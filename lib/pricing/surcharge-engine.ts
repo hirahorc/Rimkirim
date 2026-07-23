@@ -152,7 +152,15 @@ export function assessPackage(p: PackageDims, flags: SurchargeFlags = {}): Packa
     }
   }
 
-  const surchargeTotal = surcharges.reduce((s, l) => s + l.amount, 0);
+  // Only ONE Additional Handling Surcharge applies per package — the highest.
+  // If several are triggered, keep the most expensive line (first wins on ties).
+  const highest = surcharges.reduce<SurchargeLine | null>(
+    (max, l) => (max === null || l.amount > max.amount ? l : max),
+    null,
+  );
+  const appliedSurcharges = highest ? [highest] : [];
+  const surchargeTotal = highest ? highest.amount : 0;
+
   return {
     shipmentClass,
     longest,
@@ -160,24 +168,31 @@ export function assessPackage(p: PackageDims, flags: SurchargeFlags = {}): Packa
     shortest,
     girth,
     volume,
-    surcharges,
+    surcharges: appliedSurcharges,
     surchargeTotal,
   };
 }
 
+/** A package plus its own optional condition flags. */
+export type PackageWithFlags = PackageDims & SurchargeFlags;
+
 /**
  * Aggregate surcharges across all package rows (× quantity),
  * returning combined line items keyed by code with a summed amount.
+ * Optional condition flags are read PER PACKAGE, not shared across the shipment.
  */
-export function aggregateSurcharges(
-  packages: PackageDims[],
-  flags: SurchargeFlags = {},
-): { lines: SurchargeLine[]; total: number } {
+export function aggregateSurcharges(packages: PackageWithFlags[]): {
+  lines: SurchargeLine[];
+  total: number;
+} {
   const byCode = new Map<string, SurchargeLine>();
 
   for (const p of packages) {
     const qty = Math.max(1, p.quantity);
-    const { surcharges } = assessPackage(p, flags);
+    const { surcharges } = assessPackage(p, {
+      nonStandardPackaging: p.nonStandardPackaging,
+      nonStackable: p.nonStackable,
+    });
     for (const line of surcharges) {
       const existing = byCode.get(line.code);
       const add = line.amount * qty;

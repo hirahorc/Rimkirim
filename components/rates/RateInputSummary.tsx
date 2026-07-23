@@ -4,10 +4,11 @@ import Link from "next/link";
 import { Pencil, Home, Plane, Package } from "lucide-react";
 import type { CalculatorValues } from "@/lib/schemas/calculator";
 import type { RouteInfo } from "@/lib/pricing/quote";
-import { flagEmoji } from "@/lib/data/countries";
+import { Flag } from "@/components/shared/Flag";
 import { formatNumber } from "@/lib/utils/currency";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { useT } from "@/lib/i18n/LanguageProvider";
 
 export function RateInputSummary({
   input,
@@ -18,8 +19,10 @@ export function RateInputSummary({
   route: RouteInfo;
   chargeableWeight: number;
 }) {
+  const t = useT();
   const ServiceIcon = input.service === "bfg" ? Home : Plane;
-  const serviceLabel = input.service === "bfg" ? "Back For Good" : "Moving Abroad";
+  const serviceLabel =
+    input.service === "bfg" ? t("calc.serviceBfg") : t("calc.serviceMa");
   const pkgCount = input.packages.reduce((n, p) => n + (Number(p.quantity) || 1), 0);
 
   return (
@@ -30,25 +33,25 @@ export function RateInputSummary({
           {serviceLabel}
         </span>
         <span className="flex items-center gap-1.5 text-muted">
-          {route.origin && <span>{flagEmoji(route.origin.code)}</span>}
+          {route.origin && <Flag code={route.origin.code} size={12} />}
           {route.origin?.name ?? "—"}
           <span className="text-muted-2">→</span>
-          {route.destination && <span>{flagEmoji(route.destination.code)}</span>}
+          {route.destination && <Flag code={route.destination.code} size={12} />}
           {route.destination?.name ?? "—"}
         </span>
         <Badge variant={input.mode === "advance" ? "brand" : "neutral"}>
-          {input.mode === "advance" ? "Advance" : "Base"}
+          {input.mode === "advance" ? t("calc.modeAdvance") : t("calc.modeBase")}
         </Badge>
         {input.mode === "advance" && (
           <span className="flex items-center gap-1.5 text-muted">
             <Package className="size-3.5" />
-            {pkgCount} paket · {formatNumber(chargeableWeight)} kg
+            {pkgCount} {t("summary.paketUnit")} · {formatNumber(chargeableWeight)} kg
           </span>
         )}
       </div>
       <Button asChild variant="outline" size="sm" className="shrink-0">
         <Link href="/#kalkulator">
-          <Pencil className="size-3.5" /> Ubah
+          <Pencil className="size-3.5" /> {t("summary.ubah")}
         </Link>
       </Button>
     </div>

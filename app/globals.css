@@ -14,10 +14,10 @@
   --border: #2a2a2a;
   --border-strong: #3a3a3a;
 
-  /* text */
-  --foreground: #ededed;
-  --muted: #a1a1aa;
-  --muted-2: #71717a;
+  /* text — high contrast, x.ai-like */
+  --foreground: #fafafa;
+  --muted: #b7b7bd;
+  --muted-2: #8a8a92;
 
   /* brand */
   --brand: #c1ff00;
@@ -30,7 +30,8 @@
   --danger: #f87171;
   --info: #60a5fa;
 
-  --radius: 0.875rem;
+  /* sharp corners (x.ai-like) */
+  --radius: 0.25rem;
 }
 
 @theme inline {
@@ -57,9 +58,9 @@
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   --font-display: var(--font-space-grotesk), var(--font-inter), sans-serif;
 
-  --radius-lg: var(--radius);
-  --radius-md: calc(var(--radius) - 0.25rem);
-  --radius-sm: calc(var(--radius) - 0.4rem);
+  --radius-lg: calc(var(--radius) + 0.125rem);
+  --radius-md: var(--radius);
+  --radius-sm: calc(var(--radius) - 0.0625rem);
 }
 
 * {

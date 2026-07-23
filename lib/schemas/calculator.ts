@@ -1,15 +1,20 @@
 import { z } from "zod";
 
+// Validation messages are i18n keys, resolved by `t(...)` at render time.
 export const packageSchema = z.object({
-  weight: z.number({ message: "Wajib diisi" }).positive("Berat harus > 0"),
-  length: z.number({ message: "Wajib diisi" }).positive("Wajib diisi"),
-  width: z.number({ message: "Wajib diisi" }).positive("Wajib diisi"),
-  height: z.number({ message: "Wajib diisi" }).positive("Wajib diisi"),
-  quantity: z.number().int().min(1, "Min. 1"),
+  weight: z.number({ message: "err.required" }).positive("err.weightPositive"),
+  length: z.number({ message: "err.required" }).positive("err.required"),
+  width: z.number({ message: "err.required" }).positive("err.required"),
+  height: z.number({ message: "err.required" }).positive("err.required"),
+  // left empty = 1 package; consumers coerce with `Number(...) || 1`
+  quantity: z.number().int().min(1, "err.min1").optional(),
+  // per-package optional condition flags
+  nonStandardPackaging: z.boolean(),
+  nonStackable: z.boolean(),
 });
 
 export const addressSchema = z.object({
-  country: z.string().min(2, "Pilih negara"),
+  country: z.string().min(2, "err.selectCountry"),
   city: z.string().optional(),
   postalCode: z.string().optional(),
   detail: z.string().optional(),
@@ -22,21 +27,19 @@ export const calculatorSchema = z
     origin: addressSchema,
     destination: addressSchema,
     packages: z.array(packageSchema),
-    nonStandardPackaging: z.boolean(),
-    nonStackable: z.boolean(),
   })
   .superRefine((val, ctx) => {
     if (val.origin.country && val.origin.country === val.destination.country) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
-        message: "Negara asal dan tujuan tidak boleh sama",
+        message: "err.sameCountry",
         path: ["destination", "country"],
       });
     }
     if (val.mode === "advance" && val.packages.length === 0) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
-        message: "Tambahkan minimal 1 paket",
+        message: "err.minPackage",
         path: ["packages"],
       });
     }

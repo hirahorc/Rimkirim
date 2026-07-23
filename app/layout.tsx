@@ -3,6 +3,8 @@ import { Space_Grotesk, Inter } from "next/font/google";
 import "./globals.css";
 import { AppHeader } from "@/components/layout/AppHeader";
 import { AppFooter } from "@/components/layout/AppFooter";
+import { Toaster } from "@/components/ui/toaster";
+import { LanguageProvider } from "@/lib/i18n/LanguageProvider";
 
 const spaceGrotesk = Space_Grotesk({
   variable: "--font-space-grotesk",
@@ -33,9 +35,12 @@ export default function RootLayout({
       className={`${spaceGrotesk.variable} ${inter.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-background text-foreground">
-        <AppHeader />
-        <main className="flex-1">{children}</main>
-        <AppFooter />
+        <LanguageProvider>
+          <AppHeader />
+          <main className="flex-1">{children}</main>
+          <AppFooter />
+          <Toaster />
+        </LanguageProvider>
       </body>
     </html>
   );

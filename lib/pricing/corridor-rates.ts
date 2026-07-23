@@ -27,9 +27,3 @@ export const ZONE_RATES: Record<Zone, ZoneRate> = {
   NORTH_AMERICA: { perKg: 126_000, etaMin: 5, etaMax: 8 },
   LATIN_AMERICA: { perKg: 148_000, etaMin: 7, etaMax: 11 },
 };
-
-/** Base "special rate" offer shown in Base mode. */
-export const SPECIAL_RATE = {
-  perKg: 135_000,
-  minWeightKg: 21,
-} as const;

@@ -5,16 +5,20 @@
 
 import { getCountry, type Country } from "@/lib/data/countries";
 import { VENDORS, type Vendor } from "@/lib/data/vendors";
-import { ZONE_RATES, SPECIAL_RATE } from "@/lib/pricing/corridor-rates";
+import { ZONE_RATES } from "@/lib/pricing/corridor-rates";
+import {
+  findSpecialRate,
+  startingPriceOf,
+  serviceOf,
+  type SpecialRateEntry,
+  type RateDirection,
+} from "@/lib/pricing/special-rates";
 import {
   aggregateSurcharges,
-  type SurchargeFlags,
   type SurchargeLine,
+  type PackageWithFlags,
 } from "@/lib/pricing/surcharge-engine";
-import {
-  totalChargeableWeight,
-  type PackageDims,
-} from "@/lib/utils/chargeable-weight";
+import { totalChargeableWeight } from "@/lib/utils/chargeable-weight";
 
 export type ServiceType = "bfg" | "moving-abroad";
 export type CalcMode = "base" | "advance";
@@ -24,8 +28,7 @@ export interface QuoteInput {
   mode: CalcMode;
   originCountry: string; // ISO code
   destCountry: string; // ISO code
-  packages: PackageDims[];
-  flags?: SurchargeFlags;
+  packages: PackageWithFlags[];
 }
 
 export interface RouteInfo {
@@ -47,19 +50,45 @@ export interface VendorQuote {
   etaMax: number;
 }
 
+/** One weight tier of a special rate, priced as its own offer. */
+export interface SpecialRateTierQuote {
+  /** verbatim range label, e.g. "21–24 kg" */
+  display: string;
+  minKg: number;
+  maxKg?: number;
+  flat?: boolean;
+  pricePerKg: number;
+  /** minKg × pricePerKg — the entry price for this tier */
+  startingTotal: number;
+}
+
 export interface SpecialRateQuote {
-  perKg: number;
+  entry: SpecialRateEntry;
+  /** carrier + service fulfilling this rate */
+  carrier: string;
+  service: string;
+  /** one entry per weight tier; rendered as separate cards */
+  tiers: SpecialRateTierQuote[];
+  /** minimum accepted weight for this corridor */
   minWeightKg: number;
-  minTotal: number;
+  /** per-kg rate that applies at the minimum weight */
+  startingPerKg: number;
+  /** minWeightKg × startingPerKg */
+  startingTotal: number;
   etaMin: number;
   etaMax: number;
 }
 
+/** Why no special rate could be shown. */
+export type SpecialRateUnavailable = "no-rate-for-country";
+
 export interface QuoteResult {
   route: RouteInfo;
   chargeableWeight: number;
-  /** Base-mode special offer (always computable). */
-  special: SpecialRateQuote;
+  /** Base-mode special offer; null when the corridor has none. */
+  special: SpecialRateQuote | null;
+  /** Set when `special` is null. */
+  specialUnavailable?: SpecialRateUnavailable;
   /** Advance-mode vendor comparison (empty in Base mode). */
   options: VendorQuote[];
 }
@@ -105,20 +134,38 @@ export function calculateQuotes(input: QuoteInput): QuoteResult {
 
   const chargeableWeight = totalChargeableWeight(input.packages ?? []);
 
-  const special: SpecialRateQuote = {
-    perKg: SPECIAL_RATE.perKg,
-    minWeightKg: SPECIAL_RATE.minWeightKg,
-    minTotal: SPECIAL_RATE.perKg * SPECIAL_RATE.minWeightKg,
-    etaMin: zoneRate.etaMin,
-    etaMax: zoneRate.etaMax,
-  };
+  // Import (Back For Good) and export (Moving Abroad) have separate rate tables.
+  const direction: RateDirection = input.service === "bfg" ? "import" : "export";
+  let special: SpecialRateQuote | null = null;
+  let specialUnavailable: SpecialRateUnavailable | undefined;
+
+  const entry = findSpecialRate(route.foreign?.code, zone, direction);
+  if (!entry) {
+    specialUnavailable = "no-rate-for-country";
+  } else {
+    const start = startingPriceOf(entry);
+    special = {
+      entry,
+      ...serviceOf(entry),
+      tiers: entry.tiers.map((t) => ({
+        display: t.display,
+        minKg: t.minKg,
+        maxKg: t.maxKg,
+        flat: t.flat,
+        pricePerKg: t.pricePerKg,
+        startingTotal: t.pricePerKg * t.minKg,
+      })),
+      minWeightKg: start.minWeightKg,
+      startingPerKg: start.pricePerKg,
+      startingTotal: start.total,
+      etaMin: zoneRate.etaMin,
+      etaMax: zoneRate.etaMax,
+    };
+  }
 
   let options: VendorQuote[] = [];
   if (input.mode === "advance" && chargeableWeight > 0) {
-    const { lines, total: surchargeTotal } = aggregateSurcharges(
-      input.packages,
-      input.flags ?? {},
-    );
+    const { lines, total: surchargeTotal } = aggregateSurcharges(input.packages);
     options = VENDORS.map((v) =>
       computeVendorQuote(
         v,
@@ -132,5 +179,5 @@ export function calculateQuotes(input: QuoteInput): QuoteResult {
     ).sort((a, b) => a.total - b.total);
   }
 
-  return { route, chargeableWeight, special, options };
+  return { route, chargeableWeight, special, specialUnavailable, options };
 }

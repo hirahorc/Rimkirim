@@ -3,11 +3,16 @@
 import * as React from "react";
 import { useRouter } from "next/navigation";
 import { Loader2, PackageX } from "lucide-react";
-import { useCalculatorStore } from "@/lib/store/useCalculatorStore";
+import { useCalculatorStore, useStoreHydrated } from "@/lib/store/useCalculatorStore";
+import { useT } from "@/lib/i18n/LanguageProvider";
 import { calculateQuotes, type QuoteInput } from "@/lib/pricing/quote";
 import type { CalculatorValues } from "@/lib/schemas/calculator";
 import { RateInputSummary } from "./RateInputSummary";
-import { SpecialRateCard } from "./SpecialRateCard";
+import {
+  SpecialRateCard,
+  SpecialRateFooter,
+  SpecialRateUnavailableCard,
+} from "./SpecialRateCard";
 import { RateCard } from "./RateCard";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
@@ -24,18 +29,17 @@ function toQuoteInput(v: CalculatorValues): QuoteInput {
       width: Number(p.width) || 0,
       height: Number(p.height) || 0,
       quantity: Number(p.quantity) || 1,
+      nonStandardPackaging: Boolean(p.nonStandardPackaging),
+      nonStackable: Boolean(p.nonStackable),
     })),
-    flags: {
-      nonStandardPackaging: v.nonStandardPackaging,
-      nonStackable: v.nonStackable,
-    },
   };
 }
 
 export function CheckRatesClient() {
   const router = useRouter();
+  const t = useT();
   const submitted = useCalculatorStore((s) => s.submitted);
-  const hydrated = useCalculatorStore((s) => s.hydrated);
+  const hydrated = useStoreHydrated();
 
   React.useEffect(() => {
     if (hydrated && !submitted) router.replace("/");
@@ -54,13 +58,11 @@ export function CheckRatesClient() {
       <div className="mx-auto flex min-h-[50vh] max-w-md flex-col items-center justify-center px-4 text-center">
         <PackageX className="size-10 text-muted-2" />
         <h2 className="mt-4 font-display text-xl font-semibold">
-          Belum ada data pengiriman
+          {t("rates.emptyTitle")}
         </h2>
-        <p className="mt-2 text-sm text-muted">
-          Isi kalkulator dulu untuk melihat estimasi tarif.
-        </p>
+        <p className="mt-2 text-sm text-muted">{t("rates.emptyBody")}</p>
         <Button asChild className="mt-5">
-          <Link href="/#kalkulator">Ke Kalkulator</Link>
+          <Link href="/#kalkulator">{t("rates.toCalculator")}</Link>
         </Button>
       </div>
     );
@@ -75,14 +77,20 @@ export function CheckRatesClient() {
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-10 sm:px-6">
-      <header className="mb-6">
-        <h1 className="font-display text-2xl font-bold tracking-tight sm:text-3xl">
-          {isAdvance ? "Bandingkan tarif" : "Special rate untukmu"}
-        </h1>
-        <p className="mt-1 text-sm text-muted">
+      <header className="mb-5">
+        <h1 className="font-display text-3xl font-bold tracking-tight sm:text-4xl">
           {isAdvance
-            ? "Harga sudah termasuk chargeable weight & surcharge sesuai detail paketmu."
-            : "Penawaran flat rate untuk semua negara. Pakai Advance untuk harga final."}
+            ? t("rates.advanceTitle")
+            : quote.special
+              ? t("rates.specialTitle")
+              : t("rates.noRateTitle")}
+        </h1>
+        <p className="mt-1.5 text-sm text-muted">
+          {isAdvance
+            ? t("rates.advanceSub")
+            : quote.special
+              ? t("rates.specialSub")
+              : t("rates.noRateSub")}
         </p>
       </header>
 
@@ -107,20 +115,36 @@ export function CheckRatesClient() {
             />
           ))}
         </div>
+      ) : quote.special ? (
+        <>
+          <div className="grid gap-4">
+            {quote.special.tiers.map((tier) => (
+              <SpecialRateCard
+                key={tier.display}
+                special={quote.special!}
+                tier={tier}
+                route={quote.route}
+              />
+            ))}
+          </div>
+          <SpecialRateFooter special={quote.special} />
+        </>
       ) : (
-        <SpecialRateCard special={quote.special} route={quote.route} />
+        <SpecialRateUnavailableCard
+          route={quote.route}
+          isExport={submitted.service === "moving-abroad"}
+        />
       )}
 
       <p className="mt-8 text-center text-xs text-muted-2">
-        Estimasi tarif dapat berubah sesuai verifikasi dimensi & berat aktual saat
-        pickup. Butuh bantuan?{" "}
+        {t("rates.footNote")}{" "}
         <a
           href="https://wa.me/6281234567890"
           className="text-brand hover:underline"
           target="_blank"
           rel="noreferrer"
         >
-          Chat tim Rimkirim
+          {t("rates.chatLink")}
         </a>
         .
       </p>
