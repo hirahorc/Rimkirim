@@ -125,3 +125,139 @@ body {
 .animate-fade-up {
   animation: fade-up 0.4s ease both;
 }
+
+/* ------------------------------------------------------------------ */
+/*  Page entrance animations (above-the-fold, subtle & fast)          */
+/* ------------------------------------------------------------------ */
+
+@keyframes enter-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes enter-down {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes enter-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes enter-pop {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+@keyframes highlight-glow {
+  0% {
+    text-shadow: 0 0 0 rgba(193, 255, 0, 0);
+  }
+  55% {
+    text-shadow: 0 0 22px rgba(193, 255, 0, 0.45);
+  }
+  100% {
+    text-shadow: 0 0 0 rgba(193, 255, 0, 0);
+  }
+}
+
+:root {
+  --ease-out-soft: cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.reveal {
+  animation: enter-up 0.5s var(--ease-out-soft) both;
+}
+.reveal-down {
+  animation: enter-down 0.4s var(--ease-out-soft) both;
+}
+.reveal-pop {
+  animation: enter-pop 0.55s var(--ease-out-soft) both;
+}
+.reveal-bg {
+  animation: enter-fade 0.8s ease both;
+}
+.reveal-glow {
+  animation: highlight-glow 1.1s ease 0.55s both;
+}
+
+/* Stagger direct children of a container (Hero content cascade). */
+.reveal-stagger > * {
+  animation: enter-up 0.5s var(--ease-out-soft) both;
+}
+.reveal-stagger > *:nth-child(1) {
+  animation-delay: 0.05s;
+}
+.reveal-stagger > *:nth-child(2) {
+  animation-delay: 0.13s;
+}
+.reveal-stagger > *:nth-child(3) {
+  animation-delay: 0.21s;
+}
+.reveal-stagger > *:nth-child(4) {
+  animation-delay: 0.29s;
+}
+.reveal-stagger > *:nth-child(5) {
+  animation-delay: 0.37s;
+}
+.reveal-stagger > *:nth-child(6) {
+  animation-delay: 0.45s;
+}
+
+/* Per-word headline reveal: slide up + 3D x-axis flip into place. */
+@keyframes enter-word {
+  from {
+    opacity: 0;
+    transform: perspective(600px) translateY(0.4em) rotateX(-88deg);
+  }
+  to {
+    opacity: 1;
+    transform: perspective(600px) translateY(0) rotateX(0deg);
+  }
+}
+/* headline is animated per word, so cancel the container's block reveal */
+.hero-headline {
+  animation: none;
+}
+.hero-word {
+  display: inline-block;
+  transform-origin: bottom center;
+  animation: enter-word 0.6s var(--ease-out-soft) both;
+  will-change: transform, opacity;
+}
+
+/* Respect users who prefer reduced motion: show everything, no movement. */
+@media (prefers-reduced-motion: reduce) {
+  .animate-fade-up,
+  .reveal,
+  .reveal-down,
+  .reveal-pop,
+  .reveal-bg,
+  .reveal-glow,
+  .reveal-stagger > *,
+  .hero-word {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+    text-shadow: none !important;
+  }
+}

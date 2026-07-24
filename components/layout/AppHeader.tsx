@@ -9,7 +9,7 @@ import { useT } from "@/lib/i18n/LanguageProvider";
 export function AppHeader() {
   const t = useT();
   return (
-    <header className="sticky top-0 z-40 border-b border-border/80 bg-background/80 backdrop-blur-xl">
+    <header className="reveal-down sticky top-0 z-40 border-b border-border/80 bg-background/80 backdrop-blur-xl">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
         <Logo />
         <nav className="hidden items-center gap-1 text-sm text-muted md:flex">

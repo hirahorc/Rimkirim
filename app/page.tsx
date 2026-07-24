@@ -6,7 +6,10 @@ export default function Home() {
   return (
     <>
       <Hero />
-      <section className="relative mx-auto -mt-2 max-w-2xl px-4 pb-8 pt-10 sm:px-6">
+      <section
+        className="reveal-pop relative mx-auto -mt-2 max-w-2xl px-4 pb-8 pt-10 sm:px-6"
+        style={{ animationDelay: "0.5s" }}
+      >
         <ShipmentCalculator />
       </section>
       <ServiceSection />
