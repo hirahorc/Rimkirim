@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { PriceBreakdown } from "./PriceBreakdown";
 import { SurchargeInfoDialog } from "./SurchargeInfoDialog";
+import { useStartOrder } from "@/components/order/useStartOrder";
 import { useT } from "@/lib/i18n/LanguageProvider";
 import { cn } from "@/lib/utils/cn";
 
@@ -28,6 +29,7 @@ export function RateCard({
   fastest,
 }: RateCardProps) {
   const t = useT();
+  const startOrder = useStartOrder();
   const { vendor } = quote;
   return (
     <Card
@@ -112,7 +114,11 @@ export function RateCard({
             </SurchargeInfoDialog>
           </span>
         </p>
-        <Button className="w-full" variant={cheapest ? "brand" : "secondary"}>
+        <Button
+          className="w-full"
+          variant={cheapest ? "brand" : "secondary"}
+          onClick={startOrder}
+        >
           {t("rateCard.pilih")} {vendor.carrier}
         </Button>
       </div>

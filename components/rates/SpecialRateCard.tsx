@@ -20,6 +20,7 @@ import { formatIDR } from "@/lib/utils/currency";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { useStartOrder } from "@/components/order/useStartOrder";
 import { useT } from "@/lib/i18n/LanguageProvider";
 
 const WA_URL = "https://wa.me/6281234567890";
@@ -47,6 +48,7 @@ export function SpecialRateCard({
   route: RouteInfo;
 }) {
   const t = useT();
+  const startOrder = useStartOrder();
   const regions = special.entry.regions;
 
   return (
@@ -127,7 +129,7 @@ export function SpecialRateCard({
           </div>
         )}
 
-        <Button className="mt-5 w-full">
+        <Button className="mt-5 w-full" onClick={startOrder}>
           {t("special.lanjutPesan")} <ArrowRight className="size-4" />
         </Button>
       </div>

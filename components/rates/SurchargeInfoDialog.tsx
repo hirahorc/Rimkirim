@@ -82,7 +82,18 @@ const HANDLING_GROUPS: SurchargeGroup[] = [
 
 const LOGISTIC_ROWS: CostRow[] = [
   { typeKey: "surcharge.warehouseType", descKey: "surcharge.warehouseDesc", cost: "surcharge.warehouseCost", costNoteKey: "surcharge.warehouseNote" },
-  { typeKey: "surcharge.outAreaType", descKey: "surcharge.outAreaDesc", cost: "surcharge.outAreaCost" },
+  {
+    typeKey: "surcharge.outPickupType",
+    descKey: "surcharge.outPickupDesc",
+    cost: "surcharge.outPickupCost",
+    costNoteKey: "surcharge.outPickupNote",
+  },
+  {
+    typeKey: "surcharge.extDeliveryType",
+    descKey: "surcharge.extDeliveryDesc",
+    cost: "surcharge.extDeliveryCost",
+    costNoteKey: "surcharge.extDeliveryNote",
+  },
   {
     typeKey: "surcharge.mrnType",
     descKey: "surcharge.mrnDesc",

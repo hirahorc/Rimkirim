@@ -1,11 +1,15 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Logo } from "./Logo";
 import { useT } from "@/lib/i18n/LanguageProvider";
 
 export function AppFooter() {
   const t = useT();
+  const pathname = usePathname();
+  // the customer order flow (/pesan/*) has its own focused shell — no footer
+  if (pathname.startsWith("/pesan")) return null;
   return (
     <footer className="border-t border-border bg-background">
       <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6">
