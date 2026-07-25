@@ -129,7 +129,15 @@ export function SpecialRateCard({
           </div>
         )}
 
-        <Button className="mt-5 w-full" onClick={startOrder}>
+        <Button
+          className="mt-5 w-full"
+          onClick={() =>
+            startOrder({
+              perKg: tier.pricePerKg,
+              label: `${special.carrier} ${special.service}`,
+            })
+          }
+        >
           {t("special.lanjutPesan")} <ArrowRight className="size-4" />
         </Button>
       </div>

@@ -3,6 +3,7 @@
 import * as React from "react";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import { makeBookingNumber, makePackingCode } from "@/lib/utils/order-ids";
 
 export type Citizenship = "indonesian" | "foreigner";
 export type ClearanceKind = "personal" | "passenger";
@@ -14,6 +15,14 @@ export interface OrderContext {
   service: "bfg";
   originCountry: string; // ISO code (the foreign side)
   destCountry: string; // "ID"
+}
+
+/** The rate the user picked on /cek-tarif, used for the order's shipping total. */
+export interface SelectedRate {
+  /** IDR per chargeable kg */
+  perKg: number;
+  /** carrier + service (or "Special Rate") */
+  label: string;
 }
 
 export interface QuestionnaireAnswers {
@@ -42,14 +51,23 @@ const emptyModules: Modules = {
 
 interface OrderState {
   context: OrderContext | null;
+  selectedRate: SelectedRate | null;
   answers: QuestionnaireAnswers;
   clearance: ClearanceKind | null;
   modules: Modules;
+  /** issued when the order is created (user reaches the order form) */
+  bookingNumber: string | null;
+  /** packing code the system generates when none was supplied in the questionnaire */
+  generatedPackingCode: string | null;
 
-  startOrder: (ctx: OrderContext) => void;
+  startOrder: (ctx: OrderContext, rate?: SelectedRate | null) => void;
   setAnswers: (patch: Partial<QuestionnaireAnswers>) => void;
   setClearance: (c: ClearanceKind) => void;
   saveModule: (id: ModuleId, data: Record<string, unknown>) => void;
+  /** create a booking number once, on entering the order form */
+  ensureBookingNumber: () => void;
+  /** generate a packing code once CI+Items are done and none was supplied */
+  ensurePackingCode: () => void;
   reset: () => void;
 }
 
@@ -57,17 +75,23 @@ export const useOrderStore = create<OrderState>()(
   persist(
     (set) => ({
       context: null,
+      selectedRate: null,
       answers: {},
       clearance: null,
       modules: emptyModules,
+      bookingNumber: null,
+      generatedPackingCode: null,
 
-      startOrder: (ctx) =>
+      startOrder: (ctx, rate = null) =>
         set({
           context: ctx,
-          // starting a fresh order clears any prior questionnaire/clearance/modules
+          selectedRate: rate,
+          // starting a fresh order clears any prior state
           answers: {},
           clearance: null,
           modules: emptyModules,
+          bookingNumber: null,
+          generatedPackingCode: null,
         }),
       setAnswers: (patch) =>
         set((s) => ({ answers: { ...s.answers, ...patch } })),
@@ -76,16 +100,36 @@ export const useOrderStore = create<OrderState>()(
         set((s) => ({
           modules: { ...s.modules, [id]: { status: "complete", data } },
         })),
+      ensureBookingNumber: () =>
+        set((s) => (s.bookingNumber ? {} : { bookingNumber: makeBookingNumber() })),
+      ensurePackingCode: () =>
+        set((s) => {
+          // a code supplied in the questionnaire always wins; nothing to generate
+          if (s.answers.packingCode?.trim() || s.generatedPackingCode) return {};
+          if (!isPackingListReady(s.modules)) return {};
+          return { generatedPackingCode: makePackingCode() };
+        }),
       reset: () =>
-        set({ context: null, answers: {}, clearance: null, modules: emptyModules }),
+        set({
+          context: null,
+          selectedRate: null,
+          answers: {},
+          clearance: null,
+          modules: emptyModules,
+          bookingNumber: null,
+          generatedPackingCode: null,
+        }),
     }),
     {
       name: "rimkirim:order",
       partialize: (s) => ({
         context: s.context,
+        selectedRate: s.selectedRate,
         answers: s.answers,
         clearance: s.clearance,
         modules: s.modules,
+        bookingNumber: s.bookingNumber,
+        generatedPackingCode: s.generatedPackingCode,
       }),
     },
   ),
@@ -134,6 +178,18 @@ export function isPackingListReady(modules: Modules): boolean {
 /** All four modules complete → order request can be submitted. */
 export function allModulesComplete(modules: Modules): boolean {
   return MODULE_ORDER.every((id) => modules[id].status === "complete");
+}
+
+/**
+ * The packing list code to display: the one supplied in the questionnaire wins,
+ * else the system-generated one (present only once CI + Items are complete),
+ * else null (nothing to show yet).
+ */
+export function effectivePackingCode(s: {
+  answers: QuestionnaireAnswers;
+  generatedPackingCode: string | null;
+}): string | null {
+  return s.answers.packingCode?.trim() || s.generatedPackingCode || null;
 }
 
 /**

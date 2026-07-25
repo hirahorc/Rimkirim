@@ -2,16 +2,17 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { Lock, Check, ChevronRight, FileText, Sparkles, PartyPopper } from "lucide-react";
+import { Lock, Check, ChevronRight, FileText, Hash, Sparkles, PartyPopper } from "lucide-react";
 import {
   useOrderStore,
   isPickupUnlocked,
-  isPackingListReady,
   allModulesComplete,
+  effectivePackingCode,
   type ModuleId,
   type ModuleStatus,
 } from "@/lib/store/useOrderStore";
 import { MODULE_META } from "./module-meta";
+import { CopyButton } from "./CopyButton";
 import { useT } from "@/lib/i18n/LanguageProvider";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -40,11 +41,25 @@ function StatusBadge({ status, locked }: { status: ModuleStatus; locked?: boolea
 export function ModuleHub() {
   const t = useT();
   const modules = useOrderStore((s) => s.modules);
+  const answers = useOrderStore((s) => s.answers);
+  const bookingNumber = useOrderStore((s) => s.bookingNumber);
+  const generatedPackingCode = useOrderStore((s) => s.generatedPackingCode);
+  const ensureBookingNumber = useOrderStore((s) => s.ensureBookingNumber);
+  const ensurePackingCode = useOrderStore((s) => s.ensurePackingCode);
   const reset = useOrderStore((s) => s.reset);
   const [submitted, setSubmitted] = React.useState(false);
 
+  // reaching the order form = order created → issue a booking number once
+  React.useEffect(() => {
+    ensureBookingNumber();
+  }, [ensureBookingNumber]);
+  // generate a packing code once CI + Items are complete (if none was supplied)
+  React.useEffect(() => {
+    ensurePackingCode();
+  }, [modules, answers.packingCode, ensurePackingCode]);
+
   const pickupUnlocked = isPickupUnlocked(modules);
-  const packingReady = isPackingListReady(modules);
+  const packingCode = effectivePackingCode({ answers, generatedPackingCode });
   const canSubmit = allModulesComplete(modules);
 
   if (submitted) {
@@ -57,6 +72,13 @@ export function ModuleHub() {
           {t("order.confirmTitle")}
         </h1>
         <p className="mt-2 text-sm text-muted">{t("order.confirmBody")}</p>
+        {bookingNumber && (
+          <div className="mt-4 flex items-center justify-center gap-2 rounded-sm border border-border bg-surface-2/50 p-3 text-sm">
+            <span className="text-muted-2">{t("order.bookingNumberLabel")}:</span>
+            <span className="font-mono font-semibold text-brand">{bookingNumber}</span>
+            <CopyButton value={bookingNumber} />
+          </div>
+        )}
         <Button asChild className="mt-6 w-full" onClick={() => reset()}>
           <Link href="/">{t("order.backHome")}</Link>
         </Button>
@@ -72,6 +94,54 @@ export function ModuleHub() {
         </h1>
         <p className="mt-1.5 text-sm text-muted">{t("order.hubSubtitle")}</p>
       </header>
+
+      {/* order created: booking number */}
+      <Card className="mb-4 p-5">
+        <p className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-muted-2">
+          <Hash className="size-3.5" /> {t("order.bookingNumberLabel")}
+        </p>
+        <div className="mt-1 flex items-center gap-2">
+          <span className="font-display text-lg font-bold tracking-tight text-brand">
+            {bookingNumber ?? "—"}
+          </span>
+          {bookingNumber && <CopyButton value={bookingNumber} />}
+        </div>
+      </Card>
+
+      {/* packing list: code (or pending) + download place */}
+      <Card className="mb-5 flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex items-center gap-3">
+          <span
+            className={cn(
+              "grid size-10 shrink-0 place-items-center rounded-lg",
+              packingCode ? "bg-brand/15 text-brand" : "bg-surface-3 text-muted-2",
+            )}
+          >
+            <FileText className="size-5" />
+          </span>
+          <div>
+            <p className="flex items-center gap-1.5 font-medium">
+              {t("order.packingListTitle")}
+              {packingCode && (
+                <Badge variant="brand">
+                  <Sparkles className="size-3" /> {t("order.packingListReady")}
+                </Badge>
+              )}
+            </p>
+            {packingCode ? (
+              <div className="mt-0.5 flex items-center gap-1.5">
+                <span className="font-mono text-sm font-semibold">{packingCode}</span>
+                <CopyButton value={packingCode} />
+              </div>
+            ) : (
+              <p className="text-sm text-muted">{t("order.packingListPending")}</p>
+            )}
+          </div>
+        </div>
+        <Button variant="secondary" size="sm" disabled className="shrink-0">
+          {t("order.generatePdf")} ({t("order.comingSoon")})
+        </Button>
+      </Card>
 
       <div className="space-y-3">
         {MODULE_META.map((m) => {
@@ -118,36 +188,6 @@ export function ModuleHub() {
           <Lock className="size-3.5" /> {t("order.pickupLockedNote")}
         </p>
       )}
-
-      {/* packing list indicator */}
-      <Card className="mt-5 flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex items-center gap-3">
-          <span
-            className={cn(
-              "grid size-10 shrink-0 place-items-center rounded-lg",
-              packingReady ? "bg-brand/15 text-brand" : "bg-surface-3 text-muted-2",
-            )}
-          >
-            <FileText className="size-5" />
-          </span>
-          <div>
-            <p className="flex items-center gap-1.5 font-medium">
-              {t("order.packingListTitle")}
-              {packingReady && (
-                <Badge variant="brand">
-                  <Sparkles className="size-3" /> {t("order.packingListReady")}
-                </Badge>
-              )}
-            </p>
-            {!packingReady && (
-              <p className="text-sm text-muted">{t("order.packingListPending")}</p>
-            )}
-          </div>
-        </div>
-        <Button variant="secondary" size="sm" disabled className="shrink-0">
-          {t("order.generatePdf")} ({t("order.comingSoon")})
-        </Button>
-      </Card>
 
       {/* final CTA */}
       <div className="mt-6">

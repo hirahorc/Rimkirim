@@ -117,7 +117,12 @@ export function RateCard({
         <Button
           className="w-full"
           variant={cheapest ? "brand" : "secondary"}
-          onClick={startOrder}
+          onClick={() =>
+            startOrder({
+              perKg: quote.baseRatePerKg,
+              label: `${vendor.carrier} ${vendor.service}`,
+            })
+          }
         >
           {t("rateCard.pilih")} {vendor.carrier}
         </Button>
