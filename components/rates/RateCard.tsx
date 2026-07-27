@@ -77,6 +77,7 @@ export function RateCard({
         </span>
         <span className="flex items-center gap-1.5">
           <Clock className="size-3.5" /> {quote.etaMin}–{quote.etaMax} {t("rateCard.hari")}
+          <span className="text-muted-2">· {t("rateCard.etaClearanceNote")}</span>
         </span>
         <span className="flex items-center gap-1.5">
           <Package className="size-3.5" /> {formatNumber(chargeableWeight)} kg
@@ -84,17 +85,20 @@ export function RateCard({
       </div>
 
       {/* price */}
-      <div className="flex items-end justify-between border-t border-border px-5 py-4">
-        <div>
-          <p className="text-xs text-muted-2">{t("rateCard.totalEstimasi")}</p>
-          <p className="font-display text-2xl font-bold tracking-tight text-foreground">
-            {formatIDR(quote.total)}
-          </p>
+      <div className="border-t border-border px-5 py-4">
+        <div className="flex items-end justify-between">
+          <div>
+            <p className="text-xs text-muted-2">{t("rateCard.totalEstimasi")}</p>
+            <p className="font-display text-2xl font-bold tracking-tight text-foreground">
+              {formatIDR(quote.total)}
+            </p>
+          </div>
+          <div className="text-right">
+            <p className="text-xs text-muted-2">{t("rateCard.perKg")}</p>
+            <p className="font-medium text-brand">{formatIDR(quote.pricePerKg)}</p>
+          </div>
         </div>
-        <div className="text-right">
-          <p className="text-xs text-muted-2">{t("rateCard.perKg")}</p>
-          <p className="font-medium text-brand">{formatIDR(quote.pricePerKg)}</p>
-        </div>
+        <p className="mt-2 text-xs text-muted-2">{t("rateCard.taxNote")}</p>
       </div>
 
       <PriceBreakdown quote={quote} chargeableWeight={chargeableWeight} />

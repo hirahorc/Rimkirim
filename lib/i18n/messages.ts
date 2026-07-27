@@ -173,6 +173,8 @@ const id = {
     pilih: "Pilih",
     disclaimer: "Surcharge lain bisa muncul setelah paket diperiksa 3PL.",
     lihatRincian: "Lihat rincian surcharge →",
+    etaClearanceNote: "di luar proses clearance",
+    taxNote: "Belum termasuk potensi pajak.",
   },
   special: {
     badge: "Special Rate",
@@ -697,6 +699,8 @@ const en: Messages = {
     pilih: "Choose",
     disclaimer: "Other surcharges may apply after the 3PL inspects your package.",
     lihatRincian: "See surcharge details →",
+    etaClearanceNote: "excludes clearance process",
+    taxNote: "Excludes potential tax.",
   },
   special: {
     badge: "Special Rate",
