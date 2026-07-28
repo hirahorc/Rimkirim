@@ -183,10 +183,13 @@ export function calculateQuotes(input: QuoteInput): QuoteResult {
 
     // Include the corridor's special rate as its own card when the chargeable
     // weight falls within a special-rate tier — same shape as a vendor quote.
+    // Surcharges are physical attributes of the package assessed by the 3PL, so
+    // they apply to the special rate too (same lines as the vendor quotes).
     if (special) {
       const tier = tierForWeight(special.entry, chargeableWeight);
       if (tier) {
-        const total = tier.pricePerKg * chargeableWeight;
+        const baseRate = tier.pricePerKg * chargeableWeight;
+        const total = baseRate + surchargeTotal;
         options.push({
           vendor: {
             id: "special-rate",
@@ -198,11 +201,11 @@ export function calculateQuotes(input: QuoteInput): QuoteResult {
             accent: "#c1ff00",
           },
           baseRatePerKg: tier.pricePerKg,
-          baseRate: total,
-          surcharges: [],
-          surchargeTotal: 0,
+          baseRate,
+          surcharges: lines,
+          surchargeTotal,
           total,
-          pricePerKg: tier.pricePerKg,
+          pricePerKg: chargeableWeight > 0 ? total / chargeableWeight : tier.pricePerKg,
           etaMin: special.etaMin,
           etaMax: special.etaMax,
           isSpecial: true,

@@ -39,7 +39,9 @@ npm run build    # production build
   card sendiri. Import & export punya tabel berbeda; sebagian negara belum punya special rate.
 - **3PL compare** (Advance) — beberapa vendor (FedEx IP/IE, DHL, Aramex) + **Surcharge
   Information modal** (Additional Handling Surcharge per kelas Parcels/Express & Large,
-  plus Other Logistic Costs).
+  plus Other Logistic Costs). Bila chargeable weight masuk salah satu tier special rate,
+  **special rate ikut muncul sebagai card** (pill "Special Rate") dan **kena surcharge yang
+  sama** seperti card 3PL. Klik **Ubah** balik ke kalkulator dengan semua input utuh.
 
 ### Customer Order — Back For Good (`/pesan`)
 - **Fase 1 Questionnaire:** 5 pertanyaan kelayakan dengan percabangan (tidak eligible /
@@ -50,6 +52,10 @@ npm run build    # production build
 - **Fase 3 Module hub:** 4 modul draft (Customer Info, Item & Packages, Compliance,
   Pickup). Pickup terkunci sampai 3 modul lain selesai; indikator packing list "ready"
   setelah Customer Info + Items; submit akhir → konfirmasi (mock).
+- **Item & Packages:** paket bisa di-**collapse** (header ringkasan + Tutup/Buka semua +
+  chip loncat ke paket tertentu) dengan count paket di header. Tiap paket berisi kartu
+  "items inside" (deskripsi · qty · nilai/item + total per baris) dan footer **jumlah
+  barang + total nilai per paket**. Mata uang deklarasi default = negara asal pengiriman.
 
 ## Arsitektur data (mock — titik swap ke API asli)
 

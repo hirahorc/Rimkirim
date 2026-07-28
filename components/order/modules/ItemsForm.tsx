@@ -1,5 +1,6 @@
 "use client";
 
+import * as React from "react";
 import {
   useForm,
   useFieldArray,
@@ -9,7 +10,7 @@ import {
   type FieldErrors,
 } from "react-hook-form";
 import { toast } from "sonner";
-import { Plus, Trash2, Package } from "lucide-react";
+import { Plus, Trash2, Package, ChevronDown } from "lucide-react";
 import { useOrderStore } from "@/lib/store/useOrderStore";
 import { useCalculatorStore } from "@/lib/store/useCalculatorStore";
 import { totalChargeableWeight } from "@/lib/utils/chargeable-weight";
@@ -82,6 +83,34 @@ export function ItemsForm() {
   });
   const { fields, append, remove } = useFieldArray({ control, name: "packages" });
 
+  // Collapse UI state (does not touch form values). Track COLLAPSED ids keyed by
+  // stable field.id, so a freshly-appended package defaults to open.
+  const [collapsedIds, setCollapsedIds] = React.useState<Set<string>>(
+    () => new Set(),
+  );
+  const cardRefs = React.useRef<Record<string, HTMLDivElement | null>>({});
+  const isOpen = (id: string) => !collapsedIds.has(id);
+  const toggle = (id: string) =>
+    setCollapsedIds((prev) => {
+      const next = new Set(prev);
+      next.has(id) ? next.delete(id) : next.add(id);
+      return next;
+    });
+  const expandAll = () => setCollapsedIds(new Set());
+  const collapseAll = () => setCollapsedIds(new Set(fields.map((f) => f.id)));
+  const anyOpen = fields.some((f) => !collapsedIds.has(f.id));
+  const jumpTo = (id: string) => {
+    setCollapsedIds((prev) => {
+      const next = new Set(prev);
+      next.delete(id);
+      return next;
+    });
+    // wait for the block to render open before scrolling
+    requestAnimationFrame(() =>
+      cardRefs.current[id]?.scrollIntoView({ behavior: "smooth", block: "start" }),
+    );
+  };
+
   const currency = watch("currency");
   const packages = watch("packages") ?? [];
 
@@ -109,13 +138,16 @@ export function ItemsForm() {
       <form
         onSubmit={handleSubmit(
           (d) => save(d as unknown as Record<string, unknown>),
-          () => toast.error(t("calc.invalidTitle")),
+          () => {
+            expandAll(); // surface errors hidden inside collapsed packages
+            toast.error(t("calc.invalidTitle"));
+          },
         )}
         className="space-y-4"
       >
         {/* currency + carried packages */}
         <Card className="space-y-4 p-5">
-          <Field label={t("order.itCurrency")}>
+          <Field label={t("order.itCurrency")} hint={t("order.itCurrencyHelp")}>
             <select {...register("currency")} className={cn(selectCls, "sm:max-w-xs")}>
               {CURRENCIES.map((c) => (
                 <option key={c.code} value={c.code}>
@@ -137,16 +169,62 @@ export function ItemsForm() {
           )}
         </Card>
 
+        {/* packages section header: title + count, collapse control, jump chips */}
+        <div className="space-y-2">
+          <div className="flex items-center justify-between gap-2">
+            <h3 className="flex items-center gap-2 font-display font-semibold">
+              {t("order.itPackagesHeading")}
+              <span className="rounded-full bg-surface-2 px-2 py-0.5 text-xs font-medium text-muted tabular-nums">
+                {fields.length}
+              </span>
+            </h3>
+            {fields.length > 1 && (
+              <button
+                type="button"
+                onClick={anyOpen ? collapseAll : expandAll}
+                className="inline-flex items-center gap-1.5 rounded-sm border border-border px-2.5 py-1.5 text-xs text-muted transition-colors hover:border-border-strong hover:text-foreground"
+              >
+                <ChevronDown
+                  className={cn("size-3.5 transition-transform", !anyOpen && "-rotate-90")}
+                />
+                {anyOpen ? t("order.itCollapseAll") : t("order.itExpandAll")}
+              </button>
+            )}
+          </div>
+          {fields.length > 1 && (
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="text-xs text-muted-2">{t("order.itJumpTo")}:</span>
+              <div className="flex flex-wrap gap-1.5">
+                {fields.map((f, i) => (
+                  <button
+                    key={f.id}
+                    type="button"
+                    onClick={() => jumpTo(f.id)}
+                    className="grid size-7 place-items-center rounded-sm border border-border text-xs font-medium text-muted transition-colors hover:border-brand/50 hover:text-brand"
+                  >
+                    {i + 1}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+
         {fields.map((f, i) => (
-          <PackageBlock
-            key={f.id}
-            index={i}
-            control={control}
-            register={register}
-            errors={errors}
-            onRemove={() => remove(i)}
-            removable={fields.length > 1}
-          />
+          <div key={f.id} ref={(el) => { cardRefs.current[f.id] = el; }}>
+            <PackageBlock
+              index={i}
+              control={control}
+              register={register}
+              errors={errors}
+              pkg={packages[i]}
+              currency={currency}
+              open={isOpen(f.id)}
+              onToggle={() => toggle(f.id)}
+              onRemove={() => remove(i)}
+              removable={fields.length > 1}
+            />
+          </div>
         ))}
 
         <button
@@ -188,6 +266,10 @@ function PackageBlock({
   control,
   register,
   errors,
+  pkg,
+  currency,
+  open,
+  onToggle,
   onRemove,
   removable,
 }: {
@@ -195,6 +277,10 @@ function PackageBlock({
   control: Control<ItemsData>;
   register: UseFormRegister<ItemsData>;
   errors: FieldErrors<ItemsData>;
+  pkg: PackageRowT | undefined;
+  currency: string;
+  open: boolean;
+  onToggle: () => void;
   onRemove: () => void;
   removable: boolean;
 }) {
@@ -212,23 +298,72 @@ function PackageBlock({
     ["height", "order.itPhotoHeight"],
   ] as const;
 
+  // One-line summary shown when collapsed, so each package is identifiable.
+  const w = Number(pkg?.weight) || 0;
+  const l = Number(pkg?.length) || 0;
+  const wd = Number(pkg?.width) || 0;
+  const h = Number(pkg?.height) || 0;
+  const pkgItems = pkg?.items ?? [];
+  const itemCount = pkgItems.filter((it) => (it?.name ?? "").trim()).length;
+  const pkgTotalItems = pkgItems.reduce((s, it) => s + (Number(it?.quantity) || 0), 0);
+  const pkgTotalValue = pkgItems.reduce(
+    (s, it) => s + (Number(it?.quantity) || 0) * (Number(it?.value) || 0),
+    0,
+  );
+  const hasAny = w > 0 || l > 0 || wd > 0 || h > 0 || itemCount > 0;
+  const summary = hasAny
+    ? [
+        w > 0 && `${formatNumber(w)}kg`,
+        (l > 0 || wd > 0 || h > 0) && `${l}×${wd}×${h}`,
+        itemCount > 0 && `${itemCount} ${t("order.itItemsWord")}`,
+      ]
+        .filter(Boolean)
+        .join(" · ")
+    : t("order.itPackageEmpty");
+  const hasError = Boolean(pErr);
+
   return (
-    <Card className="space-y-4 p-5">
-      <div className="flex items-center justify-between">
-        <span className="text-xs font-semibold uppercase tracking-wider text-muted-2">
-          {t("order.itPackageN")} {index + 1}
-        </span>
+    <Card className="p-5">
+      <div className="flex items-center justify-between gap-2">
+        <button
+          type="button"
+          onClick={onToggle}
+          className="flex min-w-0 flex-1 items-center gap-2 text-left"
+          aria-expanded={open}
+        >
+          <ChevronDown
+            className={cn(
+              "size-4 shrink-0 text-muted transition-transform",
+              !open && "-rotate-90",
+            )}
+          />
+          <span className="shrink-0 text-xs font-semibold uppercase tracking-wider text-muted-2">
+            {t("order.itPackageN")} {index + 1}
+          </span>
+          {!open && (
+            <span
+              className={cn(
+                "truncate text-xs",
+                hasError ? "text-danger" : "text-muted",
+              )}
+            >
+              {summary}
+            </span>
+          )}
+        </button>
         {removable && (
           <button
             type="button"
             onClick={onRemove}
-            className="inline-flex items-center gap-1 text-xs text-muted transition-colors hover:text-danger"
+            className="inline-flex shrink-0 items-center gap-1 text-xs text-muted transition-colors hover:text-danger"
           >
             <Trash2 className="size-3.5" /> {t("order.itRemove")}
           </button>
         )}
       </div>
 
+      {!open ? null : (
+      <div className="mt-4 space-y-4">
       <Field label={t("order.itPackaging")}>
         <select {...register(`packages.${index}.packaging`)} className={selectCls}>
           {PACKAGING_TYPES.map((p) => (
@@ -254,32 +389,82 @@ function PackageBlock({
         </Field>
       </div>
 
-      {/* items inside */}
+      {/* items inside — one card per item, mirroring the calculator package cards */}
       <div>
         <p className="mb-2 text-sm font-medium">{t("order.itItemsHeading")}</p>
-        <div className="space-y-2">
-          {fields.map((f, j) => (
-            <div key={f.id} className="grid grid-cols-2 gap-2 sm:grid-cols-[1fr_auto_auto_auto]">
-              <Input placeholder={t("order.itItemName")} {...register(`packages.${index}.items.${j}.name`, req)} />
-              <Input type="number" min="0" placeholder={t("order.itValue")} className="sm:w-28" {...register(`packages.${index}.items.${j}.value`, { valueAsNumber: true })} />
-              <Input type="number" min="1" placeholder={t("order.itQty")} className="sm:w-20" {...register(`packages.${index}.items.${j}.quantity`, { valueAsNumber: true })} />
-              {fields.length > 1 ? (
-                <button type="button" onClick={() => remove(j)} className="grid size-11 place-items-center rounded-md text-muted transition-colors hover:text-danger">
-                  <Trash2 className="size-4" />
-                </button>
-              ) : (
-                <span className="size-11" />
-              )}
-            </div>
-          ))}
+
+        <div className="space-y-3">
+          {fields.map((f, j) => {
+            const it = pkg?.items?.[j];
+            const rowTotal = (Number(it?.quantity) || 0) * (Number(it?.value) || 0);
+            const removable = fields.length > 1;
+            return (
+              <div key={f.id} className="rounded-sm border border-border bg-surface-2/60 p-4">
+                <div className="mb-3 flex items-center justify-between">
+                  <span className="text-xs font-semibold uppercase tracking-wider text-muted">
+                    {t("order.itItemN")} {j + 1}
+                  </span>
+                  {removable && (
+                    <button
+                      type="button"
+                      onClick={() => remove(j)}
+                      className="inline-flex items-center gap-1 text-xs text-muted transition-colors hover:text-danger"
+                    >
+                      <Trash2 className="size-3.5" /> {t("order.itRemove")}
+                    </button>
+                  )}
+                </div>
+
+                <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+                  <div className="col-span-2">
+                    <Field label={t("order.itColDescription")} error={pErr?.items?.[j]?.name?.message}>
+                      <Input placeholder={t("order.itItemName")} {...register(`packages.${index}.items.${j}.name`, req)} />
+                    </Field>
+                  </div>
+                  <Field label={t("order.itColQty")}>
+                    <Input type="number" min="1" placeholder="0" {...register(`packages.${index}.items.${j}.quantity`, { valueAsNumber: true })} />
+                  </Field>
+                  <Field label={t("order.itColValue")}>
+                    <div className="relative">
+                      <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-xs text-muted-2">
+                        {currency}
+                      </span>
+                      <Input type="number" min="0" placeholder="0" className="pl-12" {...register(`packages.${index}.items.${j}.value`, { valueAsNumber: true })} />
+                    </div>
+                  </Field>
+                </div>
+
+                <div className="mt-3 flex items-center justify-between rounded-sm bg-surface/70 px-3 py-2 text-xs">
+                  <span className="text-muted">{t("order.itColTotal")}</span>
+                  <span className="font-medium text-foreground tabular-nums">
+                    {currency} {formatNumber(rowTotal)}
+                  </span>
+                </div>
+              </div>
+            );
+          })}
         </div>
         <button
           type="button"
           onClick={() => append({ name: "", value: undefined as unknown as number, quantity: 1 })}
-          className="mt-2 inline-flex items-center gap-1.5 text-xs text-brand hover:underline"
+          className="mt-3 inline-flex items-center gap-1.5 text-xs text-brand hover:underline"
         >
           <Plus className="size-3.5" /> {t("order.itAdd")}
         </button>
+
+        {/* per-package summary — filled strip, footer of the items list (mobile-first) */}
+        <div className="mt-3 flex flex-col gap-2 rounded-sm bg-surface-2/60 px-4 py-3 text-sm sm:flex-row sm:items-center sm:justify-between">
+          <span className="text-muted">
+            {t("order.itPkgTotalItems")}:{" "}
+            <span className="font-medium text-foreground tabular-nums">{pkgTotalItems}</span>
+          </span>
+          <span className="text-muted">
+            {t("order.itPkgTotalValue")}:{" "}
+            <span className="font-medium text-foreground tabular-nums">
+              {currency} {formatNumber(pkgTotalValue)}
+            </span>
+          </span>
+        </div>
       </div>
 
       {/* measurement photos */}
@@ -303,6 +488,8 @@ function PackageBlock({
           ))}
         </div>
       </div>
+      </div>
+      )}
     </Card>
   );
 }
