@@ -10,6 +10,7 @@ import {
   findSpecialRate,
   startingPriceOf,
   serviceOf,
+  tierForWeight,
   type SpecialRateEntry,
   type RateDirection,
 } from "@/lib/pricing/special-rates";
@@ -48,6 +49,8 @@ export interface VendorQuote {
   pricePerKg: number;
   etaMin: number;
   etaMax: number;
+  /** true when this option is the corridor's special rate (flat, no surcharge) */
+  isSpecial?: boolean;
 }
 
 /** One weight tier of a special rate, priced as its own offer. */
@@ -176,7 +179,38 @@ export function calculateQuotes(input: QuoteInput): QuoteResult {
         zoneRate.etaMin,
         zoneRate.etaMax,
       ),
-    ).sort((a, b) => a.total - b.total);
+    );
+
+    // Include the corridor's special rate as its own card when the chargeable
+    // weight falls within a special-rate tier — same shape as a vendor quote.
+    if (special) {
+      const tier = tierForWeight(special.entry, chargeableWeight);
+      if (tier) {
+        const total = tier.pricePerKg * chargeableWeight;
+        options.push({
+          vendor: {
+            id: "special-rate",
+            carrier: special.carrier,
+            service: special.service,
+            code: "SR",
+            rateMultiplier: 1,
+            etaModifier: 0,
+            accent: "#c1ff00",
+          },
+          baseRatePerKg: tier.pricePerKg,
+          baseRate: total,
+          surcharges: [],
+          surchargeTotal: 0,
+          total,
+          pricePerKg: tier.pricePerKg,
+          etaMin: special.etaMin,
+          etaMax: special.etaMax,
+          isSpecial: true,
+        });
+      }
+    }
+
+    options.sort((a, b) => a.total - b.total);
   }
 
   return { route, chargeableWeight, special, specialUnavailable, options };

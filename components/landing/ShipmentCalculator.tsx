@@ -19,7 +19,10 @@ import {
   calculatorSchema,
   type CalculatorValues,
 } from "@/lib/schemas/calculator";
-import { useCalculatorStore } from "@/lib/store/useCalculatorStore";
+import {
+  useCalculatorStore,
+  useStoreHydrated,
+} from "@/lib/store/useCalculatorStore";
 import { INDONESIA } from "@/lib/data/countries";
 import { totalChargeableWeight } from "@/lib/utils/chargeable-weight";
 import { formatNumber } from "@/lib/utils/currency";
@@ -63,6 +66,7 @@ export function ShipmentCalculator() {
     watch,
     setValue,
     getValues,
+    reset,
     formState: { errors },
   } = useForm<CalculatorValues>({
     resolver: zodResolver(calculatorSchema),
@@ -76,6 +80,18 @@ export function ShipmentCalculator() {
   });
 
   const { fields, append, remove } = useFieldArray({ control, name: "packages" });
+
+  // Restore the last submitted input once the store has hydrated, so "Ubah" on
+  // the results page returns the user to a fully-filled calculator.
+  const hydrated = useStoreHydrated();
+  const restored = React.useRef(false);
+  React.useEffect(() => {
+    if (hydrated && !restored.current) {
+      restored.current = true;
+      const submitted = useCalculatorStore.getState().submitted;
+      if (submitted) reset(submitted);
+    }
+  }, [hydrated, reset]);
 
   const service = watch("service");
   const mode = watch("mode");

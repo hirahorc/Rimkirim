@@ -1,6 +1,6 @@
 "use client";
 
-import { Clock, Package, Zap, BadgePercent, Info } from "lucide-react";
+import { Clock, Package, Zap, BadgePercent, Info, Sparkles } from "lucide-react";
 import type { VendorQuote, RouteInfo } from "@/lib/pricing/quote";
 import { Flag } from "@/components/shared/Flag";
 import { formatIDR, formatNumber } from "@/lib/utils/currency";
@@ -35,15 +35,20 @@ export function RateCard({
     <Card
       className={cn(
         "overflow-hidden transition-colors",
-        cheapest ? "border-brand/50" : "hover:border-border-strong",
+        cheapest || quote.isSpecial
+          ? "border-brand/50"
+          : "hover:border-border-strong",
       )}
     >
       {/* header */}
       <div className="flex items-start justify-between gap-3 p-5 pb-4">
         <div className="flex items-center gap-3">
           <span
-            className="grid size-10 place-items-center rounded-lg text-xs font-bold text-white"
-            style={{ backgroundColor: vendor.accent }}
+            className={cn(
+              "grid size-10 place-items-center rounded-lg text-xs font-bold",
+              quote.isSpecial ? "bg-brand text-brand-ink" : "text-white",
+            )}
+            style={quote.isSpecial ? undefined : { backgroundColor: vendor.accent }}
           >
             {vendor.code}
           </span>
@@ -53,6 +58,11 @@ export function RateCard({
           </div>
         </div>
         <div className="flex flex-col items-end gap-1">
+          {quote.isSpecial && (
+            <Badge variant="brand">
+              <Sparkles className="size-3" /> {t("special.badge")}
+            </Badge>
+          )}
           {cheapest && (
             <Badge variant="brand">
               <BadgePercent className="size-3" /> {t("rateCard.termurah")}
