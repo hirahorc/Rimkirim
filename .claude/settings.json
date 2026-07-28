@@ -37,7 +37,9 @@
       "Bash(git add *)",
       "Bash(git push *)",
       "Bash(git commit *)",
-      "Bash(npx --yes tsx _pl.mjs)"
+      "Bash(npx --yes tsx _pl.mjs)",
+      "Bash(grep -oE '\\\\{ code: \"[A-Z]{2}\", name: \"[^\"]+\"' /Users/hira.rimkirim/Documents/projects/Rimkirim/lib/data/countries.ts)",
+      "Bash(npx tsx -e ' *)"
     ]
   }
 }

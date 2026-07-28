@@ -1,6 +1,12 @@
 "use client";
 
-import { useForm, Controller } from "react-hook-form";
+import {
+  useForm,
+  Controller,
+  type Control,
+  type UseFormRegister,
+  type FieldPath,
+} from "react-hook-form";
 import { toast } from "sonner";
 import { Info, Copy } from "lucide-react";
 import { useOrderStore } from "@/lib/store/useOrderStore";
@@ -10,6 +16,7 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { CountrySelect } from "@/components/shared/CountrySelect";
+import { DialCodeSelect } from "@/components/order/DialCodeSelect";
 import { ModuleShell, useSaveModule, readModuleData, Field } from "./shared";
 
 interface Party {
@@ -17,6 +24,7 @@ interface Party {
   country: string;
   address: string;
   email: string;
+  phoneCountry: string;
   phone: string;
 }
 interface CustomerForm {
@@ -24,7 +32,9 @@ interface CustomerForm {
   receiver: Party;
   owner: {
     fullName: string;
+    phoneOriginCountry: string;
     phoneOrigin: string;
+    phoneDestinationCountry: string;
     phoneDestination: string;
     email: string;
   };
@@ -35,6 +45,7 @@ const emptyParty: Party = {
   country: "",
   address: "",
   email: "",
+  phoneCountry: "",
   phone: "",
 };
 
@@ -43,6 +54,8 @@ export function CustomerInfoForm() {
   const save = useSaveModule("customerInfo");
   const context = useOrderStore((s) => s.context);
   const prev = readModuleData("customerInfo") as Partial<CustomerForm>;
+  const originDial = context?.originCountry || INDONESIA.code;
+  const destDial = context?.destCountry || INDONESIA.code;
 
   const {
     register,
@@ -56,12 +69,20 @@ export function CustomerInfoForm() {
       sender: {
         ...emptyParty,
         country: context?.originCountry ?? "",
+        phoneCountry: originDial,
         ...prev.sender,
       },
-      receiver: { ...emptyParty, country: INDONESIA.code, ...prev.receiver },
+      receiver: {
+        ...emptyParty,
+        country: INDONESIA.code,
+        phoneCountry: destDial,
+        ...prev.receiver,
+      },
       owner: {
         fullName: "",
+        phoneOriginCountry: originDial,
         phoneOrigin: "",
+        phoneDestinationCountry: destDial,
         phoneDestination: "",
         email: "",
         ...prev.owner,
@@ -76,14 +97,20 @@ export function CustomerInfoForm() {
     setValue("receiver.fullName", s.fullName);
     setValue("receiver.address", s.address);
     setValue("receiver.email", s.email);
+    setValue("receiver.phoneCountry", s.phoneCountry);
     setValue("receiver.phone", s.phone);
   };
   const ownerFrom = (who: "sender" | "receiver") => {
     const p = getValues(who);
     setValue("owner.fullName", p.fullName);
     setValue("owner.email", p.email);
-    if (who === "sender") setValue("owner.phoneOrigin", p.phone);
-    else setValue("owner.phoneDestination", p.phone);
+    if (who === "sender") {
+      setValue("owner.phoneOriginCountry", p.phoneCountry);
+      setValue("owner.phoneOrigin", p.phone);
+    } else {
+      setValue("owner.phoneDestinationCountry", p.phoneCountry);
+      setValue("owner.phoneDestination", p.phone);
+    }
   };
 
   return (
@@ -117,7 +144,7 @@ export function CustomerInfoForm() {
         <Card className="space-y-4 p-5">
           <h2 className="font-display font-semibold">{t("order.ciSectionSender")}</h2>
           <Field label={t("order.ciFullName")} error={errors.sender?.fullName?.message}>
-            <Input {...register("sender.fullName", req)} />
+            <Input placeholder={t("order.ciPhName")} {...register("sender.fullName", req)} />
           </Field>
           <Field label={t("order.ciCountry")} error={errors.sender?.country?.message}>
             <Controller
@@ -130,14 +157,19 @@ export function CustomerInfoForm() {
             />
           </Field>
           <Field label={t("order.ciFullAddress")} error={errors.sender?.address?.message}>
-            <Input {...register("sender.address", req)} />
+            <Input placeholder={t("order.ciPhAddress")} {...register("sender.address", req)} />
           </Field>
           <div className="grid gap-4 sm:grid-cols-2">
             <Field label={t("order.ciEmail")} error={errors.sender?.email?.message}>
-              <Input type="email" {...register("sender.email", req)} />
+              <Input type="email" placeholder={t("order.ciPhEmail")} {...register("sender.email", req)} />
             </Field>
             <Field label={t("order.ciPhoneOrigin")} error={errors.sender?.phone?.message}>
-              <Input {...register("sender.phone", req)} />
+              <PhoneInput
+                control={control}
+                register={register}
+                codeName="sender.phoneCountry"
+                numberName="sender.phone"
+              />
             </Field>
           </div>
         </Card>
@@ -151,7 +183,7 @@ export function CustomerInfoForm() {
             </Button>
           </div>
           <Field label={t("order.ciFullName")} error={errors.receiver?.fullName?.message}>
-            <Input {...register("receiver.fullName", req)} />
+            <Input placeholder={t("order.ciPhName")} {...register("receiver.fullName", req)} />
           </Field>
           <Field label={t("order.ciCountry")}>
             <Controller
@@ -166,17 +198,22 @@ export function CustomerInfoForm() {
             label={t("order.ciFullAddress")}
             error={errors.receiver?.address?.message}
           >
-            <Input {...register("receiver.address", req)} />
+            <Input placeholder={t("order.ciPhAddress")} {...register("receiver.address", req)} />
           </Field>
           <div className="grid gap-4 sm:grid-cols-2">
             <Field label={t("order.ciEmail")} error={errors.receiver?.email?.message}>
-              <Input type="email" {...register("receiver.email", req)} />
+              <Input type="email" placeholder={t("order.ciPhEmail")} {...register("receiver.email", req)} />
             </Field>
             <Field
               label={t("order.ciPhoneDestination")}
               error={errors.receiver?.phone?.message}
             >
-              <Input {...register("receiver.phone", req)} />
+              <PhoneInput
+                control={control}
+                register={register}
+                codeName="receiver.phoneCountry"
+                numberName="receiver.phone"
+              />
             </Field>
           </div>
         </Card>
@@ -195,21 +232,31 @@ export function CustomerInfoForm() {
             </div>
           </div>
           <Field label={t("order.ciFullName")} error={errors.owner?.fullName?.message}>
-            <Input {...register("owner.fullName", req)} />
+            <Input placeholder={t("order.ciPhName")} {...register("owner.fullName", req)} />
           </Field>
           <div className="grid gap-4 sm:grid-cols-2">
             <Field label={t("order.ciPhoneOrigin")} error={errors.owner?.phoneOrigin?.message}>
-              <Input {...register("owner.phoneOrigin", req)} />
+              <PhoneInput
+                control={control}
+                register={register}
+                codeName="owner.phoneOriginCountry"
+                numberName="owner.phoneOrigin"
+              />
             </Field>
             <Field
               label={t("order.ciPhoneDestination")}
               error={errors.owner?.phoneDestination?.message}
             >
-              <Input {...register("owner.phoneDestination", req)} />
+              <PhoneInput
+                control={control}
+                register={register}
+                codeName="owner.phoneDestinationCountry"
+                numberName="owner.phoneDestination"
+              />
             </Field>
           </div>
           <Field label={t("order.ciEmail")} error={errors.owner?.email?.message}>
-            <Input type="email" {...register("owner.email", req)} />
+            <Input type="email" placeholder={t("order.ciPhEmail")} {...register("owner.email", req)} />
           </Field>
         </Card>
 
@@ -218,5 +265,41 @@ export function CustomerInfoForm() {
         </Button>
       </form>
     </ModuleShell>
+  );
+}
+
+/** Country dial-code dropdown glued to a phone-number input. */
+function PhoneInput({
+  control,
+  register,
+  codeName,
+  numberName,
+}: {
+  control: Control<CustomerForm>;
+  register: UseFormRegister<CustomerForm>;
+  codeName: FieldPath<CustomerForm>;
+  numberName: FieldPath<CustomerForm>;
+}) {
+  const t = useT();
+  return (
+    <div className="flex gap-2">
+      <div className="w-28 shrink-0">
+        <Controller
+          control={control}
+          name={codeName}
+          render={({ field }) => (
+            <DialCodeSelect
+              value={(field.value as string) || ""}
+              onChange={field.onChange}
+            />
+          )}
+        />
+      </div>
+      <Input
+        className="flex-1"
+        placeholder={t("order.ciPhPhone")}
+        {...register(numberName, { required: t("err.required") })}
+      />
+    </div>
   );
 }

@@ -26,8 +26,25 @@ import { useT } from "@/lib/i18n/LanguageProvider";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import { TooltipProvider, InfoTip } from "@/components/ui/tooltip";
 import { ModuleShell, useSaveModule, readModuleData, Field } from "./shared";
 import { cn } from "@/lib/utils/cn";
+
+const PHOTO_KEYS = ["weight", "length", "width", "height"] as const;
+
+/** True when every package has all four measurement photos. */
+function photosComplete(pkgs: PackageRowT[] | undefined): boolean {
+  return (pkgs ?? []).every((p) =>
+    PHOTO_KEYS.every((k) => Boolean(p?.photos?.[k])),
+  );
+}
 
 interface ItemRow {
   name: string;
@@ -133,16 +150,48 @@ export function ItemsForm() {
   );
   const totalPrice = selectedRate ? selectedRate.perKg * totalCw : null;
 
+  // Warn (not block) when saving without complete measurement photos.
+  const [photoWarnOpen, setPhotoWarnOpen] = React.useState(false);
+  const pendingSave = React.useRef<ItemsData | null>(null);
+
+  const onValid = (d: ItemsData) => {
+    if (!photosComplete(d.packages)) {
+      pendingSave.current = d;
+      setPhotoWarnOpen(true);
+      return;
+    }
+    save(d as unknown as Record<string, unknown>);
+  };
+  const saveAnyway = () => {
+    setPhotoWarnOpen(false);
+    if (pendingSave.current) save(pendingSave.current as unknown as Record<string, unknown>);
+  };
+  const gotoFirstMissingPhotos = () => {
+    setPhotoWarnOpen(false);
+    const idx = packages.findIndex(
+      (p) => !PHOTO_KEYS.every((k) => Boolean(p?.photos?.[k])),
+    );
+    if (idx >= 0) {
+      const id = fields[idx].id;
+      setCollapsedIds((prev) => {
+        const next = new Set(prev);
+        next.delete(id);
+        return next;
+      });
+      requestAnimationFrame(() =>
+        cardRefs.current[id]?.scrollIntoView({ behavior: "smooth", block: "start" }),
+      );
+    }
+  };
+
   return (
+    <TooltipProvider delayDuration={150}>
     <ModuleShell moduleId="items">
       <form
-        onSubmit={handleSubmit(
-          (d) => save(d as unknown as Record<string, unknown>),
-          () => {
-            expandAll(); // surface errors hidden inside collapsed packages
-            toast.error(t("calc.invalidTitle"));
-          },
-        )}
+        onSubmit={handleSubmit(onValid, () => {
+          expandAll(); // surface errors hidden inside collapsed packages
+          toast.error(t("calc.invalidTitle"));
+        })}
         className="space-y-4"
       >
         {/* currency + carried packages */}
@@ -246,7 +295,31 @@ export function ItemsForm() {
           {t("order.saveModule")}
         </Button>
       </form>
+
+      {/* warn when saving without complete measurement photos */}
+      <Dialog open={photoWarnOpen} onOpenChange={setPhotoWarnOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>{t("order.itPhotoWarnTitle")}</DialogTitle>
+            <DialogDescription>{t("order.itPhotoWarnBody")}</DialogDescription>
+          </DialogHeader>
+          <div className="flex flex-col gap-2 p-6 pt-0 sm:flex-row-reverse">
+            <Button type="button" onClick={gotoFirstMissingPhotos} className="sm:flex-1">
+              {t("order.itPhotoWarnUpload")}
+            </Button>
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={saveAnyway}
+              className="sm:flex-1"
+            >
+              {t("order.itPhotoWarnContinue")}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </ModuleShell>
+    </TooltipProvider>
   );
 }
 
@@ -469,7 +542,10 @@ function PackageBlock({
 
       {/* measurement photos */}
       <div>
-        <p className="mb-2 text-sm font-medium">{t("order.itPhotos")}</p>
+        <p className="mb-2 flex items-center gap-1.5 text-sm font-medium">
+          {t("order.itPhotos")}
+          <InfoTip content={t("order.itPhotosTooltip")} />
+        </p>
         <div className="grid gap-2 sm:grid-cols-2">
           {photoKeys.map(([key, labelKey]) => (
             <Field key={key} label={<span className="text-xs">{t(labelKey)}</span>}>

@@ -56,6 +56,11 @@ npm run build    # production build
   chip loncat ke paket tertentu) dengan count paket di header. Tiap paket berisi kartu
   "items inside" (deskripsi · qty · nilai/item + total per baris) dan footer **jumlah
   barang + total nilai per paket**. Mata uang deklarasi default = negara asal pengiriman.
+  **Foto pengukuran** opsional tapi ada tooltip risiko + modal peringatan saat simpan bila
+  belum lengkap (pilih upload dulu / lanjut) — bukti buat dispute berat kalau 3PL ukur ulang.
+- **Customer Info:** nomor telepon punya **dropdown kode negara** (`lib/data/dial-codes.ts`,
+  225 negara) yang pre-fill dari negara origin/destination kalkulator; placeholder di semua
+  field.
 
 ## Arsitektur data (mock — titik swap ke API asli)
 

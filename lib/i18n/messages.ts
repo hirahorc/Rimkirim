@@ -416,7 +416,7 @@ const id = {
       "Terima kasih! Tim kami akan menghubungi kamu untuk konfirmasi jadwal & dokumen.",
     backHome: "Kembali ke beranda",
     // module form — shared
-    saveModule: "Simpan modul",
+    saveModule: "Simpan",
     saved: "Tersimpan",
     // customer information
     ciFullName: "Nama lengkap",
@@ -472,6 +472,10 @@ const id = {
     ciPhoneDestination: "Nomor telepon (Indonesia)",
     ciSameAsSender: "Sama dengan Sender",
     ciSameAsReceiver: "Sama dengan Receiver",
+    ciPhName: "Contoh: Rimi Putri",
+    ciPhAddress: "Jalan, nomor, kota, provinsi, kode pos",
+    ciPhEmail: "rimiputri@email.com",
+    ciPhPhone: "812xxxxxxx (tanpa 0 di depan)",
     ciNoteTitle: "Data yang tertera di dokumen packing list akan berbeda:",
     ciNoteName:
       "Nama penerima akan disamakan dengan pengirim (syarat clearance: nama harus sama).",
@@ -495,6 +499,13 @@ const id = {
     itItemName: "Masukkan deskripsi barang",
     itAddPackage: "Tambah paket",
     itPhotos: "Foto pengukuran (sebagai bukti)",
+    itPhotosTooltip:
+      "Foto opsional, tapi penting. Kalau 3PL mengukur ulang dan beratnya lebih besar, tanpa foto pengukuran awal Rimkirim tidak bisa bantu ajukan dispute.",
+    itPhotoWarnTitle: "Lanjut tanpa foto pengukuran?",
+    itPhotoWarnBody:
+      "Foto pengukuran tidak wajib, tapi jadi bukti penting. Bila 3PL mengukur ulang paketmu dan hasilnya lebih berat (yang biasanya menambah biaya), Rimkirim tidak bisa membantu proses dispute karena tidak ada bukti pengukuran awal. Upload foto sekarang untuk melindungi kirimanmu.",
+    itPhotoWarnUpload: "Upload foto dulu",
+    itPhotoWarnContinue: "Lanjut tanpa foto",
     itPhotoWeight: "Foto berat",
     itPhotoLength: "Foto panjang",
     itPhotoWidth: "Foto lebar",
@@ -944,7 +955,7 @@ const en: Messages = {
     confirmBody:
       "Thank you! Our team will contact you to confirm the schedule & documents.",
     backHome: "Back to home",
-    saveModule: "Save module",
+    saveModule: "Save",
     saved: "Saved",
     ciFullName: "Full name",
     ciEmail: "Email",
@@ -995,6 +1006,10 @@ const en: Messages = {
     ciPhoneDestination: "Phone number (Indonesia)",
     ciSameAsSender: "Same as Sender",
     ciSameAsReceiver: "Same as Receiver",
+    ciPhName: "e.g. Rimi Putri",
+    ciPhAddress: "Street, number, city, state, postal code",
+    ciPhEmail: "rimiputri@email.com",
+    ciPhPhone: "812xxxxxxx (no leading 0)",
     ciNoteTitle: "What appears on the packing list will differ:",
     ciNoteName:
       "The receiver name is set to the sender name (clearance requires identical names).",
@@ -1017,6 +1032,13 @@ const en: Messages = {
     itItemName: "Enter item description",
     itAddPackage: "Add package",
     itPhotos: "Measurement photos (as proof)",
+    itPhotosTooltip:
+      "Optional but important. If the 3PL re-measures and the weight comes out higher, without initial measurement photos Rimkirim can't help you dispute it.",
+    itPhotoWarnTitle: "Continue without measurement photos?",
+    itPhotoWarnBody:
+      "Measurement photos aren't required, but they're important proof. If the 3PL re-measures your packages and the weight comes out higher (which usually adds cost), Rimkirim can't help dispute it without proof of the original measurement. Upload the photos now to protect your shipment.",
+    itPhotoWarnUpload: "Upload photos first",
+    itPhotoWarnContinue: "Continue anyway",
     itPhotoWeight: "Weight photo",
     itPhotoLength: "Length photo",
     itPhotoWidth: "Width photo",
