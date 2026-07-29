@@ -24,6 +24,28 @@ export const Input = React.forwardRef<
 });
 Input.displayName = "Input";
 
+/** Multi-line text field, styled to match Input (taller, resizable vertically). */
+export const Textarea = React.forwardRef<
+  HTMLTextAreaElement,
+  React.TextareaHTMLAttributes<HTMLTextAreaElement>
+>(({ className, rows = 3, ...props }, ref) => {
+  return (
+    <textarea
+      ref={ref}
+      rows={rows}
+      className={cn(
+        "flex min-h-24 w-full resize-y rounded-md border border-border bg-surface-2 px-3 py-2 text-sm leading-relaxed text-foreground",
+        "placeholder:text-muted-2 transition-colors",
+        "focus-visible:outline-none focus-visible:border-brand/70 focus-visible:ring-2 focus-visible:ring-brand/25",
+        "disabled:cursor-not-allowed disabled:opacity-50",
+        className,
+      )}
+      {...props}
+    />
+  );
+});
+Textarea.displayName = "Textarea";
+
 /**
  * `<input type="date">` with a custom Calendar icon pinned right (matching the
  * Select chevron). The native picker indicator is kept as an invisible click

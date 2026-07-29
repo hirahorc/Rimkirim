@@ -24,11 +24,3 @@ export const PICKUP_WINDOWS = [
   "13:00-17:00",
   "14:00-18:00",
 ] as const;
-
-/** How long the PIC can stand by for a re-pickup if the first attempt fails. */
-export const PICKUP_STANDBY = [
-  { value: "1", labelKey: "order.puStandby1" },
-  { value: "2", labelKey: "order.puStandby2" },
-  { value: "3", labelKey: "order.puStandby3" },
-  { value: "other", labelKey: "order.puStandbyOther" },
-] as const;

@@ -11,6 +11,7 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { SegmentedRoot, SegmentedItem } from "@/components/ui/toggle-group";
 import { useT } from "@/lib/i18n/LanguageProvider";
 
 /** A cost row defined by i18n keys; `cost` is a literal (amount) or a key. */
@@ -79,6 +80,45 @@ const HANDLING_GROUPS: SurchargeGroup[] = [
     ],
   },
 ];
+
+// DHL / UPS handling surcharges (flat lists; cost = Charge by Rimkirim).
+const DHL_ROWS: CostRow[] = [
+  { typeKey: "surcharge.dhlOverweightType", descKey: "surcharge.dhlOverweightDesc", cost: "IDR 1.750.000", costNoteKey: PER_PKG },
+  {
+    typeKey: "surcharge.dhlOversizeType",
+    descKey: "surcharge.dhlOversizeDesc",
+    bulletKeys: ["surcharge.dhlOversizeB1", "surcharge.dhlOversizeB2"],
+    cost: "IDR 495.000",
+    costNoteKey: PER_PKG,
+  },
+  { typeKey: "surcharge.dhlNonConvType", descKey: "surcharge.dhlNonConvDesc", cost: "IDR 495.000", costNoteKey: PER_PKG },
+  { typeKey: "surcharge.dhlNonStackType", descKey: "surcharge.dhlNonStackDesc", cost: "IDR 5.150.000", costNoteKey: PER_PKG },
+];
+
+const UPS_ROWS: CostRow[] = [
+  { typeKey: "surcharge.upsOverweightType", descKey: "surcharge.upsOverweightDesc", cost: "IDR 495.000", costNoteKey: PER_PKG },
+  {
+    typeKey: "surcharge.upsOverdimType",
+    descKey: "surcharge.upsOverdimDesc",
+    bulletKeys: ["surcharge.upsOverdimB1", "surcharge.upsOverdimB2"],
+    cost: "IDR 495.000",
+    costNoteKey: PER_PKG,
+  },
+  { typeKey: "surcharge.upsPackagingType", descKey: "surcharge.upsPackagingDesc", cost: "IDR 495.000", costNoteKey: PER_PKG },
+  {
+    typeKey: "surcharge.upsLargeType",
+    descKey: "surcharge.upsLargeDesc",
+    bulletKeys: ["surcharge.upsLargeB1", "surcharge.upsLargeB2"],
+    cost: "IDR 1.058.200",
+    costNoteKey: PER_PKG,
+  },
+];
+
+const CARRIERS = [
+  { id: "fedex", label: "FedEx" },
+  { id: "dhl", label: "DHL" },
+  { id: "ups", label: "UPS" },
+] as const;
 
 const LOGISTIC_ROWS: CostRow[] = [
   { typeKey: "surcharge.warehouseType", descKey: "surcharge.warehouseDesc", cost: "surcharge.warehouseCost", costNoteKey: "surcharge.warehouseNote" },
@@ -207,6 +247,7 @@ function FooterNote() {
 
 export function SurchargeInfoDialog({ children }: { children: React.ReactNode }) {
   const t = useT();
+  const [carrier, setCarrier] = React.useState<string>("fedex");
   return (
     <Dialog>
       <DialogTrigger asChild>{children}</DialogTrigger>
@@ -245,11 +286,43 @@ export function SurchargeInfoDialog({ children }: { children: React.ReactNode })
                   {t("surcharge.handlingIntroHighlight")}
                 </span>
               </p>
-              <div className="mt-5 space-y-6">
-                {HANDLING_GROUPS.map((g) => (
-                  <SurchargeGroupBlock key={g.labelKey} group={g} />
+
+              {/* carrier switcher */}
+              <SegmentedRoot
+                type="single"
+                value={carrier}
+                onValueChange={(v) => v && setCarrier(v)}
+                className="mt-4"
+              >
+                {CARRIERS.map((c) => (
+                  <SegmentedItem key={c.id} value={c.id}>
+                    {c.label}
+                  </SegmentedItem>
                 ))}
-              </div>
+              </SegmentedRoot>
+
+              {carrier === "fedex" && (
+                <div className="mt-4 space-y-6">
+                  {HANDLING_GROUPS.map((g) => (
+                    <SurchargeGroupBlock key={g.labelKey} group={g} />
+                  ))}
+                </div>
+              )}
+              {carrier === "dhl" && (
+                <div className="mt-4 divide-y divide-border overflow-hidden rounded-lg border border-border">
+                  {DHL_ROWS.map((r) => (
+                    <CostRowItem key={r.typeKey} row={r} />
+                  ))}
+                </div>
+              )}
+              {carrier === "ups" && (
+                <div className="mt-4 divide-y divide-border overflow-hidden rounded-lg border border-border">
+                  {UPS_ROWS.map((r) => (
+                    <CostRowItem key={r.typeKey} row={r} />
+                  ))}
+                </div>
+              )}
+
               <FooterNote />
             </TabsContent>
 

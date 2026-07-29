@@ -229,11 +229,38 @@ const id = {
     appliesAny: "Berlaku untuk paket dengan salah satu kondisi berikut:",
     biaya: "Biaya",
     perPackage: "per paket",
+    // DHL
+    dhlOverweightType: "Overweight Piece",
+    dhlOverweightDesc: "Untuk paket dan/atau pallet dengan berat di atas 70 kg.",
+    dhlOversizeType: "Oversize Piece",
+    dhlOversizeDesc: "Paket dengan ukuran melebihi batas penanganan standar:",
+    dhlOversizeB1: "Longest side > 100 cm; dan",
+    dhlOversizeB2: "Second longest side > 80 cm.",
+    dhlNonConvType: "Non-Conveyable Piece",
+    dhlNonConvDesc:
+      "Berlaku ketika kemasan luar bukan kardus corrugated, dibungkus penuh selotip dan/atau dilapisi plastik maupun bubble wrap, atau dianggap dapat merusak paket lain.",
+    dhlNonStackType: "Non-Stackable Pallet",
+    dhlNonStackDesc:
+      "Berlaku ketika pallet tidak dapat ditumpuk. Tidak berlaku untuk kiriman di bawah 25 kg.",
+    // UPS
+    upsOverweightType: "Overweight",
+    upsOverweightDesc: "Untuk paket dengan berat aktual di atas 25 kg.",
+    upsOverdimType: "Overdimension",
+    upsOverdimDesc: "Paket dengan ukuran melebihi batas penanganan standar:",
+    upsOverdimB1: "Longest side > 122 cm; dan",
+    upsOverdimB2: "Second longest side > 76 cm.",
+    upsPackagingType: "Packaging",
+    upsPackagingDesc:
+      "Berlaku ketika kemasan luar bukan kardus corrugated, dibungkus penuh selotip dan/atau dilapisi plastik maupun bubble wrap, atau dianggap dapat merusak paket lain.",
+    upsLargeType: "Large Package",
+    upsLargeDesc: "Paket dengan ukuran melebihi batas penanganan standar:",
+    upsLargeB1: "Girth > 300 cm; dan",
+    upsLargeB2: "Girth < 400 cm.",
     logisticHeading: "Other Logistic Costs",
     logisticIntro:
       "Biaya tambahan yang mungkin timbul karena kondisi khusus, kebutuhan administratif, atau regulasi lokal di negara tujuan.",
     footerNote:
-      "Semua biaya ini ditentukan oleh mitra kurir dan institusi yang mengelola dokumen terkait di tiap negara. Biaya dapat berubah sewaktu-waktu dan akan tercantum di quotation saat kamu melakukan booking pengiriman.",
+      "Semua biaya ini ditentukan oleh mitra carrier dan institusi yang mengelola dokumen terkait di tiap negara. Biaya dapat berubah sewaktu-waktu dan akan tercantum di quotation saat kamu melakukan booking pengiriman.",
     // group labels
     groupParcel: "Shipment Parcels / Express",
     groupLarge: "Shipment Large",
@@ -547,12 +574,7 @@ const id = {
     puStandbyLabel: "Standby untuk re-pickup",
     puStandbyHint:
       "Kalau penjemputan pertama gagal, berapa lama PIC bisa standby untuk penjemputan ulang?",
-    puStandbyPlaceholder: "Pilih durasi (opsional)",
-    puStandby1: "1 hari",
-    puStandby2: "2 hari",
-    puStandby3: "3 hari",
-    puStandbyOther: "Lainnya",
-    puStandbyOtherLabel: "Sebutkan lama standby",
+    puStandbyNone: "Tidak perlu standby",
     puStandbyUnit: "hari",
     buildColiving: "Student House / Co-living (rumah berbagi)",
     buildApartment: "Apartemen / Flat",
@@ -796,11 +818,38 @@ const en: Messages = {
     appliesAny: "Applies to packages meeting any of the following:",
     biaya: "Cost",
     perPackage: "per package",
+    // DHL
+    dhlOverweightType: "Overweight Piece",
+    dhlOverweightDesc: "For a package and/or pallet weighing above 70 kg.",
+    dhlOversizeType: "Oversize Piece",
+    dhlOversizeDesc: "Packages with sizes exceeding standard handling limits:",
+    dhlOversizeB1: "Longest side > 100 cm; and",
+    dhlOversizeB2: "Second longest side > 80 cm.",
+    dhlNonConvType: "Non-Conveyable Piece",
+    dhlNonConvDesc:
+      "Applied when the outer packaging isn't corrugated cardboard, is fully taped and/or wrapped in plastic or bubble wrap, or is considered likely to damage other packages.",
+    dhlNonStackType: "Non-Stackable Pallet",
+    dhlNonStackDesc:
+      "Applied when the pallet can't be stacked. Not applicable to shipments under 25 kg.",
+    // UPS
+    upsOverweightType: "Overweight",
+    upsOverweightDesc: "For a package with an actual weight above 25 kg.",
+    upsOverdimType: "Overdimension",
+    upsOverdimDesc: "Packages with sizes exceeding standard handling limits:",
+    upsOverdimB1: "Longest side > 122 cm; and",
+    upsOverdimB2: "Second longest side > 76 cm.",
+    upsPackagingType: "Packaging",
+    upsPackagingDesc:
+      "Applied when the outer packaging isn't corrugated cardboard, is fully taped and/or wrapped in plastic or bubble wrap, or is considered likely to damage other packages.",
+    upsLargeType: "Large Package",
+    upsLargeDesc: "Packages with sizes exceeding standard handling limits:",
+    upsLargeB1: "Girth > 300 cm; and",
+    upsLargeB2: "Girth < 400 cm.",
     logisticHeading: "Other Logistic Costs",
     logisticIntro:
       "Additional fees that may arise due to special conditions, administrative requirements, or local regulations in destination countries.",
     footerNote:
-      "All these costs are determined by our courier partners and the institutions managing related documents in each country. Costs are subject to change at any time and will be listed in the quotation when you make a shipping booking.",
+      "All these costs are determined by our carrier partners and the institutions managing related documents in each country. Costs are subject to change at any time and will be listed in the quotation when you make a shipping booking.",
     groupParcel: "Shipment Parcels / Express",
     groupLarge: "Shipment Large",
     parcelQ1: "Girth < 331 cm; or",
@@ -1093,12 +1142,7 @@ const en: Messages = {
     puStandbyLabel: "Re-pickup standby",
     puStandbyHint:
       "If the first pickup fails, how long can the PIC stay available for a re-pickup?",
-    puStandbyPlaceholder: "Select duration (optional)",
-    puStandby1: "1 day",
-    puStandby2: "2 days",
-    puStandby3: "3 days",
-    puStandbyOther: "Other",
-    puStandbyOtherLabel: "Specify standby duration",
+    puStandbyNone: "No standby needed",
     puStandbyUnit: "days",
     buildColiving: "Student House / Co-living (shared house)",
     buildApartment: "Apartment / Flat",
