@@ -1,15 +1,17 @@
 "use client";
 
+import * as React from "react";
 import { useForm, Controller } from "react-hook-form";
 import { toast } from "sonner";
-import { Copy, Check } from "lucide-react";
+import { Copy, Check, Minus, Plus } from "lucide-react";
 import { useOrderStore } from "@/lib/store/useOrderStore";
 import { INDONESIA } from "@/lib/data/countries";
-import { BUILDING_TYPES, PICKUP_WINDOWS } from "../module-options";
+import { BUILDING_TYPES, PICKUP_WINDOWS, PICKUP_STANDBY } from "../module-options";
 import { useT } from "@/lib/i18n/LanguageProvider";
 import { Card } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
+import { Input, DateInput } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Select } from "@/components/ui/select";
 import { DialCodeSelect } from "@/components/order/DialCodeSelect";
 import { ModuleShell, useSaveModule, readModuleData, Field } from "./shared";
 import { cn } from "@/lib/utils/cn";
@@ -23,6 +25,8 @@ interface PickupData {
   picPhone: string;
   date: string;
   time: string;
+  standbyDuration: string;
+  standbyDurationOther: string;
 }
 
 export function PickupForm() {
@@ -48,6 +52,8 @@ export function PickupForm() {
     control,
     handleSubmit,
     setValue,
+    getValues,
+    watch,
     formState: { errors },
   } = useForm<PickupData>({
     defaultValues: {
@@ -59,10 +65,23 @@ export function PickupForm() {
       picPhone: "",
       date: "",
       time: "",
+      standbyDuration: "",
+      standbyDurationOther: "",
       ...prev,
     },
   });
   const req = { required: t("err.required") };
+
+  // init the stepper to 4 (first value past the 1–3 presets) on "Other";
+  // clear it when switching away so no stale value is saved.
+  const standbyDuration = watch("standbyDuration");
+  React.useEffect(() => {
+    if (standbyDuration === "other") {
+      if (!getValues("standbyDurationOther")) setValue("standbyDurationOther", "4");
+    } else if (getValues("standbyDurationOther")) {
+      setValue("standbyDurationOther", "");
+    }
+  }, [standbyDuration, getValues, setValue]);
 
   const fillFromSender = () => {
     setValue("picName", sender?.fullName ?? "");
@@ -111,21 +130,14 @@ export function PickupForm() {
           </div>
 
           <Field label={t("order.puBuildingType")} error={errors.buildingType?.message}>
-            <Controller
-              control={control}
-              name="buildingType"
-              rules={req}
-              render={({ field }) => (
-                <ChipGroup
-                  value={field.value}
-                  onChange={field.onChange}
-                  options={BUILDING_TYPES.map((b) => ({
-                    value: b.value,
-                    label: t(b.labelKey),
-                  }))}
-                />
-              )}
-            />
+            <Select {...register("buildingType", req)}>
+              <option value="">{t("order.puBuildingTypePlaceholder")}</option>
+              {BUILDING_TYPES.map((b) => (
+                <option key={b.value} value={b.value}>
+                  {t(b.labelKey)}
+                </option>
+              ))}
+            </Select>
           </Field>
 
           <Field label={t("order.puAddress")} error={errors.address?.message}>
@@ -138,7 +150,7 @@ export function PickupForm() {
 
           <div className="grid gap-4 sm:grid-cols-2">
             <Field label={t("order.puDate")} error={errors.date?.message}>
-              <Input type="date" {...register("date", req)} />
+              <DateInput {...register("date", req)} />
             </Field>
             <Field label={t("order.puTime")} error={errors.time?.message}>
               <Controller
@@ -155,6 +167,35 @@ export function PickupForm() {
               />
             </Field>
           </div>
+
+          <Field label={t("order.puStandbyLabel")} hint={t("order.puStandbyHint")}>
+            <Select {...register("standbyDuration")}>
+              <option value="">{t("order.puStandbyPlaceholder")}</option>
+              {PICKUP_STANDBY.map((s) => (
+                <option key={s.value} value={s.value}>
+                  {t(s.labelKey)}
+                </option>
+              ))}
+            </Select>
+          </Field>
+
+          {standbyDuration === "other" && (
+            <Field label={t("order.puStandbyOtherLabel")}>
+              <Controller
+                control={control}
+                name="standbyDurationOther"
+                render={({ field }) => (
+                  <Stepper
+                    value={Number(field.value) || 4}
+                    onChange={(n) => field.onChange(String(n))}
+                    min={1}
+                    max={30}
+                    unit={t("order.puStandbyUnit")}
+                  />
+                )}
+              />
+            </Field>
+          )}
         </Card>
 
         <Button type="submit" size="lg" className="w-full">
@@ -199,6 +240,53 @@ function ChipGroup({
           </button>
         );
       })}
+    </div>
+  );
+}
+
+/** Numeric −/+ stepper (buttons only; no free typing). */
+function Stepper({
+  value,
+  onChange,
+  min = 1,
+  max,
+  unit,
+}: {
+  value: number;
+  onChange: (v: number) => void;
+  min?: number;
+  max?: number;
+  unit?: string;
+}) {
+  const v = Number.isFinite(value) ? value : min;
+  const atMin = v <= min;
+  const atMax = max != null && v >= max;
+  const btn =
+    "grid size-9 shrink-0 place-items-center rounded-md text-muted transition-colors hover:text-foreground disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:text-muted";
+  return (
+    <div className="flex h-11 w-full items-center justify-between rounded-md border border-border bg-surface-2 px-1.5 sm:max-w-xs">
+      <button
+        type="button"
+        onClick={() => onChange(Math.max(min, v - 1))}
+        disabled={atMin}
+        aria-label="−"
+        className={btn}
+      >
+        <Minus className="size-4" />
+      </button>
+      <span className="text-sm font-medium tabular-nums text-foreground">
+        {v}
+        {unit && <span className="ml-1 font-normal text-muted">{unit}</span>}
+      </span>
+      <button
+        type="button"
+        onClick={() => onChange(max != null ? Math.min(max, v + 1) : v + 1)}
+        disabled={atMax}
+        aria-label="+"
+        className={btn}
+      >
+        <Plus className="size-4" />
+      </button>
     </div>
   );
 }

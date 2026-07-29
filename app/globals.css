@@ -112,6 +112,19 @@ body {
   background: transparent;
 }
 
+/* date input: render in dark scheme; hide the native icon but keep it as an
+   invisible click target over our own Calendar icon (drawn at right-3) */
+input[type="date"].date-field {
+  color-scheme: dark;
+}
+input[type="date"].date-field::-webkit-calendar-picker-indicator {
+  margin-left: auto;
+  width: 2.25rem;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+
 @keyframes fade-up {
   from {
     opacity: 0;

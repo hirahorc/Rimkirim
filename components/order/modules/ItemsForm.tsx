@@ -26,6 +26,7 @@ import { useT } from "@/lib/i18n/LanguageProvider";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Select } from "@/components/ui/select";
 import {
   Dialog,
   DialogContent,
@@ -65,8 +66,6 @@ interface ItemsData {
   packages: PackageRowT[];
 }
 
-const selectCls =
-  "flex h-11 w-full rounded-md border border-border bg-surface-2 px-3 text-sm text-foreground focus-visible:outline-none focus-visible:border-brand/70 focus-visible:ring-2 focus-visible:ring-brand/25";
 
 const emptyPackage: PackageRowT = {
   packaging: "box",
@@ -197,13 +196,13 @@ export function ItemsForm() {
         {/* currency + carried packages */}
         <Card className="space-y-4 p-5">
           <Field label={t("order.itCurrency")} hint={t("order.itCurrencyHelp")}>
-            <select {...register("currency")} className={cn(selectCls, "sm:max-w-xs")}>
+            <Select {...register("currency")} wrapperClassName="sm:max-w-xs">
               {CURRENCIES.map((c) => (
                 <option key={c.code} value={c.code}>
                   {c.code} — {c.name}
                 </option>
               ))}
-            </select>
+            </Select>
           </Field>
           {submitted && submitted.packages.length > 0 && (
             <p className="flex items-center gap-2 text-xs text-muted-2">
@@ -438,13 +437,13 @@ function PackageBlock({
       {!open ? null : (
       <div className="mt-4 space-y-4">
       <Field label={t("order.itPackaging")}>
-        <select {...register(`packages.${index}.packaging`)} className={selectCls}>
+        <Select {...register(`packages.${index}.packaging`)}>
           {PACKAGING_TYPES.map((p) => (
             <option key={p.value} value={p.value}>
               {t(p.labelKey)}
             </option>
           ))}
-        </select>
+        </Select>
       </Field>
 
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
