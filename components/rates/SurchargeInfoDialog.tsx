@@ -38,9 +38,6 @@ const HANDLING_GROUPS: SurchargeGroup[] = [
     labelKey: "surcharge.groupParcel",
     qualifyKeys: ["surcharge.parcelQ1", "surcharge.parcelQ2", "surcharge.parcelQ3"],
     rows: [
-      { typeKey: "surcharge.suitcaseType", descKey: "surcharge.suitcaseDesc", cost: "IDR 495.000", costNoteKey: PER_PKG },
-      { typeKey: "surcharge.plasticType", descKey: "surcharge.plasticDesc", cost: "IDR 495.000", costNoteKey: PER_PKG },
-      { typeKey: "surcharge.tapeType", descKey: "surcharge.tapeDesc", cost: "IDR 495.000", costNoteKey: PER_PKG },
       { typeKey: "surcharge.overweightType", descKey: "surcharge.overweightDesc", cost: "IDR 495.000", costNoteKey: PER_PKG },
       {
         typeKey: "surcharge.overdimType",
@@ -56,6 +53,7 @@ const HANDLING_GROUPS: SurchargeGroup[] = [
         cost: "IDR 1.072.000",
         costNoteKey: PER_PKG,
       },
+      { typeKey: "surcharge.packagingType", descKey: "surcharge.packagingDesc", cost: "IDR 495.000", costNoteKey: PER_PKG },
     ],
   },
   {
@@ -140,6 +138,7 @@ const LOGISTIC_ROWS: CostRow[] = [
     bulletKeys: ["surcharge.mrnB1", "surcharge.mrnB2"],
     afterKey: "surcharge.mrnAfter",
     cost: "surcharge.mrnCost",
+    costNoteKey: "surcharge.mrnNote",
   },
 ];
 

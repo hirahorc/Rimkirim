@@ -272,15 +272,9 @@ const id = {
     largeQ2: "Berat aktual > 68 kg; atau",
     largeQ3: "Longest side > 274 cm.",
     // parcel rows
-    suitcaseType: "Suitcase / Bag",
-    suitcaseDesc:
-      "Berlaku untuk paket yang dikirim dalam bentuk koper atau tas, bukan kardus corrugated standar.",
-    plasticType: "Plastic Wrap / Bubble Wrap (Full)",
-    plasticDesc:
-      "Berlaku ketika plastic wrap atau bubble wrap dilapiskan penuh ke bagian luar paket.",
-    tapeType: "Full Tape Wrapping",
-    tapeDesc:
-      "Berlaku ketika paket dibungkus penuh dengan selotip sebagai bagian dari metode pengemasan.",
+    packagingType: "Packaging",
+    packagingDesc:
+      "Berlaku ketika kemasan luar bukan kardus corrugated, dibungkus penuh selotip dan/atau dilapisi plastik maupun bubble wrap, atau dianggap dapat merusak paket lain.",
     overweightType: "Overweight",
     overweightDesc: "Untuk paket dengan berat di atas 25 kg.",
     overdimType: "Overdimension",
@@ -316,12 +310,12 @@ const id = {
     outPickupType: "Out of Pickup Area",
     outPickupDesc:
       "Surcharge yang dikenakan ketika alamat penjemputan berada di luar area cakupan pickup standar yang dilayani carrier terkait.",
-    outPickupCost: "Hubungi support kami untuk konfirmasi.",
+    outPickupCost: "Dikonfirmasi saat booking",
     outPickupNote: "Tarif berbeda tergantung lokasi penjemputan.",
     extDeliveryType: "Extended Delivery Area",
     extDeliveryDesc:
       "Surcharge yang dikenakan ketika alamat pengantaran akhir berada di luar area cakupan pengantaran standar yang dilayani Rimkirim.",
-    extDeliveryCost: "Hubungi support kami untuk konfirmasi.",
+    extDeliveryCost: "Dikonfirmasi saat booking",
     extDeliveryNote: "Tarif berbeda tergantung lokasi pengantaran.",
     mrnType: "MRN (Movement Reference Number)",
     mrnDesc: "MRN dibutuhkan untuk kiriman dari negara Uni Eropa jika:",
@@ -329,7 +323,8 @@ const id = {
     mrnB2: "Total berat melebihi 1.000 kg",
     mrnAfter:
       "MRN menjadi bukti bahwa barang sudah terdaftar resmi untuk ekspor.",
-    mrnCost: "Berbeda tiap negara UE, dikonfirmasi saat booking",
+    mrnCost: "Dikonfirmasi saat booking",
+    mrnNote: "Berbeda tiap negara UE.",
   },
   note: {
     serbiaPriority: "Hanya tersedia via FedEx International Priority.",
@@ -858,15 +853,9 @@ const en: Messages = {
     largeQ1: "Girth > 330 cm; or",
     largeQ2: "Actual weight > 68 kg; or",
     largeQ3: "Longest side > 274 cm.",
-    suitcaseType: "Suitcase / Bag",
-    suitcaseDesc:
-      "Applied to packages shipped in the form of a suitcase or bag, instead of a standard corrugated cardboard box.",
-    plasticType: "Plastic Wrap / Bubble Wrap (Full)",
-    plasticDesc:
-      "Applied when plastic wrap or bubble wrap is fully applied to the exterior of the package.",
-    tapeType: "Full Tape Wrapping",
-    tapeDesc:
-      "Applied when the package is fully wrapped with adhesive tape as part of the packaging method.",
+    packagingType: "Packaging",
+    packagingDesc:
+      "Applied when the outer packaging isn't corrugated cardboard, is fully taped and/or wrapped in plastic or bubble wrap, or is considered likely to damage other packages.",
     overweightType: "Overweight",
     overweightDesc: "For package weighing above 25 kg.",
     overdimType: "Overdimension",
@@ -900,19 +889,20 @@ const en: Messages = {
     outPickupType: "Out of Pickup Area",
     outPickupDesc:
       "Surcharge applied when the collection address is located outside the standard pickup coverage area serviced by the appointed carrier.",
-    outPickupCost: "Contact our support for confirmation.",
+    outPickupCost: "Confirmed upon booking",
     outPickupNote: "Rate varies by pickup location.",
     extDeliveryType: "Extended Delivery Area",
     extDeliveryDesc:
       "Surcharge applied when the final delivery address is located outside the standard delivery coverage area serviced by Rimkirim.",
-    extDeliveryCost: "Contact our support for confirmation.",
+    extDeliveryCost: "Confirmed upon booking",
     extDeliveryNote: "Rate varies by delivery location.",
     mrnType: "MRN (Movement Reference Number)",
     mrnDesc: "MRN is required for shipments from EU countries if:",
     mrnB1: "Value of goods exceeds EUR 1,000",
     mrnB2: "Total weight exceeds 1,000 kg",
     mrnAfter: "The MRN serves as proof that the goods have been officially registered for export.",
-    mrnCost: "Varies by EU country, confirmed upon booking",
+    mrnCost: "Confirmed upon booking",
+    mrnNote: "Varies by EU country.",
   },
   note: {
     serbiaPriority: "Only available via FedEx International Priority.",
