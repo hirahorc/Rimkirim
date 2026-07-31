@@ -11,6 +11,11 @@ const id = {
     appName: "Rimkirim",
     tagline: "International Shipping Assistant",
   },
+  cookie: {
+    text: "Kami memakai cookie untuk meningkatkan pengalamanmu di situs ini. Dengan melanjutkan, kamu setuju dengan penggunaan cookie kami.",
+    accept: "Terima",
+    decline: "Tolak",
+  },
   nav: {
     hitungTarif: "Hitung Tarif",
     layanan: "Layanan",
@@ -594,6 +599,11 @@ const en: Messages = {
   common: {
     appName: "Rimkirim",
     tagline: "International Shipping Assistant",
+  },
+  cookie: {
+    text: "We use cookies to improve your experience on this site. By continuing, you agree to our use of cookies.",
+    accept: "Accept",
+    decline: "Decline",
   },
   nav: {
     hitungTarif: "Check Rates",

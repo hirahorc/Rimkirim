@@ -1,6 +1,7 @@
 import { Hero } from "@/components/landing/Hero";
 import { ShipmentCalculator } from "@/components/landing/ShipmentCalculator";
 import { ServiceSection, WhySection } from "@/components/landing/InfoSections";
+import { CookieConsent } from "@/components/landing/CookieConsent";
 
 export default function Home() {
   return (
@@ -14,6 +15,7 @@ export default function Home() {
       </section>
       <ServiceSection />
       <WhySection />
+      <CookieConsent />
     </>
   );
 }

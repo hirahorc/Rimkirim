@@ -30,8 +30,8 @@
   --danger: #f87171;
   --info: #60a5fa;
 
-  /* sharp corners (x.ai-like) */
-  --radius: 0.25rem;
+  /* rounded corners */
+  --radius: 0.625rem;
 }
 
 @theme inline {
