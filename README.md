@@ -33,15 +33,24 @@ npm run build    # production build
 - **Advance:** Base + detail paket (berat, L×W×H, qty, tambah paket) + **chargeable weight**
   live (`(L×W×H)/5000`, ambil terbesar vs berat aktual) → **beberapa opsi 3PL** dengan
   breakdown base rate + surcharge.
+- **Cookie consent** — banner di landing (`CookieConsent`), belum persist (muncul tiap reload).
 
 ### Check Rates (`/cek-tarif`)
 - **Special Rate** (Base) — tarif khusus **per-negara & bertingkat (tier)**; tiap tier jadi
   card sendiri. Import & export punya tabel berbeda; sebagian negara belum punya special rate.
-- **3PL compare** (Advance) — beberapa vendor (FedEx IP/IE, DHL, Aramex) + **Surcharge
-  Information modal** (Additional Handling Surcharge per kelas Parcels/Express & Large,
-  plus Other Logistic Costs). Bila chargeable weight masuk salah satu tier special rate,
+- **3PL compare** (Advance) — beberapa vendor (FedEx IP/IE, DHL, Aramex). Tiap card & special
+  rate diberi **carrier mark** (monogram beraksen warna brand — bukan logo resmi,
+  `lib/data/carriers.ts`). Bila chargeable weight masuk salah satu tier special rate,
   **special rate ikut muncul sebagai card** (pill "Special Rate") dan **kena surcharge yang
   sama** seperti card 3PL. Klik **Ubah** balik ke kalkulator dengan semua input utuh.
+- **Surcharge Information modal** — **switcher per-carrier (FedEx / DHL / UPS)**. FedEx tampil
+  bergrup (Parcels/Express + Large dengan kondisi kualifikasi); DHL & UPS list datar. Cost =
+  charge by Rimkirim. Tab kedua = Other Logistic Costs (Warehouse Fee, Out of Pickup Area,
+  Extended Delivery Area, MRN).
+- **Kasus harga domestik belum ter-cover (BFG)** — kalau kota tujuan Indonesia belum ada di
+  data (`lib/data/domestic-coverage.ts`, dummy: **Makassar**), card harga tetap tampil tapi
+  **tombol order disembunyikan** + banner arahin ke **customer support** (WhatsApp). Order
+  diselesaikan manual oleh tim.
 
 ### Customer Order — Back For Good (`/pesan`)
 - **Fase 1 Questionnaire:** 5 pertanyaan kelayakan dengan percabangan (tidak eligible /
@@ -61,6 +70,9 @@ npm run build    # production build
 - **Customer Info:** nomor telepon punya **dropdown kode negara** (`lib/data/dial-codes.ts`,
   225 negara) yang pre-fill dari negara origin/destination kalkulator; placeholder di semua
   field.
+- **Pickup Details:** telepon PIC pakai dropdown kode negara yang sama; **jenis bangunan**
+  dropdown, **jam pickup** chip grid; **catatan kurir** textarea; dan **standby re-pickup** —
+  stepper `−/+` (0 = "tidak perlu standby", maks 30 hari) buat kalau pickup pertama gagal.
 
 ## Arsitektur data (mock — titik swap ke API asli)
 
@@ -76,6 +88,9 @@ isi file berikut tanpa menyentuh komponen UI**:
 | `lib/utils/chargeable-weight.ts` | Volumetrik `/5000` + aturan `max(aktual, volumetrik)`. |
 | `lib/data/countries.ts` | Daftar negara ISO 3166 (~225) + zona. Bendera = SVG di `public/flags/4x3` (lipis/flag-icons). |
 | `lib/data/vendors.ts` | Vendor 3PL mock. |
+| `lib/data/carriers.ts` | Brand carrier (warna + monogram) buat `CarrierMark` — bukan logo resmi. |
+| `lib/data/dial-codes.ts` | Kode telepon ISO per negara (225) buat dropdown phone. |
+| `lib/data/domestic-coverage.ts` | `domesticCoverageGap()` — kota domestik yang belum ter-cover (dummy: Makassar). |
 | `lib/data/packing-list.ts` | `validatePackingCode()` — mock registry (ganti dgn API). Kode valid demo: `RK-PL-000123`. |
 
 ### State (zustand + persist / localStorage)
@@ -101,15 +116,21 @@ compile-time) + `LanguageProvider` (context, `t("ns.key")`, persist `rimkirim:la
 ```
 app/            layout (dark shell) · page.tsx (landing) · cek-tarif/ · pesan/ (+ clearance, modul)
 components/
-  ui/           primitives (button, card, input, badge, checkbox, toggle-group, popover, dialog, tabs, tooltip)
+  ui/           primitives (button, card, input + DateInput/Textarea, select, badge, checkbox,
+                toggle-group, popover, dialog, tabs, tooltip)
   layout/       Logo, AppHeader, AppFooter, LanguageToggle
-  landing/      Hero, InfoSections, ShipmentCalculator, PackageRow
-  rates/        CheckRatesClient, RateInputSummary, SpecialRateCard, RateCard, PriceBreakdown, SurchargeInfoDialog
-  order/        OrderShell, Questionnaire, ClearanceOptions, ModuleHub, ModuleForm, useStartOrder
+  landing/      Hero, InfoSections, ShipmentCalculator, PackageRow, CookieConsent
+  rates/        CheckRatesClient, RateInputSummary, SpecialRateCard, RateCard, PriceBreakdown,
+                SurchargeInfoDialog, CarrierMark, ManualQuoteNotice
+  order/        OrderShell, Questionnaire, ClearanceOptions, ModuleHub, ModuleForm, DialCodeSelect,
+                useStartOrder · modules/ (CustomerInfo, Items, Compliance, Pickup)
   shared/       CountrySelect, Flag
 lib/            pricing/ · data/ · store/ · schemas/ · i18n/ · utils/
 public/         rimkirim logo, app icon, flags/4x3 (SVG)
 ```
+
+> Sudut UI membulat via token global `--radius` (0.625rem) di `app/globals.css` — `rounded-sm/md/lg`
+> semua turun dari situ.
 
 ## Catatan / ditunda
 - Belum ada backend — order draft & validasi bersifat mock lokal.

@@ -8,7 +8,6 @@ import {
   ArrowRight,
   MessageCircle,
   Globe2,
-  Truck,
 } from "lucide-react";
 import type {
   SpecialRateQuote,
@@ -16,6 +15,7 @@ import type {
   RouteInfo,
 } from "@/lib/pricing/quote";
 import { Flag } from "@/components/shared/Flag";
+import { CarrierMark } from "./CarrierMark";
 import { formatIDR } from "@/lib/utils/currency";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -73,7 +73,10 @@ export function SpecialRateCard({
         </div>
 
         <div className="mt-2 flex items-center gap-2 text-xs text-muted">
-          <Truck className="size-3.5 text-brand" />
+          <CarrierMark
+            carrier={special.carrier}
+            className="size-6 rounded-md text-[9px]"
+          />
           <span>
             {t("special.dilayani")}{" "}
             <span className="font-medium text-foreground">

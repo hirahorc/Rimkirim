@@ -3,6 +3,7 @@
 import { Clock, Package, Zap, BadgePercent, Info, Sparkles } from "lucide-react";
 import type { VendorQuote, RouteInfo } from "@/lib/pricing/quote";
 import { Flag } from "@/components/shared/Flag";
+import { CarrierMark } from "./CarrierMark";
 import { formatIDR, formatNumber } from "@/lib/utils/currency";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -46,15 +47,13 @@ export function RateCard({
       {/* header */}
       <div className="flex items-start justify-between gap-3 p-5 pb-4">
         <div className="flex items-center gap-3">
-          <span
-            className={cn(
-              "grid size-10 place-items-center rounded-lg text-xs font-bold",
-              quote.isSpecial ? "bg-brand text-brand-ink" : "text-white",
-            )}
-            style={quote.isSpecial ? undefined : { backgroundColor: vendor.accent }}
-          >
-            {vendor.code}
-          </span>
+          {quote.isSpecial ? (
+            <span className="grid size-10 place-items-center rounded-lg bg-brand text-xs font-bold text-brand-ink">
+              {vendor.code}
+            </span>
+          ) : (
+            <CarrierMark carrier={vendor.carrier} />
+          )}
           <div>
             <p className="font-display font-semibold leading-tight">{vendor.carrier}</p>
             <p className="text-xs text-muted">{vendor.service}</p>

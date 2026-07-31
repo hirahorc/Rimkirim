@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/dialog";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { SegmentedRoot, SegmentedItem } from "@/components/ui/toggle-group";
+import { CarrierDot } from "./CarrierMark";
 import { useT } from "@/lib/i18n/LanguageProvider";
 
 /** A cost row defined by i18n keys; `cost` is a literal (amount) or a key. */
@@ -296,7 +297,7 @@ export function SurchargeInfoDialog({ children }: { children: React.ReactNode })
               >
                 {CARRIERS.map((c) => (
                   <SegmentedItem key={c.id} value={c.id}>
-                    {c.label}
+                    <CarrierDot carrier={c.label} /> {c.label}
                   </SegmentedItem>
                 ))}
               </SegmentedRoot>
