@@ -12,7 +12,13 @@ di header. Belum ada backend — semua data harga & order di-mock dan disimpan l
 npm install
 npm run dev      # http://localhost:3000
 npm run build    # production build
+npm start        # serve production build
 ```
+
+### Testing Lighthouse / performa
+Audit Lighthouse **wajib di production build** (`npm run build && npm start`), **bukan**
+`npm run dev`. Dev server pakai Turbopack HMR dengan banyak chunk yang belum di-minify, jadi skor
+Performance-nya tidak representatif. Buka `http://localhost:3000` → Chrome DevTools → Lighthouse.
 
 ## Halaman & alur
 

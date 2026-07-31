@@ -1,7 +1,12 @@
+import type { Metadata } from "next";
 import { Hero } from "@/components/landing/Hero";
 import { ShipmentCalculator } from "@/components/landing/ShipmentCalculator";
 import { ServiceSection, WhySection } from "@/components/landing/InfoSections";
 import { CookieConsent } from "@/components/landing/CookieConsent";
+
+export const metadata: Metadata = {
+  alternates: { canonical: "/" },
+};
 
 export default function Home() {
   return (

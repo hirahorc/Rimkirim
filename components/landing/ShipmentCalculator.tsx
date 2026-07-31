@@ -161,6 +161,7 @@ export function ShipmentCalculator() {
         id="kalkulator"
         className="relative overflow-hidden rounded-md border border-border-strong bg-surface/90 shadow-2xl shadow-black/40 backdrop-blur"
       >
+        <h2 className="sr-only">{t("calc.srHeading")}</h2>
         <div className="brand-glow pointer-events-none absolute inset-x-0 top-0 h-40" />
 
         {/* Service toggle */}
@@ -233,6 +234,7 @@ export function ShipmentCalculator() {
                   value={field.value}
                   onChange={field.onChange}
                   locked={originLocked}
+                  ariaLabel={t("calc.originCountry")}
                   // origin is the foreign endpoint here, so Indonesia is not an option
                   exclude={INDONESIA.code}
                   placeholder={t("calc.fromPlaceholder")}
@@ -242,12 +244,12 @@ export function ShipmentCalculator() {
             <FieldError>{t(errors.origin?.country?.message ?? "")}</FieldError>
             <div className="mt-3 grid grid-cols-2 gap-3">
               <div>
-                <Label>{t("calc.city")}</Label>
-                <Input placeholder={t("calc.cityOriginPh")} {...register("origin.city")} />
+                <Label htmlFor="calc-origin-city">{t("calc.city")}</Label>
+                <Input id="calc-origin-city" placeholder={t("calc.cityOriginPh")} {...register("origin.city")} />
               </div>
               <div>
-                <Label>{t("calc.postalCode")}</Label>
-                <Input placeholder={t("calc.postalPh")} {...register("origin.postalCode")} />
+                <Label htmlFor="calc-origin-postal">{t("calc.postalCode")}</Label>
+                <Input id="calc-origin-postal" placeholder={t("calc.postalPh")} {...register("origin.postalCode")} />
               </div>
             </div>
           </div>
@@ -262,6 +264,7 @@ export function ShipmentCalculator() {
                   value={field.value}
                   onChange={field.onChange}
                   locked={destLocked}
+                  ariaLabel={t("calc.destCountry")}
                   // destination is the foreign endpoint here, so Indonesia is not an option
                   exclude={INDONESIA.code}
                   placeholder={t("calc.toPlaceholder")}
@@ -271,12 +274,12 @@ export function ShipmentCalculator() {
             <FieldError>{t(errors.destination?.country?.message ?? "")}</FieldError>
             <div className="mt-3 grid grid-cols-2 gap-3">
               <div>
-                <Label>{t("calc.city")}</Label>
-                <Input placeholder={t("calc.cityDestPh")} {...register("destination.city")} />
+                <Label htmlFor="calc-dest-city">{t("calc.city")}</Label>
+                <Input id="calc-dest-city" placeholder={t("calc.cityDestPh")} {...register("destination.city")} />
               </div>
               <div>
-                <Label>{t("calc.postalCode")}</Label>
-                <Input placeholder={t("calc.postalPh")} {...register("destination.postalCode")} />
+                <Label htmlFor="calc-dest-postal">{t("calc.postalCode")}</Label>
+                <Input id="calc-dest-postal" placeholder={t("calc.postalPh")} {...register("destination.postalCode")} />
               </div>
             </div>
           </div>
@@ -286,9 +289,9 @@ export function ShipmentCalculator() {
         {mode === "advance" && (
           <div className="relative animate-fade-up border-t border-border p-5 sm:p-6">
             <div className="mb-3 flex items-center justify-between">
-              <h4 className="flex items-center gap-2 font-display text-sm font-semibold">
+              <h3 className="flex items-center gap-2 font-display text-sm font-semibold">
                 <PackagePlus className="size-4 text-brand" /> {t("calc.detailPaket")}
-              </h4>
+              </h3>
               {liveChargeable > 0 && (
                 <span className="flex items-center gap-1.5 text-xs text-muted">
                   {t("calc.totalChargeable")}

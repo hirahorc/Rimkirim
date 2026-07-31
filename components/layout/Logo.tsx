@@ -25,6 +25,7 @@ export function Logo({
         alt="Rimkirim"
         width={1796}
         height={618}
+        sizes="93px"
         priority
         style={{ height, width: "auto" }}
       />

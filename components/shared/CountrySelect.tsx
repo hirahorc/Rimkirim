@@ -23,6 +23,8 @@ interface CountrySelectProps {
   placeholder?: string;
   /** exclude a country code from the list (e.g. the other endpoint) */
   exclude?: string;
+  /** accessible name for the trigger (no visible label is associated) */
+  ariaLabel?: string;
 }
 
 export function CountrySelect({
@@ -31,6 +33,7 @@ export function CountrySelect({
   locked,
   placeholder,
   exclude,
+  ariaLabel,
 }: CountrySelectProps) {
   const t = useT();
   const [open, setOpen] = React.useState(false);
@@ -39,7 +42,10 @@ export function CountrySelect({
 
   if (locked) {
     return (
-      <div className="flex h-11 w-full items-center justify-between rounded-md border border-border bg-surface-3/60 px-3 text-sm">
+      <div
+        aria-label={ariaLabel}
+        className="flex h-11 w-full items-center justify-between rounded-md border border-border bg-surface-3/60 px-3 text-sm"
+      >
         <span className="flex items-center gap-2">
           <Flag code={INDONESIA.code} size={14} />
           <span className="font-medium">{INDONESIA.name}</span>
@@ -83,6 +89,7 @@ export function CountrySelect({
           type="button"
           role="combobox"
           aria-expanded={open}
+          aria-label={ariaLabel}
           className={cn(
             "flex h-11 w-full items-center justify-between rounded-md border border-border bg-surface-2 px-3 text-sm transition-colors",
             "hover:border-border-strong focus-visible:outline-none focus-visible:border-brand/70 focus-visible:ring-2 focus-visible:ring-brand/25",
@@ -110,6 +117,7 @@ export function CountrySelect({
             <Search className="size-4 text-muted-2" />
             <Command.Input
               placeholder={t("country.search")}
+              aria-label={t("country.search")}
               className="h-10 w-full bg-transparent text-sm text-foreground placeholder:text-muted-2 focus:outline-none"
             />
           </div>

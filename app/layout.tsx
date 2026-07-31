@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Space_Grotesk, Inter } from "next/font/google";
 import "./globals.css";
 import { AppHeader } from "@/components/layout/AppHeader";
@@ -18,10 +18,34 @@ const inter = Inter({
   display: "swap",
 });
 
+const SITE_URL = "https://rimkirim.com";
+const TITLE = "Rimkirim — Kirim & Pindahan Internasional";
+const DESCRIPTION =
+  "Hitung tarif pengiriman internasional Rimkirim. Back For Good (pulang ke Indonesia) & Moving Abroad (kirim ke luar negeri). Transparan, terpercaya.";
+
 export const metadata: Metadata = {
-  title: "Rimkirim — Kirim & Pindahan Internasional",
-  description:
-    "Hitung tarif pengiriman internasional Rimkirim. Back For Good (pulang ke Indonesia) & Moving Abroad (kirim ke luar negeri). Transparan, terpercaya.",
+  metadataBase: new URL(SITE_URL),
+  title: TITLE,
+  description: DESCRIPTION,
+  openGraph: {
+    title: TITLE,
+    description: DESCRIPTION,
+    url: "/",
+    siteName: "Rimkirim",
+    type: "website",
+    locale: "id_ID",
+    images: [{ url: "/rimkirim-logo.png", width: 1796, height: 618, alt: "Rimkirim" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: TITLE,
+    description: DESCRIPTION,
+    images: ["/rimkirim-logo.png"],
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#0A0A0A",
 };
 
 export default function RootLayout({

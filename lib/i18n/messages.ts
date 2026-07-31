@@ -75,6 +75,7 @@ const id = {
     disclaimer: "Tarif bersifat estimasi & dapat berubah sesuai detail kiriman.",
   },
   calc: {
+    srHeading: "Kalkulator Tarif",
     serviceBfg: "Back For Good",
     serviceMa: "Moving Abroad",
     bfgHint: "Impor: kirim barang dari luar negeri pulang ke Indonesia.",
@@ -671,6 +672,7 @@ const en: Messages = {
     disclaimer: "Rates are estimates & may change based on shipment details.",
   },
   calc: {
+    srHeading: "Rate Calculator",
     serviceBfg: "Back For Good",
     serviceMa: "Moving Abroad",
     bfgHint: "Import: ship goods from overseas back home to Indonesia.",

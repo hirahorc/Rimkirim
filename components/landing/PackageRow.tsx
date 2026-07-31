@@ -79,8 +79,9 @@ export function PackageRow({
 
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-6">
         <div className="col-span-2 sm:col-span-2">
-          <Label>{t("pkg.berat")}</Label>
+          <Label htmlFor={`pkg-${index}-weight`}>{t("pkg.berat")}</Label>
           <Input
+            id={`pkg-${index}-weight`}
             type="number"
             step="0.1"
             min="0"
@@ -89,20 +90,20 @@ export function PackageRow({
           />
         </div>
         <div>
-          <Label>{t("pkg.length")}</Label>
-          <Input type="number" min="0" placeholder="0" {...register(`packages.${index}.length`, { valueAsNumber: true })} />
+          <Label htmlFor={`pkg-${index}-length`}>{t("pkg.length")}</Label>
+          <Input id={`pkg-${index}-length`} type="number" min="0" placeholder="0" {...register(`packages.${index}.length`, { valueAsNumber: true })} />
         </div>
         <div>
-          <Label>{t("pkg.width")}</Label>
-          <Input type="number" min="0" placeholder="0" {...register(`packages.${index}.width`, { valueAsNumber: true })} />
+          <Label htmlFor={`pkg-${index}-width`}>{t("pkg.width")}</Label>
+          <Input id={`pkg-${index}-width`} type="number" min="0" placeholder="0" {...register(`packages.${index}.width`, { valueAsNumber: true })} />
         </div>
         <div>
-          <Label>{t("pkg.height")}</Label>
-          <Input type="number" min="0" placeholder="0" {...register(`packages.${index}.height`, { valueAsNumber: true })} />
+          <Label htmlFor={`pkg-${index}-height`}>{t("pkg.height")}</Label>
+          <Input id={`pkg-${index}-height`} type="number" min="0" placeholder="0" {...register(`packages.${index}.height`, { valueAsNumber: true })} />
         </div>
         <div>
-          <Label>{t("pkg.qty")}</Label>
-          <Input type="number" min="1" placeholder="1" {...register(`packages.${index}.quantity`, { valueAsNumber: true })} />
+          <Label htmlFor={`pkg-${index}-qty`}>{t("pkg.qty")}</Label>
+          <Input id={`pkg-${index}-qty`} type="number" min="1" placeholder="1" {...register(`packages.${index}.quantity`, { valueAsNumber: true })} />
         </div>
       </div>
 
@@ -167,6 +168,7 @@ export function PackageRow({
               <Checkbox
                 checked={field.value}
                 onCheckedChange={(v) => field.onChange(Boolean(v))}
+                aria-label={t("pkg.packagingLabel")}
               />
               <span>
                 {t("pkg.packagingLabel")}
@@ -183,6 +185,7 @@ export function PackageRow({
               <Checkbox
                 checked={field.value}
                 onCheckedChange={(v) => field.onChange(Boolean(v))}
+                aria-label={t("pkg.nonStackableLabel")}
               />
               <span>
                 {t("pkg.nonStackableLabel")}
