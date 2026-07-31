@@ -192,7 +192,7 @@ function SurchargeGroupBlock({ group }: { group: SurchargeGroup }) {
       <h4 className="font-display text-sm font-semibold uppercase tracking-wide text-foreground">
         {t(group.labelKey)}
       </h4>
-      <div className="mt-2 rounded-sm border border-border bg-surface-2/40 px-3 py-2.5 text-xs text-muted">
+      <div className="mt-2 rounded-lg border border-border bg-surface-2/40 px-4 py-3 text-xs text-muted sm:px-5">
         <p className="font-medium text-muted-2">{t("surcharge.appliesAny")}</p>
         <ul className="mt-1 space-y-0.5">
           {group.qualifyKeys.map((c) => (
@@ -274,7 +274,8 @@ export function SurchargeInfoDialog({ children }: { children: React.ReactNode })
             </TabsList>
           </div>
 
-          <div className="scroll-thin min-h-0 flex-1 overflow-y-auto px-5 pb-5 pt-4 sm:px-6 sm:pb-6 sm:pt-5">
+          <div className="scroll-thin min-h-0 flex-1 overflow-y-auto">
+            <div className="px-5 pb-5 pt-4 sm:px-6 sm:pb-6 sm:pt-5">
             <TabsContent value="handling">
               <h3 className="font-display text-base font-semibold sm:text-lg">
                 {t("surcharge.handlingHeading")}
@@ -333,6 +334,7 @@ export function SurchargeInfoDialog({ children }: { children: React.ReactNode })
               />
               <FooterNote />
             </TabsContent>
+            </div>
           </div>
         </Tabs>
       </DialogContent>
