@@ -14,6 +14,8 @@ import {
   SpecialRateUnavailableCard,
 } from "./SpecialRateCard";
 import { RateCard } from "./RateCard";
+import { ManualQuoteNotice } from "./ManualQuoteNotice";
+import { domesticCoverageGap } from "@/lib/data/domestic-coverage";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
@@ -69,6 +71,7 @@ export function CheckRatesClient() {
   }
 
   const quote = calculateQuotes(toQuoteInput(submitted));
+  const gap = domesticCoverageGap(submitted);
   const isAdvance = submitted.mode === "advance" && quote.options.length > 0;
   const cheapestId = quote.options[0]?.vendor.id;
   const fastestId = [...quote.options].sort(
@@ -102,6 +105,8 @@ export function CheckRatesClient() {
         />
       </div>
 
+      {gap && <ManualQuoteNotice city={gap.city} />}
+
       {isAdvance ? (
         <div className="grid gap-4">
           {quote.options.map((opt) => (
@@ -112,6 +117,7 @@ export function CheckRatesClient() {
               chargeableWeight={quote.chargeableWeight}
               cheapest={opt.vendor.id === cheapestId}
               fastest={opt.vendor.id === fastestId && opt.vendor.id !== cheapestId}
+              orderBlocked={!!gap}
             />
           ))}
         </div>
@@ -124,10 +130,11 @@ export function CheckRatesClient() {
                 special={quote.special!}
                 tier={tier}
                 route={quote.route}
+                orderBlocked={!!gap}
               />
             ))}
           </div>
-          <SpecialRateFooter special={quote.special} />
+          {!gap && <SpecialRateFooter special={quote.special} />}
         </>
       ) : (
         <SpecialRateUnavailableCard

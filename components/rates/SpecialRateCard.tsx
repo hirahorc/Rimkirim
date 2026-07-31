@@ -42,10 +42,13 @@ export function SpecialRateCard({
   special,
   tier,
   route,
+  orderBlocked,
 }: {
   special: SpecialRateQuote;
   tier: SpecialRateTierQuote;
   route: RouteInfo;
+  /** hide the order CTA (e.g. domestic price unavailable → order via support) */
+  orderBlocked?: boolean;
 }) {
   const t = useT();
   const startOrder = useStartOrder();
@@ -129,17 +132,19 @@ export function SpecialRateCard({
           </div>
         )}
 
-        <Button
-          className="mt-5 w-full"
-          onClick={() =>
-            startOrder({
-              perKg: tier.pricePerKg,
-              label: `${special.carrier} ${special.service}`,
-            })
-          }
-        >
-          {t("special.lanjutPesan")} <ArrowRight className="size-4" />
-        </Button>
+        {!orderBlocked && (
+          <Button
+            className="mt-5 w-full"
+            onClick={() =>
+              startOrder({
+                perKg: tier.pricePerKg,
+                label: `${special.carrier} ${special.service}`,
+              })
+            }
+          >
+            {t("special.lanjutPesan")} <ArrowRight className="size-4" />
+          </Button>
+        )}
       </div>
     </Card>
   );

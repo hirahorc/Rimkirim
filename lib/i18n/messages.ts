@@ -161,6 +161,11 @@ const id = {
       "Tarif khusus per negara berdasarkan berat kiriman. Pakai Advance untuk estimasi termasuk surcharge.",
     noRateTitle: "Estimasi tarif",
     noRateSub: "Rute ini belum punya special rate. Cek opsi lain di bawah.",
+    manualTitle: "Pengiriman domestik belum tersedia online",
+    manualBodyPre: "Harga di bawah baru mencakup leg internasional. Untuk tujuan ",
+    manualBodyPost:
+      ", hubungi tim kami untuk harga domestik & pemesanan manual.",
+    manualCta: "Hubungi Customer Support",
     footNote:
       "Estimasi tarif dapat berubah sesuai verifikasi dimensi & berat aktual saat pickup. Butuh bantuan?",
     chatLink: "Chat tim Rimkirim",
@@ -750,6 +755,11 @@ const en: Messages = {
       "A per-country special rate based on shipment weight. Use Advance for an estimate including surcharges.",
     noRateTitle: "Rate estimate",
     noRateSub: "This route has no special rate yet. See other options below.",
+    manualTitle: "Domestic delivery isn't available online",
+    manualBodyPre: "The prices below cover the international leg only. For ",
+    manualBodyPost:
+      ", contact our team for the domestic price and manual booking.",
+    manualCta: "Contact Customer Support",
     footNote:
       "Rate estimates may change based on verification of actual dimensions & weight at pickup. Need help?",
     chatLink: "Chat the Rimkirim team",

@@ -19,6 +19,8 @@ interface RateCardProps {
   chargeableWeight: number;
   cheapest?: boolean;
   fastest?: boolean;
+  /** hide the order CTA (e.g. domestic price unavailable → order via support) */
+  orderBlocked?: boolean;
 }
 
 export function RateCard({
@@ -27,6 +29,7 @@ export function RateCard({
   chargeableWeight,
   cheapest,
   fastest,
+  orderBlocked,
 }: RateCardProps) {
   const t = useT();
   const startOrder = useStartOrder();
@@ -128,18 +131,20 @@ export function RateCard({
             </SurchargeInfoDialog>
           </span>
         </p>
-        <Button
-          className="w-full"
-          variant={cheapest ? "brand" : "secondary"}
-          onClick={() =>
-            startOrder({
-              perKg: quote.baseRatePerKg,
-              label: `${vendor.carrier} ${vendor.service}`,
-            })
-          }
-        >
-          {t("rateCard.pilih")} {vendor.carrier}
-        </Button>
+        {!orderBlocked && (
+          <Button
+            className="w-full"
+            variant={cheapest ? "brand" : "secondary"}
+            onClick={() =>
+              startOrder({
+                perKg: quote.baseRatePerKg,
+                label: `${vendor.carrier} ${vendor.service}`,
+              })
+            }
+          >
+            {t("rateCard.pilih")} {vendor.carrier}
+          </Button>
+        )}
       </div>
     </Card>
   );
