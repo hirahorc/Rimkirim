@@ -105,7 +105,12 @@ export function CheckRatesClient() {
         />
       </div>
 
-      {gap && <ManualQuoteNotice city={gap.city} />}
+      {gap && (
+        <ManualQuoteNotice
+          origin={quote.route.origin?.name ?? ""}
+          city={gap.city}
+        />
+      )}
 
       {isAdvance ? (
         <div className="grid gap-4">

@@ -9,7 +9,13 @@ import { useT } from "@/lib/i18n/LanguageProvider";
  * a Back For Good route isn't priced online yet: the international estimate
  * still shows, but ordering is blocked and the user is pointed to support.
  */
-export function ManualQuoteNotice({ city }: { city: string }) {
+export function ManualQuoteNotice({
+  origin,
+  city,
+}: {
+  origin: string;
+  city: string;
+}) {
   const t = useT();
   return (
     <div className="mb-4 flex flex-col gap-3 rounded-lg border border-brand/30 bg-brand/5 p-4 sm:flex-row sm:items-center">
@@ -20,6 +26,10 @@ export function ManualQuoteNotice({ city }: { city: string }) {
         <p className="font-medium text-foreground">{t("rates.manualTitle")}</p>
         <p className="mt-0.5 text-sm leading-relaxed text-muted">
           {t("rates.manualBodyPre")}
+          <span className="font-medium text-foreground">{city}</span>
+          {t("rates.manualBodyMid")}
+          <span className="font-medium text-foreground">{origin}</span>
+          {t("rates.manualBodyMid2")}
           <span className="font-medium text-foreground">{city}</span>
           {t("rates.manualBodyPost")}
         </p>
