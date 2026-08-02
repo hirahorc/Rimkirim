@@ -11,6 +11,7 @@ import {
   makePackingCode,
   makeTrackingNumber,
 } from "@/lib/utils/order-ids";
+import { totalChargeableWeight } from "@/lib/utils/chargeable-weight";
 import { useAuthStore } from "./useAuthStore";
 
 export type Citizenship = "indonesian" | "foreigner";
@@ -31,6 +32,78 @@ export interface SelectedRate {
   perKg: number;
   /** carrier + service (or "Special Rate") */
   label: string;
+}
+
+/** One line of the itemized quotation breakdown (label is an i18n key). */
+export interface QuotationItem {
+  labelKey: string;
+  amount: number;
+}
+
+/** The official quotation issued by ops (mock — numbers are demo-only). */
+export interface Quotation {
+  total: number; // IDR
+  perKg: number; // IDR charged per chargeable kg
+  chargeableKg: number;
+  items: QuotationItem[];
+  validUntil: number;
+  issuedAt: number;
+}
+
+const QUOTATION_VALID_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
+
+/** The pending ops actions that the ops panel can offer (extensible per step). */
+export type OpsNoticeAction = "book-pickup";
+
+/** A signal that a customer action needs a follow-up action from the ops side. */
+export interface OpsNotice {
+  /** i18n key describing what the customer did / what ops should do next. */
+  messageKey: string;
+  action: OpsNoticeAction;
+}
+
+/** Loose package shape as saved by the Items module (for weight math). */
+interface Pkg {
+  weight?: number;
+  length?: number;
+  width?: number;
+  height?: number;
+  quantity?: number;
+}
+
+/** Build a demo quotation from the order's selected rate + item dimensions. */
+export function buildQuotation(
+  order: Pick<Order, "modules" | "selectedRate">,
+): Quotation {
+  const packages = (order.modules.items.data as { packages?: Pkg[] } | undefined)
+    ?.packages ?? [];
+  const chargeableKg = totalChargeableWeight(
+    packages.map((p) => ({
+      weight: Number(p?.weight) || 0,
+      length: Number(p?.length) || 0,
+      width: Number(p?.width) || 0,
+      height: Number(p?.height) || 0,
+      quantity: 1,
+    })),
+  );
+  const perKg = order.selectedRate?.perKg ?? 135000;
+  const freight = Math.round(perKg * chargeableKg);
+  const items: QuotationItem[] = [
+    { labelKey: "order.quFeeFreight", amount: freight },
+    { labelKey: "order.quFeeInsurance", amount: Math.round(freight * 0.015) },
+    { labelKey: "order.quFeeClearance", amount: 750000 },
+    { labelKey: "order.quFeePickup", amount: 150000 },
+  ];
+  const total = items.reduce((sum, i) => sum + i.amount, 0);
+  const now = Date.now();
+  return {
+    total,
+    perKg,
+    chargeableKg,
+    items,
+    validUntil: now + QUOTATION_VALID_MS,
+    issuedAt: now,
+  };
 }
 
 export interface QuestionnaireAnswers {
@@ -77,6 +150,7 @@ export type OrderStatus = "draft" | OrderPhase;
 export type TimelineEventType =
   | "created"
   | "submitted"
+  | "resubmitted"
   | "quotation"
   | "pickup"
   | "in-transit"
@@ -136,6 +210,13 @@ export interface Order {
   /** Chronological activity log, oldest first. Drives the tracking timeline
    *  and the notification bell. */
   timeline: TimelineEvent[];
+  /** The ops-issued quotation (null until ops issues one). */
+  quotation: Quotation | null;
+  /** Module flagged for a fix in the needs-revision flow (null = no revision). */
+  revisionModule: ModuleId | null;
+  /** Pending ops action surfaced on the ops panel (null = nothing to do).
+   *  Set when the customer acts in a way that requires ops follow-up. */
+  opsNotice: OpsNotice | null;
 
   context: OrderContext | null;
   selectedRate: SelectedRate | null;
@@ -186,6 +267,14 @@ interface OrderStoreState {
   setOrderStatus: (id: string, status: OrderStatus) => void;
   /** ops control plane: set/clear an order's attention overlay (i18n key) */
   setOrderAttention: (id: string, attention: string | null) => void;
+  /** ops control plane: issue the official quotation (builds from order data) */
+  issueQuotation: (id: string) => void;
+  /** customer: approve the quotation → order moves to pickup scheduling */
+  approveQuotation: (id: string) => void;
+  /** ops control plane: confirm the pickup booking after the customer approves */
+  bookPickup: (id: string) => void;
+  /** customer: flag a module for a fix; order returns to Review until resubmitted */
+  requestRevision: (id: string, moduleId: ModuleId) => void;
 }
 
 /** The subset of an Order that is mirrored as flat top-level store fields. */
@@ -254,6 +343,9 @@ export const useOrderStore = create<OrderStoreState>()(
             updatedAt: Date.now(),
             attention: null,
             timeline: [makeEvent("created", "order.evCreated")],
+            quotation: null,
+            revisionModule: null,
+            opsNotice: null,
             context: ctx,
             selectedRate: rate,
             answers: {},
@@ -289,13 +381,27 @@ export const useOrderStore = create<OrderStoreState>()(
         }),
       submitOrder: () =>
         updateDraft(set, (o) => {
-          if (o.status !== "draft") return null;
+          // first submit: draft → review. Revision re-submit: review → quotation
+          // (the quotation doc still exists) or review.
+          if (o.status !== "draft" && o.status !== "review") return null;
+          const isResubmit = o.status === "review";
+          const nextStatus: OrderStatus = o.quotation ? "quotation" : "review";
           return {
-            status: "review",
+            status: nextStatus,
             trackingNumber: o.trackingNumber ?? makeTrackingNumber(),
+            revisionModule: null,
+            // returning to a pending quotation re-arms the approval banner
+            attention:
+              nextStatus === "quotation"
+                ? "order.attQuotationReady"
+                : o.attention,
             timeline: [
               ...o.timeline,
-              makeEvent("submitted", "order.evSubmitted", nextEventAt(o)),
+              makeEvent(
+                isResubmit ? "resubmitted" : "submitted",
+                isResubmit ? "order.evResubmitted" : "order.evSubmitted",
+                nextEventAt(o),
+              ),
             ],
           };
         }),
@@ -374,6 +480,109 @@ export const useOrderStore = create<OrderStoreState>()(
             orders: s.orders.map((o) => (o.id === id ? next : o)),
           };
         }),
+      issueQuotation: (id) =>
+        set((s) => {
+          const order = s.orders.find((o) => o.id === id);
+          if (!order || order.status === "draft") return {};
+          const next: Order = {
+            ...order,
+            quotation: buildQuotation(order),
+            status: "quotation",
+            attention: "order.attQuotationReady",
+            opsNotice: null,
+            updatedAt: Date.now(),
+            timeline: [
+              ...order.timeline,
+              makeEvent("quotation", "order.evQuotation", nextEventAt(order)),
+            ],
+          };
+          return {
+            orders: s.orders.map((o) => (o.id === id ? next : o)),
+          };
+        }),
+      approveQuotation: (id) =>
+        set((s) => {
+          const order = s.orders.find((o) => o.id === id);
+          if (
+            !order ||
+            order.status === "draft" ||
+            !order.quotation ||
+            order.status !== "quotation"
+          ) {
+            return {};
+          }
+          const next: Order = {
+            ...order,
+            status: "pickup",
+            attention: null,
+            opsNotice: {
+              messageKey: "order.opsQuoteApproved",
+              action: "book-pickup",
+            },
+            updatedAt: Date.now(),
+            timeline: [
+              ...order.timeline,
+              makeEvent(
+                "pickup",
+                "order.evQuotationApproved",
+                nextEventAt(order),
+              ),
+            ],
+          };
+          return {
+            orders: s.orders.map((o) => (o.id === id ? next : o)),
+          };
+        }),
+      bookPickup: (id) =>
+        set((s) => {
+          const order = s.orders.find((o) => o.id === id);
+          if (
+            !order ||
+            order.status !== "pickup" ||
+            order.opsNotice?.action !== "book-pickup"
+          ) {
+            return {};
+          }
+          const next: Order = {
+            ...order,
+            opsNotice: null,
+            attention: "order.attPickupScheduled",
+            updatedAt: Date.now(),
+            timeline: [
+              ...order.timeline,
+              makeEvent("pickup", "order.evPickup", nextEventAt(order)),
+            ],
+          };
+          return {
+            orders: s.orders.map((o) => (o.id === id ? next : o)),
+          };
+        }),
+      requestRevision: (id, moduleId) =>
+        set((s) => {
+          const order = s.orders.find((o) => o.id === id);
+          if (
+            !order ||
+            order.status === "draft" ||
+            !["review", "quotation"].includes(order.status)
+          ) {
+            return {};
+          }
+          const next: Order = {
+            ...order,
+            revisionModule: moduleId,
+            status: "review",
+            attention: null,
+            opsNotice: null,
+            updatedAt: Date.now(),
+            timeline: [
+              ...order.timeline,
+              makeEvent("attention", "order.evRevision", nextEventAt(order)),
+            ],
+          };
+          return {
+            orders: s.orders.map((o) => (o.id === id ? next : o)),
+          };
+        }),
     }),
     {
       name: "rimkirim:order",
@@ -401,6 +610,9 @@ export const useOrderStore = create<OrderStoreState>()(
             ...o,
             attention: o.attention ?? null,
             timeline: o.timeline ?? [],
+            quotation: o.quotation ?? null,
+            revisionModule: o.revisionModule ?? null,
+            opsNotice: o.opsNotice ?? null,
           }));
           return { ...current, ...p, orders };
         }
@@ -415,6 +627,9 @@ export const useOrderStore = create<OrderStoreState>()(
             updatedAt: Date.now(),
             attention: null,
             timeline: [makeEvent("created", "order.evCreated")],
+            quotation: null,
+            revisionModule: null,
+            opsNotice: null,
             context: p.context,
             selectedRate: p.selectedRate ?? null,
             answers: p.answers ?? {},

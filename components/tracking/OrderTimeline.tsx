@@ -10,6 +10,7 @@ import { cn } from "@/lib/utils/cn";
 const DOT: Record<TimelineEventType, string> = {
   created: "border-border bg-surface-2",
   submitted: "bg-brand",
+  resubmitted: "bg-brand",
   quotation: "bg-brand",
   pickup: "bg-brand",
   "in-transit": "bg-brand",

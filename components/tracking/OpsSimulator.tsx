@@ -2,7 +2,16 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { Wrench, ArrowRight, Eye, BellRing } from "lucide-react";
+import { toast } from "sonner";
+import {
+  Wrench,
+  ArrowRight,
+  Eye,
+  BellRing,
+  ReceiptText,
+  AlertCircle,
+  CalendarCheck,
+} from "lucide-react";
 import {
   useOrderStore,
   type Order,
@@ -34,6 +43,8 @@ export function OpsSimulator({ order }: { order: Order }) {
   const t = useT();
   const setOrderStatus = useOrderStore((s) => s.setOrderStatus);
   const setOrderAttention = useOrderStore((s) => s.setOrderAttention);
+  const issueQuotation = useOrderStore((s) => s.issueQuotation);
+  const bookPickup = useOrderStore((s) => s.bookPickup);
 
   const currentIdx = PHASE_STEPS.indexOf(order.status as (typeof PHASE_STEPS)[number]);
   const next = currentIdx >= 0 && currentIdx < PHASE_STEPS.length - 1
@@ -59,6 +70,30 @@ export function OpsSimulator({ order }: { order: Order }) {
         </div>
         <OrderStatusBadge status={order.status} />
       </div>
+
+      {order.opsNotice && (
+        <div className="mt-4 rounded-lg border border-info/40 bg-info/10 p-4">
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <div className="flex items-start gap-2">
+              <AlertCircle className="mt-0.5 size-4 shrink-0 text-info" />
+              <p className="text-sm font-medium text-foreground">
+                {t(order.opsNotice.messageKey)}
+              </p>
+            </div>
+            {order.opsNotice.action === "book-pickup" && (
+              <Button
+                size="sm"
+                onClick={() => {
+                  bookPickup(order.id);
+                  toast.success(t("ops.pickupBookedToast"));
+                }}
+              >
+                <CalendarCheck /> {t("ops.bookPickup")}
+              </Button>
+            )}
+          </div>
+        </div>
+      )}
 
       <div className="mt-4 grid gap-4 sm:grid-cols-2">
         <div className="space-y-2">
@@ -119,6 +154,26 @@ export function OpsSimulator({ order }: { order: Order }) {
             </Button>
           ))}
         </div>
+      </div>
+
+      <div className="mt-4 border-t border-info/20 pt-4">
+        <p className="flex items-center gap-1.5 text-xs font-medium text-muted-2">
+          <ReceiptText className="size-3.5" /> {t("ops.quotation")}
+        </p>
+        {order.quotation ? (
+          <p className="mt-2 text-xs text-muted">{t("ops.quotationIssued")}</p>
+        ) : (
+          <div className="mt-2">
+            <Button
+              size="sm"
+              variant="secondary"
+              disabled={order.status === "draft"}
+              onClick={() => issueQuotation(order.id)}
+            >
+              <ReceiptText /> {t("ops.issueQuotation")}
+            </Button>
+          </div>
+        )}
       </div>
     </Card>
   );

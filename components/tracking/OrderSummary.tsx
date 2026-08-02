@@ -497,20 +497,22 @@ function PendingCards({ order }: { order: Order }) {
 
   return (
     <>
-      <Section icon={ReceiptText} title={t("order.tdQuotationSection")}>
-        {rate && (
-          <Row label={t("order.tdBaseRate")}>
-            <span className="font-medium">
-              {formatIDR(rate.perKg)}{" "}
-              <span className="text-xs font-normal text-muted-2">
-                / {t("order.tdPerKg")}
+      {!order.quotation && (
+        <Section icon={ReceiptText} title={t("order.tdQuotationSection")}>
+          {rate && (
+            <Row label={t("order.tdBaseRate")}>
+              <span className="font-medium">
+                {formatIDR(rate.perKg)}{" "}
+                <span className="text-xs font-normal text-muted-2">
+                  / {t("order.tdPerKg")}
+                </span>
               </span>
-            </span>
-          </Row>
-        )}
-        <Row label={t("order.itTotalCw")}>{formatNumber(totalCw, 1)} kg</Row>
-        <p className="py-2 text-sm text-muted-2">{t("order.tdQuotationPending")}</p>
-      </Section>
+            </Row>
+          )}
+          <Row label={t("order.itTotalCw")}>{formatNumber(totalCw, 1)} kg</Row>
+          <p className="py-2 text-sm text-muted-2">{t("order.tdQuotationPending")}</p>
+        </Section>
+      )}
 
       <Section icon={Plane} title={t("order.tdAwbSection")}>
         <p className="py-2 text-sm text-muted-2">{t("order.tdAwbPending")}</p>

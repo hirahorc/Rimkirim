@@ -27,6 +27,9 @@ import { OrderStatusBadge } from "./OrderStatusBadge";
 import { StatusStepper } from "@/components/tracking/StatusStepper";
 import { AttentionBanner } from "@/components/tracking/AttentionBanner";
 import { OrderSummary } from "@/components/tracking/OrderSummary";
+import { OrderTimeline } from "@/components/tracking/OrderTimeline";
+import { QuotationCard } from "@/components/tracking/QuotationCard";
+import { RevisionCard } from "@/components/tracking/RevisionCard";
 
 /** Tracking detail page — owner-only. */
 export function OrderDetail({ id }: { id: string }) {
@@ -141,6 +144,22 @@ export function OrderDetail({ id }: { id: string }) {
         </Card>
       )}
       <AttentionBanner attention={order.attention} />
+
+      {order.revisionModule && order.status === "review" && (
+        <div className="mt-4">
+          <RevisionCard orderId={order.id} moduleId={order.revisionModule} />
+        </div>
+      )}
+
+      {order.quotation && (
+        <div className="mt-4">
+          <QuotationCard order={order} />
+        </div>
+      )}
+
+      <div className="mt-4">
+        <OrderTimeline events={order.timeline} />
+      </div>
 
       <div className="mt-4">
         <OrderSummary order={order} />
