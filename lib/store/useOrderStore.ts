@@ -3,7 +3,14 @@
 import * as React from "react";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { makeBookingNumber, makePackingCode } from "@/lib/utils/order-ids";
+import { useShallow } from "zustand/react/shallow";
+import {
+  makeBookingNumber,
+  makeOrderId,
+  makePackingCode,
+  makeTrackingNumber,
+} from "@/lib/utils/order-ids";
+import { useAuthStore } from "./useAuthStore";
 
 export type Citizenship = "indonesian" | "foreigner";
 export type ClearanceKind = "personal" | "passenger";
@@ -51,16 +58,62 @@ const emptyModules: Modules = {
   pickup: { status: "not-started" },
 };
 
-interface OrderState {
+/** Linear post-submit phase a shipment moves through (terminal: cancelled/delivered). */
+export type OrderPhase =
+  | "review"
+  | "quotation"
+  | "pickup"
+  | "in-transit"
+  | "clearance"
+  | "delivery"
+  | "delivered"
+  | "cancelled";
+
+/** "draft" = still being filled in the /pesan flow; otherwise a live phase. */
+export type OrderStatus = "draft" | OrderPhase;
+
+export interface Order {
+  id: string;
+  ownerEmail: string | null;
+  status: OrderStatus;
+  /** Stable Rimkirim tracking number, issued once the order is submitted. */
+  trackingNumber: string | null;
+  createdAt: number;
+  updatedAt: number;
+
+  /** i18n key of an active "needs your attention" overlay (set by the ops
+   *  simulator in later steps); null = everything is on track. */
+  attention: string | null;
+
   context: OrderContext | null;
   selectedRate: SelectedRate | null;
   answers: QuestionnaireAnswers;
   clearance: ClearanceKind | null;
   modules: Modules;
-  /** issued when the order is created (user reaches the order form) */
   bookingNumber: string | null;
-  /** packing code the system generates when none was supplied in the questionnaire */
   generatedPackingCode: string | null;
+}
+
+/** Stashed order start so a logged-out user resumes it after signing in. */
+export interface PendingStart {
+  context: OrderContext;
+  rate: SelectedRate | null;
+}
+
+interface OrderStoreState {
+  orders: Order[];
+  /** The order currently being created/edited in the /pesan flow. */
+  activeDraftId: string | null;
+  /** Flat mirrors of the active draft — kept so existing selectors keep working. */
+  context: OrderContext | null;
+  selectedRate: SelectedRate | null;
+  answers: QuestionnaireAnswers;
+  clearance: ClearanceKind | null;
+  modules: Modules;
+  bookingNumber: string | null;
+  generatedPackingCode: string | null;
+  trackingNumber: string | null;
+  pendingStart: PendingStart | null;
 
   startOrder: (ctx: OrderContext, rate?: SelectedRate | null) => void;
   setAnswers: (patch: Partial<QuestionnaireAnswers>) => void;
@@ -70,12 +123,59 @@ interface OrderState {
   ensureBookingNumber: () => void;
   /** generate a packing code once CI+Items are done and none was supplied */
   ensurePackingCode: () => void;
+  /** final agree → the order leaves the draft and enters Review (tracking issued) */
+  submitOrder: () => void;
+  /** detach from the active draft; orders themselves persist */
   reset: () => void;
+  /** make an existing draft the active one again (resume it in the /pesan flow) */
+  resumeOrder: (id: string) => void;
+  setPendingStart: (intent: PendingStart | null) => void;
 }
 
-export const useOrderStore = create<OrderState>()(
+/** The subset of an Order that is mirrored as flat top-level store fields. */
+const FLAT_KEYS: (keyof Order)[] = [
+  "context",
+  "selectedRate",
+  "answers",
+  "clearance",
+  "modules",
+  "bookingNumber",
+  "generatedPackingCode",
+  "trackingNumber",
+];
+
+/** Copy the draft fields of an order into the flat state shape. */
+function syncFlatFrom(order: Order): Partial<OrderStoreState> {
+  const flat: Partial<OrderStoreState> = {};
+  for (const key of FLAT_KEYS) {
+    (flat as Record<string, unknown>)[key] = order[key];
+  }
+  return flat;
+}
+
+/** Mutate the active draft (both the `orders` entry and the flat mirrors). */
+function updateDraft(
+  set: (fn: (s: OrderStoreState) => Partial<OrderStoreState>) => void,
+  updater: (order: Order) => Partial<Order> | null,
+): void {
+  set((s) => {
+    const order = s.orders.find((o) => o.id === s.activeDraftId);
+    if (!order) return {};
+    const patch = updater(order);
+    if (!patch) return {};
+    const next: Order = { ...order, ...patch, updatedAt: Date.now() };
+    return {
+      orders: s.orders.map((o) => (o.id === next.id ? next : o)),
+      ...syncFlatFrom(next),
+    };
+  });
+}
+
+export const useOrderStore = create<OrderStoreState>()(
   persist(
     (set) => ({
+      orders: [],
+      activeDraftId: null,
       context: null,
       selectedRate: null,
       answers: {},
@@ -83,36 +183,64 @@ export const useOrderStore = create<OrderState>()(
       modules: emptyModules,
       bookingNumber: null,
       generatedPackingCode: null,
+      trackingNumber: null,
+      pendingStart: null,
 
       startOrder: (ctx, rate = null) =>
-        set({
-          context: ctx,
-          selectedRate: rate,
-          // starting a fresh order clears any prior state
-          answers: {},
-          clearance: null,
-          modules: emptyModules,
-          bookingNumber: null,
-          generatedPackingCode: null,
+        set((s) => {
+          const id = makeOrderId();
+          const order: Order = {
+            id,
+            ownerEmail: useAuthStore.getState().currentEmail,
+            status: "draft",
+            trackingNumber: null,
+            createdAt: Date.now(),
+            updatedAt: Date.now(),
+            attention: null,
+            context: ctx,
+            selectedRate: rate,
+            answers: {},
+            clearance: null,
+            modules: emptyModules,
+            bookingNumber: null,
+            generatedPackingCode: null,
+          };
+          return {
+            orders: [...s.orders, order],
+            activeDraftId: id,
+            ...syncFlatFrom(order),
+            pendingStart: null,
+          };
         }),
       setAnswers: (patch) =>
-        set((s) => ({ answers: { ...s.answers, ...patch } })),
-      setClearance: (c) => set({ clearance: c }),
+        updateDraft(set, (o) => ({ answers: { ...o.answers, ...patch } })),
+      setClearance: (c) => updateDraft(set, () => ({ clearance: c })),
       saveModule: (id, data) =>
-        set((s) => ({
-          modules: { ...s.modules, [id]: { status: "complete", data } },
+        updateDraft(set, (o) => ({
+          modules: { ...o.modules, [id]: { status: "complete", data } },
         })),
       ensureBookingNumber: () =>
-        set((s) => (s.bookingNumber ? {} : { bookingNumber: makeBookingNumber() })),
+        updateDraft(set, (o) =>
+          o.bookingNumber ? null : { bookingNumber: makeBookingNumber() },
+        ),
       ensurePackingCode: () =>
-        set((s) => {
+        updateDraft(set, (o) => {
           // a code supplied in the questionnaire always wins; nothing to generate
-          if (s.answers.packingCode?.trim() || s.generatedPackingCode) return {};
-          if (!isPackingListReady(s.modules)) return {};
+          if (o.answers.packingCode?.trim() || o.generatedPackingCode) return null;
+          if (!isPackingListReady(o.modules)) return null;
           return { generatedPackingCode: makePackingCode() };
+        }),
+      submitOrder: () =>
+        updateDraft(set, (o) => {
+          if (o.status !== "draft") return null;
+          return {
+            status: "review",
+            trackingNumber: o.trackingNumber ?? makeTrackingNumber(),
+          };
         }),
       reset: () =>
         set({
+          activeDraftId: null,
           context: null,
           selectedRate: null,
           answers: {},
@@ -120,11 +248,21 @@ export const useOrderStore = create<OrderState>()(
           modules: emptyModules,
           bookingNumber: null,
           generatedPackingCode: null,
+          trackingNumber: null,
         }),
+      resumeOrder: (id) =>
+        set((s) => {
+          const order = s.orders.find((o) => o.id === id);
+          if (!order) return {};
+          return { activeDraftId: id, ...syncFlatFrom(order), pendingStart: null };
+        }),
+      setPendingStart: (intent) => set({ pendingStart: intent }),
     }),
     {
       name: "rimkirim:order",
       partialize: (s) => ({
+        orders: s.orders,
+        activeDraftId: s.activeDraftId,
         context: s.context,
         selectedRate: s.selectedRate,
         answers: s.answers,
@@ -132,7 +270,45 @@ export const useOrderStore = create<OrderState>()(
         modules: s.modules,
         bookingNumber: s.bookingNumber,
         generatedPackingCode: s.generatedPackingCode,
+        trackingNumber: s.trackingNumber,
+        pendingStart: s.pendingStart,
       }),
+      // Migrate the pre-multi-order single-draft shape into a draft order so
+      // existing dev state isn't dropped (no `orders` array in the old shape).
+      merge: (persisted, current) => {
+        const p = (persisted ?? {}) as Partial<OrderStoreState>;
+        if (Array.isArray(p.orders)) {
+          return { ...current, ...p };
+        }
+        if (p.context) {
+          const id = makeOrderId();
+          const order: Order = {
+            id,
+            ownerEmail: useAuthStore.getState().currentEmail,
+            status: "draft",
+            trackingNumber: null,
+            createdAt: Date.now(),
+            updatedAt: Date.now(),
+            attention: null,
+            context: p.context,
+            selectedRate: p.selectedRate ?? null,
+            answers: p.answers ?? {},
+            clearance: p.clearance ?? null,
+            modules: p.modules ?? emptyModules,
+            bookingNumber: p.bookingNumber ?? null,
+            generatedPackingCode: p.generatedPackingCode ?? null,
+          };
+          return {
+            ...current,
+            ...p,
+            orders: [order],
+            activeDraftId: id,
+            trackingNumber: null,
+            pendingStart: null,
+          };
+        }
+        return { ...current };
+      },
     },
   ),
 );
@@ -184,7 +360,7 @@ export function allModulesComplete(modules: Modules): boolean {
 
 /**
  * The packing list code to display: the one supplied in the questionnaire wins,
- * else the system-generated one (present only once CI + Items are complete),
+ * else the system-generated one (present only once CI+Items are complete),
  * else null (nothing to show yet).
  */
 export function effectivePackingCode(s: {
@@ -192,6 +368,18 @@ export function effectivePackingCode(s: {
   generatedPackingCode: string | null;
 }): string | null {
   return s.answers.packingCode?.trim() || s.generatedPackingCode || null;
+}
+
+/** The current user's orders — in-progress drafts included (a draft is an order). */
+export function useMyOrders(email: string | null): Order[] {
+  return useOrderStore(
+    useShallow((s) => {
+      if (!email) return [];
+      return s.orders
+        .filter((o) => o.ownerEmail === email)
+        .sort((a, b) => b.createdAt - a.createdAt);
+    }),
+  );
 }
 
 /**

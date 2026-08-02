@@ -4,13 +4,16 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Logo } from "./Logo";
 import { LanguageToggle } from "./LanguageToggle";
+import { AccountMenu } from "@/components/auth/AccountMenu";
 import { Button } from "@/components/ui/button";
+import { useCurrentUser } from "@/lib/store/useAuthStore";
 import { useT } from "@/lib/i18n/LanguageProvider";
 import { isBareRoute } from "@/lib/utils/routes";
 
 export function AppHeader() {
   const t = useT();
   const pathname = usePathname();
+  const user = useCurrentUser();
   // standalone pages (legal docs) render without the app chrome
   if (isBareRoute(pathname)) return null;
   return (
@@ -39,6 +42,18 @@ export function AppHeader() {
         </nav>
         <div className="flex items-center gap-2">
           <LanguageToggle />
+          {user ? (
+            <>
+              <Button asChild variant="ghost" size="sm" className="hidden sm:inline-flex">
+                <Link href="/pesanan">{t("auth.myOrders")}</Link>
+              </Button>
+              <AccountMenu />
+            </>
+          ) : (
+            <Button asChild variant="ghost" size="sm">
+              <Link href="/masuk">{t("nav.masuk")}</Link>
+            </Button>
+          )}
           <Button asChild size="sm">
             <Link href="/#kalkulator">{t("nav.cekTarif")}</Link>
           </Button>

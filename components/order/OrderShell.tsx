@@ -4,6 +4,7 @@ import * as React from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { Loader2, Check } from "lucide-react";
 import { useOrderStore, useOrderHydrated } from "@/lib/store/useOrderStore";
+import { useAuthHydrated, useCurrentUser } from "@/lib/store/useAuthStore";
 import { useT } from "@/lib/i18n/LanguageProvider";
 import { cn } from "@/lib/utils/cn";
 
@@ -21,19 +22,47 @@ export function OrderShell({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
   const hydrated = useOrderHydrated();
+  const authHydrated = useAuthHydrated();
+  const user = useCurrentUser();
   const context = useOrderStore((s) => s.context);
+  const pendingStart = useOrderStore((s) => s.pendingStart);
+  const startOrder = useOrderStore((s) => s.startOrder);
+  const setPendingStart = useOrderStore((s) => s.setPendingStart);
 
   React.useEffect(() => {
-    if (hydrated && !context) router.replace("/cek-tarif");
-  }, [hydrated, context, router]);
+    if (!hydrated || !authHydrated) return;
+    // orders belong to a user — send logged-out visitors to sign in first
+    if (!user) {
+      router.replace(`/masuk?next=${encodeURIComponent(pathname)}`);
+      return;
+    }
+    // resume an order start that was stashed before login
+    if (pendingStart && !context) {
+      startOrder(pendingStart.context, pendingStart.rate);
+      setPendingStart(null);
+      return;
+    }
+    if (!context) router.replace("/cek-tarif");
+  }, [
+    hydrated,
+    authHydrated,
+    user,
+    context,
+    pendingStart,
+    startOrder,
+    setPendingStart,
+    router,
+    pathname,
+  ]);
 
-  if (!hydrated) {
+  if (!hydrated || !authHydrated) {
     return (
       <div className="flex min-h-[50vh] items-center justify-center text-muted">
         <Loader2 className="size-5 animate-spin" />
       </div>
     );
   }
+  if (!user) return null;
   if (!context) return null;
 
   const isExport = context.service === "moving-abroad";
