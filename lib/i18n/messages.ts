@@ -553,6 +553,18 @@ const id = {
       "Tim kami butuh revisi dokumen pada modul Compliance.",
     attPickupFailed:
       "Pickup pertama gagal — tim kami akan mengatur ulang penjemputan.",
+    // timeline events (order.activity)
+    tdTimeline: "Riwayat Aktivitas",
+    evCreated: "Pesanan dibuat.",
+    evSubmitted: "Permintaan order dikirim — nomor tracking diterbitkan.",
+    evQuotation: "Quotation diterbitkan.",
+    evPickup: "Pickup dijadwalkan.",
+    evInTransit: "Barang dalam perjalanan.",
+    evClearance: "Proses clearance bea cukai.",
+    evDelivery: "Pengiriman terakhir ke alamat tujuan.",
+    evDelivered: "Barang telah terkirim.",
+    evCancelled: "Pesanan dibatalkan.",
+    evAttentionCleared: "Perhatian telah ditangani.",
     // module form — shared
     saveModule: "Simpan",
     saved: "Tersimpan",
@@ -718,6 +730,11 @@ const id = {
     attPickup: "Pickup gagal",
     noOrders: "Belum ada pesanan yang dikirim untuk disimulasikan.",
     hint: "Panel ini mensimulasikan sisi ops Rimkirim (tanpa backend). Perubahan langsung tampil di halaman pelacakan customer.",
+  },
+  notif: {
+    title: "Notifikasi",
+    unread: "belum dibaca",
+    empty: "Belum ada notifikasi.",
   },
   lang: {
     label: "Bahasa",
@@ -1261,6 +1278,18 @@ const en: Messages = {
       "Our team needs you to revise the documents in the Compliance module.",
     attPickupFailed:
       "The first pickup failed — our team will reschedule the pickup.",
+    // timeline events (order.activity)
+    tdTimeline: "Activity",
+    evCreated: "Order created.",
+    evSubmitted: "Order request submitted — tracking number issued.",
+    evQuotation: "Quotation issued.",
+    evPickup: "Pickup scheduled.",
+    evInTransit: "Goods in transit.",
+    evClearance: "Customs clearance in progress.",
+    evDelivery: "Last-mile delivery to destination.",
+    evDelivered: "Goods delivered.",
+    evCancelled: "Order cancelled.",
+    evAttentionCleared: "Attention resolved.",
     saveModule: "Save",
     saved: "Saved",
     ciFullName: "Full name",
@@ -1415,6 +1444,11 @@ const en: Messages = {
     attPickup: "Pickup failed",
     noOrders: "No submitted orders to simulate yet.",
     hint: "This panel simulates Rimkirim's ops side (no backend). Changes appear instantly on the customer tracking page.",
+  },
+  notif: {
+    title: "Notifications",
+    unread: "unread",
+    empty: "No notifications yet.",
   },
   lang: {
     label: "Language",

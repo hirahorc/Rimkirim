@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { Logo } from "./Logo";
 import { LanguageToggle } from "./LanguageToggle";
 import { AccountMenu } from "@/components/auth/AccountMenu";
+import { NotificationBell } from "@/components/notifications/NotificationBell";
 import { Button } from "@/components/ui/button";
 import { useCurrentUser } from "@/lib/store/useAuthStore";
 import { useT } from "@/lib/i18n/LanguageProvider";
@@ -44,6 +45,7 @@ export function AppHeader() {
           <LanguageToggle />
           {user ? (
             <>
+              <NotificationBell />
               <Button asChild variant="ghost" size="sm" className="hidden sm:inline-flex">
                 <Link href="/pesanan">{t("auth.myOrders")}</Link>
               </Button>

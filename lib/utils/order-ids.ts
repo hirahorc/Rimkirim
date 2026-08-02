@@ -37,3 +37,10 @@ export function makeTrackingNumber(): string {
   const c = randomChars(8);
   return `RKT-${c.slice(0, 4)}-${c.slice(4)}`;
 }
+
+/** Unique timeline/notification event id. */
+export function makeEventId(): string {
+  return typeof crypto !== "undefined" && "randomUUID" in crypto
+    ? crypto.randomUUID()
+    : `ev-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+}

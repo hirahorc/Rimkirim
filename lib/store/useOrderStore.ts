@@ -6,6 +6,7 @@ import { persist } from "zustand/middleware";
 import { useShallow } from "zustand/react/shallow";
 import {
   makeBookingNumber,
+  makeEventId,
   makeOrderId,
   makePackingCode,
   makeTrackingNumber,
@@ -72,6 +73,54 @@ export type OrderPhase =
 /** "draft" = still being filled in the /pesan flow; otherwise a live phase. */
 export type OrderStatus = "draft" | OrderPhase;
 
+/** What a timeline entry represents. */
+export type TimelineEventType =
+  | "created"
+  | "submitted"
+  | "quotation"
+  | "pickup"
+  | "in-transit"
+  | "clearance"
+  | "delivery"
+  | "delivered"
+  | "cancelled"
+  | "attention"
+  | "attention-cleared";
+
+export interface TimelineEvent {
+  id: string;
+  at: number;
+  type: TimelineEventType;
+  /** i18n key rendered as the event line (phase/status or the attention key). */
+  messageKey: string;
+}
+
+/** The `order.*` i18n key for each phase/cancel event line. */
+const PHASE_EVENT_KEY: Partial<Record<OrderStatus, string>> = {
+  quotation: "order.evQuotation",
+  pickup: "order.evPickup",
+  "in-transit": "order.evInTransit",
+  clearance: "order.evClearance",
+  delivery: "order.evDelivery",
+  delivered: "order.evDelivered",
+  cancelled: "order.evCancelled",
+};
+
+function makeEvent(
+  type: TimelineEventType,
+  messageKey: string,
+  at = Date.now(),
+): TimelineEvent {
+  return { id: makeEventId(), at, type, messageKey };
+}
+
+/** Strictly-increasing timestamp so the timeline/bell ordering is deterministic
+ *  even when events land within the same millisecond. */
+function nextEventAt(order: Order): number {
+  const last = order.timeline[order.timeline.length - 1];
+  return Math.max(Date.now(), (last?.at ?? 0) + 1);
+}
+
 export interface Order {
   id: string;
   ownerEmail: string | null;
@@ -84,6 +133,9 @@ export interface Order {
   /** i18n key of an active "needs your attention" overlay (set by the ops
    *  simulator in later steps); null = everything is on track. */
   attention: string | null;
+  /** Chronological activity log, oldest first. Drives the tracking timeline
+   *  and the notification bell. */
+  timeline: TimelineEvent[];
 
   context: OrderContext | null;
   selectedRate: SelectedRate | null;
@@ -201,6 +253,7 @@ export const useOrderStore = create<OrderStoreState>()(
             createdAt: Date.now(),
             updatedAt: Date.now(),
             attention: null,
+            timeline: [makeEvent("created", "order.evCreated")],
             context: ctx,
             selectedRate: rate,
             answers: {},
@@ -240,6 +293,10 @@ export const useOrderStore = create<OrderStoreState>()(
           return {
             status: "review",
             trackingNumber: o.trackingNumber ?? makeTrackingNumber(),
+            timeline: [
+              ...o.timeline,
+              makeEvent("submitted", "order.evSubmitted", nextEventAt(o)),
+            ],
           };
         }),
       reset: () =>
@@ -265,16 +322,54 @@ export const useOrderStore = create<OrderStoreState>()(
         set((s) => {
           const order = s.orders.find((o) => o.id === id);
           // drafts are managed by the customer flow, not the ops plane
-          if (!order || order.status === "draft") return {};
-          const next: Order = { ...order, status, updatedAt: Date.now() };
-          const orders = s.orders.map((o) => (o.id === id ? next : o));
-          return { orders };
+          if (!order || order.status === "draft" || order.status === status) {
+            return {};
+          }
+          const eventKey = PHASE_EVENT_KEY[status];
+          const next: Order = {
+            ...order,
+            status,
+            updatedAt: Date.now(),
+            timeline: eventKey
+              ? [
+                  ...order.timeline,
+                  makeEvent(
+                    status as TimelineEventType,
+                    eventKey,
+                    nextEventAt(order),
+                  ),
+                ]
+              : order.timeline,
+          };
+          return {
+            orders: s.orders.map((o) => (o.id === id ? next : o)),
+          };
         }),
       setOrderAttention: (id, attention) =>
         set((s) => {
           const order = s.orders.find((o) => o.id === id);
-          if (!order || order.status === "draft") return {};
-          const next: Order = { ...order, attention, updatedAt: Date.now() };
+          if (
+            !order ||
+            order.status === "draft" ||
+            order.attention === attention
+          ) {
+            return {};
+          }
+          const next: Order = {
+            ...order,
+            attention,
+            updatedAt: Date.now(),
+            timeline: [
+              ...order.timeline,
+              attention
+                ? makeEvent("attention", attention, nextEventAt(order))
+                : makeEvent(
+                    "attention-cleared",
+                    "order.evAttentionCleared",
+                    nextEventAt(order),
+                  ),
+            ],
+          };
           return {
             orders: s.orders.map((o) => (o.id === id ? next : o)),
           };
@@ -300,7 +395,14 @@ export const useOrderStore = create<OrderStoreState>()(
       merge: (persisted, current) => {
         const p = (persisted ?? {}) as Partial<OrderStoreState>;
         if (Array.isArray(p.orders)) {
-          return { ...current, ...p };
+          // Backfill fields added after an order was persisted (attention,
+          // timeline) so stale localStorage never crashes consumers.
+          const orders = (p.orders as Order[]).map((o) => ({
+            ...o,
+            attention: o.attention ?? null,
+            timeline: o.timeline ?? [],
+          }));
+          return { ...current, ...p, orders };
         }
         if (p.context) {
           const id = makeOrderId();
@@ -312,6 +414,7 @@ export const useOrderStore = create<OrderStoreState>()(
             createdAt: Date.now(),
             updatedAt: Date.now(),
             attention: null,
+            timeline: [makeEvent("created", "order.evCreated")],
             context: p.context,
             selectedRate: p.selectedRate ?? null,
             answers: p.answers ?? {},
