@@ -546,6 +546,13 @@ const id = {
     tdCancelledNotice: "Pesanan ini dibatalkan.",
     tdMaNote:
       "Tracking Moving Abroad disiapkan menyusul — layanan ini masih dalam pengembangan.",
+    // attention overlay presets (set by the ops simulator)
+    attQuotationReady:
+      "Quotation telah diterbitkan — setujui di halaman order untuk melanjutkan.",
+    attRevision:
+      "Tim kami butuh revisi dokumen pada modul Compliance.",
+    attPickupFailed:
+      "Pickup pertama gagal — tim kami akan mengatur ulang penjemputan.",
     // module form — shared
     saveModule: "Simpan",
     saved: "Tersimpan",
@@ -694,6 +701,23 @@ const id = {
     upload: "Unggah file",
     // moving abroad entry
     maComingSoon: "Order Moving Abroad segera hadir",
+  },
+  ops: {
+    title: "Simulator Ops",
+    subtitle:
+      "Kontrol pesawat mock — gerakkan pesanan antar fase untuk demo alur tracking.",
+    menu: "Simulator (ops)",
+    advance: "Lanjutkan fase",
+    advanceCta: "Lanjut",
+    setTo: "Set status ke",
+    terminalNote: "Fase terminal",
+    attention: "Overlay perhatian (banner)",
+    attNone: "Tidak ada",
+    attQuotation: "Quotation siap",
+    attRevision: "Perlu revisi",
+    attPickup: "Pickup gagal",
+    noOrders: "Belum ada pesanan yang dikirim untuk disimulasikan.",
+    hint: "Panel ini mensimulasikan sisi ops Rimkirim (tanpa backend). Perubahan langsung tampil di halaman pelacakan customer.",
   },
   lang: {
     label: "Bahasa",
@@ -1230,6 +1254,13 @@ const en: Messages = {
     tdCancelledNotice: "This order was cancelled.",
     tdMaNote:
       "Moving Abroad tracking is coming soon — this service is still in development.",
+    // attention overlay presets (set by the ops simulator)
+    attQuotationReady:
+      "A quotation has been issued — approve it on the order page to continue.",
+    attRevision:
+      "Our team needs you to revise the documents in the Compliance module.",
+    attPickupFailed:
+      "The first pickup failed — our team will reschedule the pickup.",
     saveModule: "Save",
     saved: "Saved",
     ciFullName: "Full name",
@@ -1367,6 +1398,23 @@ const en: Messages = {
     buildOther: "Others",
     upload: "Upload file",
     maComingSoon: "Moving Abroad order is coming soon",
+  },
+  ops: {
+    title: "Ops Simulator",
+    subtitle:
+      "Mock control plane — move orders between phases to demo the tracking flow.",
+    menu: "Simulator (ops)",
+    advance: "Advance phase",
+    advanceCta: "Advance",
+    setTo: "Set status to",
+    terminalNote: "Terminal phase",
+    attention: "Attention overlay (banner)",
+    attNone: "None",
+    attQuotation: "Quotation ready",
+    attRevision: "Revision needed",
+    attPickup: "Pickup failed",
+    noOrders: "No submitted orders to simulate yet.",
+    hint: "This panel simulates Rimkirim's ops side (no backend). Changes appear instantly on the customer tracking page.",
   },
   lang: {
     label: "Language",

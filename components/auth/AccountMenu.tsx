@@ -3,7 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { User, LogOut, Package } from "lucide-react";
+import { User, LogOut, Package, Wrench } from "lucide-react";
 import {
   Popover,
   PopoverTrigger,
@@ -45,6 +45,13 @@ export function AccountMenu() {
           className="mt-1 flex items-center gap-2 rounded-md px-2 py-2 text-sm transition-colors hover:bg-surface-2"
         >
           <Package className="size-4 text-muted" /> {t("auth.myOrders")}
+        </Link>
+        <Link
+          href="/simulator"
+          onClick={() => setOpen(false)}
+          className="flex items-center gap-2 rounded-md px-2 py-2 text-sm transition-colors hover:bg-surface-2"
+        >
+          <Wrench className="size-4 text-muted" /> {t("ops.menu")}
         </Link>
         <button
           type="button"

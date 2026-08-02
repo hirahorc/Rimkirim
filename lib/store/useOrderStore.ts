@@ -130,6 +130,10 @@ interface OrderStoreState {
   /** make an existing draft the active one again (resume it in the /pesan flow) */
   resumeOrder: (id: string) => void;
   setPendingStart: (intent: PendingStart | null) => void;
+  /** ops control plane: set a submitted order's phase (drafts are read-only) */
+  setOrderStatus: (id: string, status: OrderStatus) => void;
+  /** ops control plane: set/clear an order's attention overlay (i18n key) */
+  setOrderAttention: (id: string, attention: string | null) => void;
 }
 
 /** The subset of an Order that is mirrored as flat top-level store fields. */
@@ -257,6 +261,24 @@ export const useOrderStore = create<OrderStoreState>()(
           return { activeDraftId: id, ...syncFlatFrom(order), pendingStart: null };
         }),
       setPendingStart: (intent) => set({ pendingStart: intent }),
+      setOrderStatus: (id, status) =>
+        set((s) => {
+          const order = s.orders.find((o) => o.id === id);
+          // drafts are managed by the customer flow, not the ops plane
+          if (!order || order.status === "draft") return {};
+          const next: Order = { ...order, status, updatedAt: Date.now() };
+          const orders = s.orders.map((o) => (o.id === id ? next : o));
+          return { orders };
+        }),
+      setOrderAttention: (id, attention) =>
+        set((s) => {
+          const order = s.orders.find((o) => o.id === id);
+          if (!order || order.status === "draft") return {};
+          const next: Order = { ...order, attention, updatedAt: Date.now() };
+          return {
+            orders: s.orders.map((o) => (o.id === id ? next : o)),
+          };
+        }),
     }),
     {
       name: "rimkirim:order",
