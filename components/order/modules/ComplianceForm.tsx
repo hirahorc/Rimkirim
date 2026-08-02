@@ -19,7 +19,8 @@ interface DocSpec {
   personalOnly?: boolean;
 }
 
-const DOCS: DocSpec[] = [
+/** Back For Good (import into Indonesia) document set. */
+const BFG_DOCS: DocSpec[] = [
   { key: "ktp", labelKey: "order.coKtp", required: true },
   { key: "passport", labelKey: "order.coPassport", required: true },
   { key: "flightTicket", labelKey: "order.coFlightTicket", noteKey: "order.coBeforePickup" },
@@ -34,6 +35,14 @@ const DOCS: DocSpec[] = [
   },
 ];
 
+/** Moving Abroad (export → destination country) document set. */
+const EXPORT_DOCS: DocSpec[] = [
+  { key: "passport", labelKey: "order.coPassport", required: true },
+  { key: "visa", labelKey: "order.coVisa", helpKey: "order.coVisaHelp", required: true },
+  { key: "flightTicket", labelKey: "order.coFlightTicket", noteKey: "order.coBeforePickup" },
+  { key: "ktp", labelKey: "order.coKtp" },
+];
+
 interface ComplianceData {
   docs: Record<string, string>;
   otherDocs: { name: string; file?: string }[];
@@ -43,6 +52,8 @@ export function ComplianceForm() {
   const t = useT();
   const save = useSaveModule("compliance");
   const clearance = useOrderStore((s) => s.clearance);
+  const isExport = useOrderStore((s) => s.context?.service === "moving-abroad");
+  const activeDocs = isExport ? EXPORT_DOCS : BFG_DOCS;
   const prev = readModuleData("compliance") as Partial<ComplianceData>;
 
   const {
@@ -60,10 +71,10 @@ export function ComplianceForm() {
   });
   const { fields, append, remove } = useFieldArray({ control, name: "otherDocs" });
 
-  const docs = DOCS.filter((d) => !d.personalOnly || clearance === "personal");
+  const docs = activeDocs.filter((d) => !d.personalOnly || clearance === "personal");
 
   const onSubmit = (data: ComplianceData) => {
-    const missing = DOCS.filter((d) => d.required && !data.docs?.[d.key]);
+    const missing = docs.filter((d) => d.required && !data.docs?.[d.key]);
     if (missing.length) {
       setError("root", { message: t("order.coMandatoryNote") });
       return;

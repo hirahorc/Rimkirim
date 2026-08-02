@@ -93,7 +93,11 @@ export function ItemsForm() {
     formState: { errors },
   } = useForm<ItemsData>({
     defaultValues: {
-      currency: prev.currency ?? defaultCurrencyFor(context?.originCountry),
+      currency:
+        prev.currency ??
+        (context?.service === "moving-abroad"
+          ? "USD"
+          : defaultCurrencyFor(context?.originCountry)),
       packages: prev.packages?.length ? prev.packages : [structuredClone(emptyPackage)],
     },
   });

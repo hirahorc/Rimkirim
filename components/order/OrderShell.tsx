@@ -8,7 +8,9 @@ import { useT } from "@/lib/i18n/LanguageProvider";
 import { cn } from "@/lib/utils/cn";
 
 /** Which stepper step the current path maps to (1-indexed). */
-function stepFromPath(pathname: string): 1 | 2 | 3 {
+function stepFromPath(pathname: string, isExport: boolean): number {
+  // Moving Abroad has no clearance step: Questionnaire → Order Form.
+  if (isExport) return pathname.startsWith("/pesan/modul") ? 2 : 1;
   if (pathname.startsWith("/pesan/modul")) return 3;
   if (pathname.startsWith("/pesan/clearance")) return 2;
   return 1;
@@ -34,19 +36,18 @@ export function OrderShell({ children }: { children: React.ReactNode }) {
   }
   if (!context) return null;
 
-  const active = stepFromPath(pathname);
-  const steps = [
-    t("order.stepQuestionnaire"),
-    t("order.stepClearance"),
-    t("order.stepForm"),
-  ];
+  const isExport = context.service === "moving-abroad";
+  const active = stepFromPath(pathname, isExport);
+  const steps = isExport
+    ? [t("order.stepQuestionnaire"), t("order.stepForm")]
+    : [t("order.stepQuestionnaire"), t("order.stepClearance"), t("order.stepForm")];
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6 sm:py-10">
       {/* stepper */}
       <ol className="mb-8 flex items-center gap-2 sm:gap-3">
         {steps.map((label, i) => {
-          const n = (i + 1) as 1 | 2 | 3;
+          const n = i + 1;
           const done = n < active;
           const current = n === active;
           return (
@@ -71,7 +72,7 @@ export function OrderShell({ children }: { children: React.ReactNode }) {
                   {label}
                 </span>
               </li>
-              {n < 3 && (
+              {n < steps.length && (
                 <li
                   aria-hidden
                   className={cn(

@@ -10,11 +10,11 @@ export type ClearanceKind = "personal" | "passenger";
 export type ModuleId = "customerInfo" | "items" | "compliance" | "pickup";
 export type ModuleStatus = "not-started" | "in-progress" | "complete";
 
-/** Corridor context carried in from the rate flow (Back For Good only for now). */
+/** Corridor context carried in from the rate flow. */
 export interface OrderContext {
-  service: "bfg";
-  originCountry: string; // ISO code (the foreign side)
-  destCountry: string; // "ID"
+  service: "bfg" | "moving-abroad";
+  originCountry: string; // ISO code (foreign side for BFG, "ID" for Moving Abroad)
+  destCountry: string; // "ID" for BFG, foreign side for Moving Abroad
 }
 
 /** The rate the user picked on /cek-tarif, used for the order's shipping total. */
@@ -26,12 +26,14 @@ export interface SelectedRate {
 }
 
 export interface QuestionnaireAnswers {
-  shippingPersonal?: boolean; // (a)
-  citizenship?: Citizenship; // (b)
-  livedLongEnough?: boolean; // (c)
-  canApplySKP?: boolean; // (d)
-  hasPackingCode?: boolean; // (e)
+  shippingPersonal?: boolean; // (a) both services
+  citizenship?: Citizenship; // (b) BFG only
+  livedLongEnough?: boolean; // (c) BFG only
+  canApplySKP?: boolean; // (d) BFG only
+  hasPackingCode?: boolean; // (e) both services
   packingCode?: string;
+  /** Moving Abroad only — info for the Rimkirim team, no branching. */
+  arrivedAtDestination?: boolean;
 }
 
 export interface ModuleState {

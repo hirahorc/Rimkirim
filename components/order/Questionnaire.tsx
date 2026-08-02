@@ -96,29 +96,96 @@ export function Questionnaire() {
     setCodeStatus(ok ? "found" : "not-found");
   };
 
+  const isExport = context?.service === "moving-abroad";
+
   const a = answers.shippingPersonal;
   const b = answers.citizenship;
   const c = answers.livedLongEnough;
   const d = answers.canApplySKP;
   const e = answers.hasPackingCode;
+  const arrived = answers.arrivedAtDestination;
 
   const originName = getCountry(context?.originCountry)?.name ?? "—";
+  const destName = getCountry(context?.destCountry)?.name ?? "—";
 
-  const canSubmit =
-    a === false ||
-    (a === true && b === "foreigner") ||
-    (a === true &&
-      b === "indonesian" &&
-      c !== undefined &&
-      d !== undefined &&
-      e !== undefined &&
-      (e === false || codeStatus === "found"));
+  const packingCodeOk = e === false || codeStatus === "found";
+
+  const canSubmit = isExport
+    ? a === false ||
+      (a === true && arrived !== undefined && e !== undefined && packingCodeOk)
+    : a === false ||
+      (a === true && b === "foreigner") ||
+      (a === true &&
+        b === "indonesian" &&
+        c !== undefined &&
+        d !== undefined &&
+        e !== undefined &&
+        packingCodeOk);
 
   const onSubmit = () => {
     if (a === false) return setOutcome("ineligible");
+    if (isExport) return router.push("/pesan/modul");
     if (b === "foreigner") return setOutcome("foreigner");
     router.push("/pesan/clearance");
   };
+
+  const packingReveal = e === true && (
+    <div className="mt-3">
+      <Label>{t("order.packingCodeLabel")}</Label>
+      <div className="flex gap-2">
+        <Input
+          value={answers.packingCode ?? ""}
+          onChange={(ev) => {
+            setAnswers({ packingCode: ev.target.value });
+            setCodeStatus("idle");
+          }}
+          onKeyDown={(ev) => {
+            if (ev.key === "Enter") {
+              ev.preventDefault();
+              checkCode();
+            }
+          }}
+          placeholder={t("order.packingCodePlaceholder")}
+          className="flex-1"
+        />
+        <Button
+          type="button"
+          variant="secondary"
+          onClick={checkCode}
+          disabled={codeStatus === "checking" || !answers.packingCode?.trim()}
+          className="h-11 shrink-0"
+        >
+          {codeStatus === "checking" ? (
+            <Loader2 className="size-4 animate-spin" />
+          ) : (
+            <Search className="size-4" />
+          )}
+          {t("order.packingCodeSearch")}
+        </Button>
+      </div>
+      {codeStatus === "idle" && (
+        <p className="mt-1.5 text-xs text-muted-2">{t("order.packingCodeHint")}</p>
+      )}
+      {codeStatus === "checking" && (
+        <p className="mt-1.5 flex items-center gap-1.5 text-xs text-muted">
+          <Loader2 className="size-3.5 animate-spin" />
+          {t("order.packingCodeChecking")}
+        </p>
+      )}
+      {codeStatus === "found" && (
+        <p className="mt-1.5 flex items-center gap-1.5 text-xs text-success">
+          <CheckCircle2 className="size-3.5" />
+          {t("order.packingCodeFound")}
+        </p>
+      )}
+      {codeStatus === "not-found" && (
+        <p className="mt-1.5 flex items-center gap-1.5 text-xs text-danger">
+          <XCircle className="size-3.5" />
+          {t("order.packingCodeNotFound")}
+        </p>
+      )}
+    </div>
+  );
 
   if (outcome === "ineligible") {
     return (
@@ -176,7 +243,39 @@ export function Questionnaire() {
           />
         </Question>
 
-        {a === true && (
+        {/* Moving Abroad (export): lean questionnaire */}
+        {a === true && isExport && (
+          <>
+            <Question
+              n={2}
+              question={`${t("order.qArrivedPre")} ${destName} ${t("order.qArrivedPost")}`}
+            >
+              <Choice
+                value={arrived}
+                onChange={(v) => setAnswers({ arrivedAtDestination: v })}
+                options={[
+                  { value: true, label: t("order.yes") },
+                  { value: false, label: t("order.no") },
+                ]}
+              />
+            </Question>
+
+            <Question n={3} question={t("order.qE")}>
+              <Choice
+                value={e}
+                onChange={(v) => setAnswers({ hasPackingCode: v })}
+                options={[
+                  { value: true, label: t("order.yes") },
+                  { value: false, label: t("order.no") },
+                ]}
+              />
+              {packingReveal}
+            </Question>
+          </>
+        )}
+
+        {/* Back For Good (import): full eligibility questionnaire */}
+        {a === true && !isExport && (
           <Question n={2} question={t("order.qB")}>
             <Choice<Citizenship>
               value={b}
@@ -189,7 +288,7 @@ export function Questionnaire() {
           </Question>
         )}
 
-        {a === true && b === "indonesian" && (
+        {a === true && !isExport && b === "indonesian" && (
           <>
             <Question
               n={3}
@@ -225,68 +324,7 @@ export function Questionnaire() {
                   { value: false, label: t("order.no") },
                 ]}
               />
-              {e === true && (
-                <div className="mt-3">
-                  <Label>{t("order.packingCodeLabel")}</Label>
-                  <div className="flex gap-2">
-                    <Input
-                      value={answers.packingCode ?? ""}
-                      onChange={(ev) => {
-                        setAnswers({ packingCode: ev.target.value });
-                        setCodeStatus("idle");
-                      }}
-                      onKeyDown={(ev) => {
-                        if (ev.key === "Enter") {
-                          ev.preventDefault();
-                          checkCode();
-                        }
-                      }}
-                      placeholder={t("order.packingCodePlaceholder")}
-                      className="flex-1"
-                    />
-                    <Button
-                      type="button"
-                      variant="secondary"
-                      onClick={checkCode}
-                      disabled={
-                        codeStatus === "checking" ||
-                        !answers.packingCode?.trim()
-                      }
-                      className="h-11 shrink-0"
-                    >
-                      {codeStatus === "checking" ? (
-                        <Loader2 className="size-4 animate-spin" />
-                      ) : (
-                        <Search className="size-4" />
-                      )}
-                      {t("order.packingCodeSearch")}
-                    </Button>
-                  </div>
-                  {codeStatus === "idle" && (
-                    <p className="mt-1.5 text-xs text-muted-2">
-                      {t("order.packingCodeHint")}
-                    </p>
-                  )}
-                  {codeStatus === "checking" && (
-                    <p className="mt-1.5 flex items-center gap-1.5 text-xs text-muted">
-                      <Loader2 className="size-3.5 animate-spin" />
-                      {t("order.packingCodeChecking")}
-                    </p>
-                  )}
-                  {codeStatus === "found" && (
-                    <p className="mt-1.5 flex items-center gap-1.5 text-xs text-success">
-                      <CheckCircle2 className="size-3.5" />
-                      {t("order.packingCodeFound")}
-                    </p>
-                  )}
-                  {codeStatus === "not-found" && (
-                    <p className="mt-1.5 flex items-center gap-1.5 text-xs text-danger">
-                      <XCircle className="size-3.5" />
-                      {t("order.packingCodeNotFound")}
-                    </p>
-                  )}
-                </div>
-              )}
+              {packingReveal}
             </Question>
           </>
         )}

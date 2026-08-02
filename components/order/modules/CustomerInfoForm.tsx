@@ -54,6 +54,7 @@ export function CustomerInfoForm() {
   const save = useSaveModule("customerInfo");
   const context = useOrderStore((s) => s.context);
   const prev = readModuleData("customerInfo") as Partial<CustomerForm>;
+  const isExport = context?.service === "moving-abroad";
   const originDial = context?.originCountry || INDONESIA.code;
   const destDial = context?.destCountry || INDONESIA.code;
 
@@ -74,7 +75,7 @@ export function CustomerInfoForm() {
       },
       receiver: {
         ...emptyParty,
-        country: INDONESIA.code,
+        country: isExport ? (context?.destCountry ?? "") : INDONESIA.code,
         phoneCountry: destDial,
         ...prev.receiver,
       },
@@ -121,7 +122,11 @@ export function CustomerInfoForm() {
         <div>
           <p className="font-medium text-foreground">{t("order.ciNoteTitle")}</p>
           <ul className="mt-1.5 space-y-1">
-            {[t("order.ciNoteName"), t("order.ciNoteEmail"), t("order.ciNoteAddress")].map(
+            {[
+              t("order.ciNoteName"),
+              t("order.ciNoteEmail"),
+              isExport ? t("order.ciNoteAddressExport") : t("order.ciNoteAddress"),
+            ].map(
               (n) => (
                 <li key={n} className="flex gap-2">
                   <span className="mt-2 size-1 shrink-0 rounded-full bg-muted-2" />
@@ -152,7 +157,12 @@ export function CustomerInfoForm() {
               name="sender.country"
               rules={{ required: t("err.selectCountry") }}
               render={({ field }) => (
-                <CountrySelect value={field.value} onChange={field.onChange} />
+                <CountrySelect
+                  value={field.value}
+                  onChange={field.onChange}
+                  locked={isExport}
+                  ariaLabel={t("order.ciCountry")}
+                />
               )}
             />
           </Field>
@@ -190,7 +200,12 @@ export function CustomerInfoForm() {
               control={control}
               name="receiver.country"
               render={({ field }) => (
-                <CountrySelect value={field.value} onChange={field.onChange} locked />
+                <CountrySelect
+                  value={field.value}
+                  onChange={field.onChange}
+                  locked={!isExport}
+                  ariaLabel={t("order.ciCountry")}
+                />
               )}
             />
           </Field>

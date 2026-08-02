@@ -1,32 +1,25 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { toast } from "sonner";
 import { useCalculatorStore } from "@/lib/store/useCalculatorStore";
 import { useOrderStore, type SelectedRate } from "@/lib/store/useOrderStore";
-import { useT } from "@/lib/i18n/LanguageProvider";
 
 /**
  * Starts the customer order flow from a price-card CTA, carrying the rate the
- * user picked (used later for the order's shipping total).
- * Back For Good → seed order context + go to the questionnaire.
- * Moving Abroad → "coming soon" toast (flow not built yet).
+ * user picked (used later for the order's shipping total). Seeds the order
+ * context with the calculator's service (Back For Good or Moving Abroad) and
+ * goes to the questionnaire.
  */
 export function useStartOrder() {
   const router = useRouter();
-  const t = useT();
   const submitted = useCalculatorStore((s) => s.submitted);
   const startOrder = useOrderStore((s) => s.startOrder);
 
   return (rate?: SelectedRate) => {
     if (!submitted) return;
-    if (submitted.service !== "bfg") {
-      toast(t("order.maComingSoon"));
-      return;
-    }
     startOrder(
       {
-        service: "bfg",
+        service: submitted.service,
         originCountry: submitted.origin.country,
         destCountry: submitted.destination.country,
       },

@@ -49,9 +49,15 @@ const OPTIONS: OptionSpec[] = [
 export function ClearanceOptions() {
   const t = useT();
   const router = useRouter();
+  const context = useOrderStore((s) => s.context);
   const answers = useOrderStore((s) => s.answers);
   const setClearance = useOrderStore((s) => s.setClearance);
   const allowed = allowedClearance(answers);
+
+  // Moving Abroad has no clearance step — skip straight to the module hub.
+  React.useEffect(() => {
+    if (context?.service === "moving-abroad") router.replace("/pesan/modul");
+  }, [context, router]);
 
   // pre-select the sole available option; otherwise start with none
   const soleAvailable: ClearanceKind | null =

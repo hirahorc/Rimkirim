@@ -369,6 +369,8 @@ const id = {
     qCPost: "minimal 12 bulan?",
     qD: "Bisakah kamu mengurus SKP di KBRI / KJRI terdekat?",
     qE: "Apakah kamu punya kode Rimkirim Packing List?",
+    qArrivedPre: "Apakah kamu sudah tiba di",
+    qArrivedPost: "? (info untuk tim kami)",
     yes: "Ya",
     no: "Tidak",
     indonesian: "Indonesia (WNI)",
@@ -482,6 +484,9 @@ const id = {
     // compliance
     coHeading: "Dokumen yang dibutuhkan",
     coPassport: "Paspor",
+    coVisa: "Visa / Izin Tinggal negara tujuan",
+    coVisaHelp:
+      "Bukti kamu boleh tinggal & mengimpor barang pribadi di negara tujuan.",
     coSKP: "SKP (KBRI/KJRI)",
     coInvoice: "Invoice / bukti pembelian",
     coPackingList: "Packing list",
@@ -518,6 +523,8 @@ const id = {
       "Email pada packing list adalah hello@rimkirim.com — Rimkirim mewakili kamu ke Bea Cukai.",
     ciNoteAddress:
       "Alamat penerima diisi alamat warehouse Rimkirim (semua paket transit di warehouse dulu).",
+    ciNoteAddressExport:
+      "Alamat tujuan pakai alamat asli penerima di luar negeri — barang diinspeksi dulu di gudang Rimkirim Indonesia, lalu dikirim langsung ke sana.",
     // item & packages — extended
     itCurrency: "Mata uang",
     itPackagesHeading: "Paket",
@@ -958,6 +965,8 @@ const en: Messages = {
     qCPost: "at least 12 months?",
     qD: "Are you able to apply for SKP at the nearest KBRI / KJRI?",
     qE: "Do you have a Rimkirim Packing List code?",
+    qArrivedPre: "Have you already arrived in",
+    qArrivedPost: "? (info for our team)",
     yes: "Yes",
     no: "No",
     indonesian: "Indonesian",
@@ -1063,6 +1072,9 @@ const en: Messages = {
     itEmpty: "No items yet. Add at least one.",
     coHeading: "Required documents",
     coPassport: "Passport",
+    coVisa: "Visa / Residence Permit (destination)",
+    coVisaHelp:
+      "Proof you may reside and import personal belongings in the destination country.",
     coSKP: "SKP (KBRI/KJRI)",
     coInvoice: "Invoice / proof of purchase",
     coPackingList: "Packing list",
@@ -1097,6 +1109,8 @@ const en: Messages = {
       "The email on the packing list is hello@rimkirim.com — Rimkirim represents you to customs.",
     ciNoteAddress:
       "The receiver address is set to Rimkirim's warehouse (all parcels transit the warehouse first).",
+    ciNoteAddressExport:
+      "The destination uses the receiver's real overseas address — goods are first inspected at Rimkirim's Indonesia warehouse, then shipped directly there.",
     itCurrency: "Currency",
     itPackagesHeading: "Packages",
     itCurrencyHelp:
