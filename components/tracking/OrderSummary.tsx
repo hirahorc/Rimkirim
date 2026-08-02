@@ -515,7 +515,16 @@ function PendingCards({ order }: { order: Order }) {
       )}
 
       <Section icon={Plane} title={t("order.tdAwbSection")}>
-        <p className="py-2 text-sm text-muted-2">{t("order.tdAwbPending")}</p>
+        {order.awb ? (
+          <>
+            <Row label={t("order.tdAwbNumber")}>
+              <span className="font-mono font-medium text-brand">{order.awb}</span>
+            </Row>
+            <p className="py-2 text-sm text-muted-2">{t("order.tdAwbStable")}</p>
+          </>
+        ) : (
+          <p className="py-2 text-sm text-muted-2">{t("order.tdAwbPending")}</p>
+        )}
       </Section>
 
       <Section icon={ShieldCheck} title={t("order.stepClearance")}>

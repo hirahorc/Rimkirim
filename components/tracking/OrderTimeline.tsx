@@ -20,6 +20,7 @@ const DOT: Record<TimelineEventType, string> = {
   cancelled: "bg-danger",
   attention: "bg-warning",
   "attention-cleared": "bg-surface-3",
+  awb: "bg-brand",
 };
 
 /** Vertical activity log for an order — newest event on top. */

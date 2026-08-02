@@ -11,11 +11,13 @@ import {
   ReceiptText,
   AlertCircle,
   CalendarCheck,
+  Truck,
 } from "lucide-react";
 import {
   useOrderStore,
   type Order,
   type OrderStatus,
+  type PickupFailCause,
 } from "@/lib/store/useOrderStore";
 import { PHASE_STEPS } from "./StatusStepper";
 import { OrderStatusBadge } from "@/components/order/OrderStatusBadge";
@@ -45,6 +47,17 @@ export function OpsSimulator({ order }: { order: Order }) {
   const setOrderAttention = useOrderStore((s) => s.setOrderAttention);
   const issueQuotation = useOrderStore((s) => s.issueQuotation);
   const bookPickup = useOrderStore((s) => s.bookPickup);
+  const recordPickupFail = useOrderStore((s) => s.recordPickupFail);
+  const expireDropOff = useOrderStore((s) => s.expireDropOff);
+  const issueNewAwb = useOrderStore((s) => s.issueNewAwb);
+  const confirmDroppedOff = useOrderStore((s) => s.confirmDroppedOff);
+
+  const customerFails = order.pickupFails.filter(
+    (f) => f.cause === "customer",
+  ).length;
+  const carrierFails = order.pickupFails.filter(
+    (f) => f.cause === "carrier",
+  ).length;
 
   const currentIdx = PHASE_STEPS.indexOf(order.status as (typeof PHASE_STEPS)[number]);
   const next = currentIdx >= 0 && currentIdx < PHASE_STEPS.length - 1
@@ -89,6 +102,28 @@ export function OpsSimulator({ order }: { order: Order }) {
                 }}
               >
                 <CalendarCheck /> {t("ops.bookPickup")}
+              </Button>
+            )}
+            {order.opsNotice.action === "issue-awb" && (
+              <Button
+                size="sm"
+                onClick={() => {
+                  issueNewAwb(order.id);
+                  toast.success(t("ops.awbIssuedToast"));
+                }}
+              >
+                <ReceiptText /> {t("ops.pickIssueAwb")}
+              </Button>
+            )}
+            {order.opsNotice.action === "confirm-drop-off" && (
+              <Button
+                size="sm"
+                onClick={() => {
+                  confirmDroppedOff(order.id);
+                  toast.success(t("ops.dropOffConfirmedToast"));
+                }}
+              >
+                <Truck /> {t("ops.pickConfirmDropOff")}
               </Button>
             )}
           </div>
@@ -173,6 +208,65 @@ export function OpsSimulator({ order }: { order: Order }) {
               <ReceiptText /> {t("ops.issueQuotation")}
             </Button>
           </div>
+        )}
+      </div>
+
+      <div className="mt-4 border-t border-info/20 pt-4">
+        <p className="flex items-center gap-1.5 text-xs font-medium text-muted-2">
+          <Truck className="size-3.5" /> {t("ops.pickup")}
+        </p>
+        <div className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted">
+          <span>{t("ops.awbLabel")}:</span>
+          <span className="font-mono font-medium text-foreground">
+            {order.awb ?? "—"}
+          </span>
+          {(customerFails > 0 || carrierFails > 0) && (
+            <span className="text-muted-2">
+              · {customerFails}× {t("ops.failCustomer")} · {carrierFails}×{" "}
+              {t("ops.failFedEx")}
+            </span>
+          )}
+        </div>
+        {order.status === "pickup" && (
+          <div className="mt-2 flex flex-wrap gap-2">
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => recordPickupFail(order.id, "customer" as PickupFailCause)}
+            >
+              {t("ops.failCtaCustomer")}
+            </Button>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => recordPickupFail(order.id, "carrier" as PickupFailCause)}
+            >
+              {t("ops.failCtaFedEx")}
+            </Button>
+            {order.dropOff &&
+              !order.dropOff.expired &&
+              !order.dropOff.fulfilledAt && (
+                <Button
+                  size="sm"
+                  variant="danger"
+                  onClick={() => expireDropOff(order.id)}
+                >
+                  {t("ops.dropOffExpire")}
+                </Button>
+              )}
+          </div>
+        )}
+        {order.pickupChoicePending && (
+          <p className="mt-2 text-xs text-muted-2">{t("ops.waitingChoice")}</p>
+        )}
+        {order.dropOff && (
+          <p className="mt-2 text-xs text-muted-2">
+            {order.dropOff.expired
+              ? t("ops.dropOffExpired")
+              : order.dropOff.fulfilledAt
+                ? t("ops.dropOffFulfilled")
+                : t("ops.dropOffPending")}
+          </p>
         )}
       </div>
     </Card>

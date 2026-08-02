@@ -30,6 +30,7 @@ import { OrderSummary } from "@/components/tracking/OrderSummary";
 import { OrderTimeline } from "@/components/tracking/OrderTimeline";
 import { QuotationCard } from "@/components/tracking/QuotationCard";
 import { RevisionCard } from "@/components/tracking/RevisionCard";
+import { PickupPanel } from "@/components/tracking/PickupPanel";
 
 /** Tracking detail page — owner-only. */
 export function OrderDetail({ id }: { id: string }) {
@@ -154,6 +155,12 @@ export function OrderDetail({ id }: { id: string }) {
       {order.quotation && (
         <div className="mt-4">
           <QuotationCard order={order} />
+        </div>
+      )}
+
+      {order.status === "pickup" && (
+        <div className="mt-4">
+          <PickupPanel order={order} />
         </div>
       )}
 

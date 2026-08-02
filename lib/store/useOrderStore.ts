@@ -53,13 +53,48 @@ export interface Quotation {
 const QUOTATION_VALID_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
 
 /** The pending ops actions that the ops panel can offer (extensible per step). */
-export type OpsNoticeAction = "book-pickup";
+export type OpsNoticeAction =
+  | "book-pickup"
+  | "issue-awb"
+  | "confirm-drop-off";
 
 /** A signal that a customer action needs a follow-up action from the ops side. */
 export interface OpsNotice {
   /** i18n key describing what the customer did / what ops should do next. */
   messageKey: string;
   action: OpsNoticeAction;
+}
+
+/** Who caused a failed pickup attempt. */
+export type PickupFailCause = "customer" | "carrier";
+
+/** A failed pickup attempt, attributed to the customer or the carrier (FedEx). */
+export interface PickupFail {
+  at: number;
+  cause: PickupFailCause;
+}
+
+/** Ops asking the customer to drop the package at a FedEx location instead. */
+export interface DropOffInstruction {
+  requestedAt: number;
+  /** requestedAt + 2 days — missing this deadline changes the AWB. */
+  deadline: number;
+  /** when the customer confirmed the drop-off (null = not yet). */
+  fulfilledAt: number | null;
+  expired: boolean;
+}
+
+/** Customer-fault failures allowed before the customer must request a new AWB. */
+export const MAX_CUSTOMER_PICKUP_FAILS = 3;
+
+/** Number of active days on a drop-off instruction before the AWB changes. */
+export const DROP_OFF_DEADLINE_DAYS = 2;
+
+/** Demo FedEx airway bill, 12 digits, re-generated whenever the AWB changes. */
+export function makeAwb(): string {
+  const group = () =>
+    String(Math.floor(Math.random() * 10000)).padStart(4, "0");
+  return `${group()} ${group()} ${group()}`;
 }
 
 /** Loose package shape as saved by the Items module (for weight math). */
@@ -159,7 +194,8 @@ export type TimelineEventType =
   | "delivered"
   | "cancelled"
   | "attention"
-  | "attention-cleared";
+  | "attention-cleared"
+  | "awb";
 
 export interface TimelineEvent {
   id: string;
@@ -217,6 +253,15 @@ export interface Order {
   /** Pending ops action surfaced on the ops panel (null = nothing to do).
    *  Set when the customer acts in a way that requires ops follow-up. */
   opsNotice: OpsNotice | null;
+  /** The FedEx airway bill. Unlike the stable trackingNumber, this can be
+   *  re-issued when pickups keep failing or a drop-off deadline is missed. */
+  awb: string | null;
+  /** Failed pickup attempts, oldest first, with fault attribution. */
+  pickupFails: PickupFail[];
+  /** True while the customer must choose re-pickup or drop-off after a failure. */
+  pickupChoicePending: boolean;
+  /** Active drop-off instruction (null = normal pickup flow). */
+  dropOff: DropOffInstruction | null;
 
   context: OrderContext | null;
   selectedRate: SelectedRate | null;
@@ -273,6 +318,22 @@ interface OrderStoreState {
   approveQuotation: (id: string) => void;
   /** ops control plane: confirm the pickup booking after the customer approves */
   bookPickup: (id: string) => void;
+  /** ops control plane: record a failed pickup attempt (customer/carrier fault) */
+  recordPickupFail: (id: string, cause: PickupFailCause) => void;
+  /** customer: after a failed pickup, choose to reschedule the pickup */
+  reschedulePickup: (id: string) => void;
+  /** customer: after a failed pickup, choose a drop-off at a FedEx location */
+  chooseDropOff: (id: string) => void;
+  /** ops control plane: simulate the 2-day drop-off deadline passing → AWB change */
+  expireDropOff: (id: string) => void;
+  /** ops control plane: fulfil the customer's new-AWB request */
+  issueNewAwb: (id: string) => void;
+  /** ops control plane: confirm the customer's drop-off → shipment goes in transit */
+  confirmDroppedOff: (id: string) => void;
+  /** customer: request a new AWB after repeated customer-fault pickup failures */
+  requestNewAwb: (id: string) => void;
+  /** customer: confirm the package was dropped off at the FedEx location */
+  confirmDropOff: (id: string) => void;
   /** customer: flag a module for a fix; order returns to Review until resubmitted */
   requestRevision: (id: string, moduleId: ModuleId) => void;
 }
@@ -346,6 +407,10 @@ export const useOrderStore = create<OrderStoreState>()(
             quotation: null,
             revisionModule: null,
             opsNotice: null,
+            awb: null,
+            pickupFails: [],
+            pickupChoicePending: false,
+            dropOff: null,
             context: ctx,
             selectedRate: rate,
             answers: {},
@@ -547,10 +612,268 @@ export const useOrderStore = create<OrderStoreState>()(
             ...order,
             opsNotice: null,
             attention: "order.attPickupScheduled",
+            awb: order.awb ?? makeAwb(),
             updatedAt: Date.now(),
             timeline: [
               ...order.timeline,
               makeEvent("pickup", "order.evPickup", nextEventAt(order)),
+            ],
+          };
+          return {
+            orders: s.orders.map((o) => (o.id === id ? next : o)),
+          };
+        }),
+      recordPickupFail: (id, cause) =>
+        set((s) => {
+          const order = s.orders.find((o) => o.id === id);
+          // pickup attempts pause while a drop-off instruction is pending
+          const dropOffPending =
+            order?.dropOff &&
+            !order.dropOff.expired &&
+            !order.dropOff.fulfilledAt;
+          if (
+            !order ||
+            order.status !== "pickup" ||
+            dropOffPending
+          ) {
+            return {};
+          }
+          const pickupFails: PickupFail[] = [
+            ...order.pickupFails,
+            { at: Date.now(), cause },
+          ];
+          const customerFails = pickupFails.filter(
+            (f) => f.cause === "customer",
+          ).length;
+          // 3 customer-fault fails → the customer must request a new AWB;
+          // otherwise they choose re-pickup or drop-off.
+          const reachedLimit = customerFails >= MAX_CUSTOMER_PICKUP_FAILS;
+          const next: Order = {
+            ...order,
+            pickupFails,
+            pickupChoicePending: !reachedLimit,
+            attention: reachedLimit
+              ? "order.attNeedsNewAwb"
+              : cause === "customer"
+                ? "order.attPickupFailCustomer"
+                : "order.attPickupFailFedEx",
+            updatedAt: Date.now(),
+            timeline: [
+              ...order.timeline,
+              makeEvent(
+                "attention",
+                cause === "customer"
+                  ? "order.evPickupFailCustomer"
+                  : "order.evPickupFailFedEx",
+                nextEventAt(order),
+              ),
+            ],
+          };
+          return {
+            orders: s.orders.map((o) => (o.id === id ? next : o)),
+          };
+        }),
+      reschedulePickup: (id) =>
+        set((s) => {
+          const order = s.orders.find((o) => o.id === id);
+          if (
+            !order ||
+            order.status !== "pickup" ||
+            !order.pickupChoicePending
+          ) {
+            return {};
+          }
+          const next: Order = {
+            ...order,
+            pickupChoicePending: false,
+            attention: "order.attPickupRescheduled",
+            updatedAt: Date.now(),
+            timeline: [
+              ...order.timeline,
+              makeEvent(
+                "pickup",
+                "order.evPickupRescheduled",
+                nextEventAt(order),
+              ),
+            ],
+          };
+          return {
+            orders: s.orders.map((o) => (o.id === id ? next : o)),
+          };
+        }),
+      chooseDropOff: (id) =>
+        set((s) => {
+          const order = s.orders.find((o) => o.id === id);
+          if (
+            !order ||
+            order.status !== "pickup" ||
+            !order.pickupChoicePending ||
+            order.dropOff
+          ) {
+            return {};
+          }
+          const now = Date.now();
+          const next: Order = {
+            ...order,
+            pickupChoicePending: false,
+            dropOff: {
+              requestedAt: now,
+              deadline: now + DROP_OFF_DEADLINE_DAYS * 24 * 60 * 60 * 1000,
+              fulfilledAt: null,
+              expired: false,
+            },
+            attention: "order.attDropOffRequested",
+            updatedAt: Date.now(),
+            timeline: [
+              ...order.timeline,
+              makeEvent("pickup", "order.evDropOffRequested", nextEventAt(order)),
+            ],
+          };
+          return {
+            orders: s.orders.map((o) => (o.id === id ? next : o)),
+          };
+        }),
+      expireDropOff: (id) =>
+        set((s) => {
+          const order = s.orders.find((o) => o.id === id);
+          if (
+            !order ||
+            order.status !== "pickup" ||
+            !order.dropOff ||
+            order.dropOff.fulfilledAt ||
+            order.dropOff.expired
+          ) {
+            return {};
+          }
+          const next: Order = {
+            ...order,
+            dropOff: { ...order.dropOff, expired: true },
+            awb: makeAwb(),
+            pickupFails: [],
+            pickupChoicePending: false,
+            attention: "order.attAwbChanged",
+            updatedAt: Date.now(),
+            timeline: [
+              ...order.timeline,
+              makeEvent("awb", "order.evAwbChanged", nextEventAt(order)),
+            ],
+          };
+          return {
+            orders: s.orders.map((o) => (o.id === id ? next : o)),
+          };
+        }),
+      requestNewAwb: (id) =>
+        set((s) => {
+          const order = s.orders.find((o) => o.id === id);
+          const customerFails = order?.pickupFails.filter(
+            (f) => f.cause === "customer",
+          ).length;
+          const dropOffPending =
+            order?.dropOff &&
+            !order.dropOff.expired &&
+            !order.dropOff.fulfilledAt;
+          if (
+            !order ||
+            order.status !== "pickup" ||
+            !customerFails ||
+            customerFails < MAX_CUSTOMER_PICKUP_FAILS ||
+            dropOffPending
+          ) {
+            return {};
+          }
+          const next: Order = {
+            ...order,
+            attention: null,
+            opsNotice: {
+              messageKey: "order.opsAwbRequested",
+              action: "issue-awb",
+            },
+            updatedAt: Date.now(),
+            timeline: [
+              ...order.timeline,
+              makeEvent("awb", "order.evAwbRequested", nextEventAt(order)),
+            ],
+          };
+          return {
+            orders: s.orders.map((o) => (o.id === id ? next : o)),
+          };
+        }),
+      issueNewAwb: (id) =>
+        set((s) => {
+          const order = s.orders.find((o) => o.id === id);
+          if (
+            !order ||
+            order.status !== "pickup" ||
+            order.opsNotice?.action !== "issue-awb"
+          ) {
+            return {};
+          }
+          const next: Order = {
+            ...order,
+            opsNotice: null,
+            awb: makeAwb(),
+            pickupFails: [],
+            pickupChoicePending: false,
+            attention: "order.attAwbIssued",
+            updatedAt: Date.now(),
+            timeline: [
+              ...order.timeline,
+              makeEvent("awb", "order.evAwbIssued", nextEventAt(order)),
+            ],
+          };
+          return {
+            orders: s.orders.map((o) => (o.id === id ? next : o)),
+          };
+        }),
+      confirmDropOff: (id) =>
+        set((s) => {
+          const order = s.orders.find((o) => o.id === id);
+          if (
+            !order ||
+            order.status !== "pickup" ||
+            !order.dropOff ||
+            order.dropOff.fulfilledAt ||
+            order.dropOff.expired
+          ) {
+            return {};
+          }
+          const next: Order = {
+            ...order,
+            dropOff: { ...order.dropOff, fulfilledAt: Date.now() },
+            attention: null,
+            opsNotice: {
+              messageKey: "order.opsDroppedOff",
+              action: "confirm-drop-off",
+            },
+            updatedAt: Date.now(),
+            timeline: [
+              ...order.timeline,
+              makeEvent("pickup", "order.evDropOffConfirmed", nextEventAt(order)),
+            ],
+          };
+          return {
+            orders: s.orders.map((o) => (o.id === id ? next : o)),
+          };
+        }),
+      confirmDroppedOff: (id) =>
+        set((s) => {
+          const order = s.orders.find((o) => o.id === id);
+          if (
+            !order ||
+            order.status !== "pickup" ||
+            order.opsNotice?.action !== "confirm-drop-off"
+          ) {
+            return {};
+          }
+          const next: Order = {
+            ...order,
+            status: "in-transit",
+            opsNotice: null,
+            attention: null,
+            updatedAt: Date.now(),
+            timeline: [
+              ...order.timeline,
+              makeEvent("in-transit", "order.evDroppedOff", nextEventAt(order)),
             ],
           };
           return {
@@ -613,6 +936,10 @@ export const useOrderStore = create<OrderStoreState>()(
             quotation: o.quotation ?? null,
             revisionModule: o.revisionModule ?? null,
             opsNotice: o.opsNotice ?? null,
+            awb: o.awb ?? null,
+            pickupFails: o.pickupFails ?? [],
+            pickupChoicePending: o.pickupChoicePending ?? false,
+            dropOff: o.dropOff ?? null,
           }));
           return { ...current, ...p, orders };
         }
@@ -630,6 +957,10 @@ export const useOrderStore = create<OrderStoreState>()(
             quotation: null,
             revisionModule: null,
             opsNotice: null,
+            awb: null,
+            pickupFails: [],
+            pickupChoicePending: false,
+            dropOff: null,
             context: p.context,
             selectedRate: p.selectedRate ?? null,
             answers: p.answers ?? {},

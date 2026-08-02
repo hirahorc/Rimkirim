@@ -540,7 +540,8 @@ const id = {
     tdBaseRate: "Tarif dasar",
     tdPerKg: "per kg chargeable",
     tdAwbSection: "AWB & Pengiriman",
-    tdAwbPending: "Nomor AWB & detail pengiriman akan muncul setelah pickup.",
+    tdAwbPending:
+      "Nomor AWB & detail pengiriman muncul setelah pickup dibooking.",
     tdClearancePending:
       "Proses clearance akan muncul setelah barang tiba di Indonesia.",
     tdCancelledNotice: "Pesanan ini dibatalkan.",
@@ -553,6 +554,19 @@ const id = {
       "Tim kami butuh revisi dokumen pada modul Compliance.",
     attPickupFailed:
       "Pickup pertama gagal — tim kami akan mengatur ulang penjemputan.",
+    attPickupFailCustomer:
+      "Pickup gagal — kesalahan di sisi kamu. Pilih opsi: pickup ulang atau drop-off.",
+    attPickupFailFedEx:
+      "Pickup gagal karena FedEx. Bukan salahmu — dispute internal, tanpa biaya. Pilih opsi untuk melanjutkan.",
+    attNeedsNewAwb:
+      "Pickup gagal 3× karena kesalahan di sisi kamu. Minta AWB baru untuk melanjutkan.",
+    attAwbIssued: "AWB baru diterbitkan — pickup dijadwalkan ulang.",
+    attPickupRescheduled:
+      "Pickup dijadwalkan ulang — tim kami akan menjemput sesuai jadwal baru.",
+    attDropOffRequested:
+      "Titipkan paket di lokasi drop-off FedEx dalam 2 hari, atau AWB akan diganti.",
+    attAwbChanged:
+      "AWB diganti — drop-off tidak dilakukan dalam 2 hari. Pickup dijadwalkan ulang.",
     // timeline events (order.activity)
     tdTimeline: "Riwayat Aktivitas",
     evCreated: "Pesanan dibuat.",
@@ -593,8 +607,50 @@ const id = {
     // ops notices (order.opsNotice)
     opsQuoteApproved:
       "Quotation disetujui oleh customer — booking pickup sekarang.",
+    opsAwbRequested: "Customer minta AWB baru — terbitkan untuk melanjutkan.",
+    opsDroppedOff:
+      "Customer sudah drop off — konfirmasi untuk lanjut ke transit.",
     attPickupScheduled:
       "Pickup telah dijadwalkan — tim kami akan menjemput di alamatmu.",
+    evPickupFailCustomer: "Pickup gagal — kesalahan customer.",
+    evPickupFailFedEx:
+      "Pickup gagal — kesalahan FedEx (dispute internal, tanpa biaya).",
+    evAwbRequested: "Kamu meminta AWB baru.",
+    evAwbIssued: "AWB baru diterbitkan — pickup dijadwalkan ulang.",
+    evAwbChanged: "AWB diganti — drop-off tidak dilakukan dalam 2 hari.",
+    evPickupRescheduled: "Pickup dijadwalkan ulang.",
+    evDropOffRequested: "Diminta drop-off ke lokasi FedEx dalam 2 hari.",
+    evDropOffConfirmed: "Kamu mengonfirmasi barang dititipkan di drop-off.",
+    evDroppedOff: "Barang diterima di lokasi drop-off — dalam perjalanan.",
+    // pickup status panel (order.pickupFails / dropOff)
+    pickStatus: "Status Pickup",
+    pickAttempts: "Percobaan pickup",
+    pickFailCustomer: "gagal (customer)",
+    pickFailFedEx: "gagal (FedEx)",
+    pickFailRemaining: "percobaan tersisa",
+    pickChoiceTitle: "Pilih langkah berikutnya",
+    pickChoiceBody: "Pickup sebelumnya gagal. Pilih cara melanjutkan:",
+    pickChoiceRepickup: "Jadwalkan pickup ulang",
+    pickChoiceDropOff: "Pilih drop-off",
+    pickChoiceRepickupToast: "Pickup dijadwalkan ulang.",
+    pickChoiceDropOffToast: "Drop-off diminta — cek instruksi di panel pickup.",
+    pickAwbNeededTitle: "AWB Baru Diperlukan",
+    pickAwbNeededBody:
+      "Pickup gagal 3× karena kesalahan di sisi kamu. Minta AWB baru agar kami menerbitkan ulang dan menjadwalkan pickup baru.",
+    pickAwbCta: "Minta AWB baru",
+    pickAwbRequestedToast: "Permintaan AWB baru dikirim ke tim ops.",
+    pickDropOffTitle: "Drop-off diminta",
+    pickDropOffBody:
+      "Titipkan paket di lokasi drop-off FedEx terdekat sebelum batas waktu, atau AWB akan diganti.",
+    pickDropOffDeadline: "Batas waktu",
+    pickDropOffCta: "Sudah drop off",
+    pickDropOffConfirmedToast:
+      "Konfirmasi dikirim — tim ops akan memproses kirimanmu.",
+    pickDropOffAwaitOps: "Drop-off dikonfirmasi — menunggu konfirmasi tim ops.",
+    // AWB section
+    tdAwbNumber: "Nomor AWB",
+    tdAwbStable:
+      "Nomor tracking kamu tidak berubah — hanya AWB internal yang diganti.",
     // module form — shared
     saveModule: "Simpan",
     saved: "Tersimpan",
@@ -763,6 +819,22 @@ const id = {
     quotationIssued: "Quotation sudah diterbitkan.",
     bookPickup: "Booking pickup",
     pickupBookedToast: "Pickup dijadwalkan — customer diberitahu.",
+    pickup: "Pickup & AWB",
+    awbLabel: "AWB",
+    failCustomer: "gagal customer",
+    failFedEx: "gagal FedEx",
+    failCtaCustomer: "Catat gagal (customer)",
+    failCtaFedEx: "Catat gagal (FedEx)",
+    dropOffExpire: "Tandai 2 hari lewat",
+    dropOffExpired: "Drop-off lewat batas — AWB diganti.",
+    dropOffFulfilled: "Drop-off dikonfirmasi customer.",
+    dropOffPending: "Menunggu drop-off customer (2 hari).",
+    waitingChoice:
+      "Menunggu pilihan customer (re-pickup / drop-off).",
+    pickIssueAwb: "Terbitkan AWB baru",
+    pickConfirmDropOff: "Konfirmasi drop-off",
+    awbIssuedToast: "AWB baru diterbitkan.",
+    dropOffConfirmedToast: "Drop-off dikonfirmasi — barang dalam perjalanan.",
     noOrders: "Belum ada pesanan yang dikirim untuk disimulasikan.",
     hint: "Panel ini mensimulasikan sisi ops Rimkirim (tanpa backend). Perubahan langsung tampil di halaman pelacakan customer.",
   },
@@ -1300,7 +1372,8 @@ const en: Messages = {
     tdBaseRate: "Base rate",
     tdPerKg: "per chargeable kg",
     tdAwbSection: "AWB & Shipment",
-    tdAwbPending: "The AWB number & shipping details will appear after pickup.",
+    tdAwbPending:
+      "The AWB number & shipping details appear once the pickup is booked.",
     tdClearancePending:
       "Clearance status will appear once the goods arrive in Indonesia.",
     tdCancelledNotice: "This order was cancelled.",
@@ -1313,6 +1386,19 @@ const en: Messages = {
       "Our team needs you to revise the documents in the Compliance module.",
     attPickupFailed:
       "The first pickup failed — our team will reschedule the pickup.",
+    attPickupFailCustomer:
+      "Pickup failed — an issue on your side. Choose: re-pickup or drop-off.",
+    attPickupFailFedEx:
+      "Pickup failed due to FedEx. Not your fault — internal dispute, no cost. Choose how to continue.",
+    attNeedsNewAwb:
+      "Pickup failed 3× due to issues on your side. Request a new AWB to continue.",
+    attAwbIssued: "New AWB issued — pickup rescheduled.",
+    attPickupRescheduled:
+      "Pickup rescheduled — our team will collect on the new schedule.",
+    attDropOffRequested:
+      "Drop the package at a FedEx location within 2 days, or the AWB will be changed.",
+    attAwbChanged:
+      "AWB changed — the drop-off missed the 2-day deadline. Pickup rescheduled.",
     // timeline events (order.activity)
     tdTimeline: "Activity",
     evCreated: "Order created.",
@@ -1353,8 +1439,52 @@ const en: Messages = {
     // ops notices (order.opsNotice)
     opsQuoteApproved:
       "Quotation approved by the customer — book the pickup now.",
+    opsAwbRequested:
+      "Customer requested a new AWB — issue it to continue.",
+    opsDroppedOff:
+      "Customer dropped off the package — confirm to move to transit.",
     attPickupScheduled:
       "Pickup scheduled — our team will collect at your address.",
+    evPickupFailCustomer: "Pickup failed — customer fault.",
+    evPickupFailFedEx:
+      "Pickup failed — FedEx fault (internal dispute, no cost).",
+    evAwbRequested: "You requested a new AWB.",
+    evAwbIssued: "New AWB issued — pickup rescheduled.",
+    evAwbChanged: "AWB changed — the drop-off missed the 2-day deadline.",
+    evPickupRescheduled: "Pickup rescheduled.",
+    evDropOffRequested: "Drop-off at a FedEx location requested within 2 days.",
+    evDropOffConfirmed: "You confirmed the package was dropped off.",
+    evDroppedOff: "Package received at the drop-off — in transit.",
+    // pickup status panel (order.pickupFails / dropOff)
+    pickStatus: "Pickup status",
+    pickAttempts: "Pickup attempts",
+    pickFailCustomer: "failed (customer)",
+    pickFailFedEx: "failed (FedEx)",
+    pickFailRemaining: "attempts remaining",
+    pickChoiceTitle: "Choose next step",
+    pickChoiceBody: "The pickup failed. Choose how to continue:",
+    pickChoiceRepickup: "Reschedule pickup",
+    pickChoiceDropOff: "Choose drop-off",
+    pickChoiceRepickupToast: "Pickup rescheduled.",
+    pickChoiceDropOffToast: "Drop-off requested — check the instructions in the pickup panel.",
+    pickAwbNeededTitle: "New AWB Required",
+    pickAwbNeededBody:
+      "The pickup failed 3× due to issues on your side. Request a new AWB so we can re-issue and schedule a new pickup.",
+    pickAwbCta: "Request new AWB",
+    pickAwbRequestedToast: "New AWB request sent to the ops team.",
+    pickDropOffTitle: "Drop-off requested",
+    pickDropOffBody:
+      "Drop the package at the nearest FedEx location before the deadline, or the AWB will be changed.",
+    pickDropOffDeadline: "Deadline",
+    pickDropOffCta: "I've dropped it off",
+    pickDropOffConfirmedToast:
+      "Confirmation sent — the ops team will process your shipment.",
+    pickDropOffAwaitOps:
+      "Drop-off confirmed — waiting for the ops team to confirm.",
+    // AWB section
+    tdAwbNumber: "AWB number",
+    tdAwbStable:
+      "Your tracking number never changes — only the internal AWB is replaced.",
     saveModule: "Save",
     saved: "Saved",
     ciFullName: "Full name",
@@ -1512,6 +1642,22 @@ const en: Messages = {
     quotationIssued: "Quotation already issued.",
     bookPickup: "Book pickup",
     pickupBookedToast: "Pickup scheduled — customer notified.",
+    pickup: "Pickup & AWB",
+    awbLabel: "AWB",
+    failCustomer: "customer fail",
+    failFedEx: "FedEx fail",
+    failCtaCustomer: "Record fail (customer)",
+    failCtaFedEx: "Record fail (FedEx)",
+    dropOffExpire: "Mark 2 days past",
+    dropOffExpired: "Drop-off missed the deadline — AWB changed.",
+    dropOffFulfilled: "Drop-off confirmed by the customer.",
+    dropOffPending: "Awaiting customer drop-off (2 days).",
+    waitingChoice:
+      "Awaiting customer choice (re-pickup / drop-off).",
+    pickIssueAwb: "Issue new AWB",
+    pickConfirmDropOff: "Confirm drop-off",
+    awbIssuedToast: "New AWB issued.",
+    dropOffConfirmedToast: "Drop-off confirmed — shipment in transit.",
     noOrders: "No submitted orders to simulate yet.",
     hint: "This panel simulates Rimkirim's ops side (no backend). Changes appear instantly on the customer tracking page.",
   },
