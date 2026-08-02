@@ -4,12 +4,14 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Logo } from "./Logo";
 import { useT } from "@/lib/i18n/LanguageProvider";
+import { isBareRoute } from "@/lib/utils/routes";
 
 export function AppFooter() {
   const t = useT();
   const pathname = usePathname();
-  // the customer order flow (/pesan/*) has its own focused shell — no footer
-  if (pathname.startsWith("/pesan")) return null;
+  // the customer order flow (/pesan/*) has its own focused shell — no footer;
+  // legal docs render bare so they can drop into other landing services
+  if (pathname.startsWith("/pesan") || isBareRoute(pathname)) return null;
   return (
     <footer className="border-t border-border bg-background">
       <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6">
@@ -45,11 +47,21 @@ export function AppFooter() {
             />
           </div>
         </div>
-        <div className="mt-10 flex flex-col gap-2 border-t border-border pt-6 text-xs text-muted-2 sm:flex-row sm:justify-between">
-          <span>
-            © {new Date().getFullYear()} Rimkirim. {t("footer.rights")}
-          </span>
-          <span>{t("footer.disclaimer")}</span>
+        <div className="mt-10 space-y-3 border-t border-border pt-6 text-xs text-muted-2">
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+            <span>
+              © {new Date().getFullYear()} Rimkirim. {t("footer.rights")}
+            </span>
+            <div className="flex items-center gap-4">
+              <Link href="/terms" className="transition-colors hover:text-foreground">
+                {t("footer.legalTerms")}
+              </Link>
+              <Link href="/privacy" className="transition-colors hover:text-foreground">
+                {t("footer.legalPrivacy")}
+              </Link>
+            </div>
+          </div>
+          <span className="block">{t("footer.disclaimer")}</span>
         </div>
       </div>
     </footer>

@@ -13,6 +13,7 @@ import {
 } from "@/lib/store/useOrderStore";
 import { MODULE_META } from "./module-meta";
 import { CopyButton } from "./CopyButton";
+import { BookingAgreementDialog } from "./BookingAgreementDialog";
 import { useT } from "@/lib/i18n/LanguageProvider";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -48,6 +49,7 @@ export function ModuleHub() {
   const ensurePackingCode = useOrderStore((s) => s.ensurePackingCode);
   const reset = useOrderStore((s) => s.reset);
   const [submitted, setSubmitted] = React.useState(false);
+  const [agreeOpen, setAgreeOpen] = React.useState(false);
 
   // reaching the order form = order created → issue a booking number once
   React.useEffect(() => {
@@ -195,7 +197,7 @@ export function ModuleHub() {
           size="lg"
           className="w-full"
           disabled={!canSubmit}
-          onClick={() => setSubmitted(true)}
+          onClick={() => setAgreeOpen(true)}
         >
           {t("order.finalCta")}
         </Button>
@@ -205,6 +207,15 @@ export function ModuleHub() {
           </p>
         )}
       </div>
+
+      <BookingAgreementDialog
+        open={agreeOpen}
+        onOpenChange={setAgreeOpen}
+        onAgree={() => {
+          setAgreeOpen(false);
+          setSubmitted(true);
+        }}
+      />
     </div>
   );
 }

@@ -73,6 +73,8 @@ const id = {
     linkLacak: "Lacak Kiriman",
     rights: "Semua hak dilindungi.",
     disclaimer: "Tarif bersifat estimasi & dapat berubah sesuai detail kiriman.",
+    legalTerms: "Ketentuan Layanan",
+    legalPrivacy: "Kebijakan Privasi",
   },
   calc: {
     srHeading: "Kalkulator Tarif",
@@ -383,6 +385,9 @@ const id = {
     packingCodeNotFound: "Kode tidak ditemukan",
     packingCodeHint: "Masukkan kode lalu tekan Cari untuk validasi.",
     seeResult: "Lihat hasil",
+    qAgreePre: "Dengan melanjutkan, kamu menyetujui",
+    qAgreeMid: "dan",
+    qAgreePost: " Rimkirim.",
     // outcomes
     ineligibleTitle: "Layanan ini untuk barang pribadi",
     ineligibleBody:
@@ -448,6 +453,13 @@ const id = {
     comingSoon: "segera",
     finalCta: "Lanjutkan permintaan order",
     finalDisabledNote: "Selesaikan semua modul untuk melanjutkan.",
+    baTitle: "Ketentuan & Persetujuan",
+    baSubtitle: "Baca dan setujui sebelum booking dibuat.",
+    baScrollHint: "Gulir sampai bawah untuk mengaktifkan persetujuan.",
+    baCheckbox:
+      "Saya telah membaca dan menyetujui Ketentuan Layanan dan Kebijakan Privasi Rimkirim.",
+    baAgree: "Setuju & Booking",
+    baCancel: "Batal",
     confirmTitle: "Permintaan order terkirim",
     confirmBody:
       "Terima kasih! Tim kami akan menghubungi kamu untuk konfirmasi jadwal & dokumen.",
@@ -677,6 +689,8 @@ const en: Messages = {
     linkLacak: "Track Shipment",
     rights: "All rights reserved.",
     disclaimer: "Rates are estimates & may change based on shipment details.",
+    legalTerms: "Terms of Service",
+    legalPrivacy: "Privacy Policy",
   },
   calc: {
     srHeading: "Rate Calculator",
@@ -979,6 +993,9 @@ const en: Messages = {
     packingCodeNotFound: "Code not found",
     packingCodeHint: "Enter the code then press Search to validate.",
     seeResult: "See result",
+    qAgreePre: "By continuing, you agree to our",
+    qAgreeMid: "and",
+    qAgreePost: ".",
     ineligibleTitle: "This service is for personal belongings",
     ineligibleBody:
       "Back For Good is for shipping personal belongings to Indonesia. For other shipment types, please contact our team.",
@@ -1040,6 +1057,13 @@ const en: Messages = {
     comingSoon: "soon",
     finalCta: "Continue order request",
     finalDisabledNote: "Complete all modules to continue.",
+    baTitle: "Terms & Agreement",
+    baSubtitle: "Read and agree before your booking is created.",
+    baScrollHint: "Scroll to the bottom to enable the agreement.",
+    baCheckbox:
+      "I have read and agree to Rimkirim's Terms of Service and Privacy Policy.",
+    baAgree: "Agree & Book",
+    baCancel: "Cancel",
     confirmTitle: "Order request submitted",
     confirmBody:
       "Thank you! Our team will contact you to confirm the schedule & documents.",

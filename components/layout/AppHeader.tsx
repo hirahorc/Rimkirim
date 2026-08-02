@@ -1,13 +1,18 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Logo } from "./Logo";
 import { LanguageToggle } from "./LanguageToggle";
 import { Button } from "@/components/ui/button";
 import { useT } from "@/lib/i18n/LanguageProvider";
+import { isBareRoute } from "@/lib/utils/routes";
 
 export function AppHeader() {
   const t = useT();
+  const pathname = usePathname();
+  // standalone pages (legal docs) render without the app chrome
+  if (isBareRoute(pathname)) return null;
   return (
     <header className="reveal-down sticky top-0 z-40 border-b border-border/80 bg-background/80 backdrop-blur-xl">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">

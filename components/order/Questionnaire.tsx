@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
   ArrowRight,
@@ -335,6 +336,17 @@ export function Questionnaire() {
           {t("order.seeResult")}
           <ArrowRight className="size-4" />
         </Button>
+        <p className="mt-3 text-center text-xs leading-relaxed text-muted-2">
+          {t("order.qAgreePre")}{" "}
+          <Link href="/terms" className="text-brand hover:underline">
+            {t("footer.legalTerms")}
+          </Link>{" "}
+          {t("order.qAgreeMid")}{" "}
+          <Link href="/privacy" className="text-brand hover:underline">
+            {t("footer.legalPrivacy")}
+          </Link>
+          {t("order.qAgreePost")}
+        </p>
       </div>
     </div>
   );
