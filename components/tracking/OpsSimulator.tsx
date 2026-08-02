@@ -12,12 +12,15 @@ import {
   AlertCircle,
   CalendarCheck,
   Truck,
+  ShieldCheck,
 } from "lucide-react";
 import {
   useOrderStore,
+  CLEARANCE_STEPS,
   type Order,
   type OrderStatus,
   type PickupFailCause,
+  type ClearanceStep,
 } from "@/lib/store/useOrderStore";
 import { PHASE_STEPS } from "./StatusStepper";
 import { OrderStatusBadge } from "@/components/order/OrderStatusBadge";
@@ -51,6 +54,7 @@ export function OpsSimulator({ order }: { order: Order }) {
   const expireDropOff = useOrderStore((s) => s.expireDropOff);
   const issueNewAwb = useOrderStore((s) => s.issueNewAwb);
   const confirmDroppedOff = useOrderStore((s) => s.confirmDroppedOff);
+  const setClearanceStep = useOrderStore((s) => s.setClearanceStep);
 
   const customerFails = order.pickupFails.filter(
     (f) => f.cause === "customer",
@@ -58,6 +62,11 @@ export function OpsSimulator({ order }: { order: Order }) {
   const carrierFails = order.pickupFails.filter(
     (f) => f.cause === "carrier",
   ).length;
+  const nextClearance =
+    order.status === "clearance" && order.clearanceStep
+      ? (CLEARANCE_STEPS[CLEARANCE_STEPS.indexOf(order.clearanceStep) + 1] ??
+        null)
+      : null;
 
   const currentIdx = PHASE_STEPS.indexOf(order.status as (typeof PHASE_STEPS)[number]);
   const next = currentIdx >= 0 && currentIdx < PHASE_STEPS.length - 1
@@ -136,7 +145,7 @@ export function OpsSimulator({ order }: { order: Order }) {
           <Button
             size="sm"
             variant="secondary"
-            disabled={!next}
+            disabled={!next || order.status === "clearance"}
             onClick={() => next && setOrderStatus(order.id, next)}
             className="w-full"
           >
@@ -269,8 +278,64 @@ export function OpsSimulator({ order }: { order: Order }) {
           </p>
         )}
       </div>
+
+      <div className="mt-4 border-t border-info/20 pt-4">
+        <p className="flex items-center gap-1.5 text-xs font-medium text-muted-2">
+          <ShieldCheck className="size-3.5" /> {t("ops.clearance")}
+        </p>
+        {order.status !== "clearance" ? (
+          <p className="mt-2 text-xs text-muted-2">{t("ops.clearanceInactive")}</p>
+        ) : (
+          <>
+            <div className="mt-2 flex flex-wrap gap-2">
+              {CLEARANCE_STEPS.map((step) => (
+                <Button
+                  key={step}
+                  size="sm"
+                  variant={order.clearanceStep === step ? "secondary" : "outline"}
+                  onClick={() => setClearanceStep(order.id, step)}
+                >
+                  {t(clearanceStepKey(step))}
+                </Button>
+              ))}
+            </div>
+            <div className="mt-2 flex flex-wrap gap-2">
+              {nextClearance && (
+                <Button
+                  size="sm"
+                  variant="secondary"
+                  onClick={() => setClearanceStep(order.id, nextClearance)}
+                >
+                  {t("ops.clearanceAdvance")}:{" "}
+                  {t(clearanceStepKey(nextClearance))}
+                </Button>
+              )}
+              {order.clearanceStep === "released" && (
+                <Button
+                  size="sm"
+                  onClick={() => {
+                    setOrderStatus(order.id, "delivery");
+                    toast.success(t("ops.clearanceCompleteToast"));
+                  }}
+                >
+                  {t("ops.clearanceComplete")}
+                </Button>
+              )}
+            </div>
+          </>
+        )}
+      </div>
     </Card>
   );
+}
+
+function clearanceStepKey(step: ClearanceStep): string {
+  return {
+    documents: "order.clDocuments",
+    inspection: "order.clInspection",
+    duties: "order.clDuties",
+    released: "order.clReleased",
+  }[step];
 }
 
 /** "in-transit" → "InTransit" for the `order.status*` i18n keys. */

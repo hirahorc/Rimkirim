@@ -528,7 +528,11 @@ function PendingCards({ order }: { order: Order }) {
       </Section>
 
       <Section icon={ShieldCheck} title={t("order.stepClearance")}>
-        <p className="py-2 text-sm text-muted-2">{t("order.tdClearancePending")}</p>
+        {order.status === "clearance" || order.status === "delivery" || order.status === "delivered" ? (
+          <p className="py-2 text-sm text-muted-2">{t("order.tdClearanceDone")}</p>
+        ) : (
+          <p className="py-2 text-sm text-muted-2">{t("order.tdClearancePending")}</p>
+        )}
       </Section>
     </>
   );

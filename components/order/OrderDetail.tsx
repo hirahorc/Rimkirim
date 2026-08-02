@@ -31,6 +31,7 @@ import { OrderTimeline } from "@/components/tracking/OrderTimeline";
 import { QuotationCard } from "@/components/tracking/QuotationCard";
 import { RevisionCard } from "@/components/tracking/RevisionCard";
 import { PickupPanel } from "@/components/tracking/PickupPanel";
+import { ClearancePanel } from "@/components/tracking/ClearancePanel";
 
 /** Tracking detail page — owner-only. */
 export function OrderDetail({ id }: { id: string }) {
@@ -161,6 +162,12 @@ export function OrderDetail({ id }: { id: string }) {
       {order.status === "pickup" && (
         <div className="mt-4">
           <PickupPanel order={order} />
+        </div>
+      )}
+
+      {order.status === "clearance" && (
+        <div className="mt-4">
+          <ClearancePanel order={order} />
         </div>
       )}
 

@@ -90,6 +90,28 @@ export const MAX_CUSTOMER_PICKUP_FAILS = 3;
 /** Number of active days on a drop-off instruction before the AWB changes. */
 export const DROP_OFF_DEADLINE_DAYS = 2;
 
+/** Sub-states of the clearance phase, in order. */
+export type ClearanceStep =
+  | "documents"
+  | "inspection"
+  | "duties"
+  | "released";
+
+export const CLEARANCE_STEPS: ClearanceStep[] = [
+  "documents",
+  "inspection",
+  "duties",
+  "released",
+];
+
+/** i18n key for the timeline event of each clearance sub-state. */
+export const CLEARANCE_STEP_EVENT: Record<ClearanceStep, string> = {
+  documents: "order.evClDocuments",
+  inspection: "order.evClInspection",
+  duties: "order.evClDuties",
+  released: "order.evClReleased",
+};
+
 /** Demo FedEx airway bill, 12 digits, re-generated whenever the AWB changes. */
 export function makeAwb(): string {
   const group = () =>
@@ -262,6 +284,8 @@ export interface Order {
   pickupChoicePending: boolean;
   /** Active drop-off instruction (null = normal pickup flow). */
   dropOff: DropOffInstruction | null;
+  /** Current clearance sub-state (null when not in the clearance phase). */
+  clearanceStep: ClearanceStep | null;
 
   context: OrderContext | null;
   selectedRate: SelectedRate | null;
@@ -310,6 +334,8 @@ interface OrderStoreState {
   setPendingStart: (intent: PendingStart | null) => void;
   /** ops control plane: set a submitted order's phase (drafts are read-only) */
   setOrderStatus: (id: string, status: OrderStatus) => void;
+  /** ops control plane: set the current clearance sub-state */
+  setClearanceStep: (id: string, step: ClearanceStep) => void;
   /** ops control plane: set/clear an order's attention overlay (i18n key) */
   setOrderAttention: (id: string, attention: string | null) => void;
   /** ops control plane: issue the official quotation (builds from order data) */
@@ -411,6 +437,7 @@ export const useOrderStore = create<OrderStoreState>()(
             pickupFails: [],
             pickupChoicePending: false,
             dropOff: null,
+            clearanceStep: null,
             context: ctx,
             selectedRate: rate,
             answers: {},
@@ -500,6 +527,18 @@ export const useOrderStore = create<OrderStoreState>()(
           const next: Order = {
             ...order,
             status,
+            // entering clearance starts the sub-state machine; leaving clears it
+            clearanceStep:
+              status === "clearance"
+                ? order.clearanceStep ?? "documents"
+                : order.status === "clearance"
+                  ? null
+                  : order.clearanceStep,
+            // the "released" banner is resolved once the phase moves on
+            attention:
+              order.status === "clearance" && status !== "clearance"
+                ? null
+                : order.attention,
             updatedAt: Date.now(),
             timeline: eventKey
               ? [
@@ -511,6 +550,35 @@ export const useOrderStore = create<OrderStoreState>()(
                   ),
                 ]
               : order.timeline,
+          };
+          return {
+            orders: s.orders.map((o) => (o.id === id ? next : o)),
+          };
+        }),
+      setClearanceStep: (id, step) =>
+        set((s) => {
+          const order = s.orders.find((o) => o.id === id);
+          if (
+            !order ||
+            order.status !== "clearance" ||
+            order.clearanceStep === step
+          ) {
+            return {};
+          }
+          const next: Order = {
+            ...order,
+            clearanceStep: step,
+            attention:
+              step === "released" ? "order.attClearanceReleased" : order.attention,
+            updatedAt: Date.now(),
+            timeline: [
+              ...order.timeline,
+              makeEvent(
+                "clearance",
+                CLEARANCE_STEP_EVENT[step],
+                nextEventAt(order),
+              ),
+            ],
           };
           return {
             orders: s.orders.map((o) => (o.id === id ? next : o)),
@@ -940,6 +1008,7 @@ export const useOrderStore = create<OrderStoreState>()(
             pickupFails: o.pickupFails ?? [],
             pickupChoicePending: o.pickupChoicePending ?? false,
             dropOff: o.dropOff ?? null,
+            clearanceStep: o.clearanceStep ?? null,
           }));
           return { ...current, ...p, orders };
         }
@@ -961,6 +1030,7 @@ export const useOrderStore = create<OrderStoreState>()(
             pickupFails: [],
             pickupChoicePending: false,
             dropOff: null,
+            clearanceStep: null,
             context: p.context,
             selectedRate: p.selectedRate ?? null,
             answers: p.answers ?? {},

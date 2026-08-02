@@ -567,6 +567,22 @@ const id = {
       "Titipkan paket di lokasi drop-off FedEx dalam 2 hari, atau AWB akan diganti.",
     attAwbChanged:
       "AWB diganti — drop-off tidak dilakukan dalam 2 hari. Pickup dijadwalkan ulang.",
+    attClearanceReleased:
+      "Clearance selesai — barang dikeluarkan dari Bea Cukai dan segera dikirim.",
+    // clearance sub-states (order.clearanceStep)
+    clDocuments: "Dokumen",
+    clInspection: "Pemeriksaan",
+    clDuties: "Bea & pajak",
+    clReleased: "Dikeluarkan",
+    clDescDocuments:
+      "Dokumen diajukan ke Bea Cukai: invoice, packing list, dan dokumen pendukung.",
+    clDescInspection:
+      "Petugas memverifikasi dokumen dan barang kirimanmu.",
+    clDescDuties:
+      "Perhitungan bea masuk & pajak (PDRI). Dengan SKP, barang pribadi umumnya bebas bea.",
+    clDescReleased:
+      "Barang telah dikeluarkan dari Bea Cukai dan disiapkan untuk pengiriman akhir.",
+    tdClearanceDone: "Proses clearance telah selesai.",
     // timeline events (order.activity)
     tdTimeline: "Riwayat Aktivitas",
     evCreated: "Pesanan dibuat.",
@@ -622,6 +638,10 @@ const id = {
     evDropOffRequested: "Diminta drop-off ke lokasi FedEx dalam 2 hari.",
     evDropOffConfirmed: "Kamu mengonfirmasi barang dititipkan di drop-off.",
     evDroppedOff: "Barang diterima di lokasi drop-off — dalam perjalanan.",
+    evClDocuments: "Dokumen diajukan ke Bea Cukai.",
+    evClInspection: "Dokumen diverifikasi & barang diperiksa Bea Cukai.",
+    evClDuties: "Perhitungan bea masuk & pajak (PDRI).",
+    evClReleased: "Barang dikeluarkan dari Bea Cukai — siap dikirim.",
     // pickup status panel (order.pickupFails / dropOff)
     pickStatus: "Status Pickup",
     pickAttempts: "Percobaan pickup",
@@ -835,6 +855,11 @@ const id = {
     pickConfirmDropOff: "Konfirmasi drop-off",
     awbIssuedToast: "AWB baru diterbitkan.",
     dropOffConfirmedToast: "Drop-off dikonfirmasi — barang dalam perjalanan.",
+    clearance: "Clearance",
+    clearanceInactive: "Belum di fase clearance.",
+    clearanceAdvance: "Lanjut ke",
+    clearanceComplete: "Selesaikan clearance",
+    clearanceCompleteToast: "Clearance selesai — masuk fase delivery.",
     noOrders: "Belum ada pesanan yang dikirim untuk disimulasikan.",
     hint: "Panel ini mensimulasikan sisi ops Rimkirim (tanpa backend). Perubahan langsung tampil di halaman pelacakan customer.",
   },
@@ -1399,6 +1424,22 @@ const en: Messages = {
       "Drop the package at a FedEx location within 2 days, or the AWB will be changed.",
     attAwbChanged:
       "AWB changed — the drop-off missed the 2-day deadline. Pickup rescheduled.",
+    attClearanceReleased:
+      "Clearance complete — the goods were released by Customs and will be delivered soon.",
+    // clearance sub-states (order.clearanceStep)
+    clDocuments: "Documents",
+    clInspection: "Inspection",
+    clDuties: "Duties & taxes",
+    clReleased: "Released",
+    clDescDocuments:
+      "Documents submitted to Customs: invoice, packing list, and supporting documents.",
+    clDescInspection:
+      "Customs verifies your documents and shipment.",
+    clDescDuties:
+      "Calculation of import duties & taxes (PDRI). With an SKP, personal belongings are usually exempt.",
+    clDescReleased:
+      "Your goods were released by Customs and are being prepared for final delivery.",
+    tdClearanceDone: "The clearance process has been completed.",
     // timeline events (order.activity)
     tdTimeline: "Activity",
     evCreated: "Order created.",
@@ -1455,6 +1496,10 @@ const en: Messages = {
     evDropOffRequested: "Drop-off at a FedEx location requested within 2 days.",
     evDropOffConfirmed: "You confirmed the package was dropped off.",
     evDroppedOff: "Package received at the drop-off — in transit.",
+    evClDocuments: "Documents submitted to Customs.",
+    evClInspection: "Documents verified & shipment inspected by Customs.",
+    evClDuties: "Import duties & taxes (PDRI) calculated.",
+    evClReleased: "Goods released by Customs — ready for delivery.",
     // pickup status panel (order.pickupFails / dropOff)
     pickStatus: "Pickup status",
     pickAttempts: "Pickup attempts",
@@ -1658,6 +1703,11 @@ const en: Messages = {
     pickConfirmDropOff: "Confirm drop-off",
     awbIssuedToast: "New AWB issued.",
     dropOffConfirmedToast: "Drop-off confirmed — shipment in transit.",
+    clearance: "Clearance",
+    clearanceInactive: "Not in the clearance phase yet.",
+    clearanceAdvance: "Advance to",
+    clearanceComplete: "Complete clearance",
+    clearanceCompleteToast: "Clearance complete — moving to delivery.",
     noOrders: "No submitted orders to simulate yet.",
     hint: "This panel simulates Rimkirim's ops side (no backend). Changes appear instantly on the customer tracking page.",
   },
