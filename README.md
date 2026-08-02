@@ -16,9 +16,20 @@ npm start        # serve production build
 ```
 
 ### Testing Lighthouse / performa
-Audit Lighthouse **wajib di production build** (`npm run build && npm start`), **bukan**
-`npm run dev`. Dev server pakai Turbopack HMR dengan banyak chunk yang belum di-minify, jadi skor
-Performance-nya tidak representatif. Buka `http://localhost:3000` → Chrome DevTools → Lighthouse.
+Dua syarat biar skornya representatif — kalau salah satu dilanggar, Performance & Best Practices
+turun padahal bukan karena kode app:
+
+1. **Production build, bukan dev.** Jalanin `npm run build && npm start`, audit
+   `http://localhost:3000`. Jangan `npm run dev` — Turbopack HMR + bundle devtools/chunk yang belum
+   di-minify bikin LCP & TBT (jadi skor Performance) meledak.
+2. **Profil Chrome bersih, extension dimatiin.** Pakai window **Incognito** (extension off by
+   default) atau profil baru / `--guest`. Extension wallet (MetaMask, Phantom, dll) nyuntik script
+   yang men-trigger audit `deprecations` & `inspector-issues` (Best Practices) dan nambahin
+   TBT/LCP — itu bukan bagian dari app.
+
+Buka `http://localhost:3000` → Chrome DevTools → Lighthouse → Analyze. Catatan: baris Best Practices
+yang informatif (CSP, HSTS, COOP, clickjacking, trusted-types) **bobotnya 0** — gak ngaruh ke skor,
+jadi gak perlu dikejar untuk build lokal.
 
 ## Halaman & alur
 
