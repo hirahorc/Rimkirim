@@ -509,13 +509,23 @@ export const useOrderStore = create<OrderStoreState>()(
 
       startOrder: (ctx, rate = null) =>
         set((s) => {
-          const id = makeOrderId();
+          const email = useAuthStore.getState().currentEmail;
+          // Reuse an existing un-booked draft (a questionnaire abandoned before
+          // the hub issued a booking number) so repeat price-card clicks don't
+          // pile up orphan drafts. Keep its id/createdAt; reset everything else.
+          const existing = s.orders.find(
+            (o) =>
+              o.ownerEmail === email &&
+              o.status === "draft" &&
+              o.bookingNumber === null,
+          );
+          const id = existing?.id ?? makeOrderId();
           const order: Order = {
             id,
-            ownerEmail: useAuthStore.getState().currentEmail,
+            ownerEmail: email,
             status: "draft",
             trackingNumber: null,
-            createdAt: Date.now(),
+            createdAt: existing?.createdAt ?? Date.now(),
             updatedAt: Date.now(),
             attention: null,
             timeline: [makeEvent("created", "order.evCreated")],
@@ -541,7 +551,9 @@ export const useOrderStore = create<OrderStoreState>()(
             generatedPackingCode: null,
           };
           return {
-            orders: [...s.orders, order],
+            orders: existing
+              ? s.orders.map((o) => (o.id === id ? order : o))
+              : [...s.orders, order],
             activeDraftId: id,
             ...syncFlatFrom(order),
             pendingStart: null,
@@ -1407,13 +1419,21 @@ export function effectivePackingCode(s: {
   return s.answers.packingCode?.trim() || s.generatedPackingCode || null;
 }
 
-/** The current user's orders — in-progress drafts included (a draft is an order). */
+/**
+ * The current user's orders. A draft only appears once it has a booking number
+ * (i.e. the user reached the order hub) — an abandoned-at-questionnaire draft
+ * has no identifier yet and is hidden until then.
+ */
 export function useMyOrders(email: string | null): Order[] {
   return useOrderStore(
     useShallow((s) => {
       if (!email) return [];
       return s.orders
-        .filter((o) => o.ownerEmail === email)
+        .filter(
+          (o) =>
+            o.ownerEmail === email &&
+            (o.status !== "draft" || o.bookingNumber !== null),
+        )
         .sort((a, b) => b.createdAt - a.createdAt);
     }),
   );

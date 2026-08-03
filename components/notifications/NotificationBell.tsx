@@ -36,7 +36,13 @@ function useNotifications(): NotificationItem[] {
   const email = useCurrentUser()?.email ?? null;
   const orders = useOrderStore(
     useShallow((s) =>
-      email ? s.orders.filter((o) => o.ownerEmail === email) : [],
+      email
+        ? s.orders.filter(
+            (o) =>
+              o.ownerEmail === email &&
+              (o.status !== "draft" || o.bookingNumber !== null),
+          )
+        : [],
     ),
   );
   return React.useMemo(() => {
