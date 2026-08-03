@@ -19,6 +19,7 @@ import {
 import { useLanguage, useT } from "@/lib/i18n/LanguageProvider";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { NewAwbDialog } from "./NewAwbDialog";
 
 /**
  * Customer-facing pickup status: after a failed pickup the customer chooses
@@ -27,10 +28,10 @@ import { Button } from "@/components/ui/button";
 export function PickupPanel({ order }: { order: Order }) {
   const t = useT();
   const { locale } = useLanguage();
-  const requestNewAwb = useOrderStore((s) => s.requestNewAwb);
   const reschedulePickup = useOrderStore((s) => s.reschedulePickup);
   const chooseDropOff = useOrderStore((s) => s.chooseDropOff);
   const confirmDropOff = useOrderStore((s) => s.confirmDropOff);
+  const [awbOpen, setAwbOpen] = React.useState(false);
 
   if (order.status !== "pickup") return null;
 
@@ -118,17 +119,17 @@ export function PickupPanel({ order }: { order: Order }) {
           <p className="mt-0.5 text-sm text-muted">
             {t("order.pickAwbNeededBody")}
           </p>
-          <Button
-            className="mt-3"
-            onClick={() => {
-              requestNewAwb(order.id);
-              toast.info(t("order.pickAwbRequestedToast"));
-            }}
-          >
+          <Button className="mt-3" onClick={() => setAwbOpen(true)}>
             <PackageX /> {t("order.pickAwbCta")}
           </Button>
         </div>
       )}
+
+      <NewAwbDialog
+        orderId={order.id}
+        open={awbOpen}
+        onOpenChange={setAwbOpen}
+      />
 
       {dropOff && !dropOff.expired && !dropOff.fulfilledAt && (
         <div className="mt-3 rounded-lg border border-info/40 bg-info/10 p-4">

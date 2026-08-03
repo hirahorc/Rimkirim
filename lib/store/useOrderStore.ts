@@ -84,6 +84,16 @@ export interface DropOffInstruction {
   expired: boolean;
 }
 
+/** How the customer wants the re-issued shipment handled after a new AWB. */
+export type AwbService = "pickup" | "drop-off";
+
+/** The customer's choice when requesting a new AWB (service + new date). */
+export interface AwbRequest {
+  service: AwbService;
+  /** ISO date string (yyyy-mm-dd) chosen for the new attempt. */
+  date: string;
+}
+
 /** Customer-fault failures allowed before the customer must request a new AWB. */
 export const MAX_CUSTOMER_PICKUP_FAILS = 3;
 
@@ -344,6 +354,8 @@ export interface Order {
   pickupChoicePending: boolean;
   /** Active drop-off instruction (null = normal pickup flow). */
   dropOff: DropOffInstruction | null;
+  /** The customer's pending new-AWB request (service + date), null = none. */
+  awbRequest: AwbRequest | null;
   /** Current clearance sub-state (null when not in the clearance phase). */
   clearanceStep: ClearanceStep | null;
   /** Pre-Clearance "belum bisa masuk clearance" — goods partial / delayed. */
@@ -441,8 +453,9 @@ interface OrderStoreState {
   issueNewAwb: (id: string) => void;
   /** ops control plane: confirm the customer's drop-off → shipment goes in transit */
   confirmDroppedOff: (id: string) => void;
-  /** customer: request a new AWB after repeated customer-fault pickup failures */
-  requestNewAwb: (id: string) => void;
+  /** customer: request a new AWB after repeated customer-fault pickup failures,
+   *  choosing the service (pickup/drop-off) + a new date → triggers a re-quote */
+  requestNewAwb: (id: string, req: AwbRequest) => void;
   /** customer: confirm the package was dropped off at the FedEx location */
   confirmDropOff: (id: string) => void;
   /** customer: flag a module for a fix; order returns to Review until resubmitted */
@@ -537,6 +550,7 @@ export const useOrderStore = create<OrderStoreState>()(
             pickupFails: [],
             pickupChoicePending: false,
             dropOff: null,
+            awbRequest: null,
             clearanceStep: null,
             clearanceBlocked: false,
             npdRound: 0,
@@ -978,6 +992,7 @@ export const useOrderStore = create<OrderStoreState>()(
             opsNotice: null,
             attention: "order.attPickupScheduled",
             awb: order.awb ?? makeAwb(),
+            awbRequest: null,
             updatedAt: Date.now(),
             timeline: [
               ...order.timeline,
@@ -1127,7 +1142,7 @@ export const useOrderStore = create<OrderStoreState>()(
             orders: s.orders.map((o) => (o.id === id ? next : o)),
           };
         }),
-      requestNewAwb: (id) =>
+      requestNewAwb: (id, req) =>
         set((s) => {
           const order = s.orders.find((o) => o.id === id);
           const customerFails = order?.pickupFails.filter(
@@ -1148,6 +1163,7 @@ export const useOrderStore = create<OrderStoreState>()(
           }
           const next: Order = {
             ...order,
+            awbRequest: req,
             attention: null,
             opsNotice: {
               messageKey: "order.opsAwbRequested",
@@ -1163,6 +1179,10 @@ export const useOrderStore = create<OrderStoreState>()(
             orders: s.orders.map((o) => (o.id === id ? next : o)),
           };
         }),
+      // Fulfil the new-AWB request: issue a fresh 3PL AWB, reset the attempt
+      // history + drop-off, and re-issue a quotation the customer must re-approve.
+      // The stable Rimkirim tracking number is unchanged. After approval the
+      // order returns to the pickup phase (via approveQuotation → bookPickup).
       issueNewAwb: (id) =>
         set((s) => {
           const order = s.orders.find((o) => o.id === id);
@@ -1173,17 +1193,24 @@ export const useOrderStore = create<OrderStoreState>()(
           ) {
             return {};
           }
-          const next: Order = {
+          const rebased: Order = {
             ...order,
             opsNotice: null,
             awb: makeAwb(),
             pickupFails: [],
             pickupChoicePending: false,
-            attention: "order.attAwbIssued",
+            dropOff: null,
+          };
+          const next: Order = {
+            ...rebased,
+            status: "quotation",
+            quotation: buildQuotation(rebased),
+            attention: "order.attQuotationReady",
             updatedAt: Date.now(),
             timeline: [
-              ...order.timeline,
-              makeEvent("awb", "order.evAwbIssued", nextEventAt(order)),
+              ...rebased.timeline,
+              makeEvent("awb", "order.evAwbIssued", nextEventAt(rebased)),
+              makeEvent("quotation", "order.evQuotation", nextEventAt(rebased) + 1),
             ],
           };
           return {
@@ -1307,6 +1334,7 @@ export const useOrderStore = create<OrderStoreState>()(
             pickupFails: o.pickupFails ?? [],
             pickupChoicePending: o.pickupChoicePending ?? false,
             dropOff: o.dropOff ?? null,
+            awbRequest: o.awbRequest ?? null,
             // drop clearance steps from the pre-Round-13 enum (documents/…);
             // an order still in clearance falls back to "pre-clearance".
             clearanceStep:
@@ -1339,6 +1367,7 @@ export const useOrderStore = create<OrderStoreState>()(
             pickupFails: [],
             pickupChoicePending: false,
             dropOff: null,
+            awbRequest: null,
             clearanceStep: null,
             clearanceBlocked: false,
             npdRound: 0,

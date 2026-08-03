@@ -735,6 +735,17 @@ const id = {
     tdAwbNumber: "Nomor AWB",
     tdAwbStable:
       "Nomor tracking kamu tidak berubah — hanya AWB internal yang diganti.",
+    // new-AWB request dialog
+    awbDialogTitle: "Minta AWB baru",
+    awbDialogBody:
+      "Pilih cara pengiriman ulang dan tanggal baru. Setelah diproses, kamu akan menerima quotation baru untuk disetujui. Nomor tracking kamu tetap sama.",
+    awbDialogService: "Metode pengiriman",
+    awbServicePickup: "Pickup ulang",
+    awbServiceDropOff: "Drop-off ke lokasi FedEx",
+    awbDialogDate: "Tanggal baru",
+    awbDialogSubmit: "Kirim permintaan",
+    awbDialogCancel: "Batal",
+    awbDialogDateRequired: "Pilih tanggal dulu.",
     // module form — shared
     saveModule: "Simpan",
     saved: "Tersimpan",
@@ -1678,6 +1689,17 @@ const en: Messages = {
     tdAwbNumber: "AWB number",
     tdAwbStable:
       "Your tracking number never changes — only the internal AWB is replaced.",
+    // new-AWB request dialog
+    awbDialogTitle: "Request a new AWB",
+    awbDialogBody:
+      "Choose how to re-ship and a new date. Once processed, you'll get a new quotation to approve. Your tracking number stays the same.",
+    awbDialogService: "Handling method",
+    awbServicePickup: "Re-pickup",
+    awbServiceDropOff: "Drop off at a FedEx location",
+    awbDialogDate: "New date",
+    awbDialogSubmit: "Send request",
+    awbDialogCancel: "Cancel",
+    awbDialogDateRequired: "Pick a date first.",
     saveModule: "Save",
     saved: "Saved",
     ciFullName: "Full name",
