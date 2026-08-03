@@ -568,20 +568,72 @@ const id = {
     attAwbChanged:
       "AWB diganti — drop-off tidak dilakukan dalam 2 hari. Pickup dijadwalkan ulang.",
     attClearanceReleased:
-      "Clearance selesai — barang dikeluarkan dari Bea Cukai dan segera dikirim.",
-    // clearance sub-states (order.clearanceStep)
-    clDocuments: "Dokumen",
-    clInspection: "Pemeriksaan",
-    clDuties: "Bea & pajak",
-    clReleased: "Dikeluarkan",
-    clDescDocuments:
-      "Dokumen diajukan ke Bea Cukai: invoice, packing list, dan dokumen pendukung.",
-    clDescInspection:
-      "Petugas memverifikasi dokumen dan barang kirimanmu.",
-    clDescDuties:
-      "Perhitungan bea masuk & pajak (PDRI). Dengan SKP, barang pribadi umumnya bebas bea.",
-    clDescReleased:
-      "Barang telah dikeluarkan dari Bea Cukai dan disiapkan untuk pengiriman akhir.",
+      "Clearance selesai — barang disetujui untuk dikeluarkan dari Bea Cukai.",
+    attClearanceReleasedExtra:
+      "Barang dikeluarkan (SPPBL) dengan dokumen tambahan dari Bea Cukai.",
+    attClearanceBlocked:
+      "Belum bisa masuk proses clearance — barang belum lengkap (parsial) atau pengiriman terhambat.",
+    attClearanceBarpin:
+      "Cek & konfirmasi data kirimanmu di portal Barpin agar clearance bisa lanjut.",
+    attClearanceBarpinRevision:
+      "Permintaan revisi data Barpin dikirim — tim kami menyesuaikan berdasarkan dokumenmu.",
+    attNpd:
+      "Bea Cukai menerbitkan NPD (permintaan dokumen). Tim kami melengkapinya dan mengajukan ulang.",
+    attClearanceTax:
+      "Bea Cukai menerbitkan SPTNP — bayar pajak agar barang bisa dikeluarkan.",
+    attClearanceReject:
+      "Pengajuan ditolak Bea Cukai — proses clearance diulang dari awal.",
+    // clearance sub-flow — spine labels (components/tracking/ClearancePanel)
+    clSpinePre: "Pre-Clearance",
+    clSpineBarpin: "Konfirmasi Barpin",
+    clSpineSubmit: "Pengajuan",
+    clSpineBc: "Bea Cukai",
+    clSpineResult: "Hasil",
+    // clearance sub-flow — state descriptions
+    clDescPreClearance:
+      "Tim melengkapi dokumen & mengecek kesiapan kiriman untuk masuk clearance.",
+    clDescBlocked:
+      "Belum bisa masuk clearance: barang belum sampai semua (parsial) atau pengirimannya terhambat.",
+    clDescBarpinConfirm:
+      "Data kirimanmu disiapkan di portal Barpin. Cek lalu konfirmasi, atau minta revisi bila ada yang perlu disesuaikan.",
+    clDescSubmitted:
+      "Diajukan ke Bea Cukai (link Barpin) dan ke FedEx (link Barpin + dokumen) untuk diproses.",
+    clDescBcReview:
+      "Bea Cukai sedang memproses pengajuan kirimanmu.",
+    clDescNpd:
+      "Bea Cukai meminta dokumen tambahan (NPD). Tim kami melengkapi lalu mengajukan ulang.",
+    clDescSppb: "SPPB terbit — barang disetujui untuk dikeluarkan dari Bea Cukai.",
+    clDescSppbl:
+      "SPPBL terbit — barang dikeluarkan dengan tambahan dokumen dari Bea Cukai.",
+    clDescSptnp:
+      "SPTNP terbit — kiriman belum memenuhi syarat bebas bea, jadi ada pajak yang harus dibayar sebelum barang dikeluarkan.",
+    clDescReject:
+      "Pengajuan ditolak. Proses clearance harus diulang dari awal dengan permohonan baru; biaya warehouse tetap berjalan.",
+    // clearance result badges
+    clResultSppb: "SPPB — Dikeluarkan",
+    clResultSppbl: "SPPBL — Dikeluarkan (+dokumen)",
+    clResultSptnp: "SPTNP — Perlu bayar pajak",
+    clNpdRound: "NPD ke-",
+    // clearance customer actions
+    clConfirmBarpinCta: "Konfirmasi data Barpin",
+    clRequestRevisionCta: "Minta revisi data",
+    clConfirmBarpinToast: "Data Barpin dikonfirmasi — pengajuan dilanjutkan.",
+    clRequestRevisionToast: "Permintaan revisi dikirim ke tim kami.",
+    clBarpinConfirmedNote: "Kamu sudah mengonfirmasi data Barpin.",
+    clPayTaxCta: "Bayar pajak",
+    clPayTaxToast: "Pembayaran pajak dikonfirmasi — menunggu barang dikeluarkan.",
+    clTaxPaidNote: "Pajak sudah dibayar — menunggu pengeluaran barang oleh tim.",
+    // clearance supporting-docs info (from the clearance MD)
+    clDocsTitle: "Dokumen pendukung",
+    clDocsSp3bp: "SP3BP",
+    clDocsSp3bpDesc:
+      "Diajukan di awal bila kamu pulang ke Indonesia berjeda 6 hari atau lebih dari tanggal pickup. Pengganti Boarding Pass / Arrival Stamp / ECD.",
+    clDocsStatement: "Statement Letter",
+    clDocsStatementDesc:
+      "Diajukan di awal bila dokumen sekolah/kerja belum lengkap, atau saat NPD untuk memenuhi permintaan Bea Cukai.",
+    clDocsSkp: "SKP",
+    clDocsSkpDesc:
+      "Wajib untuk skema Barang Pindahan dan tidak bisa digantikan oleh SP3BP.",
     tdClearanceDone: "Proses clearance telah selesai.",
     // timeline events (order.activity)
     tdTimeline: "Riwayat Aktivitas",
@@ -638,10 +690,21 @@ const id = {
     evDropOffRequested: "Diminta drop-off ke lokasi FedEx dalam 2 hari.",
     evDropOffConfirmed: "Kamu mengonfirmasi barang dititipkan di drop-off.",
     evDroppedOff: "Barang diterima di lokasi drop-off — dalam perjalanan.",
-    evClDocuments: "Dokumen diajukan ke Bea Cukai.",
-    evClInspection: "Dokumen diverifikasi & barang diperiksa Bea Cukai.",
-    evClDuties: "Perhitungan bea masuk & pajak (PDRI).",
-    evClReleased: "Barang dikeluarkan dari Bea Cukai — siap dikirim.",
+    evClPreClearance: "Masuk pre-clearance — melengkapi dokumen.",
+    evClBlocked: "Belum bisa masuk clearance — barang parsial / terhambat.",
+    evClUnblocked: "Kiriman siap — melanjutkan clearance.",
+    evClBarpin: "Data disiapkan di portal Barpin — menunggu konfirmasimu.",
+    evClBarpinConfirmed: "Kamu mengonfirmasi data Barpin.",
+    evClBarpinRevision: "Kamu meminta revisi data Barpin.",
+    evClSubmitted: "Diajukan ke Bea Cukai & FedEx.",
+    evClBcReview: "Bea Cukai memproses pengajuan.",
+    evClNpd: "Bea Cukai menerbitkan NPD — permintaan dokumen tambahan.",
+    evClResubmit: "Dokumen dilengkapi & diajukan ulang ke Bea Cukai.",
+    evClSppb: "SPPB terbit — barang disetujui untuk dikeluarkan.",
+    evClSppbl: "SPPBL terbit — dikeluarkan dengan dokumen tambahan.",
+    evClSptnp: "SPTNP terbit — perlu bayar pajak sebelum dikeluarkan.",
+    evClTaxPaid: "Pajak dibayar — menunggu pengeluaran barang.",
+    evClReject: "Pengajuan ditolak — clearance diulang dari awal.",
     // pickup status panel (order.pickupFails / dropOff)
     pickStatus: "Status Pickup",
     pickAttempts: "Percobaan pickup",
@@ -860,6 +923,21 @@ const id = {
     clearanceAdvance: "Lanjut ke",
     clearanceComplete: "Selesaikan clearance",
     clearanceCompleteToast: "Clearance selesai — masuk fase delivery.",
+    clBlock: "Tandai belum bisa (parsial/terhambat)",
+    clUnblock: "Batalkan tanda belum bisa",
+    clToBarpin: "Kirim data ke Barpin",
+    clAwaitBarpin: "Menunggu customer konfirmasi Barpin.",
+    clToBcReview: "Proses di Bea Cukai",
+    clRaiseNpd: "Terbitkan NPD",
+    clNpdMax: "NPD sudah maksimal (3×).",
+    clResubmit: "Ajukan ulang ke Bea Cukai",
+    clResolve: "Hasil Bea Cukai",
+    clResolveSppb: "SPPB (dikeluarkan)",
+    clResolveSppbl: "SPPBL (+dokumen)",
+    clResolveSptnp: "SPTNP (bayar pajak)",
+    clReject: "Reject (ulang)",
+    clAwaitTax: "Menunggu customer membayar pajak (SPTNP).",
+    clNpdRoundLabel: "NPD ke-",
     noOrders: "Belum ada pesanan yang dikirim untuk disimulasikan.",
     hint: "Panel ini mensimulasikan sisi ops Rimkirim (tanpa backend). Perubahan langsung tampil di halaman pelacakan customer.",
   },
@@ -1425,20 +1503,71 @@ const en: Messages = {
     attAwbChanged:
       "AWB changed — the drop-off missed the 2-day deadline. Pickup rescheduled.",
     attClearanceReleased:
-      "Clearance complete — the goods were released by Customs and will be delivered soon.",
-    // clearance sub-states (order.clearanceStep)
-    clDocuments: "Documents",
-    clInspection: "Inspection",
-    clDuties: "Duties & taxes",
-    clReleased: "Released",
-    clDescDocuments:
-      "Documents submitted to Customs: invoice, packing list, and supporting documents.",
-    clDescInspection:
-      "Customs verifies your documents and shipment.",
-    clDescDuties:
-      "Calculation of import duties & taxes (PDRI). With an SKP, personal belongings are usually exempt.",
-    clDescReleased:
-      "Your goods were released by Customs and are being prepared for final delivery.",
+      "Clearance complete — the goods were approved for release by Customs.",
+    attClearanceReleasedExtra:
+      "Goods released (SPPBL) with additional documents from Customs.",
+    attClearanceBlocked:
+      "Can't enter clearance yet — the goods aren't all here (partial) or the shipment is delayed.",
+    attClearanceBarpin:
+      "Review & confirm your shipment data on the Barpin portal so clearance can proceed.",
+    attClearanceBarpinRevision:
+      "Barpin data revision requested — our team is adjusting it based on your documents.",
+    attNpd:
+      "Customs issued an NPD (document request). Our team completes it and resubmits.",
+    attClearanceTax:
+      "Customs issued an SPTNP — pay the tax so the goods can be released.",
+    attClearanceReject:
+      "Submission rejected by Customs — the clearance process restarts from the beginning.",
+    // clearance sub-flow — spine labels (components/tracking/ClearancePanel)
+    clSpinePre: "Pre-Clearance",
+    clSpineBarpin: "Barpin confirm",
+    clSpineSubmit: "Submission",
+    clSpineBc: "Customs",
+    clSpineResult: "Result",
+    // clearance sub-flow — state descriptions
+    clDescPreClearance:
+      "The team completes documents & checks whether the shipment is ready to enter clearance.",
+    clDescBlocked:
+      "Can't enter clearance yet: the goods haven't all arrived (partial) or the shipment is delayed.",
+    clDescBarpinConfirm:
+      "Your shipment data is prepared on the Barpin portal. Review then confirm, or request a revision if something needs adjusting.",
+    clDescSubmitted:
+      "Submitted to Customs (Barpin link) and to FedEx (Barpin link + documents) for processing.",
+    clDescBcReview: "Customs is processing your submission.",
+    clDescNpd:
+      "Customs requested additional documents (NPD). Our team completes them and resubmits.",
+    clDescSppb: "SPPB issued — the goods are approved for release by Customs.",
+    clDescSppbl:
+      "SPPBL issued — the goods are released with additional documents from Customs.",
+    clDescSptnp:
+      "SPTNP issued — the shipment didn't qualify for exemption, so there's a tax to pay before the goods are released.",
+    clDescReject:
+      "Submission rejected. Clearance must restart from the beginning with a new application; warehouse costs keep running.",
+    // clearance result badges
+    clResultSppb: "SPPB — Released",
+    clResultSppbl: "SPPBL — Released (+docs)",
+    clResultSptnp: "SPTNP — Tax due",
+    clNpdRound: "NPD #",
+    // clearance customer actions
+    clConfirmBarpinCta: "Confirm Barpin data",
+    clRequestRevisionCta: "Request a revision",
+    clConfirmBarpinToast: "Barpin data confirmed — submission proceeds.",
+    clRequestRevisionToast: "Revision request sent to our team.",
+    clBarpinConfirmedNote: "You've confirmed the Barpin data.",
+    clPayTaxCta: "Pay tax",
+    clPayTaxToast: "Tax payment confirmed — awaiting release of the goods.",
+    clTaxPaidNote: "Tax paid — awaiting the team to release the goods.",
+    // clearance supporting-docs info (from the clearance MD)
+    clDocsTitle: "Supporting documents",
+    clDocsSp3bp: "SP3BP",
+    clDocsSp3bpDesc:
+      "Submitted early if you return to Indonesia 6+ days after the pickup date. Substitutes the Boarding Pass / Arrival Stamp / ECD.",
+    clDocsStatement: "Statement Letter",
+    clDocsStatementDesc:
+      "Submitted early if school/work documents are incomplete, or during an NPD to satisfy a Customs request.",
+    clDocsSkp: "SKP",
+    clDocsSkpDesc:
+      "Mandatory for the Moving-Goods (Barang Pindahan) scheme and cannot be replaced by an SP3BP.",
     tdClearanceDone: "The clearance process has been completed.",
     // timeline events (order.activity)
     tdTimeline: "Activity",
@@ -1496,10 +1625,21 @@ const en: Messages = {
     evDropOffRequested: "Drop-off at a FedEx location requested within 2 days.",
     evDropOffConfirmed: "You confirmed the package was dropped off.",
     evDroppedOff: "Package received at the drop-off — in transit.",
-    evClDocuments: "Documents submitted to Customs.",
-    evClInspection: "Documents verified & shipment inspected by Customs.",
-    evClDuties: "Import duties & taxes (PDRI) calculated.",
-    evClReleased: "Goods released by Customs — ready for delivery.",
+    evClPreClearance: "Entered pre-clearance — completing documents.",
+    evClBlocked: "Can't enter clearance yet — goods partial / delayed.",
+    evClUnblocked: "Shipment ready — continuing clearance.",
+    evClBarpin: "Data prepared on the Barpin portal — awaiting your confirmation.",
+    evClBarpinConfirmed: "You confirmed the Barpin data.",
+    evClBarpinRevision: "You requested a Barpin data revision.",
+    evClSubmitted: "Submitted to Customs & FedEx.",
+    evClBcReview: "Customs is processing the submission.",
+    evClNpd: "Customs issued an NPD — request for additional documents.",
+    evClResubmit: "Documents completed & resubmitted to Customs.",
+    evClSppb: "SPPB issued — goods approved for release.",
+    evClSppbl: "SPPBL issued — released with additional documents.",
+    evClSptnp: "SPTNP issued — tax due before release.",
+    evClTaxPaid: "Tax paid — awaiting release of the goods.",
+    evClReject: "Submission rejected — clearance restarts from the beginning.",
     // pickup status panel (order.pickupFails / dropOff)
     pickStatus: "Pickup status",
     pickAttempts: "Pickup attempts",
@@ -1708,6 +1848,21 @@ const en: Messages = {
     clearanceAdvance: "Advance to",
     clearanceComplete: "Complete clearance",
     clearanceCompleteToast: "Clearance complete — moving to delivery.",
+    clBlock: "Flag as blocked (partial/delayed)",
+    clUnblock: "Clear the blocked flag",
+    clToBarpin: "Send data to Barpin",
+    clAwaitBarpin: "Awaiting the customer's Barpin confirmation.",
+    clToBcReview: "Process at Customs",
+    clRaiseNpd: "Issue NPD",
+    clNpdMax: "NPD already at the max (3×).",
+    clResubmit: "Resubmit to Customs",
+    clResolve: "Customs result",
+    clResolveSppb: "SPPB (released)",
+    clResolveSppbl: "SPPBL (+docs)",
+    clResolveSptnp: "SPTNP (tax due)",
+    clReject: "Reject (restart)",
+    clAwaitTax: "Awaiting the customer's tax payment (SPTNP).",
+    clNpdRoundLabel: "NPD #",
     noOrders: "No submitted orders to simulate yet.",
     hint: "This panel simulates Rimkirim's ops side (no backend). Changes appear instantly on the customer tracking page.",
   },

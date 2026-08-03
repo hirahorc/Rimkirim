@@ -90,26 +90,84 @@ export const MAX_CUSTOMER_PICKUP_FAILS = 3;
 /** Number of active days on a drop-off instruction before the AWB changes. */
 export const DROP_OFF_DEADLINE_DAYS = 2;
 
-/** Sub-states of the clearance phase, in order. */
+/**
+ * Sub-states of the BFG import clearance phase, modeled on the real customs flow
+ * (see the clearance MD): pre-clearance → Barpin confirmation → submission to
+ * Bea Cukai + FedEx → BC review, which either issues an NPD (document request,
+ * up to 3 rounds) or a final result: SPPB / SPPBL (released), SPTNP (released
+ * after the customer pays tax), or Reject (restart from the beginning).
+ */
 export type ClearanceStep =
-  | "documents"
-  | "inspection"
-  | "duties"
-  | "released";
+  | "pre-clearance"
+  | "barpin-confirm"
+  | "submitted"
+  | "bc-review"
+  | "npd"
+  | "sppb"
+  | "sppbl"
+  | "sptnp"
+  | "reject";
 
-export const CLEARANCE_STEPS: ClearanceStep[] = [
-  "documents",
-  "inspection",
-  "duties",
-  "released",
-];
+/** Ops may raise up to this many NPD (document-request) rounds. */
+export const MAX_NPD_ROUNDS = 3;
+
+/** Final "released" results — clearance is done, order can move to delivery. */
+export const CLEARANCE_RELEASED: ClearanceStep[] = ["sppb", "sppbl", "sptnp"];
+
+/**
+ * The linear "spine" the sub-stepper renders. NPD and the specific end result
+ * are overlays on the BC / result nodes, not separate spine nodes.
+ */
+export const CLEARANCE_SPINE = [
+  "pre",
+  "barpin",
+  "submit",
+  "bc",
+  "result",
+] as const;
+export type ClearanceSpineNode = (typeof CLEARANCE_SPINE)[number];
+
+/** Which spine node a given clearance step lights up. */
+export function clearanceSpineIndex(step: ClearanceStep): number {
+  switch (step) {
+    case "pre-clearance":
+    case "reject":
+      return 0;
+    case "barpin-confirm":
+      return 1;
+    case "submitted":
+      return 2;
+    case "bc-review":
+    case "npd":
+      return 3;
+    case "sppb":
+    case "sppbl":
+    case "sptnp":
+      return 4;
+  }
+}
 
 /** i18n key for the timeline event of each clearance sub-state. */
 export const CLEARANCE_STEP_EVENT: Record<ClearanceStep, string> = {
-  documents: "order.evClDocuments",
-  inspection: "order.evClInspection",
-  duties: "order.evClDuties",
-  released: "order.evClReleased",
+  "pre-clearance": "order.evClPreClearance",
+  "barpin-confirm": "order.evClBarpin",
+  submitted: "order.evClSubmitted",
+  "bc-review": "order.evClBcReview",
+  npd: "order.evClNpd",
+  sppb: "order.evClSppb",
+  sppbl: "order.evClSppbl",
+  sptnp: "order.evClSptnp",
+  reject: "order.evClReject",
+};
+
+/** Attention overlay (i18n key) shown while sitting on a clearance sub-state. */
+const CLEARANCE_STEP_ATTENTION: Partial<Record<ClearanceStep, string>> = {
+  "barpin-confirm": "order.attClearanceBarpin",
+  npd: "order.attNpd",
+  sppb: "order.attClearanceReleased",
+  sppbl: "order.attClearanceReleasedExtra",
+  sptnp: "order.attClearanceTax",
+  reject: "order.attClearanceReject",
 };
 
 /** Demo FedEx airway bill, 12 digits, re-generated whenever the AWB changes. */
@@ -286,6 +344,14 @@ export interface Order {
   dropOff: DropOffInstruction | null;
   /** Current clearance sub-state (null when not in the clearance phase). */
   clearanceStep: ClearanceStep | null;
+  /** Pre-Clearance "belum bisa masuk clearance" — goods partial / delayed. */
+  clearanceBlocked: boolean;
+  /** How many NPD (document-request) rounds Bea Cukai has raised (0–3). */
+  npdRound: number;
+  /** When the customer confirmed the Barpin data (null = not yet). */
+  barpinConfirmedAt: number | null;
+  /** When the customer paid the SPTNP tax (null = not required / not yet). */
+  taxPaidAt: number | null;
 
   context: OrderContext | null;
   selectedRate: SelectedRate | null;
@@ -334,8 +400,25 @@ interface OrderStoreState {
   setPendingStart: (intent: PendingStart | null) => void;
   /** ops control plane: set a submitted order's phase (drafts are read-only) */
   setOrderStatus: (id: string, status: OrderStatus) => void;
-  /** ops control plane: set the current clearance sub-state */
+  /** ops control plane: advance the clearance spine (pre → barpin → submit → bc) */
   setClearanceStep: (id: string, step: ClearanceStep) => void;
+  /** ops control plane: flag Pre-Clearance as "belum bisa" (goods partial/delayed) */
+  setClearanceBlocked: (id: string, blocked: boolean) => void;
+  /** customer: confirm the Barpin data → submission proceeds */
+  confirmBarpin: (id: string) => void;
+  /** customer: ask ops to revise the Barpin data before confirming */
+  requestBarpinRevision: (id: string) => void;
+  /** ops control plane: Bea Cukai raises an NPD (document request), up to 3 rounds */
+  raiseNpd: (id: string) => void;
+  /** ops control plane: resubmit documents after an NPD → back to BC review */
+  resubmitClearance: (id: string) => void;
+  /** ops control plane: final BC result — sppb/sppbl/sptnp (released) or reject (restart) */
+  resolveClearance: (
+    id: string,
+    result: "sppb" | "sppbl" | "sptnp" | "reject",
+  ) => void;
+  /** customer: pay the SPTNP tax so the goods can be released */
+  payClearanceTax: (id: string) => void;
   /** ops control plane: set/clear an order's attention overlay (i18n key) */
   setOrderAttention: (id: string, attention: string | null) => void;
   /** ops control plane: issue the official quotation (builds from order data) */
@@ -438,6 +521,10 @@ export const useOrderStore = create<OrderStoreState>()(
             pickupChoicePending: false,
             dropOff: null,
             clearanceStep: null,
+            clearanceBlocked: false,
+            npdRound: 0,
+            barpinConfirmedAt: null,
+            taxPaidAt: null,
             context: ctx,
             selectedRate: rate,
             answers: {},
@@ -530,11 +617,11 @@ export const useOrderStore = create<OrderStoreState>()(
             // entering clearance starts the sub-state machine; leaving clears it
             clearanceStep:
               status === "clearance"
-                ? order.clearanceStep ?? "documents"
+                ? order.clearanceStep ?? "pre-clearance"
                 : order.status === "clearance"
                   ? null
                   : order.clearanceStep,
-            // the "released" banner is resolved once the phase moves on
+            // the clearance banner is resolved once the phase moves on
             attention:
               order.status === "clearance" && status !== "clearance"
                 ? null
@@ -568,8 +655,7 @@ export const useOrderStore = create<OrderStoreState>()(
           const next: Order = {
             ...order,
             clearanceStep: step,
-            attention:
-              step === "released" ? "order.attClearanceReleased" : order.attention,
+            attention: CLEARANCE_STEP_ATTENTION[step] ?? null,
             updatedAt: Date.now(),
             timeline: [
               ...order.timeline,
@@ -583,6 +669,197 @@ export const useOrderStore = create<OrderStoreState>()(
           return {
             orders: s.orders.map((o) => (o.id === id ? next : o)),
           };
+        }),
+      setClearanceBlocked: (id, blocked) =>
+        set((s) => {
+          const order = s.orders.find((o) => o.id === id);
+          if (
+            !order ||
+            order.status !== "clearance" ||
+            order.clearanceStep !== "pre-clearance" ||
+            order.clearanceBlocked === blocked
+          ) {
+            return {};
+          }
+          const next: Order = {
+            ...order,
+            clearanceBlocked: blocked,
+            attention: blocked ? "order.attClearanceBlocked" : null,
+            updatedAt: Date.now(),
+            timeline: [
+              ...order.timeline,
+              makeEvent(
+                "clearance",
+                blocked ? "order.evClBlocked" : "order.evClUnblocked",
+                nextEventAt(order),
+              ),
+            ],
+          };
+          return { orders: s.orders.map((o) => (o.id === id ? next : o)) };
+        }),
+      confirmBarpin: (id) =>
+        set((s) => {
+          const order = s.orders.find((o) => o.id === id);
+          if (
+            !order ||
+            order.status !== "clearance" ||
+            order.clearanceStep !== "barpin-confirm"
+          ) {
+            return {};
+          }
+          const next: Order = {
+            ...order,
+            clearanceStep: "submitted",
+            barpinConfirmedAt: Date.now(),
+            attention: null,
+            updatedAt: Date.now(),
+            timeline: [
+              ...order.timeline,
+              makeEvent(
+                "clearance",
+                "order.evClBarpinConfirmed",
+                nextEventAt(order),
+              ),
+            ],
+          };
+          return { orders: s.orders.map((o) => (o.id === id ? next : o)) };
+        }),
+      requestBarpinRevision: (id) =>
+        set((s) => {
+          const order = s.orders.find((o) => o.id === id);
+          if (
+            !order ||
+            order.status !== "clearance" ||
+            order.clearanceStep !== "barpin-confirm"
+          ) {
+            return {};
+          }
+          const next: Order = {
+            ...order,
+            attention: "order.attClearanceBarpinRevision",
+            updatedAt: Date.now(),
+            timeline: [
+              ...order.timeline,
+              makeEvent(
+                "clearance",
+                "order.evClBarpinRevision",
+                nextEventAt(order),
+              ),
+            ],
+          };
+          return { orders: s.orders.map((o) => (o.id === id ? next : o)) };
+        }),
+      raiseNpd: (id) =>
+        set((s) => {
+          const order = s.orders.find((o) => o.id === id);
+          if (
+            !order ||
+            order.status !== "clearance" ||
+            !["bc-review", "npd"].includes(order.clearanceStep ?? "") ||
+            order.npdRound >= MAX_NPD_ROUNDS
+          ) {
+            return {};
+          }
+          const next: Order = {
+            ...order,
+            clearanceStep: "npd",
+            npdRound: order.npdRound + 1,
+            attention: "order.attNpd",
+            updatedAt: Date.now(),
+            timeline: [
+              ...order.timeline,
+              makeEvent("clearance", "order.evClNpd", nextEventAt(order)),
+            ],
+          };
+          return { orders: s.orders.map((o) => (o.id === id ? next : o)) };
+        }),
+      resubmitClearance: (id) =>
+        set((s) => {
+          const order = s.orders.find((o) => o.id === id);
+          if (
+            !order ||
+            order.status !== "clearance" ||
+            order.clearanceStep !== "npd"
+          ) {
+            return {};
+          }
+          const next: Order = {
+            ...order,
+            clearanceStep: "bc-review",
+            attention: null,
+            updatedAt: Date.now(),
+            timeline: [
+              ...order.timeline,
+              makeEvent("clearance", "order.evClResubmit", nextEventAt(order)),
+            ],
+          };
+          return { orders: s.orders.map((o) => (o.id === id ? next : o)) };
+        }),
+      resolveClearance: (id, result) =>
+        set((s) => {
+          const order = s.orders.find((o) => o.id === id);
+          if (
+            !order ||
+            order.status !== "clearance" ||
+            !["bc-review", "npd"].includes(order.clearanceStep ?? "")
+          ) {
+            return {};
+          }
+          // Reject → restart clearance from Pre-Clearance (warehouse cost runs on).
+          if (result === "reject") {
+            const next: Order = {
+              ...order,
+              clearanceStep: "pre-clearance",
+              clearanceBlocked: false,
+              npdRound: 0,
+              barpinConfirmedAt: null,
+              attention: "order.attClearanceReject",
+              updatedAt: Date.now(),
+              timeline: [
+                ...order.timeline,
+                makeEvent("clearance", "order.evClReject", nextEventAt(order)),
+              ],
+            };
+            return { orders: s.orders.map((o) => (o.id === id ? next : o)) };
+          }
+          const next: Order = {
+            ...order,
+            clearanceStep: result,
+            attention: CLEARANCE_STEP_ATTENTION[result] ?? null,
+            updatedAt: Date.now(),
+            timeline: [
+              ...order.timeline,
+              makeEvent(
+                "clearance",
+                CLEARANCE_STEP_EVENT[result],
+                nextEventAt(order),
+              ),
+            ],
+          };
+          return { orders: s.orders.map((o) => (o.id === id ? next : o)) };
+        }),
+      payClearanceTax: (id) =>
+        set((s) => {
+          const order = s.orders.find((o) => o.id === id);
+          if (
+            !order ||
+            order.status !== "clearance" ||
+            order.clearanceStep !== "sptnp" ||
+            order.taxPaidAt
+          ) {
+            return {};
+          }
+          const next: Order = {
+            ...order,
+            taxPaidAt: Date.now(),
+            attention: "order.attClearanceReleased",
+            updatedAt: Date.now(),
+            timeline: [
+              ...order.timeline,
+              makeEvent("clearance", "order.evClTaxPaid", nextEventAt(order)),
+            ],
+          };
+          return { orders: s.orders.map((o) => (o.id === id ? next : o)) };
         }),
       setOrderAttention: (id, attention) =>
         set((s) => {
@@ -1009,6 +1286,10 @@ export const useOrderStore = create<OrderStoreState>()(
             pickupChoicePending: o.pickupChoicePending ?? false,
             dropOff: o.dropOff ?? null,
             clearanceStep: o.clearanceStep ?? null,
+            clearanceBlocked: o.clearanceBlocked ?? false,
+            npdRound: o.npdRound ?? 0,
+            barpinConfirmedAt: o.barpinConfirmedAt ?? null,
+            taxPaidAt: o.taxPaidAt ?? null,
           }));
           return { ...current, ...p, orders };
         }
@@ -1031,6 +1312,10 @@ export const useOrderStore = create<OrderStoreState>()(
             pickupChoicePending: false,
             dropOff: null,
             clearanceStep: null,
+            clearanceBlocked: false,
+            npdRound: 0,
+            barpinConfirmedAt: null,
+            taxPaidAt: null,
             context: p.context,
             selectedRate: p.selectedRate ?? null,
             answers: p.answers ?? {},

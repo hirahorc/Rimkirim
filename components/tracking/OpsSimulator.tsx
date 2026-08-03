@@ -16,11 +16,11 @@ import {
 } from "lucide-react";
 import {
   useOrderStore,
-  CLEARANCE_STEPS,
+  MAX_NPD_ROUNDS,
+  CLEARANCE_RELEASED,
   type Order,
   type OrderStatus,
   type PickupFailCause,
-  type ClearanceStep,
 } from "@/lib/store/useOrderStore";
 import { PHASE_STEPS } from "./StatusStepper";
 import { OrderStatusBadge } from "@/components/order/OrderStatusBadge";
@@ -55,6 +55,10 @@ export function OpsSimulator({ order }: { order: Order }) {
   const issueNewAwb = useOrderStore((s) => s.issueNewAwb);
   const confirmDroppedOff = useOrderStore((s) => s.confirmDroppedOff);
   const setClearanceStep = useOrderStore((s) => s.setClearanceStep);
+  const setClearanceBlocked = useOrderStore((s) => s.setClearanceBlocked);
+  const raiseNpd = useOrderStore((s) => s.raiseNpd);
+  const resubmitClearance = useOrderStore((s) => s.resubmitClearance);
+  const resolveClearance = useOrderStore((s) => s.resolveClearance);
 
   const customerFails = order.pickupFails.filter(
     (f) => f.cause === "customer",
@@ -62,11 +66,11 @@ export function OpsSimulator({ order }: { order: Order }) {
   const carrierFails = order.pickupFails.filter(
     (f) => f.cause === "carrier",
   ).length;
-  const nextClearance =
-    order.status === "clearance" && order.clearanceStep
-      ? (CLEARANCE_STEPS[CLEARANCE_STEPS.indexOf(order.clearanceStep) + 1] ??
-        null)
-      : null;
+  const clStep = order.status === "clearance" ? order.clearanceStep : null;
+  const canComplete =
+    clStep != null &&
+    CLEARANCE_RELEASED.includes(clStep) &&
+    (clStep !== "sptnp" || order.taxPaidAt != null);
 
   const currentIdx = PHASE_STEPS.indexOf(order.status as (typeof PHASE_STEPS)[number]);
   const next = currentIdx >= 0 && currentIdx < PHASE_STEPS.length - 1
@@ -283,59 +287,113 @@ export function OpsSimulator({ order }: { order: Order }) {
         <p className="flex items-center gap-1.5 text-xs font-medium text-muted-2">
           <ShieldCheck className="size-3.5" /> {t("ops.clearance")}
         </p>
-        {order.status !== "clearance" ? (
+        {clStep == null ? (
           <p className="mt-2 text-xs text-muted-2">{t("ops.clearanceInactive")}</p>
         ) : (
-          <>
-            <div className="mt-2 flex flex-wrap gap-2">
-              {CLEARANCE_STEPS.map((step) => (
+          <div className="mt-2 flex flex-wrap gap-2">
+            {clStep === "pre-clearance" && (
+              <>
                 <Button
-                  key={step}
                   size="sm"
-                  variant={order.clearanceStep === step ? "secondary" : "outline"}
-                  onClick={() => setClearanceStep(order.id, step)}
+                  variant={order.clearanceBlocked ? "danger" : "outline"}
+                  onClick={() =>
+                    setClearanceBlocked(order.id, !order.clearanceBlocked)
+                  }
                 >
-                  {t(clearanceStepKey(step))}
+                  {order.clearanceBlocked ? t("ops.clUnblock") : t("ops.clBlock")}
                 </Button>
-              ))}
-            </div>
-            <div className="mt-2 flex flex-wrap gap-2">
-              {nextClearance && (
                 <Button
                   size="sm"
                   variant="secondary"
-                  onClick={() => setClearanceStep(order.id, nextClearance)}
+                  disabled={order.clearanceBlocked}
+                  onClick={() => setClearanceStep(order.id, "barpin-confirm")}
                 >
-                  {t("ops.clearanceAdvance")}:{" "}
-                  {t(clearanceStepKey(nextClearance))}
+                  {t("ops.clToBarpin")}
                 </Button>
-              )}
-              {order.clearanceStep === "released" && (
+              </>
+            )}
+            {clStep === "barpin-confirm" && (
+              <p className="text-xs text-muted-2">{t("ops.clAwaitBarpin")}</p>
+            )}
+            {clStep === "submitted" && (
+              <Button
+                size="sm"
+                variant="secondary"
+                onClick={() => setClearanceStep(order.id, "bc-review")}
+              >
+                {t("ops.clToBcReview")}
+              </Button>
+            )}
+            {(clStep === "bc-review" || clStep === "npd") && (
+              <>
+                {clStep === "npd" && (
+                  <Button
+                    size="sm"
+                    variant="secondary"
+                    onClick={() => resubmitClearance(order.id)}
+                  >
+                    {t("ops.clResubmit")}
+                  </Button>
+                )}
                 <Button
                   size="sm"
-                  onClick={() => {
-                    setOrderStatus(order.id, "delivery");
-                    toast.success(t("ops.clearanceCompleteToast"));
-                  }}
+                  variant="outline"
+                  disabled={order.npdRound >= MAX_NPD_ROUNDS}
+                  onClick={() => raiseNpd(order.id)}
                 >
-                  {t("ops.clearanceComplete")}
+                  {order.npdRound >= MAX_NPD_ROUNDS
+                    ? t("ops.clNpdMax")
+                    : t("ops.clRaiseNpd")}
                 </Button>
-              )}
-            </div>
-          </>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => resolveClearance(order.id, "sppb")}
+                >
+                  {t("ops.clResolveSppb")}
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => resolveClearance(order.id, "sppbl")}
+                >
+                  {t("ops.clResolveSppbl")}
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => resolveClearance(order.id, "sptnp")}
+                >
+                  {t("ops.clResolveSptnp")}
+                </Button>
+                <Button
+                  size="sm"
+                  variant="danger"
+                  onClick={() => resolveClearance(order.id, "reject")}
+                >
+                  {t("ops.clReject")}
+                </Button>
+              </>
+            )}
+            {clStep === "sptnp" && !order.taxPaidAt && (
+              <p className="text-xs text-muted-2">{t("ops.clAwaitTax")}</p>
+            )}
+            {canComplete && (
+              <Button
+                size="sm"
+                onClick={() => {
+                  setOrderStatus(order.id, "delivery");
+                  toast.success(t("ops.clearanceCompleteToast"));
+                }}
+              >
+                {t("ops.clearanceComplete")}
+              </Button>
+            )}
+          </div>
         )}
       </div>
     </Card>
   );
-}
-
-function clearanceStepKey(step: ClearanceStep): string {
-  return {
-    documents: "order.clDocuments",
-    inspection: "order.clInspection",
-    duties: "order.clDuties",
-    released: "order.clReleased",
-  }[step];
 }
 
 /** "in-transit" → "InTransit" for the `order.status*` i18n keys. */
