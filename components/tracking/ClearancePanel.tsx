@@ -66,7 +66,11 @@ export function ClearancePanel({ order }: { order: Order }) {
 
   if (order.status !== "clearance") return null;
 
-  const current = order.clearanceStep ?? "pre-clearance";
+  // guard against any stale/unknown step value from older persisted state
+  const current: ClearanceStep =
+    order.clearanceStep && order.clearanceStep in STEP_DESC
+      ? order.clearanceStep
+      : "pre-clearance";
   const currentIdx = clearanceSpineIndex(current);
   const isReleased = CLEARANCE_RELEASED.includes(current);
   const blocked = current === "pre-clearance" && order.clearanceBlocked;

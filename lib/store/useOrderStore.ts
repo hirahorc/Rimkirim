@@ -1307,7 +1307,12 @@ export const useOrderStore = create<OrderStoreState>()(
             pickupFails: o.pickupFails ?? [],
             pickupChoicePending: o.pickupChoicePending ?? false,
             dropOff: o.dropOff ?? null,
-            clearanceStep: o.clearanceStep ?? null,
+            // drop clearance steps from the pre-Round-13 enum (documents/…);
+            // an order still in clearance falls back to "pre-clearance".
+            clearanceStep:
+              o.clearanceStep && CLEARANCE_STEP_EVENT[o.clearanceStep]
+                ? o.clearanceStep
+                : null,
             clearanceBlocked: o.clearanceBlocked ?? false,
             npdRound: o.npdRound ?? 0,
             barpinConfirmedAt: o.barpinConfirmedAt ?? null,
