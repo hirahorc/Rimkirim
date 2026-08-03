@@ -19,9 +19,11 @@ import { Button } from "@/components/ui/button";
 export function RevisionCard({
   orderId,
   moduleId,
+  note,
 }: {
   orderId: string;
   moduleId: ModuleId;
+  note?: string | null;
 }) {
   const t = useT();
   const router = useRouter();
@@ -38,6 +40,14 @@ export function RevisionCard({
             {meta ? t(meta.titleKey) : moduleId}
           </span>
         </p>
+        {note && (
+          <p className="mt-2 rounded-md bg-surface-2 px-3 py-2 text-sm text-muted">
+            <span className="font-medium text-foreground">
+              {t("order.revNote")}:
+            </span>{" "}
+            {note}
+          </p>
+        )}
       </div>
       <Button
         className="shrink-0"

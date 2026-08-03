@@ -330,6 +330,8 @@ export interface Order {
   quotation: Quotation | null;
   /** Module flagged for a fix in the needs-revision flow (null = no revision). */
   revisionModule: ModuleId | null;
+  /** Optional note from ops explaining what needs fixing (null = none). */
+  revisionNote: string | null;
   /** Pending ops action surfaced on the ops panel (null = nothing to do).
    *  Set when the customer acts in a way that requires ops follow-up. */
   opsNotice: OpsNotice | null;
@@ -444,7 +446,11 @@ interface OrderStoreState {
   /** customer: confirm the package was dropped off at the FedEx location */
   confirmDropOff: (id: string) => void;
   /** customer: flag a module for a fix; order returns to Review until resubmitted */
-  requestRevision: (id: string, moduleId: ModuleId) => void;
+  requestRevision: (
+    id: string,
+    moduleId: ModuleId,
+    note?: string | null,
+  ) => void;
 }
 
 /** The subset of an Order that is mirrored as flat top-level store fields. */
@@ -515,6 +521,7 @@ export const useOrderStore = create<OrderStoreState>()(
             timeline: [makeEvent("created", "order.evCreated")],
             quotation: null,
             revisionModule: null,
+            revisionNote: null,
             opsNotice: null,
             awb: null,
             pickupFails: [],
@@ -569,6 +576,7 @@ export const useOrderStore = create<OrderStoreState>()(
             status: nextStatus,
             trackingNumber: o.trackingNumber ?? makeTrackingNumber(),
             revisionModule: null,
+            revisionNote: null,
             // returning to a pending quotation re-arms the approval banner
             attention:
               nextStatus === "quotation"
@@ -1225,7 +1233,7 @@ export const useOrderStore = create<OrderStoreState>()(
             orders: s.orders.map((o) => (o.id === id ? next : o)),
           };
         }),
-      requestRevision: (id, moduleId) =>
+      requestRevision: (id, moduleId, note = null) =>
         set((s) => {
           const order = s.orders.find((o) => o.id === id);
           if (
@@ -1238,8 +1246,9 @@ export const useOrderStore = create<OrderStoreState>()(
           const next: Order = {
             ...order,
             revisionModule: moduleId,
+            revisionNote: note?.trim() ? note.trim() : null,
             status: "review",
-            attention: null,
+            attention: "order.attRevision",
             opsNotice: null,
             updatedAt: Date.now(),
             timeline: [
@@ -1280,6 +1289,7 @@ export const useOrderStore = create<OrderStoreState>()(
             timeline: o.timeline ?? [],
             quotation: o.quotation ?? null,
             revisionModule: o.revisionModule ?? null,
+            revisionNote: o.revisionNote ?? null,
             opsNotice: o.opsNotice ?? null,
             awb: o.awb ?? null,
             pickupFails: o.pickupFails ?? [],
@@ -1306,6 +1316,7 @@ export const useOrderStore = create<OrderStoreState>()(
             timeline: [makeEvent("created", "order.evCreated")],
             quotation: null,
             revisionModule: null,
+            revisionNote: null,
             opsNotice: null,
             awb: null,
             pickupFails: [],

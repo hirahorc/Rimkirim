@@ -13,6 +13,7 @@ import {
   CalendarCheck,
   Truck,
   ShieldCheck,
+  PenLine,
 } from "lucide-react";
 import {
   useOrderStore,
@@ -21,12 +22,15 @@ import {
   type Order,
   type OrderStatus,
   type PickupFailCause,
+  type ModuleId,
 } from "@/lib/store/useOrderStore";
 import { PHASE_STEPS } from "./StatusStepper";
+import { MODULE_META } from "@/components/order/module-meta";
 import { OrderStatusBadge } from "@/components/order/OrderStatusBadge";
 import { useT } from "@/lib/i18n/LanguageProvider";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
 import { cn } from "@/lib/utils/cn";
 
@@ -35,7 +39,6 @@ const ALL_STATES: OrderStatus[] = [...PHASE_STEPS, "cancelled"];
 /** Preset attention overlays the ops panel can set on an order to demo the banner. */
 const ATTENTION_PRESETS: { key: string; labelKey: string }[] = [
   { key: "order.attQuotationReady", labelKey: "ops.attQuotation" },
-  { key: "order.attRevision", labelKey: "ops.attRevision" },
   { key: "order.attPickupFailed", labelKey: "ops.attPickup" },
 ];
 
@@ -59,6 +62,13 @@ export function OpsSimulator({ order }: { order: Order }) {
   const raiseNpd = useOrderStore((s) => s.raiseNpd);
   const resubmitClearance = useOrderStore((s) => s.resubmitClearance);
   const resolveClearance = useOrderStore((s) => s.resolveClearance);
+  const requestRevision = useOrderStore((s) => s.requestRevision);
+
+  const [revModule, setRevModule] = React.useState<ModuleId>(
+    MODULE_META[0].id as ModuleId,
+  );
+  const [revNote, setRevNote] = React.useState("");
+  const canRevise = order.status === "review" || order.status === "quotation";
 
   const customerFails = order.pickupFails.filter(
     (f) => f.cause === "customer",
@@ -202,6 +212,44 @@ export function OpsSimulator({ order }: { order: Order }) {
             </Button>
           ))}
         </div>
+      </div>
+
+      <div className="mt-4 border-t border-info/20 pt-4">
+        <p className="flex items-center gap-1.5 text-xs font-medium text-muted-2">
+          <PenLine className="size-3.5" /> {t("ops.revise")}
+        </p>
+        {!canRevise ? (
+          <p className="mt-2 text-xs text-muted-2">{t("ops.reviseInactive")}</p>
+        ) : (
+          <div className="mt-2 space-y-2">
+            <Select
+              value={revModule}
+              onChange={(e) => setRevModule(e.target.value as ModuleId)}
+            >
+              {MODULE_META.map((m) => (
+                <option key={m.id} value={m.id}>
+                  {t(m.titleKey)}
+                </option>
+              ))}
+            </Select>
+            <Input
+              value={revNote}
+              onChange={(e) => setRevNote(e.target.value)}
+              placeholder={t("ops.reviseNotePlaceholder")}
+            />
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => {
+                requestRevision(order.id, revModule, revNote);
+                setRevNote("");
+                toast.info(t("ops.reviseToast"));
+              }}
+            >
+              <PenLine /> {t("ops.reviseCta")}
+            </Button>
+          </div>
+        )}
       </div>
 
       <div className="mt-4 border-t border-info/20 pt-4">

@@ -149,7 +149,11 @@ export function OrderDetail({ id }: { id: string }) {
 
       {order.revisionModule && order.status === "review" && (
         <div className="mt-4">
-          <RevisionCard orderId={order.id} moduleId={order.revisionModule} />
+          <RevisionCard
+            orderId={order.id}
+            moduleId={order.revisionModule}
+            note={order.revisionNote}
+          />
         </div>
       )}
 
