@@ -102,7 +102,9 @@ export function OpsSimulator({ order }: { order: Order }) {
           >
             {identifier ?? "—"} <Eye className="size-3.5" />
           </Link>
-          <p className="mt-0.5 truncate text-xs text-muted">{order.ownerEmail}</p>
+          <p className="mt-0.5 truncate text-xs text-muted">
+            {maskEmail(order.ownerEmail)}
+          </p>
         </div>
         <OrderStatusBadge status={order.status} />
       </div>
@@ -442,6 +444,15 @@ export function OpsSimulator({ order }: { order: Order }) {
       </div>
     </Card>
   );
+}
+
+/** Mask an owner email on the shared ops view: "marketing@rimkirim.com" → "m****@rimkirim.com". */
+function maskEmail(email: string | null): string {
+  if (!email) return "—";
+  const [local, domain] = email.split("@");
+  if (!domain) return "—";
+  const head = local.slice(0, 1);
+  return `${head}${"*".repeat(Math.max(1, local.length - 1))}@${domain}`;
 }
 
 /** "in-transit" → "InTransit" for the `order.status*` i18n keys. */

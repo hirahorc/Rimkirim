@@ -124,7 +124,8 @@ function OrderCard({ order, locale }: { order: Order; locale: "id" | "en" }) {
             variant="secondary"
             onClick={() => {
               resumeOrder(order.id);
-              router.push("/pesan");
+              // a booking number means the hub was reached — resume there
+              router.push(order.bookingNumber ? "/pesan/modul" : "/pesan");
             }}
           >
             <PenLine className="size-3.5" /> {t("order.resumeDraft")}

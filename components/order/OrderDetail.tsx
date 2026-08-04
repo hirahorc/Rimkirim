@@ -193,7 +193,8 @@ export function OrderDetail({ id }: { id: string }) {
             className="mt-2 w-full"
             onClick={() => {
               resumeOrder(order.id);
-              router.push("/pesan");
+              // a booking number means the hub was reached — resume there
+              router.push(order.bookingNumber ? "/pesan/modul" : "/pesan");
             }}
           >
             <PenLine className="size-4" /> {t("order.resumeDraft")}
