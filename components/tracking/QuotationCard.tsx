@@ -99,22 +99,20 @@ export function QuotationCard({ order }: { order: Order }) {
 
         {pendingApproval && (
           <div className="mt-4 space-y-2">
-            <div className="flex flex-col gap-2 sm:flex-row">
-              <Button
-                className="flex-1"
-                onClick={() => {
-                  approveQuotation(order.id);
-                  toast.success(t("order.quApprovedToast"));
-                }}
-              >
-                <CheckCircle2 /> {t("order.quApprove")}
-              </Button>
-              <Button asChild variant="outline" className="flex-1">
-                <a href={WA_URL} target="_blank" rel="noreferrer">
-                  <MessageCircle /> {t("order.quContact")}
-                </a>
-              </Button>
-            </div>
+            <Button
+              className="w-full"
+              onClick={() => {
+                approveQuotation(order.id);
+                toast.success(t("order.quApprovedToast"));
+              }}
+            >
+              <CheckCircle2 /> {t("order.quApprove")}
+            </Button>
+            <Button asChild variant="outline" className="w-full">
+              <a href={WA_URL} target="_blank" rel="noreferrer">
+                <MessageCircle /> {t("order.quContact")}
+              </a>
+            </Button>
             <Button
               variant="ghost"
               className="w-full"
