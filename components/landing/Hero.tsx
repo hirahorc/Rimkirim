@@ -35,7 +35,6 @@ export function Hero() {
   return (
     <section className="relative overflow-hidden">
       <div className="grid-backdrop reveal-bg pointer-events-none absolute inset-0" />
-      <div className="brand-glow reveal-bg pointer-events-none absolute inset-x-0 top-0 h-72" />
       <div className="reveal-stagger relative mx-auto max-w-3xl px-4 pt-16 text-center sm:px-6 sm:pt-24">
         <Badge variant="brand" className="mx-auto mb-5">
           <Sparkles className="size-3.5" /> {t("hero.badge")}
