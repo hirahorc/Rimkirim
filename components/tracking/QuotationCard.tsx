@@ -65,7 +65,7 @@ export function QuotationCard({ order }: { order: Order }) {
         <div className="mt-4 flex flex-wrap items-end justify-between gap-3">
           <div>
             <p className="text-xs text-muted-2">{t("order.quTotal")}</p>
-            <p className="mt-0.5 font-display text-3xl font-bold tracking-tight text-brand">
+            <p className="mt-0.5 font-mono text-3xl font-bold tracking-tight tabular-nums text-brand">
               {formatIDR(qu.total)}
             </p>
           </div>
@@ -75,7 +75,8 @@ export function QuotationCard({ order }: { order: Order }) {
           </p>
         </div>
         <p className="mt-1 text-xs text-muted-2">
-          {formatIDR(qu.perKg)} / {t("order.tdPerKg")} · {qu.chargeableKg} kg ·{" "}
+          <span className="font-mono tabular-nums">{formatIDR(qu.perKg)}</span> /{" "}
+          {t("order.tdPerKg")} · {qu.chargeableKg} kg ·{" "}
           {t("order.quIssued")} {dateFmt.format(qu.issuedAt)}
         </p>
 
@@ -86,14 +87,14 @@ export function QuotationCard({ order }: { order: Order }) {
               className="flex items-center justify-between gap-3 px-3 py-2 text-sm"
             >
               <span className="text-muted">{t(it.labelKey)}</span>
-              <span className="font-medium tabular-nums">
+              <span className="font-mono font-medium tabular-nums">
                 {formatIDR(it.amount)}
               </span>
             </div>
           ))}
           <div className="flex items-center justify-between gap-3 bg-surface-2 px-3 py-2 text-sm font-semibold">
             <span>{t("order.quTotal")}</span>
-            <span className="tabular-nums">{formatIDR(qu.total)}</span>
+            <span className="font-mono tabular-nums">{formatIDR(qu.total)}</span>
           </div>
         </div>
 

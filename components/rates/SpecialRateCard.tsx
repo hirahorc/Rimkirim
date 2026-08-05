@@ -97,7 +97,7 @@ export function SpecialRateCard({
         </div>
 
         <div className="mt-1 flex items-baseline gap-2">
-          <span className="font-display text-4xl font-bold tracking-tight text-brand">
+          <span className="font-mono text-4xl font-bold tracking-tight tabular-nums text-brand">
             {formatIDR(tier.pricePerKg)}
           </span>
           <span className="text-muted">{t("special.perKgUnit")}</span>
@@ -105,7 +105,7 @@ export function SpecialRateCard({
 
         <p className="mt-2 text-sm text-muted">
           {t("special.mulaiDari")}{" "}
-          <span className="font-semibold text-foreground">
+          <span className="font-mono font-semibold tabular-nums text-foreground">
             {formatIDR(tier.startingTotal)}
           </span>{" "}
           {t("special.untukKg")} {tier.minKg} kg
@@ -125,7 +125,7 @@ export function SpecialRateCard({
                   className="flex items-center justify-between px-3 py-2 text-sm"
                 >
                   <span className="text-muted">{r.label}</span>
-                  <span className="font-medium tabular-nums text-foreground">
+                  <span className="font-mono font-medium tabular-nums text-foreground">
                     {formatIDR(r.pricePerKg)}
                   </span>
                 </li>

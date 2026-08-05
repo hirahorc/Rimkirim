@@ -289,8 +289,8 @@ export function ItemsForm() {
 
         {/* totals */}
         <Card className="grid gap-4 p-5 sm:grid-cols-3">
-          <Total label={t("order.itTotalPrice")} value={totalPrice === null ? "—" : formatIDR(totalPrice)} accent />
-          <Total label={t("order.itTotalValue")} value={formatCurrency(totalValue, currency)} />
+          <Total label={t("order.itTotalPrice")} value={totalPrice === null ? "—" : formatIDR(totalPrice)} accent mono />
+          <Total label={t("order.itTotalValue")} value={formatCurrency(totalValue, currency)} mono />
           <Total label={t("order.itTotalCw")} value={`${formatNumber(totalCw)} kg`} />
         </Card>
 
@@ -326,11 +326,27 @@ export function ItemsForm() {
   );
 }
 
-function Total({ label, value, accent }: { label: string; value: string; accent?: boolean }) {
+function Total({
+  label,
+  value,
+  accent,
+  mono,
+}: {
+  label: string;
+  value: string;
+  accent?: boolean;
+  mono?: boolean;
+}) {
   return (
     <div>
       <p className="text-xs uppercase tracking-wide text-muted-2">{label}</p>
-      <p className={cn("mt-0.5 font-display text-lg font-bold tracking-tight", accent && "text-brand")}>
+      <p
+        className={cn(
+          "mt-0.5 text-lg font-bold tracking-tight",
+          mono ? "font-mono tabular-nums" : "font-display",
+          accent && "text-brand",
+        )}
+      >
         {value}
       </p>
     </div>

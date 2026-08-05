@@ -328,10 +328,10 @@ function ItemsCard({ order }: { order: Order }) {
                     <span className="text-right tabular-nums text-muted">
                       {val(it?.quantity)}
                     </span>
-                    <span className="text-right tabular-nums text-muted">
+                    <span className="text-right font-mono tabular-nums text-muted">
                       {formatCurrency(Number(it?.value) || 0, currency)}
                     </span>
-                    <span className="text-right font-medium tabular-nums">
+                    <span className="text-right font-mono font-medium tabular-nums">
                       {formatCurrency(
                         (Number(it?.value) || 0) * (Number(it?.quantity) || 0),
                         currency,
@@ -339,7 +339,7 @@ function ItemsCard({ order }: { order: Order }) {
                     </span>
                   </div>
                 ))}
-                <div className="border-t border-border bg-surface-2 px-3 py-1.5 text-right text-sm font-medium">
+                <div className="border-t border-border bg-surface-2 px-3 py-1.5 text-right font-mono text-sm font-medium tabular-nums">
                   {formatCurrency(pkgValue, currency)}
                 </div>
               </div>
@@ -354,12 +354,18 @@ function ItemsCard({ order }: { order: Order }) {
               {formatNumber(totalCw, 1)} kg
             </Row>
             <Row label={t("order.itTotalValue")}>
-              {formatCurrency(totalValue, currency)}
+              <span className="font-mono tabular-nums">
+                {formatCurrency(totalValue, currency)}
+              </span>
             </Row>
           </div>
           {totalPrice > 0 && (
             <div className="py-2">
-              <Row label={t("order.itTotalPrice")}>{formatIDR(totalPrice)}</Row>
+              <Row label={t("order.itTotalPrice")}>
+                <span className="font-mono tabular-nums">
+                  {formatIDR(totalPrice)}
+                </span>
+              </Row>
             </div>
           )}
         </>
@@ -501,11 +507,11 @@ function PendingCards({ order }: { order: Order }) {
         <Section icon={ReceiptText} title={t("order.tdQuotationSection")}>
           {rate && (
             <Row label={t("order.tdBaseRate")}>
-              <span className="font-medium">
-                {formatIDR(rate.perKg)}{" "}
-                <span className="text-xs font-normal text-muted-2">
-                  / {t("order.tdPerKg")}
-                </span>
+              <span className="font-mono font-medium tabular-nums">
+                {formatIDR(rate.perKg)}
+              </span>{" "}
+              <span className="text-xs font-normal text-muted-2">
+                / {t("order.tdPerKg")}
               </span>
             </Row>
           )}

@@ -101,13 +101,15 @@ export function RateCard({
         <div className="flex items-end justify-between">
           <div>
             <p className="text-xs text-muted-2">{t("rateCard.totalEstimasi")}</p>
-            <p className="font-display text-2xl font-bold tracking-tight text-foreground">
+            <p className="font-mono text-2xl font-bold tracking-tight tabular-nums text-foreground">
               {formatIDR(quote.total)}
             </p>
           </div>
           <div className="text-right">
             <p className="text-xs text-muted-2">{t("rateCard.perKg")}</p>
-            <p className="font-medium text-brand">{formatIDR(quote.pricePerKg)}</p>
+            <p className="font-mono font-medium tabular-nums text-brand">
+              {formatIDR(quote.pricePerKg)}
+            </p>
           </div>
         </div>
         <p className="mt-2 text-xs text-muted-2">{t("rateCard.taxNote")}</p>
