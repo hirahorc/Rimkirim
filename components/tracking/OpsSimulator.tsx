@@ -87,7 +87,7 @@ export function OpsSimulator({ order }: { order: Order }) {
     ? PHASE_STEPS[currentIdx + 1]
     : null;
 
-  const identifier = order.status === "draft" ? order.bookingNumber : order.trackingNumber;
+  const identifier = order.bookingNumber;
 
   return (
     <Card className="border-info/40 bg-info/5 p-5">

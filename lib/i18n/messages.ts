@@ -496,7 +496,6 @@ const id = {
     confirmBody:
       "Terima kasih! Tim kami akan menghubungi kamu untuk konfirmasi jadwal & dokumen.",
     backHome: "Kembali ke beranda",
-    trackingNumberLabel: "Nomor Tracking",
     viewOrder: "Lihat status pesanan",
     resumeDraft: "Lanjutkan mengisi",
     draftNote: "Draft tersimpan — lanjutkan kapan saja.",
@@ -734,7 +733,7 @@ const id = {
     // AWB section
     tdAwbNumber: "Nomor AWB",
     tdAwbStable:
-      "Nomor tracking kamu tidak berubah — hanya AWB internal yang diganti.",
+      "Nomor booking kamu tidak berubah — hanya AWB internal yang diganti.",
     // new-AWB request dialog
     awbDialogTitle: "Minta AWB baru",
     awbDialogBody:
@@ -1451,7 +1450,6 @@ const en: Messages = {
     confirmBody:
       "Thank you! Our team will contact you to confirm the schedule & documents.",
     backHome: "Back to home",
-    trackingNumberLabel: "Tracking Number",
     viewOrder: "View order status",
     resumeDraft: "Continue filling",
     draftNote: "Draft saved — continue anytime.",
@@ -1688,7 +1686,7 @@ const en: Messages = {
     // AWB section
     tdAwbNumber: "AWB number",
     tdAwbStable:
-      "Your tracking number never changes — only the internal AWB is replaced.",
+      "Your booking number never changes — only the internal AWB is replaced.",
     // new-AWB request dialog
     awbDialogTitle: "Request a new AWB",
     awbDialogBody:

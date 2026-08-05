@@ -6,7 +6,6 @@ import { useRouter } from "next/navigation";
 import {
   Loader2,
   ArrowLeft,
-  Hash,
   Package,
   Route as RouteIcon,
   PenLine,
@@ -76,8 +75,7 @@ export function OrderDetail({ id }: { id: string }) {
     year: "numeric",
   }).format(new Date(order.createdAt));
   const isDraft = order.status === "draft";
-  // a draft has no tracking number yet — the booking number identifies it
-  const identifier = isDraft ? order.bookingNumber : order.trackingNumber;
+  const identifier = order.bookingNumber;
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6 sm:py-10">
@@ -92,9 +90,7 @@ export function OrderDetail({ id }: { id: string }) {
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
             <p className="text-xs font-medium uppercase tracking-wide text-muted-2">
-              {isDraft
-                ? t("order.bookingNumberLabel")
-                : t("order.trackingNumberLabel")}
+              {t("order.bookingNumberLabel")}
             </p>
             <p className="mt-1 flex items-center gap-2">
               <span className="font-mono text-xl font-bold tracking-tight text-brand">
@@ -112,12 +108,6 @@ export function OrderDetail({ id }: { id: string }) {
               <Package className="size-4" /> {t("order.ordersCreatedAt")}
             </span>
             <span className="text-muted">{date}</span>
-          </div>
-          <div className="flex items-center justify-between gap-3">
-            <span className="flex items-center gap-1.5 text-muted-2">
-              <Hash className="size-4" /> {t("order.bookingNumberLabel")}
-            </span>
-            <span className="font-mono text-muted">{order.bookingNumber ?? "—"}</span>
           </div>
           <div className="flex items-center justify-between gap-3">
             <span className="flex items-center gap-1.5 text-muted-2">

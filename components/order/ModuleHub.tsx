@@ -47,7 +47,6 @@ export function ModuleHub() {
   const answers = useOrderStore((s) => s.answers);
   const bookingNumber = useOrderStore((s) => s.bookingNumber);
   const generatedPackingCode = useOrderStore((s) => s.generatedPackingCode);
-  const trackingNumber = useOrderStore((s) => s.trackingNumber);
   const orderId = useOrderStore((s) => s.activeDraftId);
   const ensureBookingNumber = useOrderStore((s) => s.ensureBookingNumber);
   const ensurePackingCode = useOrderStore((s) => s.ensurePackingCode);
@@ -79,13 +78,6 @@ export function ModuleHub() {
           {t("order.confirmTitle")}
         </h1>
         <p className="mt-2 text-sm text-muted">{t("order.confirmBody")}</p>
-        {trackingNumber && (
-          <div className="mt-4 flex items-center justify-center gap-2 rounded-sm border border-border bg-surface-2/50 p-3 text-sm">
-            <span className="text-muted-2">{t("order.trackingNumberLabel")}:</span>
-            <span className="font-mono font-semibold text-brand">{trackingNumber}</span>
-            <CopyButton value={trackingNumber} />
-          </div>
-        )}
         {bookingNumber && (
           <div className="mt-2 flex items-center justify-center gap-2 rounded-sm border border-border bg-surface-2/50 p-3 text-sm">
             <span className="text-muted-2">{t("order.bookingNumberLabel")}:</span>
