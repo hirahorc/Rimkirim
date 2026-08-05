@@ -55,7 +55,7 @@ function useNotifications(): NotificationItem[] {
           seq: items.length,
           messageKey: e.messageKey,
           orderId: o.id,
-          identifier: o.trackingNumber ?? o.bookingNumber,
+          identifier: o.bookingNumber,
         });
       }
     }

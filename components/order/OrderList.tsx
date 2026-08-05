@@ -90,8 +90,7 @@ function OrderCard({ order, locale }: { order: Order; locale: "id" | "en" }) {
     year: "numeric",
   }).format(new Date(order.createdAt));
   const isDraft = order.status === "draft";
-  // a draft has no tracking number yet — the booking number identifies it
-  const identifier = isDraft ? order.bookingNumber : order.trackingNumber;
+  const identifier = order.bookingNumber;
 
   return (
     <Card className="p-4 transition-colors hover:border-border-strong">

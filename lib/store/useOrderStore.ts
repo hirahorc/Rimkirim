@@ -9,7 +9,6 @@ import {
   makeEventId,
   makeOrderId,
   makePackingCode,
-  makeTrackingNumber,
 } from "@/lib/utils/order-ids";
 import { totalChargeableWeight } from "@/lib/utils/chargeable-weight";
 import { useAuthStore } from "./useAuthStore";
@@ -325,8 +324,6 @@ export interface Order {
   id: string;
   ownerEmail: string | null;
   status: OrderStatus;
-  /** Stable Rimkirim tracking number, issued once the order is submitted. */
-  trackingNumber: string | null;
   createdAt: number;
   updatedAt: number;
 
@@ -345,7 +342,7 @@ export interface Order {
   /** Pending ops action surfaced on the ops panel (null = nothing to do).
    *  Set when the customer acts in a way that requires ops follow-up. */
   opsNotice: OpsNotice | null;
-  /** The FedEx airway bill. Unlike the stable trackingNumber, this can be
+  /** The FedEx airway bill. Unlike the stable booking number, this can be
    *  re-issued when pickups keep failing or a drop-off deadline is missed. */
   awb: string | null;
   /** Failed pickup attempts, oldest first, with fault attribution. */
@@ -394,7 +391,6 @@ interface OrderStoreState {
   modules: Modules;
   bookingNumber: string | null;
   generatedPackingCode: string | null;
-  trackingNumber: string | null;
   pendingStart: PendingStart | null;
 
   startOrder: (ctx: OrderContext, rate?: SelectedRate | null) => void;
@@ -475,7 +471,6 @@ const FLAT_KEYS: (keyof Order)[] = [
   "modules",
   "bookingNumber",
   "generatedPackingCode",
-  "trackingNumber",
 ];
 
 /** Copy the draft fields of an order into the flat state shape. */
@@ -517,7 +512,6 @@ export const useOrderStore = create<OrderStoreState>()(
       modules: emptyModules,
       bookingNumber: null,
       generatedPackingCode: null,
-      trackingNumber: null,
       pendingStart: null,
 
       startOrder: (ctx, rate = null) =>
@@ -537,7 +531,6 @@ export const useOrderStore = create<OrderStoreState>()(
             id,
             ownerEmail: email,
             status: "draft",
-            trackingNumber: null,
             createdAt: existing?.createdAt ?? Date.now(),
             updatedAt: Date.now(),
             attention: null,
@@ -600,7 +593,9 @@ export const useOrderStore = create<OrderStoreState>()(
           const nextStatus: OrderStatus = o.quotation ? "quotation" : "review";
           return {
             status: nextStatus,
-            trackingNumber: o.trackingNumber ?? makeTrackingNumber(),
+            // the hub already issued a booking number; guarantee one as the
+            // single lifecycle identifier just in case.
+            bookingNumber: o.bookingNumber ?? makeBookingNumber(),
             revisionModule: null,
             revisionNote: null,
             // returning to a pending quotation re-arms the approval banner
@@ -628,7 +623,6 @@ export const useOrderStore = create<OrderStoreState>()(
           modules: emptyModules,
           bookingNumber: null,
           generatedPackingCode: null,
-          trackingNumber: null,
         }),
       resumeOrder: (id) =>
         set((s) => {
@@ -1312,7 +1306,6 @@ export const useOrderStore = create<OrderStoreState>()(
         modules: s.modules,
         bookingNumber: s.bookingNumber,
         generatedPackingCode: s.generatedPackingCode,
-        trackingNumber: s.trackingNumber,
         pendingStart: s.pendingStart,
       }),
       // Migrate the pre-multi-order single-draft shape into a draft order so
@@ -1354,7 +1347,6 @@ export const useOrderStore = create<OrderStoreState>()(
             id,
             ownerEmail: useAuthStore.getState().currentEmail,
             status: "draft",
-            trackingNumber: null,
             createdAt: Date.now(),
             updatedAt: Date.now(),
             attention: null,
@@ -1386,7 +1378,6 @@ export const useOrderStore = create<OrderStoreState>()(
             ...p,
             orders: [order],
             activeDraftId: id,
-            trackingNumber: null,
             pendingStart: null,
           };
         }
