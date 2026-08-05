@@ -1,0 +1,26 @@
+"use client";
+
+import type { OrderStatus } from "@/lib/store/useOrderStore";
+import { useT } from "@/lib/i18n/LanguageProvider";
+import { Badge } from "@/components/ui/badge";
+
+const STATUS_META: Record<
+  OrderStatus,
+  { labelKey: string; variant: "neutral" | "brand" | "warning" | "info" | "success" | "danger" }
+> = {
+  draft: { labelKey: "order.statusDraft", variant: "neutral" },
+  review: { labelKey: "order.statusReview", variant: "neutral" },
+  quotation: { labelKey: "order.statusQuotation", variant: "brand" },
+  pickup: { labelKey: "order.statusPickup", variant: "warning" },
+  "in-transit": { labelKey: "order.statusInTransit", variant: "info" },
+  clearance: { labelKey: "order.statusClearance", variant: "warning" },
+  delivery: { labelKey: "order.statusDelivery", variant: "info" },
+  delivered: { labelKey: "order.statusDelivered", variant: "success" },
+  cancelled: { labelKey: "order.statusCancelled", variant: "danger" },
+};
+
+export function OrderStatusBadge({ status }: { status: OrderStatus }) {
+  const t = useT();
+  const meta = STATUS_META[status];
+  return <Badge variant={meta.variant}>{t(meta.labelKey)}</Badge>;
+}

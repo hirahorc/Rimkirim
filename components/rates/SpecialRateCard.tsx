@@ -56,7 +56,6 @@ export function SpecialRateCard({
 
   return (
     <Card className="relative overflow-hidden border-brand/40">
-      <div className="brand-glow pointer-events-none absolute inset-x-0 top-0 h-32" />
       <div className="relative p-6">
         <div className="flex items-center justify-between gap-3">
           <Badge variant="brand">

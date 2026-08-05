@@ -80,15 +80,6 @@ body {
   text-rendering: optimizeLegibility;
 }
 
-/* subtle ambient brand glow used behind hero / cards */
-.brand-glow {
-  background: radial-gradient(
-    60% 60% at 50% 0%,
-    rgba(193, 255, 0, 0.1) 0%,
-    transparent 70%
-  );
-}
-
 /* grid backdrop for hero */
 .grid-backdrop {
   background-image:

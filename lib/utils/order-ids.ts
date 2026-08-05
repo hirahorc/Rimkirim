@@ -25,3 +25,22 @@ export function makePackingCode(): string {
   const n = Math.floor(100000 + Math.random() * 900000);
   return `RK-PL-${n}`;
 }
+
+/** Internal order id (not shown to the user), e.g. "RK-O-4KX9-M2PT". */
+export function makeOrderId(): string {
+  const c = randomChars(8);
+  return `RK-O-${c.slice(0, 4)}-${c.slice(4)}`;
+}
+
+/** Stable Rimkirim tracking number, e.g. "RKT-7T9P-WL2N". Distinct from the booking number. */
+export function makeTrackingNumber(): string {
+  const c = randomChars(8);
+  return `RKT-${c.slice(0, 4)}-${c.slice(4)}`;
+}
+
+/** Unique timeline/notification event id. */
+export function makeEventId(): string {
+  return typeof crypto !== "undefined" && "randomUUID" in crypto
+    ? crypto.randomUUID()
+    : `ev-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+}

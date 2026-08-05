@@ -162,7 +162,6 @@ export function ShipmentCalculator() {
         className="relative overflow-hidden rounded-md border border-border-strong bg-surface/90 shadow-2xl shadow-black/40 backdrop-blur"
       >
         <h2 className="sr-only">{t("calc.srHeading")}</h2>
-        <div className="brand-glow pointer-events-none absolute inset-x-0 top-0 h-40" />
 
         {/* Service toggle */}
         <div className="relative border-b border-border p-5 sm:p-6">

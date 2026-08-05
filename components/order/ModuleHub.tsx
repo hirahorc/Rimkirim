@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Lock, Check, ChevronRight, FileText, Hash, Sparkles, PartyPopper } from "lucide-react";
 import {
   useOrderStore,
@@ -41,12 +42,16 @@ function StatusBadge({ status, locked }: { status: ModuleStatus; locked?: boolea
 
 export function ModuleHub() {
   const t = useT();
+  const router = useRouter();
   const modules = useOrderStore((s) => s.modules);
   const answers = useOrderStore((s) => s.answers);
   const bookingNumber = useOrderStore((s) => s.bookingNumber);
   const generatedPackingCode = useOrderStore((s) => s.generatedPackingCode);
+  const trackingNumber = useOrderStore((s) => s.trackingNumber);
+  const orderId = useOrderStore((s) => s.activeDraftId);
   const ensureBookingNumber = useOrderStore((s) => s.ensureBookingNumber);
   const ensurePackingCode = useOrderStore((s) => s.ensurePackingCode);
+  const submitOrder = useOrderStore((s) => s.submitOrder);
   const reset = useOrderStore((s) => s.reset);
   const [submitted, setSubmitted] = React.useState(false);
   const [agreeOpen, setAgreeOpen] = React.useState(false);
@@ -74,14 +79,31 @@ export function ModuleHub() {
           {t("order.confirmTitle")}
         </h1>
         <p className="mt-2 text-sm text-muted">{t("order.confirmBody")}</p>
-        {bookingNumber && (
+        {trackingNumber && (
           <div className="mt-4 flex items-center justify-center gap-2 rounded-sm border border-border bg-surface-2/50 p-3 text-sm">
+            <span className="text-muted-2">{t("order.trackingNumberLabel")}:</span>
+            <span className="font-mono font-semibold text-brand">{trackingNumber}</span>
+            <CopyButton value={trackingNumber} />
+          </div>
+        )}
+        {bookingNumber && (
+          <div className="mt-2 flex items-center justify-center gap-2 rounded-sm border border-border bg-surface-2/50 p-3 text-sm">
             <span className="text-muted-2">{t("order.bookingNumberLabel")}:</span>
             <span className="font-mono font-semibold text-brand">{bookingNumber}</span>
             <CopyButton value={bookingNumber} />
           </div>
         )}
-        <Button asChild className="mt-6 w-full" onClick={() => reset()}>
+        <Button
+          className="mt-6 w-full"
+          onClick={() => {
+            const id = orderId;
+            reset();
+            router.push(id ? `/pesanan/${id}` : "/");
+          }}
+        >
+          {t("order.viewOrder")}
+        </Button>
+        <Button asChild variant="ghost" className="mt-2 w-full">
           <Link href="/">{t("order.backHome")}</Link>
         </Button>
       </Card>
@@ -213,6 +235,7 @@ export function ModuleHub() {
         onOpenChange={setAgreeOpen}
         onAgree={() => {
           setAgreeOpen(false);
+          submitOrder();
           setSubmitted(true);
         }}
       />

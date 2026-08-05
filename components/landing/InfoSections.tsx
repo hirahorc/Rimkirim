@@ -23,7 +23,6 @@ export function ServiceSection() {
       </div>
       <div className="grid gap-5 md:grid-cols-2">
         <Card className="relative overflow-hidden p-6">
-          <div className="brand-glow pointer-events-none absolute inset-x-0 top-0 h-24" />
           <div className="relative">
             <span className="grid size-11 place-items-center rounded-lg bg-brand/15 text-brand">
               <Home className="size-5" />
