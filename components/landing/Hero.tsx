@@ -37,7 +37,7 @@ export function Hero() {
       <div className="grid-backdrop reveal-bg pointer-events-none absolute inset-0" />
       <div className="reveal-stagger relative mx-auto max-w-3xl px-4 pt-16 text-center sm:px-6 sm:pt-24">
         <Badge variant="brand" className="mx-auto mb-5">
-          <Sparkles className="size-3.5" /> {t("hero.badge")}
+          {t("hero.badge")}
         </Badge>
         <h1 className="hero-headline font-display text-4xl font-bold leading-[1.05] tracking-tight sm:text-6xl">
           <Words text={line} startIndex={0} />

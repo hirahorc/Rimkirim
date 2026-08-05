@@ -56,7 +56,7 @@ const id = {
     loginRequired: "Masuk dulu untuk melanjutkan",
   },
   hero: {
-    badge: "Pengiriman internasional yang transparan",
+    badge: "International Moving Assistant",
     titleLine: "Pulang atau pindah,",
     titleHighlight: "tanpa drama.",
     subtitle:
@@ -1022,7 +1022,7 @@ const en: Messages = {
     loginRequired: "Sign in to continue",
   },
   hero: {
-    badge: "Transparent international shipping",
+    badge: "International Moving Assistant",
     titleLine: "Move home or abroad,",
     titleHighlight: "drama-free.",
     subtitle:
