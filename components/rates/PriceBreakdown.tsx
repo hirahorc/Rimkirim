@@ -50,7 +50,9 @@ export function PriceBreakdown({
           )}
           <div className="mt-1 flex items-center justify-between border-t border-border pt-2 font-semibold">
             <span>{t("breakdown.total")}</span>
-            <span className="text-brand">{formatIDR(quote.total)}</span>
+            <span className="font-mono tabular-nums text-brand">
+              {formatIDR(quote.total)}
+            </span>
           </div>
         </div>
       )}
@@ -70,7 +72,7 @@ function Row({
   return (
     <div className="flex items-start justify-between gap-4">
       <span className={cn("text-muted", muted && "text-warning/90")}>{label}</span>
-      <span className="shrink-0 font-medium tabular-nums">{value}</span>
+      <span className="shrink-0 font-mono font-medium tabular-nums">{value}</span>
     </div>
   );
 }
