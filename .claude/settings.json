@@ -41,7 +41,22 @@
       "Bash(grep -oE '\\\\{ code: \"[A-Z]{2}\", name: \"[^\"]+\"' /Users/hira.rimkirim/Documents/projects/Rimkirim/lib/data/countries.ts)",
       "Bash(npx tsx -e ' *)",
       "Bash(npx -y skills add mattpocock/skills --skill=grill-with-docs)",
-      "Bash(git check-ignore *)"
+      "Bash(git check-ignore *)",
+      "Bash(echo \"---EXIT:$?---\")",
+      "Bash(grep -rnE \"CLEARANCE_STEPS|clDocuments|clInspection|clDuties|clReleased|evClDocuments|evClInspection|evClDuties|evClReleased|\\\\\"documents\\\\\"|\\\\\"inspection\\\\\"|\\\\\"duties\\\\\"|\\\\\"released\\\\\"|clDesc\\\\\\\\\\\\$|attClearanceReleased\\\\b\" components lib app)",
+      "Bash(gh pr create --base main --head feat/order-tracking-status --title 'Order tracking & status \\(BFG\\) — mock auth, multi-order, ops simulator' --body ' *)",
+      "Bash(command -v gh)",
+      "Read(//opt/homebrew/bin/**)",
+      "Bash(echo \"exit:$?\")",
+      "Bash(brew install *)",
+      "Bash(gh --version)",
+      "Bash(gh auth *)",
+      "Bash(git fetch *)",
+      "Bash(git rev-list *)",
+      "Bash(git checkout *)",
+      "Bash(git merge --no-ff feat/order-tracking-status -m ' *)",
+      "Bash(git merge --no-ff feat/single-booking-identifier -m ' *)",
+      "Bash(git branch *)"
     ]
   }
 }

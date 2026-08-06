@@ -5,7 +5,11 @@
       "Bash(npm --version)",
       "Bash(npx --yes create-next-app@latest . --typescript --tailwind --eslint --app --src-dir=false --import-alias \"@/*\" --use-npm --no-turbopack --yes)",
       "Bash(npx --yes create-next-app@latest rimkirim-app --typescript --tailwind --eslint --app --src-dir=false --import-alias \"@/*\" --use-npm --no-turbopack --yes)",
-      "Bash(npm install *)"
+      "Bash(npm install *)",
+      "Bash(npx --yes skills add mattpocock/skills --skill=grill-with-docs)",
+      "Bash(node -e \"const l=require\\('./skills-lock.json'\\);console.log\\(JSON.stringify\\(l,null,1\\).slice\\(0,1500\\)\\)\")",
+      "Bash(awk '{print $6, $7, $8, $9, $10}')",
+      "Bash(awk '{print $6,$7,$8,$9}')"
     ]
   }
 }
