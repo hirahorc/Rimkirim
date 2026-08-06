@@ -204,8 +204,10 @@ aligned instrument readout. The pairing reads competent and calm, not corporate.
   columns cap around `max-w-3xl`.
 - **Label** (Inter 500, 0.75rem, letter-spacing 0.04em, often UPPERCASE): Eyebrows, field labels,
   captions, table headers — always in Dim Grey.
-- **Micro** (Inter 500, 0.625rem / 10px): The smallest labels only — status-stepper phase names,
-  compliance micro-notes, secondary meta in dense selects. Never body copy.
+- **Micro** (Inter 500, ~9–11px; 0.625rem / 10px is the norm): The smallest labels only —
+  status-stepper phase names (10px → 11px at `sm`), count-pill / eyebrow captions (11px),
+  compliance micro-notes, the carrier monogram (9px), and secondary meta in dense selects. Never
+  body copy.
 - **Mono** (JetBrains Mono 500, `tabular-nums`, size follows context from 0.75rem chips to the
   3xl quotation total): Booking numbers, packing codes (`RK-PL-XXXXXX`), airway bills, and all
   IDR/currency amounts.
