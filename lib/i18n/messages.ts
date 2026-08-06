@@ -10,6 +10,8 @@ const id = {
   common: {
     appName: "Rimkirim",
     tagline: "International Shipping Assistant",
+    close: "Tutup",
+    moreInfo: "Info selengkapnya",
   },
   cookie: {
     text: "Kami memakai cookie untuk meningkatkan pengalamanmu di situs ini. Dengan melanjutkan, kamu setuju dengan penggunaan cookie kami.",
@@ -976,6 +978,8 @@ const en: Messages = {
   common: {
     appName: "Rimkirim",
     tagline: "International Shipping Assistant",
+    close: "Close",
+    moreInfo: "More info",
   },
   cookie: {
     text: "We use cookies to improve your experience on this site. By continuing, you agree to our use of cookies.",

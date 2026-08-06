@@ -103,7 +103,7 @@ export function NotificationBell() {
         <button
           type="button"
           aria-label={t("notif.title")}
-          className="relative grid size-9 place-items-center rounded-md border border-border bg-surface-2 text-muted transition-colors hover:text-foreground"
+          className="tap-target relative grid size-9 place-items-center rounded-md border border-border bg-surface-2 text-muted transition-colors hover:text-foreground"
         >
           <Bell className="size-4" />
           {unread > 0 && (

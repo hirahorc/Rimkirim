@@ -29,7 +29,7 @@ export function AccountMenu() {
         <button
           type="button"
           aria-label={t("auth.account")}
-          className="grid size-9 place-items-center rounded-md border border-border bg-surface-2 text-muted transition-colors hover:text-foreground"
+          className="tap-target relative grid size-9 place-items-center rounded-md border border-border bg-surface-2 text-muted transition-colors hover:text-foreground"
         >
           <User className="size-4" />
         </button>

@@ -3,6 +3,7 @@
 import * as React from "react";
 import * as TooltipPrimitive from "@radix-ui/react-tooltip";
 import { Info } from "lucide-react";
+import { useT } from "@/lib/i18n/LanguageProvider";
 import { cn } from "@/lib/utils/cn";
 
 export const TooltipProvider = TooltipPrimitive.Provider;
@@ -30,13 +31,14 @@ TooltipContent.displayName = "TooltipContent";
 
 /** Convenience: an info (i) icon that shows `content` on hover/focus. */
 export function InfoTip({ content }: { content: React.ReactNode }) {
+  const t = useT();
   return (
     <Tooltip>
       <TooltipTrigger asChild>
         <button
           type="button"
           className="inline-grid place-items-center text-muted-2 transition-colors hover:text-brand focus-visible:text-brand focus-visible:outline-none"
-          aria-label="Info"
+          aria-label={t("common.moreInfo")}
         >
           <Info className="size-3.5" />
         </button>

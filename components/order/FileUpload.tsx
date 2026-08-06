@@ -69,6 +69,7 @@ export function FileUpload({
           <img
             src={preview}
             alt=""
+            aria-hidden="true"
             className="size-7 shrink-0 rounded-sm object-cover"
           />
         ) : value ? (
