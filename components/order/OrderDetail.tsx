@@ -94,7 +94,7 @@ export function OrderDetail({ id }: { id: string }) {
             </p>
             <p className="mt-1 flex items-center gap-2">
               <span className="font-mono text-xl font-bold tracking-tight text-brand">
-                {identifier ?? "—"}
+                {identifier ?? "–"}
               </span>
               {identifier && <CopyButton value={identifier} />}
             </p>
@@ -121,10 +121,10 @@ export function OrderDetail({ id }: { id: string }) {
             </span>
             <span className="flex items-center gap-1.5 text-muted">
               <Flag code={order.context?.originCountry} size={13} />
-              {origin?.name ?? "—"}
+              {origin?.name ?? "–"}
               <span className="text-muted-2">→</span>
               <Flag code={order.context?.destCountry} size={13} />
-              {dest?.name ?? "—"}
+              {dest?.name ?? "–"}
             </span>
           </div>
         </div>

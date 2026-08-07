@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { OrderDetail } from "@/components/order/OrderDetail";
 
 export const metadata: Metadata = {
-  title: "Tracking — Rimkirim",
+  title: "Tracking · Rimkirim",
   description: "Pantau status pengiriman kiriman Rimkirim kamu.",
 };
 

@@ -203,7 +203,7 @@ export function ItemsForm() {
             <Select {...register("currency")} wrapperClassName="sm:max-w-xs">
               {CURRENCIES.map((c) => (
                 <option key={c.code} value={c.code}>
-                  {c.code} — {c.name}
+                  {c.code} – {c.name}
                 </option>
               ))}
             </Select>
@@ -289,7 +289,7 @@ export function ItemsForm() {
 
         {/* totals */}
         <Card className="grid gap-4 p-5 sm:grid-cols-3">
-          <Total label={t("order.itTotalPrice")} value={totalPrice === null ? "—" : formatIDR(totalPrice)} accent mono />
+          <Total label={t("order.itTotalPrice")} value={totalPrice === null ? "–" : formatIDR(totalPrice)} accent mono />
           <Total label={t("order.itTotalValue")} value={formatCurrency(totalValue, currency)} mono />
           <Total label={t("order.itTotalCw")} value={`${formatNumber(totalCw)} kg`} />
         </Card>

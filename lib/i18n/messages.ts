@@ -22,9 +22,9 @@ const id = {
     eyebrow: "FAQ",
     title: "Pertanyaan yang sering ditanya",
     subtitle:
-      "Semua yang perlu kamu tahu sebelum kirim — dari packing sampai bea cukai.",
+      "Semua yang perlu kamu tahu sebelum kirim, dari packing sampai bea cukai.",
     teaserTitle: "Masih ada pertanyaan?",
-    teaserBody: "Packing, bea cukai, biaya, tracking, klaim — jawabannya di sini.",
+    teaserBody: "Packing, bea cukai, biaya, tracking, klaim: jawabannya di sini.",
     teaserCta: "Lihat FAQ lengkap",
   },
   nav: {
@@ -48,7 +48,7 @@ const id = {
   article: {
     eyebrow: "Article",
     title: "Cerita & panduan pindah lintas negara",
-    body: "Tips packing, seluk-beluk bea cukai, dan kisah nyata orang yang pulang atau pindah — kami sedang menyiapkan bacaan yang bikin persiapanmu jauh lebih tenang.",
+    body: "Tips packing, seluk-beluk bea cukai, dan kisah nyata orang yang pulang atau pindah. Kami sedang menyiapkan bacaan yang bikin persiapanmu jauh lebih tenang.",
   },
   about: {
     eyebrow: "About Us",
@@ -58,7 +58,7 @@ const id = {
   expat: {
     eyebrow: "Expat Relocation",
     title: "Pindah ke Indonesia, tanpa pusing dokumen",
-    body: "Layanan relokasi untuk warga negara asing dan expat yang pindah ke Indonesia — barang, dokumen, dan clearance ditangani satu pintu. Kami sedang merapikan detailnya untukmu.",
+    body: "Layanan relokasi untuk warga negara asing dan expat yang pindah ke Indonesia: barang, dokumen, dan clearance ditangani satu pintu. Kami sedang merapikan detailnya untukmu.",
   },
   auth: {
     account: "Akun",
@@ -80,7 +80,7 @@ const id = {
     loginLink: "Daftar",
     signupLink: "Masuk",
     demoNote:
-      "Mode demo — akun & sesi disimpan di browser kamu, tanpa verifikasi email.",
+      "Mode demo: akun & sesi disimpan di browser kamu, tanpa verifikasi email.",
     emailExists: "Email sudah terdaftar. Coba masuk.",
     invalidCredentials: "Email atau kata sandi salah.",
     loggedIn: "Berhasil masuk",
@@ -96,7 +96,7 @@ const id = {
     titleLine: "Pulang atau pindah,",
     titleHighlight: "tanpa drama.",
     subtitle:
-      "Rimkirim bantu kamu kirim barang lintas negara — dari luar negeri pulang ke Indonesia, atau dari Indonesia ke seluruh dunia. Cek tarifnya sekarang, harga jelas di depan.",
+      "Rimkirim bantu kamu kirim barang lintas negara: dari luar negeri pulang ke Indonesia, atau dari Indonesia ke seluruh dunia. Cek tarifnya sekarang, harga jelas di depan.",
     trustClearance: "Clearance ditangani penuh",
     trustCountries: "220+ negara",
     trustInstant: "Estimasi instan",
@@ -123,7 +123,7 @@ const id = {
     r3Title: "Asisten yang hadir",
     r3Body: "Tim kami mendampingi lewat WhatsApp dari awal sampai barang tiba.",
     r4Title: "Harga transparan",
-    r4Body: "Breakdown tarif jelas — base rate, chargeable weight, sampai surcharge.",
+    r4Body: "Breakdown tarif jelas: base rate, chargeable weight, sampai surcharge.",
   },
   footer: {
     tagline: "International Shipping Assistant",
@@ -264,7 +264,7 @@ const id = {
     dilayani: "Dilayani",
     perKgUnit: "/ kg",
     minShipmentPre: "Minimum pengiriman",
-    minShipmentPost: "— mulai dari",
+    minShipmentPost: ", mulai dari",
     untukKg: "untuk",
     mulaiDari: "Mulai dari",
     wilayahTujuan: "Wilayah tujuan",
@@ -291,11 +291,11 @@ const id = {
     noSurcharge: "Tidak ada surcharge tambahan.",
   },
   surchargeLine: {
-    OVERSIZE: "Penanganan Tambahan — Oversize",
-    OVERDIMENSION: "Penanganan Tambahan — Overdimension",
-    OVERWEIGHT: "Penanganan Tambahan — Overweight",
-    PACKAGING: "Penanganan Tambahan — Packaging",
-    FREIGHT: "Penanganan Tambahan — Freight",
+    OVERSIZE: "Penanganan Tambahan: Oversize",
+    OVERDIMENSION: "Penanganan Tambahan: Overdimension",
+    OVERWEIGHT: "Penanganan Tambahan: Overweight",
+    PACKAGING: "Penanganan Tambahan: Packaging",
+    FREIGHT: "Penanganan Tambahan: Freight",
     NON_STACKABLE: "Non-Stackable Surcharge",
     UNAUTHORIZED_FREIGHT: "Unauthorized Freight Charge",
   },
@@ -378,7 +378,7 @@ const id = {
     freightB1: "Longest side > 157 cm.",
     nonStackType: "Non-Stackable",
     nonStackDesc:
-      "Berlaku ketika paket tidak dapat ditumpuk — mis. tidak memiliki permukaan rata di dasar atau atas, hanya memiliki permukaan rata yang sangat terbatas, atau dianggap dapat merusak paket lain.",
+      "Berlaku ketika paket tidak dapat ditumpuk, mis. tidak memiliki permukaan rata di dasar atau atas, hanya memiliki permukaan rata yang sangat terbatas, atau dianggap dapat merusak paket lain.",
     unauthType: "Unauthorized Freight",
     unauthDesc: "Berlaku untuk kiriman yang melebihi batas penanganan maksimum:",
     unauthB1: "Girth > 762 cm; atau",
@@ -481,7 +481,7 @@ const id = {
     clPersonalSubtitle: "Relocation Clearance",
     clPersonalDesc:
       "Barang pindahan yang tiba bersama importir atau paling lama 90 (sembilan puluh) hari sebelum atau 90 (sembilan puluh) hari setelah kedatangan importir.",
-    clPersonalBenefit1: "ZERO Tax — jika kamu hanya mengirim Personal Used Items.",
+    clPersonalBenefit1: "ZERO Tax, jika kamu hanya mengirim Personal Used Items.",
     clPersonalReq1: "Tiket Pesawat / Boarding Pass",
     clPersonalReq2: "SKP dari KBRI / KJRI",
     clPersonalReq3: "Dokumen pendukung untuk studi atau kerja di luar negeri",
@@ -534,7 +534,7 @@ const id = {
     backHome: "Kembali ke beranda",
     viewOrder: "Lihat status pesanan",
     resumeDraft: "Lanjutkan mengisi",
-    draftNote: "Draft tersimpan — lanjutkan kapan saja.",
+    draftNote: "Draft tersimpan. Lanjutkan kapan saja.",
     // status phases
     statusDraft: "Draft",
     statusReview: "Review",
@@ -581,43 +581,43 @@ const id = {
       "Proses clearance akan muncul setelah barang tiba di Indonesia.",
     tdCancelledNotice: "Pesanan ini dibatalkan.",
     tdMaNote:
-      "Tracking Moving Abroad disiapkan menyusul — layanan ini masih dalam pengembangan.",
+      "Tracking Moving Abroad disiapkan menyusul. Layanan ini masih dalam pengembangan.",
     // attention overlay presets (set by the ops simulator)
     attQuotationReady:
-      "Quotation telah diterbitkan — setujui di halaman order untuk melanjutkan.",
+      "Quotation telah diterbitkan. Setujui di halaman order untuk melanjutkan.",
     attRevision:
       "Tim kami butuh revisi dokumen pada modul Compliance.",
     attPickupFailed:
-      "Pickup pertama gagal — tim kami akan mengatur ulang penjemputan.",
+      "Pickup pertama gagal. Tim kami akan mengatur ulang penjemputan.",
     attPickupFailCustomer:
-      "Pickup gagal — kesalahan di sisi kamu. Pilih opsi: pickup ulang atau drop-off.",
+      "Pickup gagal. Kesalahan di sisi kamu. Pilih opsi: pickup ulang atau drop-off.",
     attPickupFailFedEx:
-      "Pickup gagal karena FedEx. Bukan salahmu — dispute internal, tanpa biaya. Pilih opsi untuk melanjutkan.",
+      "Pickup gagal karena FedEx. Bukan salahmu: dispute internal, tanpa biaya. Pilih opsi untuk melanjutkan.",
     attNeedsNewAwb:
       "Pickup gagal 3× karena kesalahan di sisi kamu. Minta AWB baru untuk melanjutkan.",
-    attAwbIssued: "AWB baru diterbitkan — pickup dijadwalkan ulang.",
+    attAwbIssued: "AWB baru diterbitkan. Pickup dijadwalkan ulang.",
     attPickupRescheduled:
-      "Pickup dijadwalkan ulang — tim kami akan menjemput sesuai jadwal baru.",
+      "Pickup dijadwalkan ulang. Tim kami akan menjemput sesuai jadwal baru.",
     attDropOffRequested:
       "Titipkan paket di lokasi drop-off FedEx dalam 2 hari, atau AWB akan diganti.",
     attAwbChanged:
-      "AWB diganti — drop-off tidak dilakukan dalam 2 hari. Pickup dijadwalkan ulang.",
+      "AWB diganti. Drop-off tidak dilakukan dalam 2 hari. Pickup dijadwalkan ulang.",
     attClearanceReleased:
-      "Clearance selesai — barang disetujui untuk dikeluarkan dari Bea Cukai.",
+      "Clearance selesai. Barang disetujui untuk dikeluarkan dari Bea Cukai.",
     attClearanceReleasedExtra:
       "Barang dikeluarkan (SPPBL) dengan dokumen tambahan dari Bea Cukai.",
     attClearanceBlocked:
-      "Belum bisa masuk proses clearance — barang belum lengkap (parsial) atau pengiriman terhambat.",
+      "Belum bisa masuk proses clearance: barang belum lengkap (parsial) atau pengiriman terhambat.",
     attClearanceBarpin:
       "Cek & konfirmasi data kirimanmu di portal Barpin agar clearance bisa lanjut.",
     attClearanceBarpinRevision:
-      "Permintaan revisi data Barpin dikirim — tim kami menyesuaikan berdasarkan dokumenmu.",
+      "Permintaan revisi data Barpin dikirim. Tim kami menyesuaikan berdasarkan dokumenmu.",
     attNpd:
       "Bea Cukai menerbitkan NPD (permintaan dokumen). Tim kami melengkapinya dan mengajukan ulang.",
     attClearanceTax:
-      "Bea Cukai menerbitkan SPTNP — bayar pajak agar barang bisa dikeluarkan.",
+      "Bea Cukai menerbitkan SPTNP. Bayar pajak agar barang bisa dikeluarkan.",
     attClearanceReject:
-      "Pengajuan ditolak Bea Cukai — proses clearance diulang dari awal.",
+      "Pengajuan ditolak Bea Cukai. Proses clearance diulang dari awal.",
     // clearance sub-flow — spine labels (components/tracking/ClearancePanel)
     clSpinePre: "Pre-Clearance",
     clSpineBarpin: "Konfirmasi Barpin",
@@ -637,27 +637,27 @@ const id = {
       "Bea Cukai sedang memproses pengajuan kirimanmu.",
     clDescNpd:
       "Bea Cukai meminta dokumen tambahan (NPD). Tim kami melengkapi lalu mengajukan ulang.",
-    clDescSppb: "SPPB terbit — barang disetujui untuk dikeluarkan dari Bea Cukai.",
+    clDescSppb: "SPPB terbit. Barang disetujui untuk dikeluarkan dari Bea Cukai.",
     clDescSppbl:
-      "SPPBL terbit — barang dikeluarkan dengan tambahan dokumen dari Bea Cukai.",
+      "SPPBL terbit. Barang dikeluarkan dengan tambahan dokumen dari Bea Cukai.",
     clDescSptnp:
-      "SPTNP terbit — kiriman belum memenuhi syarat bebas bea, jadi ada pajak yang harus dibayar sebelum barang dikeluarkan.",
+      "SPTNP terbit. Kiriman belum memenuhi syarat bebas bea, jadi ada pajak yang harus dibayar sebelum barang dikeluarkan.",
     clDescReject:
       "Pengajuan ditolak. Proses clearance harus diulang dari awal dengan permohonan baru; biaya warehouse tetap berjalan.",
     // clearance result badges
-    clResultSppb: "SPPB — Dikeluarkan",
-    clResultSppbl: "SPPBL — Dikeluarkan (+dokumen)",
-    clResultSptnp: "SPTNP — Perlu bayar pajak",
+    clResultSppb: "SPPB: Dikeluarkan",
+    clResultSppbl: "SPPBL: Dikeluarkan (+dokumen)",
+    clResultSptnp: "SPTNP: Perlu bayar pajak",
     clNpdRound: "NPD ke-",
     // clearance customer actions
     clConfirmBarpinCta: "Konfirmasi data Barpin",
     clRequestRevisionCta: "Minta revisi data",
-    clConfirmBarpinToast: "Data Barpin dikonfirmasi — pengajuan dilanjutkan.",
+    clConfirmBarpinToast: "Data Barpin dikonfirmasi. Pengajuan dilanjutkan.",
     clRequestRevisionToast: "Permintaan revisi dikirim ke tim kami.",
     clBarpinConfirmedNote: "Kamu sudah mengonfirmasi data Barpin.",
     clPayTaxCta: "Bayar pajak",
-    clPayTaxToast: "Pembayaran pajak dikonfirmasi — menunggu barang dikeluarkan.",
-    clTaxPaidNote: "Pajak sudah dibayar — menunggu pengeluaran barang oleh tim.",
+    clPayTaxToast: "Pembayaran pajak dikonfirmasi. Menunggu barang dikeluarkan.",
+    clTaxPaidNote: "Pajak sudah dibayar. Menunggu pengeluaran barang oleh tim.",
     // clearance supporting-docs info (from the clearance MD)
     clDocsTitle: "Dokumen pendukung",
     clDocsSp3bp: "SP3BP",
@@ -673,7 +673,7 @@ const id = {
     // timeline events (order.activity)
     tdTimeline: "Riwayat Aktivitas",
     evCreated: "Pesanan dibuat.",
-    evSubmitted: "Permintaan order dikirim — nomor tracking diterbitkan.",
+    evSubmitted: "Permintaan order dikirim. Nomor tracking diterbitkan.",
     evQuotation: "Quotation diterbitkan.",
     evPickup: "Pickup dijadwalkan.",
     evInTransit: "Barang dalam perjalanan.",
@@ -696,51 +696,51 @@ const id = {
     quFeeInsurance: "Asuransi",
     quFeeClearance: "Biaya clearance",
     quFeePickup: "Biaya pickup",
-    quApprovedToast: "Quotation disetujui — pickup akan dijadwalkan.",
+    quApprovedToast: "Quotation disetujui. Pickup akan dijadwalkan.",
     // revision flow (revisionModule)
     revTitle: "Revisi Diperlukan",
     revBody: "Selesaikan modul ini untuk melanjutkan:",
     revCta: "Perbaiki sekarang",
     revDialogTitle: "Modul yang ingin direvisi",
     revDialogHint: "Order akan kembali ke Review sampai modul diperbaiki.",
-    revRequested: "Revisi diminta — order kembali ke Review.",
+    revRequested: "Revisi diminta. Order kembali ke Review.",
     revNote: "Catatan dari tim",
-    evQuotationApproved: "Quotation disetujui — pickup dijadwalkan.",
+    evQuotationApproved: "Quotation disetujui. Pickup dijadwalkan.",
     evRevision: "Revisi diminta.",
     evResubmitted: "Order diperbarui setelah revisi.",
     // ops notices (order.opsNotice)
     opsQuoteApproved:
-      "Quotation disetujui oleh customer — booking pickup sekarang.",
-    opsAwbRequested: "Customer minta AWB baru — terbitkan untuk melanjutkan.",
+      "Quotation disetujui oleh customer. Booking pickup sekarang.",
+    opsAwbRequested: "Customer minta AWB baru. Terbitkan untuk melanjutkan.",
     opsDroppedOff:
-      "Customer sudah drop off — konfirmasi untuk lanjut ke transit.",
+      "Customer sudah drop off. Konfirmasi untuk lanjut ke transit.",
     attPickupScheduled:
-      "Pickup telah dijadwalkan — tim kami akan menjemput di alamatmu.",
-    evPickupFailCustomer: "Pickup gagal — kesalahan customer.",
+      "Pickup telah dijadwalkan. Tim kami akan menjemput di alamatmu.",
+    evPickupFailCustomer: "Pickup gagal: kesalahan customer.",
     evPickupFailFedEx:
-      "Pickup gagal — kesalahan FedEx (dispute internal, tanpa biaya).",
+      "Pickup gagal: kesalahan FedEx (dispute internal, tanpa biaya).",
     evAwbRequested: "Kamu meminta AWB baru.",
-    evAwbIssued: "AWB baru diterbitkan — pickup dijadwalkan ulang.",
-    evAwbChanged: "AWB diganti — drop-off tidak dilakukan dalam 2 hari.",
+    evAwbIssued: "AWB baru diterbitkan. Pickup dijadwalkan ulang.",
+    evAwbChanged: "AWB diganti. Drop-off tidak dilakukan dalam 2 hari.",
     evPickupRescheduled: "Pickup dijadwalkan ulang.",
     evDropOffRequested: "Diminta drop-off ke lokasi FedEx dalam 2 hari.",
     evDropOffConfirmed: "Kamu mengonfirmasi barang dititipkan di drop-off.",
-    evDroppedOff: "Barang diterima di lokasi drop-off — dalam perjalanan.",
-    evClPreClearance: "Masuk pre-clearance — melengkapi dokumen.",
-    evClBlocked: "Belum bisa masuk clearance — barang parsial / terhambat.",
-    evClUnblocked: "Kiriman siap — melanjutkan clearance.",
-    evClBarpin: "Data disiapkan di portal Barpin — menunggu konfirmasimu.",
+    evDroppedOff: "Barang diterima di lokasi drop-off. Dalam perjalanan.",
+    evClPreClearance: "Masuk pre-clearance, melengkapi dokumen.",
+    evClBlocked: "Belum bisa masuk clearance: barang parsial / terhambat.",
+    evClUnblocked: "Kiriman siap, melanjutkan clearance.",
+    evClBarpin: "Data disiapkan di portal Barpin, menunggu konfirmasimu.",
     evClBarpinConfirmed: "Kamu mengonfirmasi data Barpin.",
     evClBarpinRevision: "Kamu meminta revisi data Barpin.",
     evClSubmitted: "Diajukan ke Bea Cukai & FedEx.",
     evClBcReview: "Bea Cukai memproses pengajuan.",
-    evClNpd: "Bea Cukai menerbitkan NPD — permintaan dokumen tambahan.",
+    evClNpd: "Bea Cukai menerbitkan NPD: permintaan dokumen tambahan.",
     evClResubmit: "Dokumen dilengkapi & diajukan ulang ke Bea Cukai.",
-    evClSppb: "SPPB terbit — barang disetujui untuk dikeluarkan.",
-    evClSppbl: "SPPBL terbit — dikeluarkan dengan dokumen tambahan.",
-    evClSptnp: "SPTNP terbit — perlu bayar pajak sebelum dikeluarkan.",
-    evClTaxPaid: "Pajak dibayar — menunggu pengeluaran barang.",
-    evClReject: "Pengajuan ditolak — clearance diulang dari awal.",
+    evClSppb: "SPPB terbit. Barang disetujui untuk dikeluarkan.",
+    evClSppbl: "SPPBL terbit, dikeluarkan dengan dokumen tambahan.",
+    evClSptnp: "SPTNP terbit, perlu bayar pajak sebelum dikeluarkan.",
+    evClTaxPaid: "Pajak dibayar, menunggu pengeluaran barang.",
+    evClReject: "Pengajuan ditolak. Clearance diulang dari awal.",
     // pickup status panel (order.pickupFails / dropOff)
     pickStatus: "Status Pickup",
     pickAttempts: "Percobaan pickup",
@@ -752,7 +752,7 @@ const id = {
     pickChoiceRepickup: "Jadwalkan pickup ulang",
     pickChoiceDropOff: "Pilih drop-off",
     pickChoiceRepickupToast: "Pickup dijadwalkan ulang.",
-    pickChoiceDropOffToast: "Drop-off diminta — cek instruksi di panel pickup.",
+    pickChoiceDropOffToast: "Drop-off diminta. Cek instruksi di panel pickup.",
     pickAwbNeededTitle: "AWB Baru Diperlukan",
     pickAwbNeededBody:
       "Pickup gagal 3× karena kesalahan di sisi kamu. Minta AWB baru agar kami menerbitkan ulang dan menjadwalkan pickup baru.",
@@ -764,12 +764,12 @@ const id = {
     pickDropOffDeadline: "Batas waktu",
     pickDropOffCta: "Sudah drop off",
     pickDropOffConfirmedToast:
-      "Konfirmasi dikirim — tim ops akan memproses kirimanmu.",
-    pickDropOffAwaitOps: "Drop-off dikonfirmasi — menunggu konfirmasi tim ops.",
+      "Konfirmasi dikirim. Tim ops akan memproses kirimanmu.",
+    pickDropOffAwaitOps: "Drop-off dikonfirmasi, menunggu konfirmasi tim ops.",
     // AWB section
     tdAwbNumber: "Nomor AWB",
     tdAwbStable:
-      "Nomor booking kamu tidak berubah — hanya AWB internal yang diganti.",
+      "Nomor booking kamu tidak berubah, hanya AWB internal yang diganti.",
     // new-AWB request dialog
     awbDialogTitle: "Minta AWB baru",
     awbDialogBody:
@@ -849,11 +849,11 @@ const id = {
     ciNoteName:
       "Nama penerima akan disamakan dengan pengirim (syarat clearance: nama harus sama).",
     ciNoteEmail:
-      "Email pada packing list adalah hello@rimkirim.com — Rimkirim mewakili kamu ke Bea Cukai.",
+      "Email pada packing list adalah hello@rimkirim.com. Rimkirim mewakili kamu ke Bea Cukai.",
     ciNoteAddress:
       "Alamat penerima diisi alamat warehouse Rimkirim (semua paket transit di warehouse dulu).",
     ciNoteAddressExport:
-      "Alamat tujuan pakai alamat asli penerima di luar negeri — barang diinspeksi dulu di gudang Rimkirim Indonesia, lalu dikirim langsung ke sana.",
+      "Alamat tujuan pakai alamat asli penerima di luar negeri: barang diinspeksi dulu di gudang Rimkirim Indonesia, lalu dikirim langsung ke sana.",
     // item & packages — extended
     itCurrency: "Mata uang",
     itPackagesHeading: "Paket",
@@ -895,7 +895,7 @@ const id = {
     coEnpwp: "e-NPWP",
     coProofOfStay: "Proof of Stay",
     coProofOfStayHelp:
-      "Proof of Stay membuktikan kedatangan & domisili kamu di luar negeri. Unggah dokumen yang menunjukkan kamu diterima sebagai pelajar atau pekerja — mis. Letter of Acceptance atau Employment Contract.",
+      "Proof of Stay membuktikan kedatangan & domisili kamu di luar negeri. Unggah dokumen yang menunjukkan kamu diterima sebagai pelajar atau pekerja, mis. Letter of Acceptance atau Employment Contract.",
     coOtherDocs: "Dokumen pendukung lain",
     coOtherDocName: "Nama dokumen",
     coAddOtherDoc: "Tambah dokumen",
@@ -933,7 +933,7 @@ const id = {
   ops: {
     title: "Simulator Ops",
     subtitle:
-      "Kontrol pesawat mock — gerakkan pesanan antar fase untuk demo alur tracking.",
+      "Kontrol pesawat mock: gerakkan pesanan antar fase untuk demo alur tracking.",
     menu: "Simulator (ops)",
     advance: "Lanjutkan fase",
     advanceCta: "Lanjut",
@@ -948,7 +948,7 @@ const id = {
     issueQuotation: "Terbitkan quotation",
     quotationIssued: "Quotation sudah diterbitkan.",
     bookPickup: "Booking pickup",
-    pickupBookedToast: "Pickup dijadwalkan — customer diberitahu.",
+    pickupBookedToast: "Pickup dijadwalkan, customer diberitahu.",
     pickup: "Pickup & AWB",
     awbLabel: "AWB",
     failCustomer: "gagal customer",
@@ -956,7 +956,7 @@ const id = {
     failCtaCustomer: "Catat gagal (customer)",
     failCtaFedEx: "Catat gagal (FedEx)",
     dropOffExpire: "Tandai 2 hari lewat",
-    dropOffExpired: "Drop-off lewat batas — AWB diganti.",
+    dropOffExpired: "Drop-off lewat batas. AWB diganti.",
     dropOffFulfilled: "Drop-off dikonfirmasi customer.",
     dropOffPending: "Menunggu drop-off customer (2 hari).",
     waitingChoice:
@@ -964,12 +964,12 @@ const id = {
     pickIssueAwb: "Terbitkan AWB baru",
     pickConfirmDropOff: "Konfirmasi drop-off",
     awbIssuedToast: "AWB baru diterbitkan.",
-    dropOffConfirmedToast: "Drop-off dikonfirmasi — barang dalam perjalanan.",
+    dropOffConfirmedToast: "Drop-off dikonfirmasi, barang dalam perjalanan.",
     clearance: "Clearance",
     clearanceInactive: "Belum di fase clearance.",
     clearanceAdvance: "Lanjut ke",
     clearanceComplete: "Selesaikan clearance",
-    clearanceCompleteToast: "Clearance selesai — masuk fase delivery.",
+    clearanceCompleteToast: "Clearance selesai, masuk fase delivery.",
     clBlock: "Tandai belum bisa (parsial/terhambat)",
     clUnblock: "Batalkan tanda belum bisa",
     clToBarpin: "Kirim data ke Barpin",
@@ -1024,9 +1024,9 @@ const en: Messages = {
     eyebrow: "FAQ",
     title: "Frequently asked questions",
     subtitle:
-      "Everything to know before you ship — from packing to customs.",
+      "Everything to know before you ship, from packing to customs.",
     teaserTitle: "Still have questions?",
-    teaserBody: "Packing, customs, costs, tracking, claims — the answers are here.",
+    teaserBody: "Packing, customs, costs, tracking, claims: the answers are here.",
     teaserCta: "See the full FAQ",
   },
   nav: {
@@ -1050,7 +1050,7 @@ const en: Messages = {
   article: {
     eyebrow: "Article",
     title: "Stories & guides for moving across borders",
-    body: "Packing tips, the ins and outs of customs, and real stories from people moving home or abroad — we're preparing reads that make your prep far calmer.",
+    body: "Packing tips, the ins and outs of customs, and real stories from people moving home or abroad. We're preparing reads that make your prep far calmer.",
   },
   about: {
     eyebrow: "About Us",
@@ -1060,7 +1060,7 @@ const en: Messages = {
   expat: {
     eyebrow: "Expat Relocation",
     title: "Move to Indonesia, without the paperwork stress",
-    body: "A relocation service for foreign nationals and expats moving to Indonesia — belongings, documents, and clearance handled in one place. We're putting the finishing touches on the details for you.",
+    body: "A relocation service for foreign nationals and expats moving to Indonesia: belongings, documents, and clearance handled in one place. We're putting the finishing touches on the details for you.",
   },
   auth: {
     account: "Account",
@@ -1082,7 +1082,7 @@ const en: Messages = {
     loginLink: "Sign up",
     signupLink: "Sign in",
     demoNote:
-      "Demo mode — accounts & sessions are stored in your browser, no email verification.",
+      "Demo mode: accounts & sessions are stored in your browser, no email verification.",
     emailExists: "Email already registered. Try signing in.",
     invalidCredentials: "Invalid email or password.",
     loggedIn: "Signed in",
@@ -1098,7 +1098,7 @@ const en: Messages = {
     titleLine: "Move home or abroad,",
     titleHighlight: "drama-free.",
     subtitle:
-      "Rimkirim helps you ship across borders — from overseas back home to Indonesia, or from Indonesia to the rest of the world. Check your rate now, with pricing clear up front.",
+      "Rimkirim helps you ship across borders: from overseas back home to Indonesia, or from Indonesia to the rest of the world. Check your rate now, with pricing clear up front.",
     trustClearance: "Full clearance handling",
     trustCountries: "220+ countries",
     trustInstant: "Instant estimate",
@@ -1121,11 +1121,11 @@ const en: Messages = {
     r1Title: "Safe & trusted",
     r1Body: "Your goods are handled to international standards, with optional insurance.",
     r2Title: "Clearance sorted",
-    r2Body: "We fully handle customs and paperwork — you just receive your goods.",
+    r2Body: "We fully handle customs and paperwork. You just receive your goods.",
     r3Title: "An assistant who's present",
     r3Body: "Our team supports you via WhatsApp from start until your goods arrive.",
     r4Title: "Transparent pricing",
-    r4Body: "A clear rate breakdown — base rate, chargeable weight, down to surcharges.",
+    r4Body: "A clear rate breakdown: base rate, chargeable weight, down to surcharges.",
   },
   footer: {
     tagline: "International Shipping Assistant",
@@ -1266,7 +1266,7 @@ const en: Messages = {
     dilayani: "Fulfilled by",
     perKgUnit: "/ kg",
     minShipmentPre: "Minimum shipment",
-    minShipmentPost: "— starting from",
+    minShipmentPost: ", starting from",
     untukKg: "for",
     mulaiDari: "Starting from",
     wilayahTujuan: "Destination region",
@@ -1293,11 +1293,11 @@ const en: Messages = {
     noSurcharge: "No additional surcharge.",
   },
   surchargeLine: {
-    OVERSIZE: "Additional Handling — Oversize",
-    OVERDIMENSION: "Additional Handling — Overdimension",
-    OVERWEIGHT: "Additional Handling — Overweight",
-    PACKAGING: "Additional Handling — Packaging",
-    FREIGHT: "Additional Handling — Freight",
+    OVERSIZE: "Additional Handling: Oversize",
+    OVERDIMENSION: "Additional Handling: Overdimension",
+    OVERWEIGHT: "Additional Handling: Overweight",
+    PACKAGING: "Additional Handling: Packaging",
+    FREIGHT: "Additional Handling: Freight",
     NON_STACKABLE: "Non-Stackable Surcharge",
     UNAUTHORIZED_FREIGHT: "Unauthorized Freight Charge",
   },
@@ -1376,7 +1376,7 @@ const en: Messages = {
     freightB1: "Longest side > 157 cm.",
     nonStackType: "Non-Stackable",
     nonStackDesc:
-      "Applied when the package cannot be stacked — e.g. it has no flat surface on the base or top, has only a very limited flat surface, or is considered likely to damage other packages.",
+      "Applied when the package cannot be stacked, e.g. it has no flat surface on the base or top, has only a very limited flat surface, or is considered likely to damage other packages.",
     unauthType: "Unauthorized Freight",
     unauthDesc: "Applied to shipments that exceed the maximum handling limits:",
     unauthB1: "Girth > 762 cm; or",
@@ -1472,7 +1472,7 @@ const en: Messages = {
     clPersonalSubtitle: "Relocation Clearance",
     clPersonalDesc:
       "Moving goods arriving together with the importer or at most 90 (ninety) days before or 90 (ninety) days after the importer's arrival.",
-    clPersonalBenefit1: "ZERO Tax — if you only ship Personal Used Items.",
+    clPersonalBenefit1: "ZERO Tax, if you only ship Personal Used Items.",
     clPersonalReq1: "Flight Ticket / Boarding Pass",
     clPersonalReq2: "SKP from KBRI / KJRI",
     clPersonalReq3: "Supporting document for study or work abroad",
@@ -1524,7 +1524,7 @@ const en: Messages = {
     backHome: "Back to home",
     viewOrder: "View order status",
     resumeDraft: "Continue filling",
-    draftNote: "Draft saved — continue anytime.",
+    draftNote: "Draft saved. Continue anytime.",
     statusDraft: "Draft",
     statusReview: "Review",
     statusQuotation: "Quotation",
@@ -1569,43 +1569,43 @@ const en: Messages = {
       "Clearance status will appear once the goods arrive in Indonesia.",
     tdCancelledNotice: "This order was cancelled.",
     tdMaNote:
-      "Moving Abroad tracking is coming soon — this service is still in development.",
+      "Moving Abroad tracking is coming soon. This service is still in development.",
     // attention overlay presets (set by the ops simulator)
     attQuotationReady:
-      "A quotation has been issued — approve it on the order page to continue.",
+      "A quotation has been issued. Approve it on the order page to continue.",
     attRevision:
       "Our team needs you to revise the documents in the Compliance module.",
     attPickupFailed:
-      "The first pickup failed — our team will reschedule the pickup.",
+      "The first pickup failed. Our team will reschedule the pickup.",
     attPickupFailCustomer:
-      "Pickup failed — an issue on your side. Choose: re-pickup or drop-off.",
+      "Pickup failed: an issue on your side. Choose: re-pickup or drop-off.",
     attPickupFailFedEx:
-      "Pickup failed due to FedEx. Not your fault — internal dispute, no cost. Choose how to continue.",
+      "Pickup failed due to FedEx. Not your fault: internal dispute, no cost. Choose how to continue.",
     attNeedsNewAwb:
       "Pickup failed 3× due to issues on your side. Request a new AWB to continue.",
-    attAwbIssued: "New AWB issued — pickup rescheduled.",
+    attAwbIssued: "New AWB issued. Pickup rescheduled.",
     attPickupRescheduled:
-      "Pickup rescheduled — our team will collect on the new schedule.",
+      "Pickup rescheduled. Our team will collect on the new schedule.",
     attDropOffRequested:
       "Drop the package at a FedEx location within 2 days, or the AWB will be changed.",
     attAwbChanged:
-      "AWB changed — the drop-off missed the 2-day deadline. Pickup rescheduled.",
+      "AWB changed. The drop-off missed the 2-day deadline. Pickup rescheduled.",
     attClearanceReleased:
-      "Clearance complete — the goods were approved for release by Customs.",
+      "Clearance complete. The goods were approved for release by Customs.",
     attClearanceReleasedExtra:
       "Goods released (SPPBL) with additional documents from Customs.",
     attClearanceBlocked:
-      "Can't enter clearance yet — the goods aren't all here (partial) or the shipment is delayed.",
+      "Can't enter clearance yet: the goods aren't all here (partial) or the shipment is delayed.",
     attClearanceBarpin:
       "Review & confirm your shipment data on the Barpin portal so clearance can proceed.",
     attClearanceBarpinRevision:
-      "Barpin data revision requested — our team is adjusting it based on your documents.",
+      "Barpin data revision requested. Our team is adjusting it based on your documents.",
     attNpd:
       "Customs issued an NPD (document request). Our team completes it and resubmits.",
     attClearanceTax:
-      "Customs issued an SPTNP — pay the tax so the goods can be released.",
+      "Customs issued an SPTNP. Pay the tax so the goods can be released.",
     attClearanceReject:
-      "Submission rejected by Customs — the clearance process restarts from the beginning.",
+      "Submission rejected by Customs. The clearance process restarts from the beginning.",
     // clearance sub-flow — spine labels (components/tracking/ClearancePanel)
     clSpinePre: "Pre-Clearance",
     clSpineBarpin: "Barpin confirm",
@@ -1624,27 +1624,27 @@ const en: Messages = {
     clDescBcReview: "Customs is processing your submission.",
     clDescNpd:
       "Customs requested additional documents (NPD). Our team completes them and resubmits.",
-    clDescSppb: "SPPB issued — the goods are approved for release by Customs.",
+    clDescSppb: "SPPB issued. The goods are approved for release by Customs.",
     clDescSppbl:
-      "SPPBL issued — the goods are released with additional documents from Customs.",
+      "SPPBL issued. The goods are released with additional documents from Customs.",
     clDescSptnp:
-      "SPTNP issued — the shipment didn't qualify for exemption, so there's a tax to pay before the goods are released.",
+      "SPTNP issued. The shipment didn't qualify for exemption, so there's a tax to pay before the goods are released.",
     clDescReject:
       "Submission rejected. Clearance must restart from the beginning with a new application; warehouse costs keep running.",
     // clearance result badges
-    clResultSppb: "SPPB — Released",
-    clResultSppbl: "SPPBL — Released (+docs)",
-    clResultSptnp: "SPTNP — Tax due",
+    clResultSppb: "SPPB: Released",
+    clResultSppbl: "SPPBL: Released (+docs)",
+    clResultSptnp: "SPTNP: Tax due",
     clNpdRound: "NPD #",
     // clearance customer actions
     clConfirmBarpinCta: "Confirm Barpin data",
     clRequestRevisionCta: "Request a revision",
-    clConfirmBarpinToast: "Barpin data confirmed — submission proceeds.",
+    clConfirmBarpinToast: "Barpin data confirmed. Submission proceeds.",
     clRequestRevisionToast: "Revision request sent to our team.",
     clBarpinConfirmedNote: "You've confirmed the Barpin data.",
     clPayTaxCta: "Pay tax",
-    clPayTaxToast: "Tax payment confirmed — awaiting release of the goods.",
-    clTaxPaidNote: "Tax paid — awaiting the team to release the goods.",
+    clPayTaxToast: "Tax payment confirmed, awaiting release of the goods.",
+    clTaxPaidNote: "Tax paid, awaiting the team to release the goods.",
     // clearance supporting-docs info (from the clearance MD)
     clDocsTitle: "Supporting documents",
     clDocsSp3bp: "SP3BP",
@@ -1660,7 +1660,7 @@ const en: Messages = {
     // timeline events (order.activity)
     tdTimeline: "Activity",
     evCreated: "Order created.",
-    evSubmitted: "Order request submitted — tracking number issued.",
+    evSubmitted: "Order request submitted. Tracking number issued.",
     evQuotation: "Quotation issued.",
     evPickup: "Pickup scheduled.",
     evInTransit: "Goods in transit.",
@@ -1683,52 +1683,52 @@ const en: Messages = {
     quFeeInsurance: "Insurance",
     quFeeClearance: "Clearance handling",
     quFeePickup: "Pickup",
-    quApprovedToast: "Quotation approved — pickup will be scheduled.",
+    quApprovedToast: "Quotation approved. Pickup will be scheduled.",
     // revision flow (revisionModule)
     revTitle: "Revision Required",
     revBody: "Complete this module to continue:",
     revCta: "Fix now",
     revDialogTitle: "Module to revise",
     revDialogHint: "The order returns to Review until the module is fixed.",
-    revRequested: "Revision requested — order back to Review.",
+    revRequested: "Revision requested. Order back to Review.",
     revNote: "Note from the team",
-    evQuotationApproved: "Quotation approved — pickup scheduled.",
+    evQuotationApproved: "Quotation approved. Pickup scheduled.",
     evRevision: "Revision requested.",
     evResubmitted: "Order updated after revision.",
     // ops notices (order.opsNotice)
     opsQuoteApproved:
-      "Quotation approved by the customer — book the pickup now.",
+      "Quotation approved by the customer. Book the pickup now.",
     opsAwbRequested:
-      "Customer requested a new AWB — issue it to continue.",
+      "Customer requested a new AWB. Issue it to continue.",
     opsDroppedOff:
-      "Customer dropped off the package — confirm to move to transit.",
+      "Customer dropped off the package. Confirm to move to transit.",
     attPickupScheduled:
-      "Pickup scheduled — our team will collect at your address.",
-    evPickupFailCustomer: "Pickup failed — customer fault.",
+      "Pickup scheduled. Our team will collect at your address.",
+    evPickupFailCustomer: "Pickup failed: customer fault.",
     evPickupFailFedEx:
-      "Pickup failed — FedEx fault (internal dispute, no cost).",
+      "Pickup failed: FedEx fault (internal dispute, no cost).",
     evAwbRequested: "You requested a new AWB.",
-    evAwbIssued: "New AWB issued — pickup rescheduled.",
-    evAwbChanged: "AWB changed — the drop-off missed the 2-day deadline.",
+    evAwbIssued: "New AWB issued. Pickup rescheduled.",
+    evAwbChanged: "AWB changed. The drop-off missed the 2-day deadline.",
     evPickupRescheduled: "Pickup rescheduled.",
     evDropOffRequested: "Drop-off at a FedEx location requested within 2 days.",
     evDropOffConfirmed: "You confirmed the package was dropped off.",
-    evDroppedOff: "Package received at the drop-off — in transit.",
-    evClPreClearance: "Entered pre-clearance — completing documents.",
-    evClBlocked: "Can't enter clearance yet — goods partial / delayed.",
-    evClUnblocked: "Shipment ready — continuing clearance.",
-    evClBarpin: "Data prepared on the Barpin portal — awaiting your confirmation.",
+    evDroppedOff: "Package received at the drop-off, in transit.",
+    evClPreClearance: "Entered pre-clearance, completing documents.",
+    evClBlocked: "Can't enter clearance yet: goods partial / delayed.",
+    evClUnblocked: "Shipment ready, continuing clearance.",
+    evClBarpin: "Data prepared on the Barpin portal, awaiting your confirmation.",
     evClBarpinConfirmed: "You confirmed the Barpin data.",
     evClBarpinRevision: "You requested a Barpin data revision.",
     evClSubmitted: "Submitted to Customs & FedEx.",
     evClBcReview: "Customs is processing the submission.",
-    evClNpd: "Customs issued an NPD — request for additional documents.",
+    evClNpd: "Customs issued an NPD: request for additional documents.",
     evClResubmit: "Documents completed & resubmitted to Customs.",
-    evClSppb: "SPPB issued — goods approved for release.",
-    evClSppbl: "SPPBL issued — released with additional documents.",
-    evClSptnp: "SPTNP issued — tax due before release.",
-    evClTaxPaid: "Tax paid — awaiting release of the goods.",
-    evClReject: "Submission rejected — clearance restarts from the beginning.",
+    evClSppb: "SPPB issued, goods approved for release.",
+    evClSppbl: "SPPBL issued, released with additional documents.",
+    evClSptnp: "SPTNP issued, tax due before release.",
+    evClTaxPaid: "Tax paid, awaiting release of the goods.",
+    evClReject: "Submission rejected. Clearance restarts from the beginning.",
     // pickup status panel (order.pickupFails / dropOff)
     pickStatus: "Pickup status",
     pickAttempts: "Pickup attempts",
@@ -1740,7 +1740,7 @@ const en: Messages = {
     pickChoiceRepickup: "Reschedule pickup",
     pickChoiceDropOff: "Choose drop-off",
     pickChoiceRepickupToast: "Pickup rescheduled.",
-    pickChoiceDropOffToast: "Drop-off requested — check the instructions in the pickup panel.",
+    pickChoiceDropOffToast: "Drop-off requested. Check the instructions in the pickup panel.",
     pickAwbNeededTitle: "New AWB Required",
     pickAwbNeededBody:
       "The pickup failed 3× due to issues on your side. Request a new AWB so we can re-issue and schedule a new pickup.",
@@ -1752,13 +1752,13 @@ const en: Messages = {
     pickDropOffDeadline: "Deadline",
     pickDropOffCta: "I've dropped it off",
     pickDropOffConfirmedToast:
-      "Confirmation sent — the ops team will process your shipment.",
+      "Confirmation sent. The ops team will process your shipment.",
     pickDropOffAwaitOps:
-      "Drop-off confirmed — waiting for the ops team to confirm.",
+      "Drop-off confirmed, waiting for the ops team to confirm.",
     // AWB section
     tdAwbNumber: "AWB number",
     tdAwbStable:
-      "Your booking number never changes — only the internal AWB is replaced.",
+      "Your booking number never changes, only the internal AWB is replaced.",
     // new-AWB request dialog
     awbDialogTitle: "Request a new AWB",
     awbDialogBody:
@@ -1832,11 +1832,11 @@ const en: Messages = {
     ciNoteName:
       "The receiver name is set to the sender name (clearance requires identical names).",
     ciNoteEmail:
-      "The email on the packing list is hello@rimkirim.com — Rimkirim represents you to customs.",
+      "The email on the packing list is hello@rimkirim.com. Rimkirim represents you to customs.",
     ciNoteAddress:
       "The receiver address is set to Rimkirim's warehouse (all parcels transit the warehouse first).",
     ciNoteAddressExport:
-      "The destination uses the receiver's real overseas address — goods are first inspected at Rimkirim's Indonesia warehouse, then shipped directly there.",
+      "The destination uses the receiver's real overseas address: goods are first inspected at Rimkirim's Indonesia warehouse, then shipped directly there.",
     itCurrency: "Currency",
     itPackagesHeading: "Packages",
     itCurrencyHelp:
@@ -1876,7 +1876,7 @@ const en: Messages = {
     coEnpwp: "e-NPWP",
     coProofOfStay: "Proof of Stay",
     coProofOfStayHelp:
-      "Proof of Stay confirms your arrival and residence abroad. Upload a document showing you've been accepted as a student or worker — for example, a Letter of Acceptance or Employment Contract.",
+      "Proof of Stay confirms your arrival and residence abroad. Upload a document showing you've been accepted as a student or worker, for example, a Letter of Acceptance or Employment Contract.",
     coOtherDocs: "Other supporting documents",
     coOtherDocName: "Document name",
     coAddOtherDoc: "Add document",
@@ -1911,7 +1911,7 @@ const en: Messages = {
   ops: {
     title: "Ops Simulator",
     subtitle:
-      "Mock control plane — move orders between phases to demo the tracking flow.",
+      "Mock control plane: move orders between phases to demo the tracking flow.",
     menu: "Simulator (ops)",
     advance: "Advance phase",
     advanceCta: "Advance",
@@ -1926,7 +1926,7 @@ const en: Messages = {
     issueQuotation: "Issue quotation",
     quotationIssued: "Quotation already issued.",
     bookPickup: "Book pickup",
-    pickupBookedToast: "Pickup scheduled — customer notified.",
+    pickupBookedToast: "Pickup scheduled, customer notified.",
     pickup: "Pickup & AWB",
     awbLabel: "AWB",
     failCustomer: "customer fail",
@@ -1934,7 +1934,7 @@ const en: Messages = {
     failCtaCustomer: "Record fail (customer)",
     failCtaFedEx: "Record fail (FedEx)",
     dropOffExpire: "Mark 2 days past",
-    dropOffExpired: "Drop-off missed the deadline — AWB changed.",
+    dropOffExpired: "Drop-off missed the deadline. AWB changed.",
     dropOffFulfilled: "Drop-off confirmed by the customer.",
     dropOffPending: "Awaiting customer drop-off (2 days).",
     waitingChoice:
@@ -1942,12 +1942,12 @@ const en: Messages = {
     pickIssueAwb: "Issue new AWB",
     pickConfirmDropOff: "Confirm drop-off",
     awbIssuedToast: "New AWB issued.",
-    dropOffConfirmedToast: "Drop-off confirmed — shipment in transit.",
+    dropOffConfirmedToast: "Drop-off confirmed, shipment in transit.",
     clearance: "Clearance",
     clearanceInactive: "Not in the clearance phase yet.",
     clearanceAdvance: "Advance to",
     clearanceComplete: "Complete clearance",
-    clearanceCompleteToast: "Clearance complete — moving to delivery.",
+    clearanceCompleteToast: "Clearance complete, moving to delivery.",
     clBlock: "Flag as blocked (partial/delayed)",
     clUnblock: "Clear the blocked flag",
     clToBarpin: "Send data to Barpin",

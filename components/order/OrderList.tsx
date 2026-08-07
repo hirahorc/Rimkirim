@@ -97,15 +97,15 @@ function OrderCard({ order, locale }: { order: Order; locale: "id" | "en" }) {
       <div className="flex items-center justify-between gap-3">
         <Link href={`/pesanan/${order.id}`} className="min-w-0 flex-1">
           <p className="flex items-center gap-2 font-mono text-sm font-semibold text-brand">
-            {identifier ?? "—"}
+            {identifier ?? "–"}
             <OrderStatusBadge status={order.status} />
           </p>
           <p className="mt-2 flex items-center gap-1.5 text-sm text-muted">
             <Flag code={order.context?.originCountry} size={13} />
-            <span>{origin?.name ?? "—"}</span>
+            <span>{origin?.name ?? "–"}</span>
             <span className="text-muted-2">→</span>
             <Flag code={order.context?.destCountry} size={13} />
-            <span>{dest?.name ?? "—"}</span>
+            <span>{dest?.name ?? "–"}</span>
           </p>
         </Link>
         <div className="shrink-0 text-right">

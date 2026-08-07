@@ -100,7 +100,7 @@ export function OpsSimulator({ order }: { order: Order }) {
             href={`/pesanan/${order.id}`}
             className="mt-1.5 inline-flex items-center gap-1.5 font-mono text-sm font-semibold text-brand transition-colors hover:text-brand-dim"
           >
-            {identifier ?? "—"} <Eye className="size-3.5" />
+            {identifier ?? "–"} <Eye className="size-3.5" />
           </Link>
           <p className="mt-0.5 truncate text-xs text-muted">
             {maskEmail(order.ownerEmail)}
@@ -281,7 +281,7 @@ export function OpsSimulator({ order }: { order: Order }) {
         <div className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted">
           <span>{t("ops.awbLabel")}:</span>
           <span className="font-mono font-medium text-foreground">
-            {order.awb ?? "—"}
+            {order.awb ?? "–"}
           </span>
           {(customerFails > 0 || carrierFails > 0) && (
             <span className="text-muted-2">
@@ -448,9 +448,9 @@ export function OpsSimulator({ order }: { order: Order }) {
 
 /** Mask an owner email on the shared ops view: "marketing@rimkirim.com" → "m****@rimkirim.com". */
 function maskEmail(email: string | null): string {
-  if (!email) return "—";
+  if (!email) return "–";
   const [local, domain] = email.split("@");
-  if (!domain) return "—";
+  if (!domain) return "–";
   const head = local.slice(0, 1);
   return `${head}${"*".repeat(Math.max(1, local.length - 1))}@${domain}`;
 }

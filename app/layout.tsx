@@ -25,7 +25,7 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 const SITE_URL = "https://rimkirim.com";
-const TITLE = "Rimkirim — Kirim & Pindahan Internasional";
+const TITLE = "Rimkirim · Kirim & Pindahan Internasional";
 const DESCRIPTION =
   "Hitung tarif pengiriman internasional Rimkirim. Back For Good (pulang ke Indonesia) & Moving Abroad (kirim ke luar negeri). Transparan, terpercaya.";
 

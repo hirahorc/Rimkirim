@@ -65,7 +65,7 @@ export function DialCodeSelect({
         >
           <span className="flex min-w-0 items-center gap-1.5">
             <Flag code={selected?.code} size={14} />
-            <span className="tabular-nums text-foreground">{dial ?? "—"}</span>
+            <span className="tabular-nums text-foreground">{dial ?? "–"}</span>
           </span>
           <ChevronsUpDown className="size-3.5 shrink-0 text-muted-2" />
         </button>

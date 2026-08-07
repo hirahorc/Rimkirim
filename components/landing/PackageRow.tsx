@@ -56,9 +56,9 @@ export function PackageRow({
   const rowTotal = rowChargeableWeight(dims);
   const pkgErr = errors.packages?.[index];
 
-  /** nothing entered yet — show "—" instead of zeros */
+  /** nothing entered yet — show "–" instead of zeros */
   const untouched = !dims.weight && !hasDims;
-  const kg = (v: number) => (untouched ? "—" : `${formatNumber(v)} kg`);
+  const kg = (v: number) => (untouched ? "–" : `${formatNumber(v)} kg`);
 
   return (
     <div className="rounded-sm border border-border bg-surface-2/60 p-4">

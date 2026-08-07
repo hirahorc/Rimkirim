@@ -29,10 +29,10 @@ function RouteLine({ route }: { route: RouteInfo }) {
   return (
     <div className="flex items-center gap-2 text-sm text-muted">
       {route.origin && <Flag code={route.origin.code} size={14} />}
-      <span>{route.origin?.name ?? "—"}</span>
+      <span>{route.origin?.name ?? "–"}</span>
       <span className="text-muted-2">→</span>
       {route.destination && <Flag code={route.destination.code} size={14} />}
-      <span>{route.destination?.name ?? "—"}</span>
+      <span>{route.destination?.name ?? "–"}</span>
     </div>
   );
 }
