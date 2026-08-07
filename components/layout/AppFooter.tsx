@@ -26,15 +26,16 @@ export function AppFooter() {
               links={[
                 [t("footer.linkBfg"), "/#layanan"],
                 [t("footer.linkMa"), "/#layanan"],
+                [t("nav.expat"), "/expat-relocation"],
                 [t("footer.linkHitung"), "/#kalkulator"],
               ]}
             />
             <FooterCol
               title={t("footer.colPerusahaan")}
               links={[
+                [t("nav.about"), "/about"],
                 [t("footer.linkKenapa"), "/#kenapa"],
-                [t("footer.linkTestimoni"), "/#kenapa"],
-                [t("footer.linkBlog"), "#"],
+                [t("nav.article"), "/articles"],
               ]}
             />
             <FooterCol
