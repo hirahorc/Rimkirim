@@ -41,7 +41,7 @@ export function AppFooter() {
               title={t("footer.colBantuan")}
               links={[
                 [t("footer.linkWa"), "https://wa.me/6281234567890"],
-                [t("footer.linkFaq"), "#"],
+                [t("footer.linkFaq"), "/faq"],
                 [t("footer.linkLacak"), "#"],
               ]}
             />

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Hero } from "@/components/landing/Hero";
 import { ShipmentCalculator } from "@/components/landing/ShipmentCalculator";
 import { ServiceSection, WhySection } from "@/components/landing/InfoSections";
+import { FaqTeaser } from "@/components/landing/FaqTeaser";
 import { CookieConsent } from "@/components/landing/CookieConsent";
 
 export const metadata: Metadata = {
@@ -20,6 +21,7 @@ export default function Home() {
       </section>
       <ServiceSection />
       <WhySection />
+      <FaqTeaser />
       <CookieConsent />
     </>
   );

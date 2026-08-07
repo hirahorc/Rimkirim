@@ -18,10 +18,20 @@ const id = {
     accept: "Terima",
     decline: "Tolak",
   },
+  faq: {
+    eyebrow: "FAQ",
+    title: "Pertanyaan yang sering ditanya",
+    subtitle:
+      "Semua yang perlu kamu tahu sebelum kirim — dari packing sampai bea cukai.",
+    teaserTitle: "Masih ada pertanyaan?",
+    teaserBody: "Packing, bea cukai, biaya, tracking, klaim — jawabannya di sini.",
+    teaserCta: "Lihat FAQ lengkap",
+  },
   nav: {
     hitungTarif: "Hitung Tarif",
     layanan: "Layanan",
     kenapa: "Kenapa Rimkirim",
+    faq: "FAQ",
     hubungiKami: "Hubungi Kami",
     cekTarif: "Cek Tarif",
     masuk: "Masuk",
@@ -986,10 +996,20 @@ const en: Messages = {
     accept: "Accept",
     decline: "Decline",
   },
+  faq: {
+    eyebrow: "FAQ",
+    title: "Frequently asked questions",
+    subtitle:
+      "Everything to know before you ship — from packing to customs.",
+    teaserTitle: "Still have questions?",
+    teaserBody: "Packing, customs, costs, tracking, claims — the answers are here.",
+    teaserCta: "See the full FAQ",
+  },
   nav: {
     hitungTarif: "Calculate Rates",
     layanan: "Services",
     kenapa: "Why Rimkirim",
+    faq: "FAQ",
     hubungiKami: "Contact Us",
     cekTarif: "Check Rates",
     masuk: "Sign in",

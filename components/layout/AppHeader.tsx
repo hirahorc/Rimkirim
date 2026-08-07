@@ -40,6 +40,12 @@ export function AppHeader() {
           >
             {t("nav.kenapa")}
           </Link>
+          <Link
+            href="/faq"
+            className="rounded-md px-3 py-2 transition-colors hover:text-foreground"
+          >
+            {t("nav.faq")}
+          </Link>
         </nav>
         <div className="flex items-center gap-2">
           <LanguageToggle />
