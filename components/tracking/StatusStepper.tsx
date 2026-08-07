@@ -45,11 +45,7 @@ export function StatusStepper({ status }: { status: OrderPhase }) {
         return (
           <div
             key={phase}
-            className={cn(
-              "flex flex-1 flex-col items-center",
-              i === 0 && "items-start",
-              i === PHASE_STEPS.length - 1 && "items-end",
-            )}
+            className="flex flex-1 flex-col items-center"
           >
             <div className="flex w-full items-center">
               <span
