@@ -118,7 +118,7 @@ export function ModuleHub() {
         </p>
         <div className="mt-1 flex items-center gap-2">
           <span className="font-display text-lg font-bold tracking-tight text-brand">
-            {bookingNumber ?? "—"}
+            {bookingNumber ?? "–"}
           </span>
           {bookingNumber && <CopyButton value={bookingNumber} />}
         </div>

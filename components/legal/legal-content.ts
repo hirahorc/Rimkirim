@@ -21,8 +21,8 @@ export const termsDoc: LegalDocData = {
   title: { id: "Ketentuan Layanan", en: "Terms of Service" },
   updated: UPDATED,
   intro: {
-    id: "Ketentuan ini mengatur penggunaan layanan Rimkirim — asisten pengiriman internasional untuk relokasi barang pribadi lintas negara (Back For Good dan Moving Abroad). Dengan menggunakan layanan kami, kamu setuju dengan ketentuan di bawah ini.",
-    en: "These terms govern your use of Rimkirim — an international shipping assistant for personal cross-border relocation (Back For Good and Moving Abroad). By using our services, you agree to the terms below.",
+    id: "Ketentuan ini mengatur penggunaan layanan Rimkirim, asisten pengiriman internasional untuk relokasi barang pribadi lintas negara (Back For Good dan Moving Abroad). Dengan menggunakan layanan kami, kamu setuju dengan ketentuan di bawah ini.",
+    en: "These terms govern your use of Rimkirim, an international shipping assistant for personal cross-border relocation (Back For Good and Moving Abroad). By using our services, you agree to the terms below.",
   },
   contact: CONTACT,
   sections: [

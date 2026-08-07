@@ -106,8 +106,8 @@ export function Questionnaire() {
   const e = answers.hasPackingCode;
   const arrived = answers.arrivedAtDestination;
 
-  const originName = getCountry(context?.originCountry)?.name ?? "—";
-  const destName = getCountry(context?.destCountry)?.name ?? "—";
+  const originName = getCountry(context?.originCountry)?.name ?? "–";
+  const destName = getCountry(context?.destCountry)?.name ?? "–";
 
   const packingCodeOk = e === false || codeStatus === "found";
 

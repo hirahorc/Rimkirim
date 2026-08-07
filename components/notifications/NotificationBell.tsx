@@ -140,7 +140,7 @@ export function NotificationBell() {
                 >
                   <span className="text-sm">{t(n.messageKey)}</span>
                   <span className="flex items-center gap-2 text-xs text-muted-2">
-                    <span className="font-mono">{n.identifier ?? "—"}</span>
+                    <span className="font-mono">{n.identifier ?? "–"}</span>
                     <span>·</span>
                     <span>{timeFmt.format(n.at)}</span>
                   </span>

@@ -94,7 +94,7 @@ export function assessPackage(p: PackageDims, flags: SurchargeFlags = {}): Packa
     if (longest > 243 || volume > 283_168 || p.weight > 50) {
       surcharges.push({
         code: "OVERSIZE",
-        label: "Additional Handling — Oversize",
+        label: "Additional Handling: Oversize",
         amount: SURCHARGE.OVERSIZE,
       });
     }
@@ -102,7 +102,7 @@ export function assessPackage(p: PackageDims, flags: SurchargeFlags = {}): Packa
     if (girth > 266 || longest > 121 || secondLongest > 76 || volume > 169_901) {
       surcharges.push({
         code: "OVERDIMENSION",
-        label: "Additional Handling — Overdimension",
+        label: "Additional Handling: Overdimension",
         amount: SURCHARGE.OVERDIMENSION,
       });
     }
@@ -110,7 +110,7 @@ export function assessPackage(p: PackageDims, flags: SurchargeFlags = {}): Packa
     if (p.weight > 25) {
       surcharges.push({
         code: "OVERWEIGHT",
-        label: "Additional Handling — Overweight",
+        label: "Additional Handling: Overweight",
         amount: SURCHARGE.OVERWEIGHT,
       });
     }
@@ -118,7 +118,7 @@ export function assessPackage(p: PackageDims, flags: SurchargeFlags = {}): Packa
     if (flags.nonStandardPackaging) {
       surcharges.push({
         code: "PACKAGING",
-        label: "Additional Handling — Packaging",
+        label: "Additional Handling: Packaging",
         amount: SURCHARGE.PACKAGING,
         optional: true,
       });
@@ -129,7 +129,7 @@ export function assessPackage(p: PackageDims, flags: SurchargeFlags = {}): Packa
     if (longest > 157) {
       surcharges.push({
         code: "FREIGHT",
-        label: "Additional Handling — Freight",
+        label: "Additional Handling: Freight",
         amount: SURCHARGE.FREIGHT,
       });
     }

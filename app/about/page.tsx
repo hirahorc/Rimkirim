@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import { ComingSoon } from "@/components/marketing/ComingSoon";
 
 export const metadata: Metadata = {
-  title: "About Us — Rimkirim",
+  title: "About Us · Rimkirim",
   description:
-    "Rimkirim — pendamping pindahmu lintas negara: harga jelas di depan, bea cukai kami yang urus.",
+    "Rimkirim · pendamping pindahmu lintas negara: harga jelas di depan, bea cukai kami yang urus.",
   alternates: { canonical: "/about" },
 };
 

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { ComingSoon } from "@/components/marketing/ComingSoon";
 
 export const metadata: Metadata = {
-  title: "Article — Rimkirim",
+  title: "Article · Rimkirim",
   description:
     "Cerita, panduan, dan kabar seputar pindah lintas negara dari Rimkirim.",
   alternates: { canonical: "/articles" },

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { LoginForm } from "@/components/auth/LoginForm";
 
 export const metadata: Metadata = {
-  title: "Masuk — Rimkirim",
+  title: "Masuk · Rimkirim",
   description: "Masuk ke akun Rimkirim untuk mengelola pesanan & tracking.",
 };
 

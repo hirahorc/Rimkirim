@@ -28,7 +28,7 @@ import {
   type Order,
 } from "@/lib/store/useOrderStore";
 
-const dash = "—";
+const dash = "–";
 
 function Section({
   icon: Icon,

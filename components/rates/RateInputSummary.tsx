@@ -34,10 +34,10 @@ export function RateInputSummary({
         </span>
         <span className="flex items-center gap-1.5 text-muted">
           {route.origin && <Flag code={route.origin.code} size={12} />}
-          {route.origin?.name ?? "—"}
+          {route.origin?.name ?? "–"}
           <span className="text-muted-2">→</span>
           {route.destination && <Flag code={route.destination.code} size={12} />}
-          {route.destination?.name ?? "—"}
+          {route.destination?.name ?? "–"}
         </span>
         <Badge variant={input.mode === "advance" ? "brand" : "neutral"}>
           {input.mode === "advance" ? t("calc.modeAdvance") : t("calc.modeBase")}
