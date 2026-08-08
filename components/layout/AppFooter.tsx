@@ -4,14 +4,14 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Logo } from "./Logo";
 import { useT } from "@/lib/i18n/LanguageProvider";
-import { isBareRoute } from "@/lib/utils/routes";
+import { isBareRoute, isOrderFlowRoute } from "@/lib/utils/routes";
 
 export function AppFooter() {
   const t = useT();
   const pathname = usePathname();
   // the customer order flow (/pesan/*) has its own focused shell — no footer;
   // legal docs render bare so they can drop into other landing services
-  if (pathname.startsWith("/pesan") || isBareRoute(pathname)) return null;
+  if (isOrderFlowRoute(pathname) || isBareRoute(pathname)) return null;
   return (
     <footer className="border-t border-border bg-background">
       <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6">
@@ -78,7 +78,7 @@ function FooterCol({
 }) {
   return (
     <div>
-      <h4 className="mb-3 font-medium text-foreground">{title}</h4>
+      <h3 className="mb-3 font-medium text-foreground">{title}</h3>
       <ul className="space-y-2">
         {links.map(([label, href]) => (
           <li key={label}>

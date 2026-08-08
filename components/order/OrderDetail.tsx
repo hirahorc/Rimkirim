@@ -92,12 +92,17 @@ export function OrderDetail({ id }: { id: string }) {
             <p className="text-xs font-medium uppercase tracking-wide text-muted-2">
               {t("order.bookingNumberLabel")}
             </p>
-            <p className="mt-1 flex items-center gap-2">
-              <span className="font-mono text-xl font-bold tracking-tight text-foreground">
+            {/* the booking number names this page, so it carries the h1 —
+                the copy button stays a sibling rather than sitting inside it */}
+            <div className="mt-1 flex items-center gap-2">
+              <h1
+                className="font-mono text-xl font-bold tracking-tight text-foreground"
+                aria-label={`${t("order.bookingNumberLabel")} ${identifier ?? ""}`}
+              >
                 {identifier ?? "–"}
-              </span>
+              </h1>
               {identifier && <CopyButton value={identifier} />}
-            </p>
+            </div>
           </div>
           <OrderStatusBadge status={order.status} />
         </div>
