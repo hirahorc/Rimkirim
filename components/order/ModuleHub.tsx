@@ -129,7 +129,7 @@ export function ModuleHub() {
         <div className="flex items-center gap-3">
           <span
             className={cn(
-              "grid size-10 shrink-0 place-items-center rounded-lg",
+              "grid size-10 shrink-0 place-items-center rounded-md",
               packingCode ? "bg-brand/15 text-brand-ink" : "bg-surface-3 text-muted-2",
             )}
           >
@@ -172,7 +172,7 @@ export function ModuleHub() {
             >
               <span
                 className={cn(
-                  "grid size-11 shrink-0 place-items-center rounded-lg",
+                  "grid size-11 shrink-0 place-items-center rounded-md",
                   status === "complete"
                     ? "bg-brand/15 text-brand-ink"
                     : "bg-surface-3 text-muted",

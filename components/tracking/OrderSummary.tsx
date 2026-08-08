@@ -42,7 +42,7 @@ function Section({
   return (
     <Card className="p-5 sm:p-6">
       <h2 className="flex items-center gap-2 font-display text-base font-semibold tracking-tight">
-        <span className="grid size-6 place-items-center rounded-md bg-brand/10 text-brand-ink">
+        <span className="grid size-6 place-items-center rounded-xs bg-brand/10 text-brand-ink">
           <Icon className="size-3.5" />
         </span>
         {title}
@@ -312,7 +312,7 @@ function ItemsCard({ order }: { order: Order }) {
                 : t("order.tdMissing")}
             </Row>
             {items.length > 0 && (
-              <div className="mt-1.5 overflow-hidden rounded-lg border border-border">
+              <div className="mt-1.5 overflow-hidden rounded-md border border-border">
                 <div className="grid grid-cols-[1fr_auto_auto_auto] gap-2 bg-surface-2 px-3 py-1.5 text-[10px] font-medium uppercase tracking-wide text-muted-2">
                   <span>{t("order.itColDescription")}</span>
                   <span className="text-right">{t("order.itColQty")}</span>

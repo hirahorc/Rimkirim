@@ -220,7 +220,7 @@ function SurchargeGroupBlock({
         <CountPill n={rows.length} />
       </div>
       {qualifyKeys && qualifyKeys.length > 0 && (
-        <div className="mt-2 rounded-lg border border-border bg-surface-2/40 px-4 py-3 text-xs text-muted sm:px-5">
+        <div className="mt-2 rounded-md border border-border bg-surface-2/40 px-4 py-3 text-xs text-muted sm:px-5">
           <p className="font-medium text-muted-2">{t("surcharge.appliesAny")}</p>
           <ul className="mt-1 space-y-0.5">
             {qualifyKeys.map((c) => (
@@ -232,7 +232,7 @@ function SurchargeGroupBlock({
           </ul>
         </div>
       )}
-      <div className="mt-3 divide-y divide-border overflow-hidden rounded-lg border border-border">
+      <div className="mt-3 divide-y divide-border overflow-hidden rounded-md border border-border">
         {rows.map((r, i) => (
           <CostRowItem key={r.typeKey} row={r} index={i + 1} />
         ))}
@@ -257,7 +257,7 @@ function CostSection({
         <CountPill n={rows.length} />
       </div>
       <p className="mt-1 text-sm leading-relaxed text-muted">{intro}</p>
-      <div className="mt-4 divide-y divide-border overflow-hidden rounded-lg border border-border">
+      <div className="mt-4 divide-y divide-border overflow-hidden rounded-md border border-border">
         {rows.map((r, i) => (
           <CostRowItem key={r.typeKey} row={r} index={i + 1} />
         ))}

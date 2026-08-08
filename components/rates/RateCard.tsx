@@ -48,7 +48,7 @@ export function RateCard({
       <div className="flex items-start justify-between gap-3 p-5 pb-4">
         <div className="flex items-center gap-3">
           {quote.isSpecial ? (
-            <span className="grid size-10 place-items-center rounded-lg bg-brand text-xs font-bold text-brand-ink">
+            <span className="grid size-10 place-items-center rounded-md bg-brand text-xs font-bold text-brand-ink">
               {vendor.code}
             </span>
           ) : (

@@ -68,6 +68,9 @@
   --font-mono: var(--font-jetbrains-mono), ui-monospace, SFMono-Regular, Menlo,
     monospace;
 
+  /* xs exists because radius clamps to half the shorter side: on a 24px chip
+     even `sm` (12px) collapses into a circle. */
+  --radius-xs: 0.5rem;
   --radius-sm: 0.75rem;
   --radius-md: var(--radius);
   --radius-lg: 1.75rem;

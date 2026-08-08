@@ -80,7 +80,7 @@ export function QuotationCard({ order }: { order: Order }) {
           {t("order.quIssued")} {dateFmt.format(qu.issuedAt)}
         </p>
 
-        <div className="mt-4 divide-y divide-border rounded-lg border border-border">
+        <div className="mt-4 divide-y divide-border rounded-md border border-border">
           {qu.items.map((it) => (
             <div
               key={it.labelKey}

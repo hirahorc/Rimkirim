@@ -65,6 +65,7 @@ typography:
     fontFeature: "tabular-nums"
 rounded:
   mark: "0.12em"
+  xs: "0.5rem"
   sm: "0.75rem"
   md: "1rem"
   lg: "1.75rem"
@@ -307,13 +308,28 @@ without support simply get no parallax.
 
 ## Shapes
 
-Generously rounded on a 16px base (`--radius: 1rem`): inputs and buttons at `rounded-md` (16px),
-cards and dialogs at `rounded-lg` (28px), small nested boxes at `rounded-sm` (12px), and the hero
-container at `rounded-xl` (40px). Badges, count chips, segmented controls, and numbered markers are
-full **pills** (`rounded-full`). The highlighter mark uses a font-relative `0.12em` so its corners
-scale with the text it marks. Everything is fenced by **1px hairline borders** (`#e5e5e5`, stepping
-to `#d4d4d4` for inputs and emphasis) — borders, not fills or shadows, define the geometry. No sharp
-0px corners, no heavy 2px+ strokes.
+Generously rounded on a 16px base (`--radius: 1rem`). The scale is
+**xs 8px · sm 12px · md 16px · lg 28px · xl 40px · full**: 24px icon chips at `rounded-xs`, small
+nested boxes at `rounded-sm`, inputs / buttons / 40px icon tiles at `rounded-md`, cards and dialogs
+at `rounded-lg`. `xl` is reserved for a future full-bleed container and is currently unused.
+Badges, count chips, segmented controls, and numbered markers are full **pills** (`rounded-full`).
+The highlighter mark uses a font-relative `0.12em` so its corners scale with the text it marks.
+Everything is fenced by **1px hairline borders** (`#e5e5e5`, stepping to `#d4d4d4` for inputs and
+emphasis) — borders, not fills or shadows, define the geometry. No sharp 0px corners, no heavy 2px+
+strokes.
+
+### Named Rules
+**The Step-Down Rule.** A box nested inside another drops one notch: a 28px card holds 16px panels,
+which hold 12px boxes. Matching the parent's radius on a child reads as a mistake, because the
+concentric curves no longer share a centre — the inner radius should roughly equal the outer radius
+minus the padding between them.
+
+**The Clamp Rule.** A border-radius silently collapses to half the shorter side, so any radius at or
+above half an element's height turns it into a pill or a circle whether you meant it or not. Check
+the box before picking the token: `lg` (28px) circles anything under 56px, `md` (16px) under 32px,
+`sm` (12px) under 24px. That is why `xs` exists, and why the 24px section chips use it. When a
+circle *is* the intent, say so with `rounded-full` rather than leaving a clamped value that looks
+like an accident.
 
 ## Components
 

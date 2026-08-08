@@ -80,7 +80,7 @@ export function ClearancePanel({ order }: { order: Order }) {
     <Card className="p-5 sm:p-6">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h2 className="flex items-center gap-2 font-display text-base font-semibold tracking-tight">
-          <span className="grid size-6 place-items-center rounded-md bg-brand/10 text-brand-ink">
+          <span className="grid size-6 place-items-center rounded-xs bg-brand/10 text-brand-ink">
             <ShieldCheck className="size-3.5" />
           </span>
           {t("order.stepClearance")}
@@ -163,7 +163,7 @@ export function ClearancePanel({ order }: { order: Order }) {
       {/* current-state description */}
       <p
         className={cn(
-          "mt-4 flex items-start gap-2 rounded-lg px-3 py-2.5 text-sm",
+          "mt-4 flex items-start gap-2 rounded-md px-3 py-2.5 text-sm",
           blocked
             ? "bg-warning/10 text-warning"
             : "bg-surface-2 text-muted",
@@ -220,7 +220,7 @@ export function ClearancePanel({ order }: { order: Order }) {
         ))}
 
       {/* supporting documents info (from the clearance MD) */}
-      <div className="mt-4 rounded-lg border border-border p-3">
+      <div className="mt-4 rounded-md border border-border p-3">
         <p className="flex items-center gap-1.5 text-xs font-medium text-muted-2">
           <Info className="size-3.5" /> {t("order.clDocsTitle")}
         </p>

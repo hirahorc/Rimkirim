@@ -17,7 +17,7 @@ export function CarrierMark({
     <span
       aria-label={carrier}
       className={cn(
-        "grid size-10 shrink-0 place-items-center rounded-lg text-xs font-bold leading-none tracking-tight",
+        "grid size-10 shrink-0 place-items-center rounded-md text-xs font-bold leading-none tracking-tight",
         className,
       )}
       style={{ backgroundColor: b.bg, color: b.fg }}

@@ -74,7 +74,7 @@ export function SpecialRateCard({
         <div className="mt-2 flex items-center gap-2 text-xs text-muted">
           <CarrierMark
             carrier={special.carrier}
-            className="size-6 rounded-md text-[9px]"
+            className="size-6 rounded-xs text-[9px]"
           />
           <span>
             {t("special.dilayani")}{" "}

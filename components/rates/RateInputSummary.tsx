@@ -26,7 +26,7 @@ export function RateInputSummary({
   const pkgCount = input.packages.reduce((n, p) => n + (Number(p.quantity) || 1), 0);
 
   return (
-    <div className="flex flex-col gap-4 rounded-xl border border-border bg-surface/70 p-4 sm:flex-row sm:items-center sm:justify-between">
+    <div className="flex flex-col gap-4 rounded-lg border border-border bg-surface/70 p-4 sm:flex-row sm:items-center sm:justify-between">
       <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm">
         <span className="flex items-center gap-2 font-medium">
           <ServiceIcon className="size-4 text-foreground" />
