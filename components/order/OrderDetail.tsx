@@ -81,7 +81,7 @@ export function OrderDetail({ id }: { id: string }) {
     <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6 sm:py-10">
       <Link
         href="/pesanan"
-        className="mb-4 inline-flex items-center gap-1.5 text-sm text-muted transition-colors hover:text-foreground"
+        className="tap-row mb-4 inline-flex items-center gap-1.5 text-sm text-muted transition-colors hover:text-foreground"
       >
         <ArrowLeft className="size-4" /> {t("order.ordersTitle")}
       </Link>

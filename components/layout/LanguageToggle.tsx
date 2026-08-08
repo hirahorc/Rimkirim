@@ -21,7 +21,7 @@ export function LanguageToggle() {
           onClick={() => setLocale(opt)}
           aria-pressed={locale === opt}
           className={cn(
-            "rounded-full px-2.5 py-1 text-xs font-medium transition-colors",
+            "tap-row rounded-full px-2.5 py-1 text-xs font-medium transition-colors",
             locale === opt
               ? "bg-background text-foreground shadow-float"
               : "text-muted hover:text-foreground",

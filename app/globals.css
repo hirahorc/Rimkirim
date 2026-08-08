@@ -174,6 +174,19 @@ input[type="date"].date-field::-webkit-calendar-picker-indicator {
   transform: translate(-50%, -50%);
 }
 
+/* Comfortable touch rows for text links and small controls.
+   Keyed on `pointer: coarse` rather than a width breakpoint: a laptop with a
+   touchscreen needs the bigger target and a narrow desktop window does not.
+   Real height rather than a `.tap-target` overlay, because in a dense list
+   overlapping invisible hit areas steal each other's taps. */
+@media (pointer: coarse) {
+  .tap-row {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+  }
+}
+
 /* ------------------------------------------------------------------ */
 /*  Page entrance animations (above-the-fold, subtle & fast)          */
 /* ------------------------------------------------------------------ */

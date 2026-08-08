@@ -257,6 +257,19 @@ Density is comfortable, not compact: cards pad `20–24px` (`p-5 → sm:p-6`), v
 numbered stepper across the top; long forms collapse into sections the user can jump between. The
 spacing scale is Tailwind's default 4px base.
 
+### Named Rules
+**The Coarse-Pointer Rule.** Touch targets are sized by **input method, not viewport width** — a
+laptop with a touchscreen needs the bigger target and a narrow desktop window does not. Anything
+below ~44px that a finger has to hit gets sized up inside `@media (pointer: coarse)`, so mouse
+layouts keep their density. Two utilities, and picking the wrong one is a bug:
+
+- **`.tap-row`** grows the element's *real* height to 44px. Use it for text links and controls that
+  sit in a list or a row — footer links, the language toggle, segmented items. Real height is
+  required here because invisible hit areas in a dense list overlap and steal each other's taps.
+- **`.tap-target`** paints a 44px invisible `::after` over a small control without changing its
+  visual size. Only for **isolated** icon buttons with clear space around them (the bell, the
+  hamburger, copy). The host must already be positioned.
+
 ## Elevation & Depth
 
 **Flat by default, depth through tonal layering and hairlines.** A surface reads as "closer"

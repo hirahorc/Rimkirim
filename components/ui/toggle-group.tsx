@@ -26,7 +26,7 @@ export const SegmentedItem = React.forwardRef<
   <ToggleGroupPrimitive.Item
     ref={ref}
     className={cn(
-      "flex flex-1 items-center justify-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-all",
+      "tap-row flex flex-1 items-center justify-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-all",
       "text-muted hover:text-foreground",
       // the selected segment lifts off the track instead of filling with lime:
       // on daylight a full lime pill is far too much area for a mere state

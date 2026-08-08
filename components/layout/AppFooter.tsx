@@ -54,10 +54,10 @@ export function AppFooter() {
               © {new Date().getFullYear()} Rimkirim. {t("footer.rights")}
             </span>
             <div className="flex items-center gap-4">
-              <Link href="/terms" className="transition-colors hover:text-foreground">
+              <Link href="/terms" className="tap-row transition-colors hover:text-foreground">
                 {t("footer.legalTerms")}
               </Link>
-              <Link href="/privacy" className="transition-colors hover:text-foreground">
+              <Link href="/privacy" className="tap-row transition-colors hover:text-foreground">
                 {t("footer.legalPrivacy")}
               </Link>
             </div>
@@ -79,10 +79,13 @@ function FooterCol({
   return (
     <div>
       <h3 className="mb-3 font-medium text-foreground">{title}</h3>
-      <ul className="space-y-2">
+      <ul>
         {links.map(([label, href]) => (
           <li key={label}>
-            <Link href={href} className="text-muted transition-colors hover:text-foreground">
+            <Link
+              href={href}
+              className="tap-row flex items-center py-1 text-muted transition-colors hover:text-foreground"
+            >
               {label}
             </Link>
           </li>
