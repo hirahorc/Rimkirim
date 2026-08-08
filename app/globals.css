@@ -35,8 +35,10 @@
   /* rounded corners */
   --radius: 1rem;
 
-  /* the one shadow in the system: genuinely floating chrome */
+  /* two sanctioned shadows: lifted chrome, and portalled overlays that must
+     separate from the page behind them */
   --elevation-float: 0 4px 24px rgba(0, 0, 0, 0.06);
+  --elevation-overlay: 0 16px 48px -12px rgba(0, 0, 0, 0.18);
 }
 
 @theme inline {
@@ -72,6 +74,7 @@
   --radius-xl: 2.5rem;
 
   --shadow-float: var(--elevation-float);
+  --shadow-overlay: var(--elevation-overlay);
 }
 
 * {

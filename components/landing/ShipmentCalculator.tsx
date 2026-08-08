@@ -159,7 +159,7 @@ export function ShipmentCalculator() {
       <form
         onSubmit={handleSubmit(onSubmit, onInvalid)}
         id="kalkulator"
-        className="relative overflow-hidden rounded-md border border-border-strong bg-surface/90 shadow-2xl shadow-black/40 backdrop-blur"
+        className="relative overflow-hidden rounded-md border border-border-strong bg-surface/90 shadow-overlay backdrop-blur"
       >
         <h2 className="sr-only">{t("calc.srHeading")}</h2>
 

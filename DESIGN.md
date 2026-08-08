@@ -198,7 +198,10 @@ carried by weight and Ink; when a phrase must be singled out it gets the highlig
 light system.
 
 **The No-Gradient Rule.** Surfaces are solid fills. No gradient backgrounds, no ambient glows, no
-glass blur behind content. Depth comes from panels, hairlines, and one float shadow.
+glass blur used as *decoration*. Depth comes from panels, hairlines, and the two sanctioned shadows.
+The one sanctioned translucency is functional: sticky chrome (the header capsule) is
+`bg-background/70` + `backdrop-blur-xl` so the page reads legibly as it scrolls underneath — an
+effect doing a specific job, not a texture.
 
 **The Tint-15/25 Rule.** *Status* chips use the colour at 15% opacity for the fill, 25% for the
 border, and full strength for the text/icon. **Brand chips are the exception** — a 15% lime wash is
@@ -258,14 +261,22 @@ hairline border. On daylight, tonal steps alone are subtle, so **the 1px hairlin
 depth device** — more load-bearing here than it was on black.
 
 ### Shadow Vocabulary
-- **Float** (`0 4px 24px rgba(0,0,0,0.06)` — `shadow-float`): The single sanctioned shadow, for
-  chrome that genuinely lifts off its track: the selected segment in a segmented control or tab
-  list, the active language pill, and floating navigation. It is a lift cue, not decoration.
+Exactly two shadows exist. Anything else is a tonal step or a hairline.
+- **Float** (`0 4px 24px rgba(0,0,0,0.06)` — `shadow-float`): For chrome that lifts off its own
+  track: the header capsule, the selected segment in a segmented control or tab list, the active
+  language pill. A lift cue, not decoration.
+- **Overlay** (`0 16px 48px -12px rgba(0,0,0,0.18)` — `shadow-overlay`): For portalled surfaces
+  that must separate from the whole page behind them: dialogs, the mobile sheet, popovers,
+  tooltips, and the landing calculator. Deeper than Float because it has more to clear.
 
 ### Named Rules
-**The Flat-By-Default Rule.** Surfaces are flat at rest. The only elevation is `shadow-float` on
-lifted chrome. If you reach for a drop shadow to separate two things, use a tonal step or a
-hairline instead.
+**The Flat-By-Default Rule.** Surfaces are flat at rest. Elevation is only ever `shadow-float` on
+lifted chrome or `shadow-overlay` on a portalled surface. If you reach for a drop shadow to
+separate two things in the page flow, use a tonal step or a hairline instead.
+
+**The Light-Scrim Rule.** Modal scrims are `bg-foreground/25` with a light backdrop blur. A
+near-opaque black veil belongs to a dark UI; on daylight it reads as a blackout and breaks the
+sense that the page is still there underneath.
 
 ## Shapes
 
@@ -308,11 +319,25 @@ to `#d4d4d4` for inputs and emphasis) — borders, not fills or shadows, define 
 - **Focus:** border shifts to Ink and a `ring-2 ring-foreground/40` appears (no lift).
 - **Disabled:** `opacity-50`, `cursor-not-allowed`.
 
-### Navigation
-- **Header:** sticky, `bg-background/80` with `backdrop-blur`, hairline bottom border; wordmark
-  left (the dark-ink logo, `rimkirim-logo-dark.png`), quiet Readout-Grey text links center (hover →
-  Ink), and the lime "Cek Tarif" CTA plus account/notification controls right. Links are hidden
-  below `md`, where a right slide-over sheet takes over.
+### Navigation (signature)
+- **Header capsule:** the header does not sit on a bar — it is a **floating capsule**. A sticky
+  wrapper (`px-3 sm:px-6`, `pt-3`) holds a `max-w-6xl`, 60px, `rounded-full` capsule with a
+  hairline border, `bg-background/70`, `backdrop-blur-xl` and `shadow-float`. The page scrolls
+  behind it and blurs underneath, so the chrome floats clear of the page edge instead of ruling a
+  line across it.
+- **Contents:** wordmark left (the dark-ink logo, `rimkirim-logo-dark.png`), nav links center, and
+  the language toggle, account/notification controls and the lime "Cek Tarif" CTA right. Small
+  icon controls inside the capsule are `rounded-full` to echo its geometry.
+- **Nav links:** `rounded-full`, `px-[18px] py-2`, `font-medium`. Inactive is Readout Grey with a
+  faint Panel-2 hover; the **active link is a solid Panel-2 pill** with Ink text and
+  `aria-current="page"`.
+- **Mobile (`< md`):** links collapse into a right slide-over sheet — `bg-background`,
+  `rounded-l-lg`, `shadow-overlay`, over a `bg-foreground/25` scrim, with full-pill 48px rows.
+
+**The Contrast-Against-Its-Track Rule.** An active item is always the tonal *opposite* of the
+track it sits in, never lime. On a Panel-2 track (segmented control, tabs, language toggle) the
+active item is white and lifts with `shadow-float`; inside the translucent white header capsule
+the active link is a Panel-2 pill instead. Same principle, inverted fill.
 
 ### Segmented control (signature)
 - A `rounded-lg` Panel-2 track with a 1px border and `p-1`; the active item **lifts** — white fill,
