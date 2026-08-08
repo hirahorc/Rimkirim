@@ -119,43 +119,52 @@ export function PackageRow({
         </FieldError>
       )}
 
-      {/* live chargeable weight */}
-      <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 rounded-sm bg-surface/70 px-3 py-2 text-xs">
-        <span className="flex items-center gap-1 text-muted">
-          {t("pkg.aktual")}{" "}
-          <span
-            className={cn(
-              "font-medium text-foreground",
-              !untouched && basis === "actual" && "text-brand",
-            )}
-          >
-            {kg(dims.weight)}
-          </span>
-        </span>
-        <span className="flex items-center gap-1 text-muted">
-          {t("pkg.volumetrik")}{" "}
-          <span
-            className={cn(
-              "font-medium text-foreground",
-              !untouched && basis === "volumetric" && "text-brand",
-            )}
-          >
-            {kg(vol)}
-          </span>
-          <InfoTip content={t("pkg.volTooltip")} />
-        </span>
-        <span className="ml-auto flex items-center gap-1.5">
-          <span className="flex items-center gap-1 text-muted">
-            {t("pkg.chargeable")}
-            <InfoTip content={t("pkg.chgTooltip")} />
-          </span>
-          <Badge variant={untouched ? "neutral" : "brand"}>{kg(chg)}</Badge>
-          {!untouched && dims.quantity > 1 && (
-            <span className="text-muted">
-              × {dims.quantity} = {formatNumber(rowTotal)} kg
+      {/* live chargeable weight — aligned readout: stacked rows on mobile, 3 columns on sm+ */}
+      <div className="mt-3 overflow-hidden rounded-sm bg-surface/70 text-xs">
+        <div className="grid grid-cols-1 divide-y divide-border sm:grid-cols-3 sm:divide-x sm:divide-y-0">
+          <div className="flex items-center justify-between gap-3 px-3 py-2 sm:flex-col sm:items-start sm:gap-1">
+            <span className="text-[10px] font-medium uppercase tracking-wide text-muted-2">
+              {t("pkg.aktual")}
             </span>
-          )}
-        </span>
+            <span
+              className={cn(
+                "font-medium tabular-nums text-foreground",
+                !untouched && basis === "actual" && "text-brand",
+              )}
+            >
+              {kg(dims.weight)}
+            </span>
+          </div>
+          <div className="flex items-center justify-between gap-3 px-3 py-2 sm:flex-col sm:items-start sm:gap-1">
+            <span className="flex items-center gap-1 text-[10px] font-medium uppercase tracking-wide text-muted-2">
+              {t("pkg.volumetrik")}
+              <InfoTip content={t("pkg.volTooltip")} />
+            </span>
+            <span
+              className={cn(
+                "font-medium tabular-nums text-foreground",
+                !untouched && basis === "volumetric" && "text-brand",
+              )}
+            >
+              {kg(vol)}
+            </span>
+          </div>
+          <div className="flex items-center justify-between gap-3 px-3 py-2 sm:flex-col sm:items-start sm:gap-1">
+            <span className="flex items-center gap-1 text-[10px] font-medium uppercase tracking-wide text-muted-2">
+              {t("pkg.chargeable")}
+              <InfoTip content={t("pkg.chgTooltip")} />
+            </span>
+            <Badge variant={untouched ? "neutral" : "brand"}>{kg(chg)}</Badge>
+          </div>
+        </div>
+        {!untouched && dims.quantity > 1 && (
+          <div className="border-t border-border px-3 py-1.5 text-[11px] text-muted-2">
+            {t("pkg.chargeable")} × {dims.quantity} ={" "}
+            <span className="font-medium tabular-nums text-foreground">
+              {formatNumber(rowTotal)} kg
+            </span>
+          </div>
+        )}
       </div>
 
       {/* per-package optional conditions */}
