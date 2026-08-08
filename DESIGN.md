@@ -22,8 +22,8 @@ colors:
 typography:
   display:
     fontFamily: "Space Grotesk, Inter, sans-serif"
-    fontSize: "clamp(2.25rem, 6vw, 3.75rem)"
-    fontWeight: 700
+    fontSize: "clamp(2.375rem, 6.5vw, 4.75rem)"
+    fontWeight: 500
     lineHeight: 1.05
     letterSpacing: "-0.02em"
   headline:
@@ -78,6 +78,7 @@ spacing:
   xl: "24px"
 shadow:
   float: "0 4px 24px rgba(0, 0, 0, 0.06)"
+  overlay: "0 16px 48px -12px rgba(0, 0, 0, 0.18)"
 components:
   button-primary:
     backgroundColor: "{colors.brand}"
@@ -219,8 +220,10 @@ instrument readout. The pairing reads competent and calm, not corporate. These t
 unchanged from the previous visual world — the palette moved, the voice did not.
 
 ### Hierarchy
-- **Display** (Space Grotesk 700, `clamp(2.25rem, 6vw, 3.75rem)`, line-height 1.05, tracking
-  -0.02em): Hero headline only. Often set as individually rising words.
+- **Display** (Space Grotesk 500, `clamp(2.375rem, 6.5vw, 4.75rem)` = 38px -> 76px, line-height
+  1.05, tracking -0.02em): Hero headline only, set as individually rising words. Medium weight, not
+  bold: at 76px the lighter cut reads editorial and confident rather than shouty, and it keeps the
+  lime highlighter behind it feeling like a mark rather than a block.
 - **Headline** (Space Grotesk 700, `clamp(1.5rem, 3vw, 1.875rem)`, tracking tight): Page/section
   titles (questionnaire, module hub, "Pesanan Saya").
 - **Title** (Space Grotesk 600, ~1.125rem, tracking tight): Card titles and panel headings.
