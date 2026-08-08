@@ -356,6 +356,21 @@ like an accident.
 - **Shadow Strategy:** none — separated by a 1px Hairline border.
 - **Internal Padding:** `p-5 → sm:p-6` (20–24px).
 
+### Card grid → scroll strip (signature)
+A multi-card row collapses into a horizontal, snapping strip below `sm` instead of stacking into a
+long column: `-mx-4 px-4` so it bleeds to the viewport edge while the first card still starts on the
+content margin, cards at `w-[78%] shrink-0 snap-start` so **the next card peeks by ~110px** and the
+swipe is self-evident, `snap-x snap-mandatory` with `scroll-px-4`, and `.scroll-strip` to hide the
+bar and set `overscroll-behavior-x: contain` (otherwise a sideways swipe can trigger the browser's
+back gesture). At `sm` it becomes a plain grid — `sm:grid sm:snap-none sm:overflow-visible sm:mx-0`.
+The container takes `tabIndex={0}` with `role="group"` and a label, since the cards hold no
+focusable children and the overflow would otherwise be unreachable without a pointer.
+
+**Use it only when the cards are supporting content.** Four "why us" reasons are a good strip: they
+reward compactness and nobody has to read all of them. A two-card row offering a *choice* — Back For
+Good vs Moving Abroad — stays stacked, because hiding half a decision behind a swipe costs more than
+the vertical space it saves.
+
 ### Inputs / Fields
 - **Style:** `h-11` (2.75rem), `rounded-md`, Panel-2 fill, Hairline border, `text-sm`; labels are
   Dim-Grey `text-xs` above the field; errors in Stop Red below.

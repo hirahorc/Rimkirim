@@ -107,6 +107,17 @@ body {
   mask-image: radial-gradient(70% 60% at 50% 30%, #000 0%, transparent 85%);
 }
 
+/* Horizontal card strip (mobile). The next card peeks so the swipe affordance
+   is visible, and overscroll-behavior stops a sideways swipe from triggering
+   the browser's back gesture. */
+.scroll-strip {
+  scrollbar-width: none; /* Firefox + Chrome 121+; the ::-webkit rule covers Safari */
+  overscroll-behavior-x: contain;
+}
+.scroll-strip::-webkit-scrollbar {
+  display: none;
+}
+
 /* thin custom scrollbar for command list etc. */
 .scroll-thin::-webkit-scrollbar {
   width: 8px;

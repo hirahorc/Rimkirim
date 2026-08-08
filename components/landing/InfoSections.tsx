@@ -66,9 +66,20 @@ export function WhySection() {
           </h2>
           <p className="mx-auto mt-3 max-w-xl text-muted">{t("why.subtitle")}</p>
         </div>
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {/* below sm these become a snapping strip that bleeds to the viewport
+            edge, with the next card peeking so the swipe is discoverable;
+            tabIndex keeps the overflow reachable without a pointer */}
+        <div
+          className="scroll-strip -mx-4 flex snap-x snap-mandatory scroll-px-4 gap-4 overflow-x-auto px-4 pb-1 sm:mx-0 sm:grid sm:grid-cols-2 sm:snap-none sm:overflow-visible sm:px-0 sm:pb-0 lg:grid-cols-4"
+          tabIndex={0}
+          role="group"
+          aria-label={t("why.heading")}
+        >
           {reasons.map(({ icon: Icon, title, body }) => (
-            <Card key={title} className="p-5">
+            <Card
+              key={title}
+              className="w-[78%] shrink-0 snap-start p-5 sm:w-auto sm:shrink"
+            >
               <span className="grid size-10 place-items-center rounded-md bg-brand/15 text-brand-ink">
                 <Icon className="size-5" />
               </span>
