@@ -97,7 +97,7 @@ export function SpecialRateCard({
         </div>
 
         <div className="mt-1 flex items-baseline gap-2">
-          <span className="font-mono text-4xl font-bold tracking-tight tabular-nums text-brand">
+          <span className="font-mono text-4xl font-bold tracking-tight tabular-nums text-foreground">
             {formatIDR(tier.pricePerKg)}
           </span>
           <span className="text-muted">{t("special.perKgUnit")}</span>
@@ -167,7 +167,7 @@ export function SpecialRateFooter({ special }: { special: SpecialRateQuote }) {
         </div>
       )}
       <div className="flex items-start gap-2 rounded-sm border border-border bg-surface-2/60 p-3 text-xs text-muted">
-        <Info className="mt-0.5 size-4 shrink-0 text-brand" />
+        <Info className="mt-0.5 size-4 shrink-0 text-foreground" />
         <p>
           {t("special.footerInfo")}{" "}
           <span className="font-medium text-foreground">

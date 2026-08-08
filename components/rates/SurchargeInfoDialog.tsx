@@ -161,7 +161,7 @@ function CostRowItem({ row, index }: { row: CostRow; index: number }) {
   const t = useT();
   return (
     <div className="flex gap-3 px-4 py-4 sm:px-5">
-      <span className="mt-0.5 grid size-5 shrink-0 place-items-center rounded-full bg-brand/15 text-xs font-semibold tabular-nums text-brand">
+      <span className="mt-0.5 grid size-5 shrink-0 place-items-center rounded-full bg-brand/15 text-xs font-semibold tabular-nums text-foreground">
         {index}
       </span>
       <div className="min-w-0 flex-1">
@@ -314,7 +314,7 @@ export function SurchargeInfoDialog({ children }: { children: React.ReactNode })
               </h3>
               <p className="mt-1 text-sm leading-relaxed text-muted">
                 {t("surcharge.handlingIntroPre")}{" "}
-                <span className="text-brand">
+                <span className="text-foreground">
                   {t("surcharge.handlingIntroHighlight")}
                 </span>
               </p>

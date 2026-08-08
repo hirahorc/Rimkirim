@@ -40,7 +40,7 @@ export function OrderTimeline({ events }: { events: TimelineEvent[] }) {
   return (
     <Card className="p-5 sm:p-6">
       <h2 className="flex items-center gap-2 font-display text-base font-semibold tracking-tight">
-        <span className="grid size-6 place-items-center rounded-md bg-brand/10 text-brand">
+        <span className="grid size-6 place-items-center rounded-md bg-brand/10 text-brand-ink">
           <Activity className="size-3.5" />
         </span>
         {t("order.tdTimeline")}

@@ -78,7 +78,7 @@ export function CountrySelect({
       <span className="text-[10px] uppercase tracking-wide text-muted-2">
         {t(`zone.${c.zone}`)}
       </span>
-      {value === c.code && <Check className="size-4 text-brand" />}
+      {value === c.code && <Check className="size-4 text-foreground" />}
     </Command.Item>
   );
 
@@ -92,7 +92,7 @@ export function CountrySelect({
           aria-label={ariaLabel}
           className={cn(
             "flex h-11 w-full items-center justify-between rounded-md border border-border bg-surface-2 px-3 text-sm transition-colors",
-            "hover:border-border-strong focus-visible:outline-none focus-visible:border-brand/70 focus-visible:ring-2 focus-visible:ring-brand/25",
+            "hover:border-border-strong focus-visible:outline-none focus-visible:border-foreground focus-visible:ring-2 focus-visible:ring-foreground/40",
           )}
         >
           {selected ? (

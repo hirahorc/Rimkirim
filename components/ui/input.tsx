@@ -13,7 +13,7 @@ export const Input = React.forwardRef<
       className={cn(
         "flex h-11 w-full rounded-md border border-border bg-surface-2 px-3 py-2 text-sm text-foreground",
         "placeholder:text-muted-2 transition-colors",
-        "focus-visible:outline-none focus-visible:border-brand/70 focus-visible:ring-2 focus-visible:ring-brand/25",
+        "focus-visible:outline-none focus-visible:border-foreground focus-visible:ring-2 focus-visible:ring-foreground/40",
         "disabled:cursor-not-allowed disabled:opacity-50",
         "[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none",
         className,
@@ -36,7 +36,7 @@ export const Textarea = React.forwardRef<
       className={cn(
         "flex min-h-24 w-full resize-y rounded-md border border-border bg-surface-2 px-3 py-2 text-sm leading-relaxed text-foreground",
         "placeholder:text-muted-2 transition-colors",
-        "focus-visible:outline-none focus-visible:border-brand/70 focus-visible:ring-2 focus-visible:ring-brand/25",
+        "focus-visible:outline-none focus-visible:border-foreground focus-visible:ring-2 focus-visible:ring-foreground/40",
         "disabled:cursor-not-allowed disabled:opacity-50",
         className,
       )}
@@ -62,7 +62,7 @@ export const DateInput = React.forwardRef<
         type="date"
         className={cn(
           "date-field flex h-11 w-full rounded-md border border-border bg-surface-2 pl-3 pr-9 text-sm text-foreground transition-colors",
-          "focus-visible:outline-none focus-visible:border-brand/70 focus-visible:ring-2 focus-visible:ring-brand/25",
+          "focus-visible:outline-none focus-visible:border-foreground focus-visible:ring-2 focus-visible:ring-foreground/40",
           "disabled:cursor-not-allowed disabled:opacity-50",
           className,
         )}

@@ -21,7 +21,7 @@ export function CookieConsent() {
     <div className="pointer-events-none fixed inset-x-0 bottom-0 z-40 flex justify-center p-4">
       <div className="animate-fade-up pointer-events-auto flex w-full max-w-3xl flex-col gap-3 rounded-lg border border-border bg-surface/95 p-4 shadow-xl shadow-black/40 backdrop-blur sm:flex-row sm:items-center sm:gap-4">
         <div className="flex items-start gap-2.5 text-sm text-muted">
-          <Cookie className="mt-0.5 size-5 shrink-0 text-brand" />
+          <Cookie className="mt-0.5 size-5 shrink-0 text-foreground" />
           <p>{t("cookie.text")}</p>
         </div>
         <div className="flex shrink-0 gap-2 sm:ml-auto">

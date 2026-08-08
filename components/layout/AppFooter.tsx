@@ -82,7 +82,7 @@ function FooterCol({
       <ul className="space-y-2">
         {links.map(([label, href]) => (
           <li key={label}>
-            <Link href={href} className="text-muted transition-colors hover:text-brand">
+            <Link href={href} className="text-muted transition-colors hover:text-foreground">
               {label}
             </Link>
           </li>

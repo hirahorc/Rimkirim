@@ -289,7 +289,7 @@ export function ShipmentCalculator() {
           <div className="relative animate-fade-up border-t border-border p-5 sm:p-6">
             <div className="mb-3 flex items-center justify-between">
               <h3 className="flex items-center gap-2 font-display text-sm font-semibold">
-                <PackagePlus className="size-4 text-brand" /> {t("calc.detailPaket")}
+                <PackagePlus className="size-4 text-foreground" /> {t("calc.detailPaket")}
               </h3>
               {liveChargeable > 0 && (
                 <span className="flex items-center gap-1.5 text-xs text-muted">
@@ -306,7 +306,7 @@ export function ShipmentCalculator() {
                 <SurchargeInfoDialog>
                   <button
                     type="button"
-                    className="font-medium text-brand hover:underline"
+                    className="link-mark"
                   >
                     {t("calc.lihatJenisSurcharge")}
                   </button>
@@ -336,7 +336,7 @@ export function ShipmentCalculator() {
             <button
               type="button"
               onClick={() => append({ ...emptyPackage })}
-              className="mt-3 inline-flex items-center gap-2 rounded-sm border border-dashed border-border-strong px-3 py-2 text-sm text-muted transition-colors hover:border-brand/50 hover:text-brand"
+              className="mt-3 inline-flex items-center gap-2 rounded-sm border border-dashed border-border-strong px-3 py-2 text-sm text-muted transition-colors hover:border-border-strong hover:text-foreground"
             >
               <Plus className="size-4" /> {t("calc.tambahPaket")}
             </button>

@@ -93,7 +93,7 @@ export function OrderDetail({ id }: { id: string }) {
               {t("order.bookingNumberLabel")}
             </p>
             <p className="mt-1 flex items-center gap-2">
-              <span className="font-mono text-xl font-bold tracking-tight text-brand">
+              <span className="font-mono text-xl font-bold tracking-tight text-foreground">
                 {identifier ?? "–"}
               </span>
               {identifier && <CopyButton value={identifier} />}

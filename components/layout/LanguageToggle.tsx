@@ -23,7 +23,7 @@ export function LanguageToggle() {
           className={cn(
             "rounded-full px-2.5 py-1 text-xs font-medium transition-colors",
             locale === opt
-              ? "bg-brand text-brand-ink"
+              ? "bg-background text-foreground shadow-float"
               : "text-muted hover:text-foreground",
           )}
         >

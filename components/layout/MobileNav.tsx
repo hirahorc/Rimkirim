@@ -64,7 +64,7 @@ export function MobileNav() {
                   className={cn(
                     "flex min-h-[48px] items-center rounded-lg px-3 text-base transition-colors",
                     active
-                      ? "bg-surface-2 font-medium text-brand"
+                      ? "bg-surface-2 font-medium text-foreground"
                       : "text-muted hover:bg-surface-2 hover:text-foreground",
                   )}
                 >

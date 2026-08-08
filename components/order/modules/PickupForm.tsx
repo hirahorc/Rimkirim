@@ -201,14 +201,14 @@ function ChipGroup({
             onClick={() => onChange(o.value)}
             className={cn(
               "flex min-h-11 items-center justify-center gap-1.5 rounded-sm border px-3 py-2.5 text-center text-sm transition-colors",
-              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/40",
+              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/50",
               selected
-                ? "border-brand bg-brand/10 font-medium text-foreground ring-1 ring-brand/60"
+                ? "border-foreground bg-surface-2 font-medium text-foreground"
                 : "border-border text-muted hover:border-border-strong hover:text-foreground",
             )}
           >
             {o.label}
-            {selected && <Check className="size-3.5 shrink-0 text-brand" strokeWidth={3} />}
+            {selected && <Check className="size-3.5 shrink-0 text-foreground" strokeWidth={3} />}
           </button>
         );
       })}

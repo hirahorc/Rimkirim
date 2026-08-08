@@ -24,13 +24,13 @@ export function ServiceSection() {
       <div className="grid gap-5 md:grid-cols-2">
         <Card className="relative overflow-hidden p-6">
           <div className="relative">
-            <span className="grid size-11 place-items-center rounded-lg bg-brand/15 text-brand">
+            <span className="grid size-11 place-items-center rounded-lg bg-brand/15 text-brand-ink">
               <Home className="size-5" />
             </span>
             <h3 className="mt-4 font-display text-xl font-semibold">
               {t("service.bfgTitle")}
             </h3>
-            <p className="mt-1 text-sm text-brand">{t("service.bfgDir")}</p>
+            <p className="mt-1 text-sm text-foreground">{t("service.bfgDir")}</p>
             <p className="mt-3 text-sm text-muted">{t("service.bfgBody")}</p>
           </div>
         </Card>
@@ -69,7 +69,7 @@ export function WhySection() {
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {reasons.map(({ icon: Icon, title, body }) => (
             <Card key={title} className="p-5">
-              <span className="grid size-10 place-items-center rounded-lg bg-brand/15 text-brand">
+              <span className="grid size-10 place-items-center rounded-lg bg-brand/15 text-brand-ink">
                 <Icon className="size-5" />
               </span>
               <h3 className="mt-4 font-medium">{title}</h3>

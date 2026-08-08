@@ -96,7 +96,7 @@ function OrderCard({ order, locale }: { order: Order; locale: "id" | "en" }) {
     <Card className="p-4 transition-colors hover:border-border-strong">
       <div className="flex items-center justify-between gap-3">
         <Link href={`/pesanan/${order.id}`} className="min-w-0 flex-1">
-          <p className="flex items-center gap-2 font-mono text-sm font-semibold text-brand">
+          <p className="flex items-center gap-2 font-mono text-sm font-semibold text-foreground">
             {identifier ?? "–"}
             <OrderStatusBadge status={order.status} />
           </p>

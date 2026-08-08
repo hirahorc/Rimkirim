@@ -48,7 +48,7 @@ export function QuotationCard({ order }: { order: Order }) {
       <Card className="p-5 sm:p-6">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <h2 className="flex items-center gap-2 font-display text-base font-semibold tracking-tight">
-            <ReceiptText className="size-4 text-brand" />
+            <ReceiptText className="size-4 text-foreground" />
             {t("order.tdQuotationSection")}
           </h2>
           {pendingApproval ? (
@@ -65,7 +65,7 @@ export function QuotationCard({ order }: { order: Order }) {
         <div className="mt-4 flex flex-wrap items-end justify-between gap-3">
           <div>
             <p className="text-xs text-muted-2">{t("order.quTotal")}</p>
-            <p className="mt-0.5 font-mono text-3xl font-bold tracking-tight tabular-nums text-brand">
+            <p className="mt-0.5 font-mono text-3xl font-bold tracking-tight tabular-nums text-foreground">
               {formatIDR(qu.total)}
             </p>
           </div>

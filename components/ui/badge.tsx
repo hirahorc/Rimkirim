@@ -7,7 +7,9 @@ const badgeVariants = cva(
   {
     variants: {
       variant: {
-        brand: "bg-brand/15 text-brand border border-brand/25",
+        // brand is a solid marker, not a tint: a 15% lime wash is invisible on
+        // daylight, and lime can never be the text colour.
+        brand: "bg-brand-soft text-brand-ink border border-transparent",
         neutral: "bg-surface-3 text-muted border border-border",
         success: "bg-success/15 text-success border border-success/25",
         warning: "bg-warning/15 text-warning border border-warning/25",

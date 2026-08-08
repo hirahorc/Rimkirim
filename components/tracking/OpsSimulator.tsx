@@ -98,7 +98,7 @@ export function OpsSimulator({ order }: { order: Order }) {
           </p>
           <Link
             href={`/pesanan/${order.id}`}
-            className="mt-1.5 inline-flex items-center gap-1.5 font-mono text-sm font-semibold text-brand transition-colors hover:text-brand-dim"
+            className="mt-1.5 inline-flex items-center gap-1.5 font-mono text-sm font-semibold text-foreground transition-colors hover:text-foreground"
           >
             {identifier ?? "–"} <Eye className="size-3.5" />
           </Link>

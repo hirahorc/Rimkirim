@@ -252,7 +252,7 @@ export function ItemsForm() {
                     key={f.id}
                     type="button"
                     onClick={() => jumpTo(f.id)}
-                    className="grid size-7 place-items-center rounded-sm border border-border text-xs font-medium text-muted transition-colors hover:border-brand/50 hover:text-brand"
+                    className="grid size-7 place-items-center rounded-sm border border-border text-xs font-medium text-muted transition-colors hover:border-border-strong hover:text-foreground"
                   >
                     {i + 1}
                   </button>
@@ -282,7 +282,7 @@ export function ItemsForm() {
         <button
           type="button"
           onClick={() => append(structuredClone(emptyPackage))}
-          className="inline-flex items-center gap-2 rounded-sm border border-dashed border-border-strong px-3 py-2 text-sm text-muted transition-colors hover:border-brand/50 hover:text-brand"
+          className="inline-flex items-center gap-2 rounded-sm border border-dashed border-border-strong px-3 py-2 text-sm text-muted transition-colors hover:border-border-strong hover:text-foreground"
         >
           <Plus className="size-4" /> {t("order.itAddPackage")}
         </button>
@@ -344,7 +344,7 @@ function Total({
         className={cn(
           "mt-0.5 text-lg font-bold tracking-tight",
           mono ? "font-mono tabular-nums" : "font-display",
-          accent && "text-brand",
+          accent && "text-foreground",
         )}
       >
         {value}
@@ -539,7 +539,7 @@ function PackageBlock({
         <button
           type="button"
           onClick={() => append({ name: "", value: undefined as unknown as number, quantity: 1 })}
-          className="mt-3 inline-flex items-center gap-1.5 text-xs text-brand hover:underline"
+          className="mt-3 inline-flex items-center gap-1.5 text-xs link-mark"
         >
           <Plus className="size-3.5" /> {t("order.itAdd")}
         </button>

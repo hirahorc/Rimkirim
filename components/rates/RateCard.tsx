@@ -107,7 +107,7 @@ export function RateCard({
           </div>
           <div className="text-right">
             <p className="text-xs text-muted-2">{t("rateCard.perKg")}</p>
-            <p className="font-mono font-medium tabular-nums text-brand">
+            <p className="font-mono font-medium tabular-nums text-foreground">
               {formatIDR(quote.pricePerKg)}
             </p>
           </div>
@@ -125,7 +125,7 @@ export function RateCard({
             <SurchargeInfoDialog>
               <button
                 type="button"
-                className="font-medium text-brand hover:underline"
+                className="link-mark"
               >
                 {t("rateCard.lihatRincian")}
               </button>

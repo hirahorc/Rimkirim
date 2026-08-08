@@ -13,7 +13,7 @@ export const Checkbox = React.forwardRef<
     ref={ref}
     className={cn(
       "peer size-5 shrink-0 rounded-[6px] border border-border-strong bg-surface-2 transition-colors",
-      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/40",
+      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/50",
       "data-[state=checked]:bg-brand data-[state=checked]:border-brand data-[state=checked]:text-brand-ink",
       className,
     )}

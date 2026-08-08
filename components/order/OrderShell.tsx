@@ -86,7 +86,7 @@ export function OrderShell({ children }: { children: React.ReactNode }) {
                   className={cn(
                     "grid size-7 shrink-0 place-items-center rounded-full border text-xs font-semibold",
                     done && "border-brand bg-brand text-brand-ink",
-                    current && "border-brand text-brand",
+                    current && "border-foreground text-foreground",
                     !done && !current && "border-border text-muted-2",
                   )}
                 >

@@ -42,7 +42,7 @@ export function Hero() {
         <h1 className="hero-headline font-display text-4xl font-bold leading-[1.05] tracking-tight sm:text-6xl">
           <Words text={line} startIndex={0} />
           <br />
-          <span className="reveal-glow text-brand">
+          <span className="hero-mark">
             <Words text={highlight} startIndex={lineCount} />
           </span>
         </h1>
@@ -51,13 +51,13 @@ export function Hero() {
         </p>
         <div className="mt-6 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-muted-2">
           <span className="flex items-center gap-1.5">
-            <ShieldCheck className="size-4 text-brand" /> {t("hero.trustClearance")}
+            <ShieldCheck className="size-4 text-foreground" /> {t("hero.trustClearance")}
           </span>
           <span className="flex items-center gap-1.5">
-            <Globe2 className="size-4 text-brand" /> {t("hero.trustCountries")}
+            <Globe2 className="size-4 text-foreground" /> {t("hero.trustCountries")}
           </span>
           <span className="flex items-center gap-1.5">
-            <Sparkles className="size-4 text-brand" /> {t("hero.trustInstant")}
+            <Sparkles className="size-4 text-foreground" /> {t("hero.trustInstant")}
           </span>
         </div>
       </div>

@@ -93,7 +93,7 @@ export function ComplianceForm() {
               <div className="mb-1 flex flex-wrap items-center gap-2">
                 <span className="text-xs font-medium text-muted">
                   {t(d.labelKey)}
-                  {d.required && <span className="ml-0.5 text-brand">*</span>}
+                  {d.required && <span className="ml-0.5 text-danger">*</span>}
                 </span>
                 {d.noteKey && (
                   <span className="rounded-full border border-border bg-surface-2 px-2 py-0.5 text-[10px] text-muted-2">
@@ -149,7 +149,7 @@ export function ComplianceForm() {
           <button
             type="button"
             onClick={() => append({ name: "", file: "" })}
-            className="inline-flex items-center gap-1.5 text-sm text-brand hover:underline"
+            className="inline-flex items-center gap-1.5 text-sm link-mark"
           >
             <Plus className="size-4" /> {t("order.coAddOtherDoc")}
           </button>

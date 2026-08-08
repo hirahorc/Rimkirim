@@ -64,7 +64,7 @@ export function Faq() {
                     key={f.q}
                     className="group border-b border-border last:border-0"
                   >
-                    <summary className="flex cursor-pointer list-none items-center justify-between gap-3 rounded-sm py-4 text-sm font-medium text-foreground transition-colors hover:text-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/40 [&::-webkit-details-marker]:hidden">
+                    <summary className="flex cursor-pointer list-none items-center justify-between gap-3 rounded-sm py-4 text-sm font-medium text-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/50 [&::-webkit-details-marker]:hidden">
                       <span>{f.q}</span>
                       <ChevronDown className="size-4 shrink-0 text-muted-2 transition-transform duration-200 group-open:rotate-180" />
                     </summary>

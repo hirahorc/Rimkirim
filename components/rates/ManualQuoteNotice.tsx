@@ -19,7 +19,7 @@ export function ManualQuoteNotice({
   const t = useT();
   return (
     <div className="mb-4 flex flex-col gap-3 rounded-lg border border-brand/30 bg-brand/5 p-4 sm:flex-row sm:items-center">
-      <span className="grid size-10 shrink-0 place-items-center rounded-full bg-brand/10 text-brand">
+      <span className="grid size-10 shrink-0 place-items-center rounded-full bg-brand/10 text-brand-ink">
         <Headset className="size-5" />
       </span>
       <div className="min-w-0 flex-1">

@@ -28,8 +28,10 @@ export const SegmentedItem = React.forwardRef<
     className={cn(
       "flex flex-1 items-center justify-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-all",
       "text-muted hover:text-foreground",
-      "data-[state=on]:bg-brand data-[state=on]:text-brand-ink data-[state=on]:font-semibold",
-      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/40",
+      // the selected segment lifts off the track instead of filling with lime:
+      // on daylight a full lime pill is far too much area for a mere state
+      "data-[state=on]:bg-background data-[state=on]:text-foreground data-[state=on]:font-semibold data-[state=on]:shadow-float",
+      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/50",
       className,
     )}
     {...props}

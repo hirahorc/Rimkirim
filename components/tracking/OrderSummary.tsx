@@ -42,7 +42,7 @@ function Section({
   return (
     <Card className="p-5 sm:p-6">
       <h2 className="flex items-center gap-2 font-display text-base font-semibold tracking-tight">
-        <span className="grid size-6 place-items-center rounded-md bg-brand/10 text-brand">
+        <span className="grid size-6 place-items-center rounded-md bg-brand/10 text-brand-ink">
           <Icon className="size-3.5" />
         </span>
         {title}
@@ -524,7 +524,7 @@ function PendingCards({ order }: { order: Order }) {
         {order.awb ? (
           <>
             <Row label={t("order.tdAwbNumber")}>
-              <span className="font-mono font-medium text-brand">{order.awb}</span>
+              <span className="font-mono font-medium text-foreground">{order.awb}</span>
             </Row>
             <p className="py-2 text-sm text-muted-2">{t("order.tdAwbStable")}</p>
           </>

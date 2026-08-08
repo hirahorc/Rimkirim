@@ -152,7 +152,7 @@ export function CheckRatesClient() {
         {t("rates.footNote")}{" "}
         <a
           href="https://wa.me/6281234567890"
-          className="text-brand hover:underline"
+          className="link-mark"
           target="_blank"
           rel="noreferrer"
         >

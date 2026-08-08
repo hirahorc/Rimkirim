@@ -67,7 +67,7 @@ function Question({
   return (
     <Card className="animate-fade-up p-5">
       <p className="flex gap-2 font-medium">
-        <span className="text-brand">{n}.</span>
+        <span className="text-foreground">{n}.</span>
         <span>{question}</span>
       </p>
       {children}
@@ -208,7 +208,7 @@ export function Questionnaire() {
   if (outcome === "foreigner") {
     return (
       <OutcomeScreen
-        icon={<Globe2 className="size-10 text-brand" />}
+        icon={<Globe2 className="size-10 text-foreground" />}
         title={t("order.foreignerTitle")}
         body={t("order.foreignerBody")}
         primary={{
@@ -338,11 +338,11 @@ export function Questionnaire() {
         </Button>
         <p className="mt-3 text-center text-xs leading-relaxed text-muted-2">
           {t("order.qAgreePre")}{" "}
-          <Link href="/terms" className="text-brand hover:underline">
+          <Link href="/terms" className="link-mark">
             {t("footer.legalTerms")}
           </Link>{" "}
           {t("order.qAgreeMid")}{" "}
-          <Link href="/privacy" className="text-brand hover:underline">
+          <Link href="/privacy" className="link-mark">
             {t("footer.legalPrivacy")}
           </Link>
           {t("order.qAgreePost")}

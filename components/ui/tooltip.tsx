@@ -37,7 +37,7 @@ export function InfoTip({ content }: { content: React.ReactNode }) {
       <TooltipTrigger asChild>
         <button
           type="button"
-          className="inline-grid place-items-center text-muted-2 transition-colors hover:text-brand focus-visible:text-brand focus-visible:outline-none"
+          className="inline-grid place-items-center text-muted-2 transition-colors hover:text-foreground focus-visible:text-foreground focus-visible:outline-none"
           aria-label={t("common.moreInfo")}
         >
           <Info className="size-3.5" />

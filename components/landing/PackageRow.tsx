@@ -129,7 +129,7 @@ export function PackageRow({
             <span
               className={cn(
                 "font-medium tabular-nums text-foreground",
-                !untouched && basis === "actual" && "text-brand",
+                !untouched && basis === "actual" && "text-foreground",
               )}
             >
               {kg(dims.weight)}
@@ -143,7 +143,7 @@ export function PackageRow({
             <span
               className={cn(
                 "font-medium tabular-nums text-foreground",
-                !untouched && basis === "volumetric" && "text-brand",
+                !untouched && basis === "volumetric" && "text-foreground",
               )}
             >
               {kg(vol)}

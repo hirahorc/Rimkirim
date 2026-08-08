@@ -61,7 +61,7 @@ export function FileUpload({
           "flex h-11 flex-1 items-center gap-2 rounded-md border border-dashed px-3 text-sm transition-colors",
           value
             ? "border-brand/50 text-foreground"
-            : "border-border-strong text-muted hover:border-brand/50 hover:text-foreground",
+            : "border-border-strong text-muted hover:border-border-strong hover:text-foreground",
         )}
       >
         {preview ? (
@@ -73,7 +73,7 @@ export function FileUpload({
             className="size-7 shrink-0 rounded-sm object-cover"
           />
         ) : value ? (
-          <FileCheck2 className="size-4 shrink-0 text-brand" />
+          <FileCheck2 className="size-4 shrink-0 text-foreground" />
         ) : (
           <Upload className="size-4 shrink-0" />
         )}
