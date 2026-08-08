@@ -30,7 +30,9 @@ export function AppHeader() {
     <header className="reveal-down sticky top-0 z-40 px-3 pb-1 pt-3 sm:px-6">
       {/* a capsule that floats clear of the page edge; the page scrolls behind
           it and blurs underneath, so the chrome never sits on a hard bar */}
-      <div className="mx-auto flex h-[60px] max-w-6xl items-center justify-between gap-3 rounded-full border border-border bg-background/70 pl-5 pr-2 shadow-float backdrop-blur-xl">
+      {/* /85 rather than the reference's /55: display type scrolling underneath
+          stays legible through a thinner veil and fights the nav links */}
+      <div className="mx-auto flex h-[60px] max-w-6xl items-center justify-between gap-3 rounded-full border border-border bg-background/85 pl-5 pr-2 shadow-float backdrop-blur-xl">
         <Logo />
         <nav className="hidden items-center gap-0.5 text-sm md:flex">
           {NAV_LINKS.map((n) => {

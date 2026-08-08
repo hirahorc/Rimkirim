@@ -291,6 +291,59 @@ input[type="date"].date-field::-webkit-calendar-picker-indicator {
   will-change: transform, opacity;
 }
 
+/* ------------------------------------------------------------------ */
+/*  Scroll-linked hero settle                                          */
+/* ------------------------------------------------------------------ */
+
+/* As the first screen scrolls away, the hero text drifts up and dims, the
+   grid backdrop trails behind it, and the calculator closes the gap — a
+   short parallax that costs the page no extra scroll distance, so the
+   calculator (the reason this page exists) stays where it was.
+
+   Gated on @supports because an unsupported `animation-timeline` would fall
+   back to the document timeline and fire the whole thing once on load. Gated
+   on no-preference so reduced-motion users get a plain static hero. */
+@supports (animation-timeline: scroll()) {
+  @media (prefers-reduced-motion: no-preference) {
+    @keyframes hero-settle {
+      to {
+        transform: translateY(-40px);
+        opacity: 0.4;
+      }
+    }
+    @keyframes hero-drift {
+      to {
+        transform: translateY(32px);
+        opacity: 0.35;
+      }
+    }
+    @keyframes calc-rise {
+      from {
+        transform: translateY(28px);
+      }
+      to {
+        transform: translateY(0);
+      }
+    }
+
+    .hero-settle {
+      animation: hero-settle linear both;
+      animation-timeline: scroll(root block);
+      animation-range: 0 45vh;
+    }
+    .hero-drift {
+      animation: hero-drift linear both;
+      animation-timeline: scroll(root block);
+      animation-range: 0 60vh;
+    }
+    .calc-rise {
+      animation: calc-rise linear both;
+      animation-timeline: scroll(root block);
+      animation-range: 0 45vh;
+    }
+  }
+}
+
 /* Respect users who prefer reduced motion: show everything, no movement. */
 @media (prefers-reduced-motion: reduce) {
   .animate-fade-up,

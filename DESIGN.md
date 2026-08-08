@@ -281,6 +281,30 @@ separate two things in the page flow, use a tonal step or a hairline instead.
 near-opaque black veil belongs to a dark UI; on daylight it reads as a blackout and breaks the
 sense that the page is still there underneath.
 
+## Motion
+
+**One authored moment, and it belongs to the hero.** Everything else is a 0.2s
+`cubic-bezier(0.4, 0, 0.2, 1)` colour/border transition on hover and focus.
+
+- **Entrance** (time-based, on load): the header drops in, hero children cascade up on a
+  0.05s-per-item stagger, the headline arrives word by word, and the calculator pops in last.
+  Under ~0.7s total.
+- **The hero settle** (scroll-linked): across the first 45vh the hero text drifts up 40px and
+  dims to 0.4, the grid backdrop trails 32px behind it, and the calculator closes a 28px gap —
+  a short parallax that reads as depth without costing the page a single pixel of extra scroll.
+
+**The Never-Delay-The-Calculator Rule.** The landing exists to get someone into the rate
+calculator, which sits immediately below the fold. Motion may decorate that journey but must
+never lengthen it: no pinned/sticky hero, no scroll-jacking, no reveal that has to finish before
+the primary action is reachable. This is why the settle is scroll-*linked* rather than a pin.
+
+Implementation notes: scroll-linked motion uses CSS scroll-driven animations
+(`animation-timeline: scroll(root block)`), wrapped in `@supports (animation-timeline: scroll())`
+— without the guard an unsupporting browser falls back to the document timeline and fires the
+whole thing once on load. The whole block is additionally gated on
+`prefers-reduced-motion: no-preference`, so reduced-motion users get a static hero, and browsers
+without support simply get no parallax.
+
 ## Shapes
 
 Generously rounded on a 16px base (`--radius: 1rem`): inputs and buttons at `rounded-md` (16px),

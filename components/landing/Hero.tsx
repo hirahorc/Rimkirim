@@ -34,8 +34,13 @@ export function Hero() {
   const lineCount = line.split(" ").length;
   return (
     <section className="relative overflow-hidden">
-      <div className="grid-backdrop reveal-bg pointer-events-none absolute inset-0" />
-      <div className="reveal-stagger relative mx-auto max-w-4xl px-4 pt-20 text-center sm:px-6 sm:pt-28">
+      {/* the backdrop sits in an oversized box so it has room to drift without
+          exposing an edge; the inner element keeps its own load-in fade */}
+      <div className="hero-drift pointer-events-none absolute inset-x-0 -inset-y-12">
+        <div className="grid-backdrop reveal-bg size-full" />
+      </div>
+      <div className="hero-settle relative">
+        <div className="reveal-stagger mx-auto max-w-4xl px-4 pt-20 text-center sm:px-6 sm:pt-28">
         <Badge variant="brand" className="mx-auto mb-6">
           {t("hero.badge")}
         </Badge>
@@ -61,6 +66,7 @@ export function Hero() {
           <span className="flex items-center gap-1.5">
             <Sparkles className="size-4 text-foreground" /> {t("hero.trustInstant")}
           </span>
+        </div>
         </div>
       </div>
     </section>
