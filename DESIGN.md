@@ -437,11 +437,15 @@ active item is white and lifts with `shadow-float`; inside the translucent white
 the active link is a Panel-2 pill instead. Same principle, inverted fill.
 
 ### Segmented control (signature)
-- A `rounded-lg` Panel-2 track with a 1px border and `p-1`; the active item **lifts** — white fill,
-  Ink text, `font-semibold`, `shadow-float` — while inactive items are Readout Grey. It does *not*
-  fill with lime: a full-width lime pill is far too much area for a mere state, and it would starve
-  the primary CTA of its voice. Used for Base/Advance mode, service toggle, carrier switcher, tab
-  lists, and the AWB service choice.
+- A **`rounded-full`** Panel-2 track with a 1px border and `p-1`; the items are `rounded-full` too,
+  so a pill item sits concentrically inside a pill track (item radius = track radius − padding) and
+  they never read as mismatched — the earlier `rounded-lg` track + `rounded-md` item clashed once
+  the item grew tall enough on touch for the track to clamp to a full pill. The active item
+  **lifts** — white fill, Ink text, `font-semibold`, `shadow-float` — while inactive items are
+  Readout Grey. It does *not* fill with lime: a full-width lime pill is far too much area for a mere
+  state, and it would starve the primary CTA of its voice. This is the one shape shared by both the
+  `SegmentedRoot` primitive (service, mode, carrier, AWB) and the `Tabs` primitive (surcharge
+  dialog), so the two never diverge.
 
 ### Status stepper (signature)
 - A horizontal phase rail (Review → Quotation → Pickup → In-Transit → Clearance → Delivery →
