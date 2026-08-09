@@ -333,6 +333,18 @@ whole thing once on load. The whole block is additionally gated on
 `prefers-reduced-motion: no-preference`, so reduced-motion users get a static hero, and browsers
 without support simply get no parallax.
 
+**The No-Orphan-Layer Rule.** `will-change` is never left on a static style. It promotes a
+compositor layer and holds it for the life of the element, so on a one-shot entrance it strands one
+layer per node forever. transform/opacity are already compositor-accelerated while an animation
+runs, so short entrances need no hint at all; reach for `will-change` only on an element about to
+animate repeatedly, and clear it when the animation ends.
+
+**Performance is measured, not assumed.** The header capsule's `backdrop-blur-xl` is always-on over
+scrolling content — the usual suspect on low-end devices — but a scroll trace at 4× CPU throttle
+held ~16.4ms/frame, inside the 60fps budget, so it stays: it is load-bearing for the floating-glass
+identity and it is not slow. Re-profile before touching it, rather than removing a signature effect
+on suspicion.
+
 ## Shapes
 
 Generously rounded on a 16px base (`--radius: 1rem`). The scale is

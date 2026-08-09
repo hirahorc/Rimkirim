@@ -315,7 +315,9 @@ input[type="date"].date-field::-webkit-calendar-picker-indicator {
   display: inline-block;
   transform-origin: bottom center;
   animation: enter-word 0.6s var(--ease-out-soft) both;
-  will-change: transform, opacity;
+  /* no persistent will-change: transform/opacity are compositor-accelerated
+     for the 0.6s the animation runs, and a static will-change would pin a
+     layer per word for the life of the page (measured: 5 orphaned layers). */
 }
 
 /* ------------------------------------------------------------------ */
