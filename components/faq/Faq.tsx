@@ -29,19 +29,22 @@ export function Faq() {
           </p>
         </header>
 
-        {/* service tabs */}
-        <SegmentedRoot
-          type="single"
-          value={tabId}
-          onValueChange={(v) => v && setTabId(v as TabId)}
-          className="mx-auto mt-8 max-w-md"
-        >
-          {FAQ_TABS.map((x) => (
-            <SegmentedItem key={x.id} value={x.id}>
-              {x.label}
-            </SegmentedItem>
-          ))}
-        </SegmentedRoot>
+        {/* service tabs — centered on the page. SegmentedRoot is inline-flex,
+            so mx-auto can't center it; a flex-justify-center wrapper does. */}
+        <div className="mt-8 flex justify-center">
+          <SegmentedRoot
+            type="single"
+            value={tabId}
+            onValueChange={(v) => v && setTabId(v as TabId)}
+            className="max-w-md"
+          >
+            {FAQ_TABS.map((x) => (
+              <SegmentedItem key={x.id} value={x.id}>
+                {x.label}
+              </SegmentedItem>
+            ))}
+          </SegmentedRoot>
+        </div>
 
         {/* direction note (Moving Abroad) */}
         {tab.note && (
