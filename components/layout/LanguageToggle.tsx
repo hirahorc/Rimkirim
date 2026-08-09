@@ -21,7 +21,10 @@ export function LanguageToggle() {
           onClick={() => setLocale(opt)}
           aria-pressed={locale === opt}
           className={cn(
-            "tap-row rounded-full px-2.5 py-1 text-xs font-medium transition-colors",
+            // a compact segmented pill, identical on every viewport — no
+            // tap-row: its 44px min-height deformed this into a tall oval on
+            // touch. Segmented controls are exempt from the row-height rule.
+            "rounded-full px-2.5 py-1 text-xs font-medium transition-colors",
             locale === opt
               ? "bg-background text-foreground shadow-float"
               : "text-muted hover:text-foreground",

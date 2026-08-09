@@ -34,7 +34,7 @@ export function AppHeader() {
           stays legible through a thinner veil and fights the nav links */}
       <div className="mx-auto flex h-[60px] max-w-6xl items-center justify-between gap-3 rounded-full border border-border bg-background/85 pl-5 pr-2 shadow-float backdrop-blur-xl">
         <Logo />
-        <nav className="hidden items-center gap-0.5 text-sm md:flex">
+        <nav className="hidden items-center gap-0.5 text-sm lg:flex">
           {NAV_LINKS.map((n) => {
             const active =
               pathname === n.href || pathname.startsWith(`${n.href}/`);
@@ -64,7 +64,7 @@ export function AppHeader() {
                 asChild
                 variant="ghost"
                 size="sm"
-                className="hidden sm:inline-flex"
+                className="hidden lg:inline-flex"
               >
                 <Link href="/pesanan">{t("auth.myOrders")}</Link>
               </Button>
@@ -75,12 +75,12 @@ export function AppHeader() {
               asChild
               variant="ghost"
               size="sm"
-              className="hidden sm:inline-flex"
+              className="hidden lg:inline-flex"
             >
               <Link href="/masuk">{t("nav.masuk")}</Link>
             </Button>
           )}
-          <Button asChild size="sm" className="hidden sm:inline-flex">
+          <Button asChild size="sm" className="hidden lg:inline-flex">
             <Link href="/#kalkulator">{t("nav.cekTarif")}</Link>
           </Button>
           <MobileNav />

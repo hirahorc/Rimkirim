@@ -35,7 +35,7 @@ export function MobileNav() {
         <button
           type="button"
           aria-label={t("nav.menu")}
-          className="tap-target relative grid size-9 place-items-center rounded-full border border-border bg-surface-2 text-muted transition-colors hover:text-foreground md:hidden"
+          className="tap-target relative grid size-9 place-items-center rounded-full border border-border bg-surface-2 text-muted transition-colors hover:text-foreground lg:hidden"
         >
           <Menu className="size-4" />
         </button>

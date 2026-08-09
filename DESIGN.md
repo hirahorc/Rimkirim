@@ -428,7 +428,7 @@ the vertical space it saves.
 - **Nav links:** `rounded-full`, `px-[18px] py-2`, `font-medium`. Inactive is Readout Grey with a
   faint Panel-2 hover; the **active link is a solid Panel-2 pill** with Ink text and
   `aria-current="page"`.
-- **Mobile (`< md`):** links collapse into a right slide-over sheet — `bg-background`,
+- **Below `lg` (mobile + tablet):** links collapse into a right slide-over sheet — `bg-background`,
   `rounded-l-lg`, `shadow-overlay`, over a `bg-foreground/25` scrim, with full-pill 48px rows.
 
 **The Contrast-Against-Its-Track Rule.** An active item is always the tonal *opposite* of the
