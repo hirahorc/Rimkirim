@@ -59,15 +59,9 @@ export function AppHeader() {
           <LanguageToggle />
           {user ? (
             <>
+              {/* "Pesanan Saya" lives only in the profile menu (AccountMenu) —
+                  the header keeps just the bell + profile when signed in */}
               <NotificationBell />
-              <Button
-                asChild
-                variant="ghost"
-                size="sm"
-                className="hidden lg:inline-flex"
-              >
-                <Link href="/pesanan">{t("auth.myOrders")}</Link>
-              </Button>
               <AccountMenu />
             </>
           ) : (
