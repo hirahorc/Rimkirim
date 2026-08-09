@@ -85,7 +85,7 @@ export function StatusStepper({ status }: { status: OrderPhase }) {
             </div>
             <p
               className={cn(
-                "mt-1.5 px-0.5 text-center text-[10px] leading-tight sm:text-[11px]",
+                "mt-1.5 px-0.5 text-center text-[10px] leading-tight",
                 current && "font-semibold text-foreground",
                 done && "font-medium text-foreground",
                 !done && !current && "text-muted-2",

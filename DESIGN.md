@@ -28,16 +28,22 @@ typography:
     letterSpacing: "-0.02em"
   headline:
     fontFamily: "Space Grotesk, Inter, sans-serif"
-    fontSize: "clamp(1.5rem, 3vw, 1.875rem)"
+    fontSize: "2.25rem"
     fontWeight: 700
     lineHeight: 1.1
-    letterSpacing: "-0.02em"
+    letterSpacing: "-0.025em"
+  page-title:
+    fontFamily: "Space Grotesk, Inter, sans-serif"
+    fontSize: "1.5rem"
+    fontWeight: 700
+    lineHeight: 1.3
+    letterSpacing: "-0.025em"
   title:
     fontFamily: "Space Grotesk, Inter, sans-serif"
-    fontSize: "1.125rem"
+    fontSize: "1.25rem"
     fontWeight: 600
-    lineHeight: 1.3
-    letterSpacing: "-0.01em"
+    lineHeight: 1.4
+    letterSpacing: "-0.025em"
   body:
     fontFamily: "Inter, ui-sans-serif, system-ui, sans-serif"
     fontSize: "1rem"
@@ -225,16 +231,24 @@ unchanged from the previous visual world — the palette moved, the voice did no
   1.05, tracking -0.02em): Hero headline only, set as individually rising words. Medium weight, not
   bold: at 76px the lighter cut reads editorial and confident rather than shouty, and it keeps the
   lime highlighter behind it feeling like a mark rather than a block.
-- **Headline** (Space Grotesk 700, `clamp(1.5rem, 3vw, 1.875rem)`, tracking tight): Page/section
-  titles (questionnaire, module hub, "Pesanan Saya").
-- **Title** (Space Grotesk 600, ~1.125rem, tracking tight): Card titles and panel headings.
+- **Headline** (Space Grotesk 700, `2.25rem`/36px, tracking -0.025em): the largest non-hero
+  heading — landing section titles ("Kenapa Rimkirim", "Dua arah, satu tim"), set `text-3xl
+  sm:text-4xl`.
+- **Page title** (Space Grotesk 700, `1.5rem`/24px, tracking -0.025em): the `h1` of a focused page
+  — questionnaire, module hub, "Pesanan Saya", auth, legal, order tracking. A few wider pages
+  (check-rates, coming-soon) step to `sm:text-3xl`/30px; treat that as the top of this role, not a
+  separate one.
+- **Title** (Space Grotesk 600, `1.25rem`/20px, tracking -0.025em): card titles and panel/dialog
+  headings. Every 20px display heading carries `tracking-tight` — that is the role's signature, not
+  optional.
 - **Body** (Inter 400, 1rem / 0.875rem, line-height ~1.6): Descriptions and running copy; reading
-  columns cap around `max-w-3xl`.
+  columns cap around `max-w-3xl`, and long-form answers cap tighter at `max-w-[65ch]`.
 - **Label** (Inter 500, 0.75rem, letter-spacing 0.04em, often UPPERCASE): Eyebrows, field labels,
-  captions, table headers — always in Dim Grey.
-- **Micro** (Inter 500, ~9–11px; 0.625rem / 10px is the norm): The smallest labels only —
-  status-stepper phase names (10px → 11px at `sm`), count-pill / eyebrow captions (11px), the
-  chargeable-weight readout labels, the carrier monogram (9px). Never body copy.
+  captions, count pills, table headers — always in Dim Grey. This is the floor for anything that
+  reads as a word; 11px is **not** a step (it was drift, now removed).
+- **Micro** (Inter 500, `0.625rem`/10px, the single smallest step): the smallest marks only —
+  status-stepper phase names, the chargeable-weight readout labels, the compact carrier monogram.
+  Never body copy, and never used where Label (12px) would do.
 - **Mono** (JetBrains Mono 500, `tabular-nums`, size follows context from 0.75rem chips to the
   3xl quotation total): Booking numbers, packing codes (`RK-PL-XXXXXX`), airway bills, and all
   IDR/currency amounts.

@@ -158,7 +158,7 @@ export function PackageRow({
           </div>
         </div>
         {!untouched && dims.quantity > 1 && (
-          <div className="border-t border-border px-3 py-1.5 text-[11px] text-muted-2">
+          <div className="border-t border-border px-3 py-1.5 text-xs text-muted-2">
             {t("pkg.chargeable")} × {dims.quantity} ={" "}
             <span className="font-medium tabular-nums text-foreground">
               {formatNumber(rowTotal)} kg

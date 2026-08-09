@@ -68,7 +68,7 @@ export function Faq() {
                       <span>{f.q}</span>
                       <ChevronDown className="size-4 shrink-0 text-muted-2 transition-transform duration-200 group-open:rotate-180" />
                     </summary>
-                    <p className="pb-4 text-sm leading-relaxed text-muted">
+                    <p className="max-w-[65ch] pb-4 text-sm leading-relaxed text-muted">
                       {f.a}
                     </p>
                   </details>

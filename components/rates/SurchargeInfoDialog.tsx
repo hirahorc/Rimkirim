@@ -151,7 +151,7 @@ function resolveCost(t: (k: string) => string, cost: string): string {
 /** A small count badge shown next to a group/section heading. */
 function CountPill({ n }: { n: number }) {
   return (
-    <span className="rounded-full border border-border bg-surface-2 px-2 py-0.5 text-[11px] font-medium tabular-nums text-muted-2">
+    <span className="rounded-full border border-border bg-surface-2 px-2 py-0.5 text-xs font-medium tabular-nums text-muted-2">
       {n}
     </span>
   );
@@ -183,7 +183,7 @@ function CostRowItem({ row, index }: { row: CostRow; index: number }) {
         )}
 
         <div className="mt-3 flex flex-wrap items-baseline gap-x-2 gap-y-0.5 border-t border-border/60 pt-2.5">
-          <span className="text-[11px] font-medium uppercase tracking-wide text-muted-2">
+          <span className="text-xs font-medium uppercase tracking-wide text-muted-2">
             {t("surcharge.biaya")}
           </span>
           <span className="text-sm font-semibold text-foreground">

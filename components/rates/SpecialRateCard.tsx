@@ -74,7 +74,7 @@ export function SpecialRateCard({
         <div className="mt-2 flex items-center gap-2 text-xs text-muted">
           <CarrierMark
             carrier={special.carrier}
-            className="size-6 rounded-xs text-[9px]"
+            className="size-6 rounded-xs text-[10px]"
           />
           <span>
             {t("special.dilayani")}{" "}
@@ -114,7 +114,7 @@ export function SpecialRateCard({
         {/* rate varies by destination region (e.g. Malaysia West / East) */}
         {regions && regions.length > 0 && (
           <div className="mt-5 overflow-hidden rounded-sm border border-border">
-            <div className="flex items-center justify-between border-b border-border bg-surface-2/60 px-3 py-2 text-[11px] font-semibold uppercase tracking-wider text-muted">
+            <div className="flex items-center justify-between border-b border-border bg-surface-2/60 px-3 py-2 text-xs font-semibold uppercase tracking-wider text-muted">
               <span>{t("special.wilayahTujuan")}</span>
               <span>{t("special.hargaPerKg")}</span>
             </div>
@@ -208,7 +208,7 @@ export function SpecialRateUnavailableCard({
           <RouteLine route={route} />
         </div>
 
-        <h3 className="mt-4 font-display text-xl font-semibold">
+        <h3 className="mt-4 font-display text-xl font-semibold tracking-tight">
           {t("special.unavailTitlePre")} {country}
         </h3>
         <p className="mt-2 text-sm text-muted">{t("special.unavailBody")}</p>

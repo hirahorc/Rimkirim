@@ -59,7 +59,7 @@ export function CheckRatesClient() {
     return (
       <div className="mx-auto flex min-h-[50vh] max-w-md flex-col items-center justify-center px-4 text-center">
         <PackageX className="size-10 text-muted-2" />
-        <h2 className="mt-4 font-display text-xl font-semibold">
+        <h2 className="mt-4 font-display text-xl font-semibold tracking-tight">
           {t("rates.emptyTitle")}
         </h2>
         <p className="mt-2 text-sm text-muted">{t("rates.emptyBody")}</p>

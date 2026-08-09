@@ -27,7 +27,7 @@ export function ServiceSection() {
             <span className="grid size-11 place-items-center rounded-md bg-brand/15 text-brand-ink">
               <Home className="size-5" />
             </span>
-            <h3 className="mt-4 font-display text-xl font-semibold">
+            <h3 className="mt-4 font-display text-xl font-semibold tracking-tight">
               {t("service.bfgTitle")}
             </h3>
             <p className="mt-1 text-sm text-foreground">{t("service.bfgDir")}</p>
@@ -38,7 +38,7 @@ export function ServiceSection() {
           <span className="grid size-11 place-items-center rounded-md bg-surface-3 text-foreground">
             <Plane className="size-5" />
           </span>
-          <h3 className="mt-4 font-display text-xl font-semibold">
+          <h3 className="mt-4 font-display text-xl font-semibold tracking-tight">
             {t("service.maTitle")}
           </h3>
           <p className="mt-1 text-sm text-muted">{t("service.maDir")}</p>
