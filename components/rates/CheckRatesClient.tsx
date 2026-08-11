@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { useRouter } from "next/navigation";
-import { Loader2, PackageX } from "lucide-react";
+import { Loader2, PackageX, Info } from "lucide-react";
 import { useCalculatorStore, useStoreHydrated } from "@/lib/store/useCalculatorStore";
 import { useT } from "@/lib/i18n/LanguageProvider";
 import { calculateQuotes, type QuoteInput } from "@/lib/pricing/quote";
@@ -14,6 +14,7 @@ import {
   SpecialRateUnavailableCard,
 } from "./SpecialRateCard";
 import { RateCard } from "./RateCard";
+import { SurchargeInfoDialog } from "./SurchargeInfoDialog";
 import { ManualQuoteNotice } from "./ManualQuoteNotice";
 import { domesticCoverageGap } from "@/lib/data/domestic-coverage";
 import { Button } from "@/components/ui/button";
@@ -113,19 +114,32 @@ export function CheckRatesClient() {
       )}
 
       {isAdvance ? (
-        <div className="grid gap-4">
-          {quote.options.map((opt) => (
-            <RateCard
-              key={opt.vendor.id}
-              quote={opt}
-              route={quote.route}
-              chargeableWeight={quote.chargeableWeight}
-              cheapest={opt.vendor.id === cheapestId}
-              fastest={opt.vendor.id === fastestId && opt.vendor.id !== cheapestId}
-              orderBlocked={!!gap}
-            />
-          ))}
-        </div>
+        <>
+          <div className="grid gap-4">
+            {quote.options.map((opt) => (
+              <RateCard
+                key={opt.vendor.id}
+                quote={opt}
+                chargeableWeight={quote.chargeableWeight}
+                cheapest={opt.vendor.id === cheapestId}
+                fastest={opt.vendor.id === fastestId && opt.vendor.id !== cheapestId}
+                orderBlocked={!!gap}
+              />
+            ))}
+          </div>
+          {/* the caveats that apply to every card, said once */}
+          <p className="mt-4 flex items-start gap-2 rounded-md bg-surface-2/60 px-4 py-3 text-xs leading-relaxed text-muted-2">
+            <Info className="mt-0.5 size-3.5 shrink-0" />
+            <span>
+              {t("rates.advanceCaveat")}{" "}
+              <SurchargeInfoDialog>
+                <button type="button" className="link-mark">
+                  {t("rateCard.lihatRincian")}
+                </button>
+              </SurchargeInfoDialog>
+            </span>
+          </p>
+        </>
       ) : quote.special ? (
         <>
           <div className="grid gap-4">

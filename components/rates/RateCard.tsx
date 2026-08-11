@@ -1,22 +1,19 @@
 "use client";
 
-import { Clock, Package, Zap, BadgePercent, Info, Sparkles } from "lucide-react";
-import type { VendorQuote, RouteInfo } from "@/lib/pricing/quote";
-import { Flag } from "@/components/shared/Flag";
+import { Clock, Zap, BadgePercent, Sparkles } from "lucide-react";
+import type { VendorQuote } from "@/lib/pricing/quote";
 import { CarrierMark } from "./CarrierMark";
-import { formatIDR, formatNumber } from "@/lib/utils/currency";
+import { formatIDR } from "@/lib/utils/currency";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { PriceBreakdown } from "./PriceBreakdown";
-import { SurchargeInfoDialog } from "./SurchargeInfoDialog";
 import { useStartOrder } from "@/components/order/useStartOrder";
 import { useT } from "@/lib/i18n/LanguageProvider";
 import { cn } from "@/lib/utils/cn";
 
 interface RateCardProps {
   quote: VendorQuote;
-  route: RouteInfo;
   chargeableWeight: number;
   cheapest?: boolean;
   fastest?: boolean;
@@ -26,7 +23,6 @@ interface RateCardProps {
 
 export function RateCard({
   quote,
-  route,
   chargeableWeight,
   cheapest,
   fastest,
@@ -78,21 +74,11 @@ export function RateCard({
         </div>
       </div>
 
-      {/* route + eta */}
-      <div className="flex flex-wrap items-center gap-x-4 gap-y-1 px-5 pb-4 text-xs text-muted">
-        <span className="flex items-center gap-1.5">
-          {route.origin && <Flag code={route.origin.code} size={12} />}
-          {route.origin?.name}
-          <span className="text-muted-2">→</span>
-          {route.destination && <Flag code={route.destination.code} size={12} />}
-          {route.destination?.name}
-        </span>
+      {/* eta only — route + chargeable weight live once in the recap bar above,
+          and the clearance/tax/surcharge caveats live once below the list */}
+      <div className="px-5 pb-4 text-xs text-muted">
         <span className="flex items-center gap-1.5">
           <Clock className="size-3.5" /> {quote.etaMin}–{quote.etaMax} {t("rateCard.hari")}
-          <span className="text-muted-2">· {t("rateCard.etaClearanceNote")}</span>
-        </span>
-        <span className="flex items-center gap-1.5">
-          <Package className="size-3.5" /> {formatNumber(chargeableWeight)} kg
         </span>
       </div>
 
@@ -112,27 +98,12 @@ export function RateCard({
             </p>
           </div>
         </div>
-        <p className="mt-2 text-xs text-muted-2">{t("rateCard.taxNote")}</p>
       </div>
 
       <PriceBreakdown quote={quote} chargeableWeight={chargeableWeight} />
 
-      <div className="space-y-3 p-5 pt-3">
-        <p className="flex items-start gap-1.5 text-xs text-muted-2">
-          <Info className="mt-0.5 size-3.5 shrink-0" />
-          <span>
-            {t("rateCard.disclaimer")}{" "}
-            <SurchargeInfoDialog>
-              <button
-                type="button"
-                className="link-mark"
-              >
-                {t("rateCard.lihatRincian")}
-              </button>
-            </SurchargeInfoDialog>
-          </span>
-        </p>
-        {!orderBlocked && (
+      {!orderBlocked && (
+        <div className="p-5 pt-3">
           <Button
             className="w-full"
             variant={cheapest ? "brand" : "secondary"}
@@ -145,8 +116,8 @@ export function RateCard({
           >
             {t("rateCard.pilih")} {vendor.carrier}
           </Button>
-        )}
-      </div>
+        </div>
+      )}
     </Card>
   );
 }

@@ -239,6 +239,8 @@ const id = {
     manualBodyMid2: " sampai ",
     manualBodyPost: ".",
     manualCta: "Hubungi Customer Support",
+    advanceCaveat:
+      "Semua estimasi di luar proses clearance dan belum termasuk potensi pajak. Surcharge tambahan bisa muncul setelah paket diperiksa 3PL.",
     footNote:
       "Estimasi tarif dapat berubah sesuai verifikasi dimensi & berat aktual saat pickup. Butuh bantuan?",
     chatLink: "Chat tim Rimkirim",
@@ -1241,6 +1243,8 @@ const en: Messages = {
     manualBodyMid2: " to ",
     manualBodyPost: ".",
     manualCta: "Contact Customer Support",
+    advanceCaveat:
+      "All estimates exclude the clearance process and any potential tax. Extra surcharges may appear after the 3PL inspects your package.",
     footNote:
       "Rate estimates may change based on verification of actual dimensions & weight at pickup. Need help?",
     chatLink: "Chat the Rimkirim team",
