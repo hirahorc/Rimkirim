@@ -1,6 +1,6 @@
 "use client";
 
-import { Clock, Zap, BadgePercent, Sparkles } from "lucide-react";
+import { Clock, Zap, BadgePercent } from "lucide-react";
 import type { VendorQuote } from "@/lib/pricing/quote";
 import { CarrierMark } from "./CarrierMark";
 import { formatIDR } from "@/lib/utils/currency";
@@ -35,16 +35,16 @@ export function RateCard({
     <Card
       className={cn(
         "overflow-hidden transition-colors",
-        cheapest || quote.isSpecial
-          ? "border-brand/50"
-          : "hover:border-border-strong",
+        // lime border marks the recommended (cheapest) pick only — the special
+        // rate isn't always the best price, so it doesn't earn the lime frame
+        cheapest ? "border-brand/50" : "hover:border-border-strong",
       )}
     >
       {/* header */}
       <div className="flex items-start justify-between gap-3 p-5 pb-4">
         <div className="flex items-center gap-3">
           {quote.isSpecial ? (
-            <span className="grid size-10 place-items-center rounded-md bg-brand text-xs font-bold text-brand-ink">
+            <span className="grid size-10 place-items-center rounded-md bg-surface-3 text-xs font-bold text-foreground">
               {vendor.code}
             </span>
           ) : (
@@ -56,10 +56,11 @@ export function RateCard({
           </div>
         </div>
         <div className="flex flex-col items-end gap-1">
+          {/* "Special Rate" is a type marker, not a value claim — neutral chip,
+              no lime/Sparkles, so it never poses as the best deal when it isn't.
+              Lime stays reserved for Termurah/Tercepat (the real value signals). */}
           {quote.isSpecial && (
-            <Badge variant="brand">
-              <Sparkles className="size-3" /> {t("special.badge")}
-            </Badge>
+            <Badge variant="neutral">{t("special.badge")}</Badge>
           )}
           {cheapest && (
             <Badge variant="brand">
