@@ -10,7 +10,7 @@ import { useT } from "@/lib/i18n/LanguageProvider";
 import { Card } from "@/components/ui/card";
 import { Input, DateInput, Textarea } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Select } from "@/components/ui/select";
+import { SelectField } from "@/components/ui/select-field";
 import { DialCodeSelect } from "@/components/order/DialCodeSelect";
 import { ModuleShell, useSaveModule, readModuleData, Field } from "./shared";
 import { cn } from "@/lib/utils/cn";
@@ -124,26 +124,31 @@ export function PickupForm() {
           </div>
 
           <Field label={t("order.puBuildingType")} error={errors.buildingType?.message}>
-            <Select
-              {...register("buildingType", {
-                ...req,
-                onChange: (e) => {
-                  // switching to a house retires the access questions — drop any
-                  // stale answers so they aren't saved on a house pickup
-                  if (e.target.value === "house") {
-                    setValue("freightElevator", "");
-                    setValue("receptionist", "");
-                  }
-                },
-              })}
-            >
-              <option value="">{t("order.puBuildingTypePlaceholder")}</option>
-              {BUILDING_TYPES.map((b) => (
-                <option key={b.value} value={b.value}>
-                  {t(b.labelKey)}
-                </option>
-              ))}
-            </Select>
+            <Controller
+              control={control}
+              name="buildingType"
+              rules={req}
+              render={({ field }) => (
+                <SelectField
+                  value={field.value}
+                  onChange={(v) => {
+                    field.onChange(v);
+                    // switching to a house retires the access questions — drop
+                    // any stale answers so they aren't saved on a house pickup
+                    if (v === "house") {
+                      setValue("freightElevator", "");
+                      setValue("receptionist", "");
+                    }
+                  }}
+                  ariaLabel={t("order.puBuildingType")}
+                  placeholder={t("order.puBuildingTypePlaceholder")}
+                  options={BUILDING_TYPES.map((b) => ({
+                    value: b.value,
+                    label: t(b.labelKey),
+                  }))}
+                />
+              )}
+            />
           </Field>
 
           {needsAccessQs && (

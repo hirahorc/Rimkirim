@@ -26,7 +26,7 @@ import { useT } from "@/lib/i18n/LanguageProvider";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Select } from "@/components/ui/select";
+import { SelectField } from "@/components/ui/select-field";
 import {
   Dialog,
   DialogContent,
@@ -200,13 +200,25 @@ export function ItemsForm() {
         {/* currency + carried packages */}
         <Card className="space-y-4 p-5">
           <Field label={t("order.itCurrency")} hint={t("order.itCurrencyHelp")}>
-            <Select {...register("currency")} wrapperClassName="sm:max-w-xs">
-              {CURRENCIES.map((c) => (
-                <option key={c.code} value={c.code}>
-                  {c.code} – {c.name}
-                </option>
-              ))}
-            </Select>
+            <Controller
+              control={control}
+              name="currency"
+              render={({ field }) => (
+                <SelectField
+                  value={field.value}
+                  onChange={field.onChange}
+                  ariaLabel={t("order.itCurrency")}
+                  wrapperClassName="sm:max-w-xs"
+                  searchable
+                  searchPlaceholder={t("order.itCurrencySearch")}
+                  emptyText={t("order.itCurrencyEmpty")}
+                  options={CURRENCIES.map((c) => ({
+                    value: c.code,
+                    label: `${c.code} – ${c.name}`,
+                  }))}
+                />
+              )}
+            />
           </Field>
           {submitted && submitted.packages.length > 0 && (
             <p className="flex items-center gap-2 text-xs text-muted-2">
@@ -457,13 +469,21 @@ function PackageBlock({
       {!open ? null : (
       <div className="mt-4 space-y-4">
       <Field label={t("order.itPackaging")}>
-        <Select {...register(`packages.${index}.packaging`)}>
-          {PACKAGING_TYPES.map((p) => (
-            <option key={p.value} value={p.value}>
-              {t(p.labelKey)}
-            </option>
-          ))}
-        </Select>
+        <Controller
+          control={control}
+          name={`packages.${index}.packaging`}
+          render={({ field }) => (
+            <SelectField
+              value={field.value}
+              onChange={field.onChange}
+              ariaLabel={t("order.itPackaging")}
+              options={PACKAGING_TYPES.map((p) => ({
+                value: p.value,
+                label: t(p.labelKey),
+              }))}
+            />
+          )}
+        />
       </Field>
 
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">

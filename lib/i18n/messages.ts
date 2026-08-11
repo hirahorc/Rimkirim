@@ -858,6 +858,8 @@ const id = {
       "Alamat tujuan pakai alamat asli penerima di luar negeri: barang diinspeksi dulu di gudang Rimkirim Indonesia, lalu dikirim langsung ke sana.",
     // item & packages — extended
     itCurrency: "Mata uang",
+    itCurrencySearch: "Cari mata uang…",
+    itCurrencyEmpty: "Mata uang tidak ditemukan.",
     itPackagesHeading: "Paket",
     itCurrencyHelp:
       "Nilai barang di packing list dideklarasikan ke bea cukai dalam mata uang negara asal pengiriman. Pilih mata uang negara tempat lo mengirim.",
@@ -1844,6 +1846,8 @@ const en: Messages = {
     ciNoteAddressExport:
       "The destination uses the receiver's real overseas address: goods are first inspected at Rimkirim's Indonesia warehouse, then shipped directly there.",
     itCurrency: "Currency",
+    itCurrencySearch: "Search currency…",
+    itCurrencyEmpty: "No currency found.",
     itPackagesHeading: "Packages",
     itCurrencyHelp:
       "The item values on the packing list are declared to customs in the origin country's currency. Pick the currency of the country you're shipping from.",
