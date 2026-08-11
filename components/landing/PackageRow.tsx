@@ -129,7 +129,7 @@ export function PackageRow({
             <span
               className={cn(
                 "font-medium tabular-nums text-foreground",
-                !untouched && basis === "actual" && "text-brand",
+                !untouched && basis === "actual" && "text-foreground",
               )}
             >
               {kg(dims.weight)}
@@ -143,7 +143,7 @@ export function PackageRow({
             <span
               className={cn(
                 "font-medium tabular-nums text-foreground",
-                !untouched && basis === "volumetric" && "text-brand",
+                !untouched && basis === "volumetric" && "text-foreground",
               )}
             >
               {kg(vol)}
@@ -158,7 +158,7 @@ export function PackageRow({
           </div>
         </div>
         {!untouched && dims.quantity > 1 && (
-          <div className="border-t border-border px-3 py-1.5 text-[11px] text-muted-2">
+          <div className="border-t border-border px-3 py-1.5 text-xs text-muted-2">
             {t("pkg.chargeable")} × {dims.quantity} ={" "}
             <span className="font-medium tabular-nums text-foreground">
               {formatNumber(rowTotal)} kg

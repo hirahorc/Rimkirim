@@ -19,7 +19,7 @@ export const TooltipContent = React.forwardRef<
       ref={ref}
       sideOffset={sideOffset}
       className={cn(
-        "z-50 max-w-[240px] rounded-sm border border-border-strong bg-surface-2 px-3 py-2 text-xs leading-relaxed text-foreground shadow-xl shadow-black/50",
+        "z-50 max-w-[240px] rounded-sm border border-border-strong bg-surface-2 px-3 py-2 text-xs leading-relaxed text-foreground shadow-overlay",
         "data-[state=delayed-open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=delayed-open]:fade-in-0",
         className,
       )}
@@ -37,7 +37,7 @@ export function InfoTip({ content }: { content: React.ReactNode }) {
       <TooltipTrigger asChild>
         <button
           type="button"
-          className="inline-grid place-items-center text-muted-2 transition-colors hover:text-brand focus-visible:text-brand focus-visible:outline-none"
+          className="inline-grid place-items-center text-muted-2 transition-colors hover:text-foreground focus-visible:text-foreground focus-visible:outline-none"
           aria-label={t("common.moreInfo")}
         >
           <Info className="size-3.5" />

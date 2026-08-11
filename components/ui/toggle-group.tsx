@@ -11,7 +11,10 @@ export const SegmentedRoot = React.forwardRef<
   <ToggleGroupPrimitive.Root
     ref={ref}
     className={cn(
-      "inline-flex w-full items-stretch gap-1 rounded-lg border border-border bg-surface-2 p-1",
+      // full-pill track: a pill item inside a pill track stays concentric at
+      // any height (item radius = track radius - padding), so the two never
+      // read as mismatched the way rounded-lg track + rounded-md item did.
+      "inline-flex w-full items-stretch gap-1 rounded-full border border-border bg-surface-2 p-1",
       className,
     )}
     {...props}
@@ -26,10 +29,12 @@ export const SegmentedItem = React.forwardRef<
   <ToggleGroupPrimitive.Item
     ref={ref}
     className={cn(
-      "flex flex-1 items-center justify-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-all",
+      "tap-row flex flex-1 items-center justify-center gap-2 rounded-full px-3 py-2 text-sm font-medium transition-all",
       "text-muted hover:text-foreground",
-      "data-[state=on]:bg-brand data-[state=on]:text-brand-ink data-[state=on]:font-semibold",
-      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/40",
+      // the selected segment lifts off the track instead of filling with lime:
+      // on daylight a full lime pill is far too much area for a mere state
+      "data-[state=on]:bg-background data-[state=on]:text-foreground data-[state=on]:font-semibold data-[state=on]:shadow-float",
+      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/50",
       className,
     )}
     {...props}

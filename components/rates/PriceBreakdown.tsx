@@ -50,7 +50,7 @@ export function PriceBreakdown({
           )}
           <div className="mt-1 flex items-center justify-between border-t border-border pt-2 font-semibold">
             <span>{t("breakdown.total")}</span>
-            <span className="font-mono tabular-nums text-brand">
+            <span className="font-mono tabular-nums text-foreground">
               {formatIDR(quote.total)}
             </span>
           </div>

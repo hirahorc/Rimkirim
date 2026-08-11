@@ -34,31 +34,39 @@ export function Hero() {
   const lineCount = line.split(" ").length;
   return (
     <section className="relative overflow-hidden">
-      <div className="grid-backdrop reveal-bg pointer-events-none absolute inset-0" />
-      <div className="reveal-stagger relative mx-auto max-w-3xl px-4 pt-16 text-center sm:px-6 sm:pt-24">
-        <Badge variant="brand" className="mx-auto mb-5">
+      {/* the backdrop sits in an oversized box so it has room to drift without
+          exposing an edge; the inner element keeps its own load-in fade */}
+      <div className="hero-drift pointer-events-none absolute inset-x-0 -inset-y-12">
+        <div className="grid-backdrop reveal-bg size-full" />
+      </div>
+      <div className="hero-settle relative">
+        <div className="reveal-stagger mx-auto max-w-4xl px-4 pt-20 text-center sm:px-6 sm:pt-28">
+        <Badge variant="brand" className="mx-auto mb-6">
           {t("hero.badge")}
         </Badge>
-        <h1 className="hero-headline font-display text-4xl font-bold leading-[1.05] tracking-tight sm:text-6xl">
+        {/* display type runs 38px -> 76px; medium weight keeps it editorial
+            rather than shouty at the large end */}
+        <h1 className="hero-headline font-display text-[clamp(2.375rem,6.5vw,4.75rem)] font-medium leading-[1.05] tracking-[-0.02em]">
           <Words text={line} startIndex={0} />
           <br />
-          <span className="reveal-glow text-brand">
+          <span className="hero-mark">
             <Words text={highlight} startIndex={lineCount} />
           </span>
         </h1>
-        <p className="mx-auto mt-5 max-w-xl text-base text-muted sm:text-lg">
+        <p className="mx-auto mt-7 max-w-2xl text-lg leading-relaxed text-muted sm:text-xl">
           {t("hero.subtitle")}
         </p>
-        <div className="mt-6 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-muted-2">
+        <div className="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-muted-2">
           <span className="flex items-center gap-1.5">
-            <ShieldCheck className="size-4 text-brand" /> {t("hero.trustClearance")}
+            <ShieldCheck className="size-4 text-foreground" /> {t("hero.trustClearance")}
           </span>
           <span className="flex items-center gap-1.5">
-            <Globe2 className="size-4 text-brand" /> {t("hero.trustCountries")}
+            <Globe2 className="size-4 text-foreground" /> {t("hero.trustCountries")}
           </span>
           <span className="flex items-center gap-1.5">
-            <Sparkles className="size-4 text-brand" /> {t("hero.trustInstant")}
+            <Sparkles className="size-4 text-foreground" /> {t("hero.trustInstant")}
           </span>
+        </div>
         </div>
       </div>
     </section>

@@ -58,8 +58,10 @@ export function StatusStepper({ status }: { status: OrderPhase }) {
               <span
                 className={cn(
                   "grid size-6 shrink-0 place-items-center rounded-full border-2",
-                  done && "border-brand bg-brand text-white",
-                  current && "border-brand bg-brand/10 text-brand",
+                  done && "border-brand bg-brand text-brand-ink",
+                  // on daylight a lime hairline reads ~1.5:1, so the live step
+                  // is framed in ink and marked with a lime core instead
+                  current && "border-foreground bg-background text-brand-ink",
                   !done && !current && "border-border bg-surface-2 text-muted-2",
                   cancelled && "border-border bg-surface-2 text-muted-2",
                 )}
@@ -83,9 +85,9 @@ export function StatusStepper({ status }: { status: OrderPhase }) {
             </div>
             <p
               className={cn(
-                "mt-1.5 px-0.5 text-center text-[10px] leading-tight sm:text-[11px]",
+                "mt-1.5 px-0.5 text-center text-[10px] leading-tight",
                 current && "font-semibold text-foreground",
-                done && "font-medium text-brand",
+                done && "font-medium text-foreground",
                 !done && !current && "text-muted-2",
                 cancelled && "text-muted-2",
               )}

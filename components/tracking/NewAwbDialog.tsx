@@ -63,7 +63,7 @@ export function NewAwbDialog({
       <DialogContent>
         <DialogHeader className="p-5 pb-4 sm:p-6 sm:pb-4">
           <DialogTitle className="flex items-center gap-2">
-            <PackageX className="size-5 text-brand" />
+            <PackageX className="size-5 text-foreground" />
             {t("order.awbDialogTitle")}
           </DialogTitle>
           <DialogDescription>{t("order.awbDialogBody")}</DialogDescription>

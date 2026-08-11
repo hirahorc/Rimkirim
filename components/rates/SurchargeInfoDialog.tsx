@@ -151,7 +151,7 @@ function resolveCost(t: (k: string) => string, cost: string): string {
 /** A small count badge shown next to a group/section heading. */
 function CountPill({ n }: { n: number }) {
   return (
-    <span className="rounded-full border border-border bg-surface-2 px-2 py-0.5 text-[11px] font-medium tabular-nums text-muted-2">
+    <span className="rounded-full border border-border bg-surface-2 px-2 py-0.5 text-xs font-medium tabular-nums text-muted-2">
       {n}
     </span>
   );
@@ -161,7 +161,7 @@ function CostRowItem({ row, index }: { row: CostRow; index: number }) {
   const t = useT();
   return (
     <div className="flex gap-3 px-4 py-4 sm:px-5">
-      <span className="mt-0.5 grid size-5 shrink-0 place-items-center rounded-full bg-brand/15 text-xs font-semibold tabular-nums text-brand">
+      <span className="mt-0.5 grid size-5 shrink-0 place-items-center rounded-full bg-brand/15 text-xs font-semibold tabular-nums text-foreground">
         {index}
       </span>
       <div className="min-w-0 flex-1">
@@ -183,7 +183,7 @@ function CostRowItem({ row, index }: { row: CostRow; index: number }) {
         )}
 
         <div className="mt-3 flex flex-wrap items-baseline gap-x-2 gap-y-0.5 border-t border-border/60 pt-2.5">
-          <span className="text-[11px] font-medium uppercase tracking-wide text-muted-2">
+          <span className="text-xs font-medium uppercase tracking-wide text-muted-2">
             {t("surcharge.biaya")}
           </span>
           <span className="text-sm font-semibold text-foreground">
@@ -220,7 +220,7 @@ function SurchargeGroupBlock({
         <CountPill n={rows.length} />
       </div>
       {qualifyKeys && qualifyKeys.length > 0 && (
-        <div className="mt-2 rounded-lg border border-border bg-surface-2/40 px-4 py-3 text-xs text-muted sm:px-5">
+        <div className="mt-2 rounded-md border border-border bg-surface-2/40 px-4 py-3 text-xs text-muted sm:px-5">
           <p className="font-medium text-muted-2">{t("surcharge.appliesAny")}</p>
           <ul className="mt-1 space-y-0.5">
             {qualifyKeys.map((c) => (
@@ -232,7 +232,7 @@ function SurchargeGroupBlock({
           </ul>
         </div>
       )}
-      <div className="mt-3 divide-y divide-border overflow-hidden rounded-lg border border-border">
+      <div className="mt-3 divide-y divide-border overflow-hidden rounded-md border border-border">
         {rows.map((r, i) => (
           <CostRowItem key={r.typeKey} row={r} index={i + 1} />
         ))}
@@ -257,7 +257,7 @@ function CostSection({
         <CountPill n={rows.length} />
       </div>
       <p className="mt-1 text-sm leading-relaxed text-muted">{intro}</p>
-      <div className="mt-4 divide-y divide-border overflow-hidden rounded-lg border border-border">
+      <div className="mt-4 divide-y divide-border overflow-hidden rounded-md border border-border">
         {rows.map((r, i) => (
           <CostRowItem key={r.typeKey} row={r} index={i + 1} />
         ))}
@@ -314,7 +314,7 @@ export function SurchargeInfoDialog({ children }: { children: React.ReactNode })
               </h3>
               <p className="mt-1 text-sm leading-relaxed text-muted">
                 {t("surcharge.handlingIntroPre")}{" "}
-                <span className="text-brand">
+                <span className="text-foreground">
                   {t("surcharge.handlingIntroHighlight")}
                 </span>
               </p>

@@ -47,7 +47,7 @@ export function DialCodeSelect({
       <Flag code={code} size={14} />
       <span className="flex-1 truncate">{name}</span>
       <span className="tabular-nums text-muted-2">{DIAL_BY_ISO[code]}</span>
-      {value === code && <Check className="size-4 text-brand" />}
+      {value === code && <Check className="size-4 text-foreground" />}
     </Command.Item>
   );
 
@@ -60,7 +60,7 @@ export function DialCodeSelect({
           aria-expanded={open}
           className={cn(
             "flex h-11 w-full items-center justify-between gap-1 rounded-md border border-border bg-surface-2 px-2.5 text-sm transition-colors",
-            "hover:border-border-strong focus-visible:outline-none focus-visible:border-brand/70 focus-visible:ring-2 focus-visible:ring-brand/25",
+            "hover:border-border-strong focus-visible:outline-none focus-visible:border-foreground focus-visible:ring-2 focus-visible:ring-foreground/40",
           )}
         >
           <span className="flex min-w-0 items-center gap-1.5">

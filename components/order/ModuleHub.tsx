@@ -71,7 +71,7 @@ export function ModuleHub() {
   if (submitted) {
     return (
       <Card className="mx-auto max-w-md p-8 text-center">
-        <div className="mx-auto grid size-16 place-items-center rounded-full bg-brand/15 text-brand">
+        <div className="mx-auto grid size-16 place-items-center rounded-full bg-brand/15 text-brand-ink">
           <PartyPopper className="size-8" />
         </div>
         <h1 className="mt-5 font-display text-xl font-bold tracking-tight">
@@ -81,7 +81,7 @@ export function ModuleHub() {
         {bookingNumber && (
           <div className="mt-2 flex items-center justify-center gap-2 rounded-sm border border-border bg-surface-2/50 p-3 text-sm">
             <span className="text-muted-2">{t("order.bookingNumberLabel")}:</span>
-            <span className="font-mono font-semibold text-brand">{bookingNumber}</span>
+            <span className="font-mono font-semibold text-foreground">{bookingNumber}</span>
             <CopyButton value={bookingNumber} />
           </div>
         )}
@@ -117,7 +117,7 @@ export function ModuleHub() {
           <Hash className="size-3.5" /> {t("order.bookingNumberLabel")}
         </p>
         <div className="mt-1 flex items-center gap-2">
-          <span className="font-display text-lg font-bold tracking-tight text-brand">
+          <span className="font-display text-lg font-bold tracking-tight text-foreground">
             {bookingNumber ?? "–"}
           </span>
           {bookingNumber && <CopyButton value={bookingNumber} />}
@@ -129,8 +129,8 @@ export function ModuleHub() {
         <div className="flex items-center gap-3">
           <span
             className={cn(
-              "grid size-10 shrink-0 place-items-center rounded-lg",
-              packingCode ? "bg-brand/15 text-brand" : "bg-surface-3 text-muted-2",
+              "grid size-10 shrink-0 place-items-center rounded-md",
+              packingCode ? "bg-brand/15 text-brand-ink" : "bg-surface-3 text-muted-2",
             )}
           >
             <FileText className="size-5" />
@@ -172,9 +172,9 @@ export function ModuleHub() {
             >
               <span
                 className={cn(
-                  "grid size-11 shrink-0 place-items-center rounded-lg",
+                  "grid size-11 shrink-0 place-items-center rounded-md",
                   status === "complete"
-                    ? "bg-brand/15 text-brand"
+                    ? "bg-brand/15 text-brand-ink"
                     : "bg-surface-3 text-muted",
                 )}
               >

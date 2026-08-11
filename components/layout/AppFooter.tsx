@@ -4,14 +4,14 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Logo } from "./Logo";
 import { useT } from "@/lib/i18n/LanguageProvider";
-import { isBareRoute } from "@/lib/utils/routes";
+import { isBareRoute, isOrderFlowRoute } from "@/lib/utils/routes";
 
 export function AppFooter() {
   const t = useT();
   const pathname = usePathname();
   // the customer order flow (/pesan/*) has its own focused shell — no footer;
   // legal docs render bare so they can drop into other landing services
-  if (pathname.startsWith("/pesan") || isBareRoute(pathname)) return null;
+  if (isOrderFlowRoute(pathname) || isBareRoute(pathname)) return null;
   return (
     <footer className="border-t border-border bg-background">
       <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6">
@@ -54,10 +54,10 @@ export function AppFooter() {
               © {new Date().getFullYear()} Rimkirim. {t("footer.rights")}
             </span>
             <div className="flex items-center gap-4">
-              <Link href="/terms" className="transition-colors hover:text-foreground">
+              <Link href="/terms" className="tap-row transition-colors hover:text-foreground">
                 {t("footer.legalTerms")}
               </Link>
-              <Link href="/privacy" className="transition-colors hover:text-foreground">
+              <Link href="/privacy" className="tap-row transition-colors hover:text-foreground">
                 {t("footer.legalPrivacy")}
               </Link>
             </div>
@@ -78,11 +78,14 @@ function FooterCol({
 }) {
   return (
     <div>
-      <h4 className="mb-3 font-medium text-foreground">{title}</h4>
-      <ul className="space-y-2">
+      <h3 className="mb-3 font-medium text-foreground">{title}</h3>
+      <ul>
         {links.map(([label, href]) => (
           <li key={label}>
-            <Link href={href} className="text-muted transition-colors hover:text-brand">
+            <Link
+              href={href}
+              className="tap-row flex items-center py-1 text-muted transition-colors hover:text-foreground"
+            >
               {label}
             </Link>
           </li>

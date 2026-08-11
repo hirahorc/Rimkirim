@@ -13,7 +13,7 @@ export function FaqTeaser() {
     <section className="mx-auto max-w-4xl px-4 py-12 sm:px-6 sm:py-16">
       <Card className="flex flex-col gap-4 p-6 sm:flex-row sm:items-center sm:justify-between sm:p-8">
         <div className="flex items-start gap-3">
-          <span className="grid size-10 shrink-0 place-items-center rounded-lg bg-brand/15 text-brand">
+          <span className="grid size-10 shrink-0 place-items-center rounded-md bg-brand/15 text-brand-ink">
             <HelpCircle className="size-5" />
           </span>
           <div>

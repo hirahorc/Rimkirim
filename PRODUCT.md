@@ -107,7 +107,10 @@ surcharge, packing list.
 - **Aset:** logo di `public/rimkirim-logo{,-dark,-white}.png`, app icon `app/icon.png`,
   bendera SVG `public/flags/4x3` (flag-icons).
 - **Visual yang sudah mengikat** (tercatat sebagai fakta, bukan arahan estetika baru):
-  dark mode only, aksen brand `#C1FF00`, Space Grotesk untuk display + Inter untuk body.
+  **light mode only** (kanvas putih), aksen brand `#C1FF00` dengan pendamping pastel `#ccfa59`,
+  Space Grotesk untuk display + Inter untuk body + JetBrains Mono untuk kode & rupiah.
+  Lime dipakai **hanya sebagai fill di balik teks gelap**, tidak pernah sebagai warna teks.
+  (Sebelumnya dark mode only; diganti sengaja — lihat DESIGN.md "The Open Desk".)
 - **Bahasa:** bilingual Indonesia + Inggris, **ID sebagai source of truth** dan parity
   di-enforce compile-time lewat tipe di `lib/i18n/messages.ts`. Mata uang tetap format `id-ID`
   (Rupiah) di kedua bahasa.
@@ -150,6 +153,9 @@ liputan pers, sertifikasi, izin PPJK, benchmark kecepatan, jumlah kiriman, dan r
 
 - **Parity ID/EN wajib.** Setiap string baru harus ada di kedua katalog — dilanggar =
   compile error. Audiensnya tinggal di negara berbahasa Inggris; EN bukan pelengkap.
-- **Dark mode only** adalah keputusan produk yang sudah diambil. Konsekuensinya kontras teks
-  harus dijaga ketat di satu tema itu; tidak ada fallback tema terang yang menyelamatkan.
+- **Light mode only** adalah keputusan produk yang sudah diambil. Konsekuensinya kontras teks
+  harus dijaga ketat di satu tema itu; tidak ada fallback tema gelap yang menyelamatkan.
+  Konsekuensi khas kanvas terang: warna brand lime `#C1FF00` **gagal kontras sebagai teks,
+  ikon, border, maupun focus ring** (~1.1:1 di atas putih), jadi semuanya memakai tinta gelap
+  dan lime hanya jadi fill.
 - Tidak ada standar formal (WCAG level tertentu) yang ditetapkan sejauh ini.

@@ -53,7 +53,7 @@ export function BookingAgreementDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader className="flex-row items-center gap-2 p-5 pb-4 sm:p-6 sm:pb-4">
-          <ShieldCheck className="size-5 shrink-0 text-brand" />
+          <ShieldCheck className="size-5 shrink-0 text-foreground" />
           <div>
             <DialogTitle>{t("order.baTitle")}</DialogTitle>
             <DialogDescription>{t("order.baSubtitle")}</DialogDescription>

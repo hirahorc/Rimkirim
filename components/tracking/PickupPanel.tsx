@@ -52,7 +52,7 @@ export function PickupPanel({ order }: { order: Order }) {
   return (
     <Card className="p-5 sm:p-6">
       <h2 className="flex items-center gap-2 font-display text-base font-semibold tracking-tight">
-        <span className="grid size-6 place-items-center rounded-md bg-brand/10 text-brand">
+        <span className="grid size-6 place-items-center rounded-xs bg-brand/10 text-brand-ink">
           <Truck className="size-3.5" />
         </span>
         {t("order.pickStatus")}
@@ -82,7 +82,7 @@ export function PickupPanel({ order }: { order: Order }) {
       )}
 
       {!needsAwb && order.pickupChoicePending && (
-        <div className="mt-3 rounded-lg border border-warning/40 bg-warning/10 p-4">
+        <div className="mt-3 rounded-md border border-warning/40 bg-warning/10 p-4">
           <p className="text-sm font-semibold text-warning">
             {t("order.pickChoiceTitle")}
           </p>
@@ -112,7 +112,7 @@ export function PickupPanel({ order }: { order: Order }) {
       )}
 
       {needsAwb && (
-        <div className="mt-3 rounded-lg border border-warning/40 bg-warning/10 p-4">
+        <div className="mt-3 rounded-md border border-warning/40 bg-warning/10 p-4">
           <p className="text-sm font-semibold text-warning">
             {t("order.pickAwbNeededTitle")}
           </p>
@@ -132,7 +132,7 @@ export function PickupPanel({ order }: { order: Order }) {
       />
 
       {dropOff && !dropOff.expired && !dropOff.fulfilledAt && (
-        <div className="mt-3 rounded-lg border border-info/40 bg-info/10 p-4">
+        <div className="mt-3 rounded-md border border-info/40 bg-info/10 p-4">
           <p className="flex items-center gap-1.5 text-sm font-semibold text-info">
             <MapPin /> {t("order.pickDropOffTitle")}
           </p>

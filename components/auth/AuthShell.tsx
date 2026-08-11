@@ -35,7 +35,7 @@ export function AuthShell({
       <p className="mt-4 text-center text-xs text-muted-2">{t("auth.demoNote")}</p>
       <p className="mt-6 text-center text-sm text-muted">
         {switchPre}{" "}
-        <Link href={switchHref} className="font-medium text-brand hover:underline">
+        <Link href={switchHref} className="link-mark">
           {switchLabel}
         </Link>
       </p>

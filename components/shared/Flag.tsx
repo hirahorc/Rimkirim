@@ -29,7 +29,7 @@ export function Flag({
       height={size}
       style={{ width, height: size }}
       className={cn(
-        "inline-block shrink-0 rounded-[2px] object-cover ring-1 ring-white/15",
+        "inline-block shrink-0 rounded-[2px] object-cover ring-1 ring-black/10",
         className,
       )}
     />

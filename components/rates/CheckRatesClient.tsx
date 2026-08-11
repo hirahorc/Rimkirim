@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { useRouter } from "next/navigation";
-import { Loader2, PackageX } from "lucide-react";
+import { Loader2, PackageX, Info } from "lucide-react";
 import { useCalculatorStore, useStoreHydrated } from "@/lib/store/useCalculatorStore";
 import { useT } from "@/lib/i18n/LanguageProvider";
 import { calculateQuotes, type QuoteInput } from "@/lib/pricing/quote";
@@ -14,6 +14,7 @@ import {
   SpecialRateUnavailableCard,
 } from "./SpecialRateCard";
 import { RateCard } from "./RateCard";
+import { SurchargeInfoDialog } from "./SurchargeInfoDialog";
 import { ManualQuoteNotice } from "./ManualQuoteNotice";
 import { domesticCoverageGap } from "@/lib/data/domestic-coverage";
 import { Button } from "@/components/ui/button";
@@ -59,7 +60,7 @@ export function CheckRatesClient() {
     return (
       <div className="mx-auto flex min-h-[50vh] max-w-md flex-col items-center justify-center px-4 text-center">
         <PackageX className="size-10 text-muted-2" />
-        <h2 className="mt-4 font-display text-xl font-semibold">
+        <h2 className="mt-4 font-display text-xl font-semibold tracking-tight">
           {t("rates.emptyTitle")}
         </h2>
         <p className="mt-2 text-sm text-muted">{t("rates.emptyBody")}</p>
@@ -113,19 +114,35 @@ export function CheckRatesClient() {
       )}
 
       {isAdvance ? (
-        <div className="grid gap-4">
-          {quote.options.map((opt) => (
-            <RateCard
-              key={opt.vendor.id}
-              quote={opt}
-              route={quote.route}
-              chargeableWeight={quote.chargeableWeight}
-              cheapest={opt.vendor.id === cheapestId}
-              fastest={opt.vendor.id === fastestId && opt.vendor.id !== cheapestId}
-              orderBlocked={!!gap}
-            />
-          ))}
-        </div>
+        <>
+          {/* two-up on md+ so two options sit in one viewport — this is a
+              comparison surface. items-start keeps an expanded breakdown from
+              stretching its row neighbour. mobile stays single-column. */}
+          <div className="grid items-start gap-4 md:grid-cols-2">
+            {quote.options.map((opt) => (
+              <RateCard
+                key={opt.vendor.id}
+                quote={opt}
+                chargeableWeight={quote.chargeableWeight}
+                cheapest={opt.vendor.id === cheapestId}
+                fastest={opt.vendor.id === fastestId && opt.vendor.id !== cheapestId}
+                orderBlocked={!!gap}
+              />
+            ))}
+          </div>
+          {/* the caveats that apply to every card, said once */}
+          <p className="mt-4 flex items-start gap-2 rounded-md bg-surface-2/60 px-4 py-3 text-xs leading-relaxed text-muted-2">
+            <Info className="mt-0.5 size-3.5 shrink-0" />
+            <span>
+              {t("rates.advanceCaveat")}{" "}
+              <SurchargeInfoDialog>
+                <button type="button" className="link-mark">
+                  {t("rateCard.lihatRincian")}
+                </button>
+              </SurchargeInfoDialog>
+            </span>
+          </p>
+        </>
       ) : quote.special ? (
         <>
           <div className="grid gap-4">
@@ -152,7 +169,7 @@ export function CheckRatesClient() {
         {t("rates.footNote")}{" "}
         <a
           href="https://wa.me/6281234567890"
-          className="text-brand hover:underline"
+          className="link-mark"
           target="_blank"
           rel="noreferrer"
         >

@@ -27,10 +27,10 @@ export function ComingSoon({
   const Icon = ICONS[icon];
   return (
     <section className="mx-auto flex min-h-[72vh] max-w-2xl flex-col items-center justify-center px-4 py-20 text-center sm:px-6">
-      <span className="grid size-14 place-items-center rounded-2xl bg-brand/15 text-brand">
+      <span className="grid size-14 place-items-center rounded-md bg-brand/15 text-brand-ink">
         <Icon className="size-7" />
       </span>
-      <span className="mt-6 inline-flex items-center gap-2 rounded-full border border-brand/25 bg-brand/15 px-3 py-1 text-xs font-medium text-brand">
+      <span className="mt-6 inline-flex items-center gap-2 rounded-full border border-brand/25 bg-brand/15 px-3 py-1 text-xs font-medium text-foreground">
         <span className="size-1.5 rounded-full bg-brand" />
         {t("comingSoon.tag")}
       </span>

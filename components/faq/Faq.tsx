@@ -29,23 +29,26 @@ export function Faq() {
           </p>
         </header>
 
-        {/* service tabs */}
-        <SegmentedRoot
-          type="single"
-          value={tabId}
-          onValueChange={(v) => v && setTabId(v as TabId)}
-          className="mx-auto mt-8 max-w-md"
-        >
-          {FAQ_TABS.map((x) => (
-            <SegmentedItem key={x.id} value={x.id}>
-              {x.label}
-            </SegmentedItem>
-          ))}
-        </SegmentedRoot>
+        {/* service tabs — centered on the page. SegmentedRoot is inline-flex,
+            so mx-auto can't center it; a flex-justify-center wrapper does. */}
+        <div className="mt-8 flex justify-center">
+          <SegmentedRoot
+            type="single"
+            value={tabId}
+            onValueChange={(v) => v && setTabId(v as TabId)}
+            className="max-w-md"
+          >
+            {FAQ_TABS.map((x) => (
+              <SegmentedItem key={x.id} value={x.id}>
+                {x.label}
+              </SegmentedItem>
+            ))}
+          </SegmentedRoot>
+        </div>
 
         {/* direction note (Moving Abroad) */}
         {tab.note && (
-          <div className="mt-5 flex items-start gap-2.5 rounded-lg border border-border bg-surface-2/60 p-3.5 text-sm text-muted">
+          <div className="mt-5 flex items-start gap-2.5 rounded-md border border-border bg-surface-2/60 p-3.5 text-sm text-muted">
             <Info className="mt-0.5 size-4 shrink-0 text-muted-2" />
             <p>{tab.note}</p>
           </div>
@@ -64,11 +67,11 @@ export function Faq() {
                     key={f.q}
                     className="group border-b border-border last:border-0"
                   >
-                    <summary className="flex cursor-pointer list-none items-center justify-between gap-3 rounded-sm py-4 text-sm font-medium text-foreground transition-colors hover:text-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/40 [&::-webkit-details-marker]:hidden">
+                    <summary className="flex cursor-pointer list-none items-center justify-between gap-3 rounded-sm py-4 text-sm font-medium text-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/50 [&::-webkit-details-marker]:hidden">
                       <span>{f.q}</span>
                       <ChevronDown className="size-4 shrink-0 text-muted-2 transition-transform duration-200 group-open:rotate-180" />
                     </summary>
-                    <p className="pb-4 text-sm leading-relaxed text-muted">
+                    <p className="max-w-[65ch] pb-4 text-sm leading-relaxed text-muted">
                       {f.a}
                     </p>
                   </details>

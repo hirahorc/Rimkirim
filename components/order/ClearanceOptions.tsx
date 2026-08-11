@@ -108,7 +108,7 @@ export function ClearanceOptions() {
                 !enabled && "opacity-60",
                 enabled && "cursor-pointer",
                 enabled && !isSelected && "hover:border-border-strong",
-                isSelected && "border-brand ring-2 ring-brand/60",
+                isSelected && "border-foreground ring-2 ring-foreground/15",
               )}
             >
               {isSelected && (
@@ -118,7 +118,7 @@ export function ClearanceOptions() {
               )}
               <div className="flex items-start justify-between gap-2 pr-8">
                 <div>
-                  <h2 className="font-display text-xl font-bold text-brand">
+                  <h2 className="font-display text-xl font-bold text-foreground">
                     {t(o.titleKey)}
                   </h2>
                   <p className="mt-0.5 text-sm text-muted">{t(o.subtitleKey)}</p>
@@ -136,12 +136,12 @@ export function ClearanceOptions() {
 
               <div className="mt-5 space-y-4">
                 <Section
-                  icon={<Gift className="size-4 text-brand" />}
+                  icon={<Gift className="size-4 text-foreground" />}
                   label={t("order.clBenefits")}
                   items={o.benefitKeys.map((k) => t(k))}
                 />
                 <Section
-                  icon={<ClipboardCheck className="size-4 text-brand" />}
+                  icon={<ClipboardCheck className="size-4 text-foreground" />}
                   label={t("order.clRequirements")}
                   items={o.requirementKeys.map((k) => t(k))}
                 />

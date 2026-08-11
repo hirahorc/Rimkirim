@@ -27,10 +27,14 @@ export function AppHeader() {
   // standalone pages (legal docs) render without the app chrome
   if (isBareRoute(pathname)) return null;
   return (
-    <header className="reveal-down sticky top-0 z-40 border-b border-border/80 bg-background/80 backdrop-blur-xl">
-      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
+    <header className="reveal-down sticky top-0 z-40 px-3 pb-1 pt-3 sm:px-6">
+      {/* a capsule that floats clear of the page edge; the page scrolls behind
+          it and blurs underneath, so the chrome never sits on a hard bar */}
+      {/* /85 rather than the reference's /55: display type scrolling underneath
+          stays legible through a thinner veil and fights the nav links */}
+      <div className="mx-auto flex h-[60px] max-w-6xl items-center justify-between gap-3 rounded-full border border-border bg-background/85 pl-5 pr-2 shadow-float backdrop-blur-xl">
         <Logo />
-        <nav className="hidden items-center gap-1 text-sm text-muted md:flex">
+        <nav className="hidden items-center gap-0.5 text-sm lg:flex">
           {NAV_LINKS.map((n) => {
             const active =
               pathname === n.href || pathname.startsWith(`${n.href}/`);
@@ -38,9 +42,12 @@ export function AppHeader() {
               <Link
                 key={n.href}
                 href={n.href}
+                aria-current={active ? "page" : undefined}
                 className={cn(
-                  "rounded-md px-3 py-2 transition-colors",
-                  active ? "text-foreground" : "hover:text-foreground",
+                  "rounded-full px-[18px] py-2 font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/50",
+                  active
+                    ? "bg-surface-2 text-foreground"
+                    : "text-muted hover:bg-surface-2/70 hover:text-foreground",
                 )}
               >
                 {t(n.key)}
@@ -52,15 +59,9 @@ export function AppHeader() {
           <LanguageToggle />
           {user ? (
             <>
+              {/* "Pesanan Saya" lives only in the profile menu (AccountMenu) —
+                  the header keeps just the bell + profile when signed in */}
               <NotificationBell />
-              <Button
-                asChild
-                variant="ghost"
-                size="sm"
-                className="hidden sm:inline-flex"
-              >
-                <Link href="/pesanan">{t("auth.myOrders")}</Link>
-              </Button>
               <AccountMenu />
             </>
           ) : (
@@ -68,12 +69,12 @@ export function AppHeader() {
               asChild
               variant="ghost"
               size="sm"
-              className="hidden sm:inline-flex"
+              className="hidden lg:inline-flex"
             >
               <Link href="/masuk">{t("nav.masuk")}</Link>
             </Button>
           )}
-          <Button asChild size="sm" className="hidden sm:inline-flex">
+          <Button asChild size="sm" className="hidden lg:inline-flex">
             <Link href="/#kalkulator">{t("nav.cekTarif")}</Link>
           </Button>
           <MobileNav />

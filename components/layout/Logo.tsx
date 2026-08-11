@@ -2,7 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { cn } from "@/lib/utils/cn";
 
-/** Official Rimkirim wordmark (neon/lime version for the dark UI). */
+/** Official Rimkirim wordmark (dark-ink version, for the light UI). */
 export function Logo({
   className,
   height = 28,
@@ -21,7 +21,7 @@ export function Logo({
       aria-label="Rimkirim beranda"
     >
       <Image
-        src="/rimkirim-logo.png"
+        src="/rimkirim-logo-dark.png"
         alt="Rimkirim"
         width={1796}
         height={618}

@@ -35,18 +35,18 @@ export function MobileNav() {
         <button
           type="button"
           aria-label={t("nav.menu")}
-          className="tap-target relative grid size-9 place-items-center rounded-md border border-border bg-surface-2 text-muted transition-colors hover:text-foreground md:hidden"
+          className="tap-target relative grid size-9 place-items-center rounded-full border border-border bg-surface-2 text-muted transition-colors hover:text-foreground lg:hidden"
         >
           <Menu className="size-4" />
         </button>
       </Dialog.Trigger>
       <Dialog.Portal>
-        <Dialog.Overlay className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0" />
-        <Dialog.Content className="fixed right-0 top-0 z-50 flex h-full w-[min(86vw,340px)] flex-col border-l border-border-strong bg-surface shadow-2xl shadow-black/60 outline-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=open]:slide-in-from-right-[340px] data-[state=closed]:slide-out-to-right-[340px] data-[state=open]:duration-300 data-[state=closed]:duration-200">
+        <Dialog.Overlay className="fixed inset-0 z-50 bg-foreground/25 backdrop-blur-sm data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0" />
+        <Dialog.Content className="fixed right-0 top-0 z-50 flex h-full w-[min(86vw,340px)] flex-col rounded-l-lg border-l border-border bg-background shadow-overlay outline-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=open]:slide-in-from-right-[340px] data-[state=closed]:slide-out-to-right-[340px] data-[state=open]:duration-300 data-[state=closed]:duration-200">
           <Dialog.Title className="sr-only">{t("nav.menu")}</Dialog.Title>
           <div className="flex items-center justify-between border-b border-border p-4">
             <Logo height={28} />
-            <Dialog.Close className="tap-target relative grid size-9 place-items-center rounded-md text-muted transition-colors hover:bg-surface-2 hover:text-foreground">
+            <Dialog.Close className="tap-target relative grid size-9 place-items-center rounded-full text-muted transition-colors hover:bg-surface-2 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/50">
               <X className="size-5" />
               <span className="sr-only">{t("nav.closeMenu")}</span>
             </Dialog.Close>
@@ -62,9 +62,9 @@ export function MobileNav() {
                   href={n.href}
                   onClick={close}
                   className={cn(
-                    "flex min-h-[48px] items-center rounded-lg px-3 text-base transition-colors",
+                    "flex min-h-[48px] items-center rounded-full px-4 text-base transition-colors",
                     active
-                      ? "bg-surface-2 font-medium text-brand"
+                      ? "bg-surface-2 font-medium text-foreground"
                       : "text-muted hover:bg-surface-2 hover:text-foreground",
                   )}
                 >
