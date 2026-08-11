@@ -18,6 +18,9 @@ import { cn } from "@/lib/utils/cn";
 interface PickupData {
   picName: string;
   buildingType: string;
+  /** shared-building access, asked only when buildingType !== "house" */
+  freightElevator: string;
+  receptionist: string;
   address: string;
   notesCourier: string;
   picPhoneCountry: string;
@@ -50,11 +53,14 @@ export function PickupForm() {
     control,
     handleSubmit,
     setValue,
+    watch,
     formState: { errors },
   } = useForm<PickupData>({
     defaultValues: {
       picName: "",
       buildingType: "",
+      freightElevator: "",
+      receptionist: "",
       address: "",
       notesCourier: "",
       picPhoneCountry: originDial,
@@ -66,6 +72,10 @@ export function PickupForm() {
     },
   });
   const req = { required: t("err.required") };
+  // shared buildings (anything but a house) have access logistics the courier
+  // needs; a house — and the unselected placeholder — asks neither
+  const needsAccessQs =
+    watch("buildingType") !== "" && watch("buildingType") !== "house";
 
   const fillFromSender = () => {
     setValue("picName", sender?.fullName ?? "");
@@ -114,7 +124,19 @@ export function PickupForm() {
           </div>
 
           <Field label={t("order.puBuildingType")} error={errors.buildingType?.message}>
-            <Select {...register("buildingType", req)}>
+            <Select
+              {...register("buildingType", {
+                ...req,
+                onChange: (e) => {
+                  // switching to a house retires the access questions — drop any
+                  // stale answers so they aren't saved on a house pickup
+                  if (e.target.value === "house") {
+                    setValue("freightElevator", "");
+                    setValue("receptionist", "");
+                  }
+                },
+              })}
+            >
               <option value="">{t("order.puBuildingTypePlaceholder")}</option>
               {BUILDING_TYPES.map((b) => (
                 <option key={b.value} value={b.value}>
@@ -123,6 +145,51 @@ export function PickupForm() {
               ))}
             </Select>
           </Field>
+
+          {needsAccessQs && (
+            <div className="grid gap-4 sm:grid-cols-2">
+              <Field
+                label={t("order.puFreightElevator")}
+                error={errors.freightElevator?.message}
+              >
+                <Controller
+                  control={control}
+                  name="freightElevator"
+                  rules={{ required: needsAccessQs ? t("err.required") : false }}
+                  render={({ field }) => (
+                    <ChipGroup
+                      value={field.value}
+                      onChange={field.onChange}
+                      options={[
+                        { value: "yes", label: t("order.yes") },
+                        { value: "no", label: t("order.no") },
+                      ]}
+                    />
+                  )}
+                />
+              </Field>
+              <Field
+                label={t("order.puReceptionist")}
+                error={errors.receptionist?.message}
+              >
+                <Controller
+                  control={control}
+                  name="receptionist"
+                  rules={{ required: needsAccessQs ? t("err.required") : false }}
+                  render={({ field }) => (
+                    <ChipGroup
+                      value={field.value}
+                      onChange={field.onChange}
+                      options={[
+                        { value: "yes", label: t("order.yes") },
+                        { value: "no", label: t("order.no") },
+                      ]}
+                    />
+                  )}
+                />
+              </Field>
+            </div>
+          )}
 
           <Field label={t("order.puAddress")} error={errors.address?.message}>
             <Input placeholder={t("order.puPhAddress")} {...register("address", req)} />

@@ -917,6 +917,8 @@ const id = {
     puPhAddress: "Alamat lengkap tempat penjemputan barang",
     puPhNotes: "Contoh: titip ke satpam, hubungi dulu sebelum datang",
     puBuildingTypePlaceholder: "Pilih jenis bangunan",
+    puFreightElevator: "Ada akses lift barang (freight elevator)?",
+    puReceptionist: "Ada resepsionis?",
     puStandbyLabel: "Standby untuk re-pickup",
     puStandbyHint:
       "Kalau penjemputan pertama gagal, berapa lama PIC bisa standby untuk penjemputan ulang?",
@@ -1899,6 +1901,8 @@ const en: Messages = {
     puPhAddress: "Full address where the goods will be collected",
     puPhNotes: "e.g. leave with security, call before arriving",
     puBuildingTypePlaceholder: "Select building type",
+    puFreightElevator: "Is there freight elevator access?",
+    puReceptionist: "Is there a receptionist?",
     puStandbyLabel: "Re-pickup standby",
     puStandbyHint:
       "If the first pickup fails, how long can the PIC stay available for a re-pickup?",
