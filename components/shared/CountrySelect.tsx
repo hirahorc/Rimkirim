@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { Command } from "cmdk";
-import { Check, ChevronsUpDown, Lock, Search } from "lucide-react";
+import { Check, ChevronDown, Lock, Search } from "lucide-react";
 import {
   ALL_COUNTRIES,
   COUNTRIES,
@@ -44,7 +44,7 @@ export function CountrySelect({
     return (
       <div
         aria-label={ariaLabel}
-        className="flex h-11 w-full items-center justify-between rounded-md border border-border bg-surface-3/60 px-3 text-sm"
+        className="flex h-11 w-full items-center justify-between rounded-md border border-border bg-surface-2 px-3 text-sm opacity-70"
       >
         <span className="flex items-center gap-2">
           <Flag code={INDONESIA.code} size={14} />
@@ -103,7 +103,7 @@ export function CountrySelect({
           ) : (
             <span className="text-muted-2">{ph}</span>
           )}
-          <ChevronsUpDown className="size-4 shrink-0 text-muted-2" />
+          <ChevronDown className="size-4 shrink-0 text-muted-2" />
         </button>
       </PopoverTrigger>
       <PopoverContent className="p-0">
