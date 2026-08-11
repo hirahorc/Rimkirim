@@ -115,7 +115,10 @@ export function CheckRatesClient() {
 
       {isAdvance ? (
         <>
-          <div className="grid gap-4">
+          {/* two-up on md+ so two options sit in one viewport — this is a
+              comparison surface. items-start keeps an expanded breakdown from
+              stretching its row neighbour. mobile stays single-column. */}
+          <div className="grid items-start gap-4 md:grid-cols-2">
             {quote.options.map((opt) => (
               <RateCard
                 key={opt.vendor.id}
