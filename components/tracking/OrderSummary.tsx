@@ -443,6 +443,8 @@ function PickupCard({
     | {
         picName?: string;
         buildingType?: string;
+        freightElevator?: string;
+        receptionist?: string;
         address?: string;
         notesCourier?: string;
         picPhoneCountry?: string;
@@ -452,6 +454,9 @@ function PickupCard({
         standbyDuration?: string;
       }
     | undefined;
+  const showAccessQs = !!data?.buildingType && data.buildingType !== "house";
+  const yesNo = (v?: string) =>
+    v === "yes" ? t("order.yes") : v === "no" ? t("order.no") : dash;
   const date = data?.date
     ? new Intl.DateTimeFormat(locale, {
         day: "numeric",
@@ -477,6 +482,16 @@ function PickupCard({
       <Row label={t("order.puBuildingType")}>
         {buildingLabel(t, data?.buildingType)}
       </Row>
+      {showAccessQs && (
+        <>
+          <Row label={t("order.puFreightElevator")}>
+            {yesNo(data?.freightElevator)}
+          </Row>
+          <Row label={t("order.puReceptionist")}>
+            {yesNo(data?.receptionist)}
+          </Row>
+        </>
+      )}
       <Row label={t("order.puAddress")}>{val(data?.address)}</Row>
       <Row label={t("order.puDate")}>{date}</Row>
       <Row label={t("order.puTime")}>{val(data?.time)}</Row>

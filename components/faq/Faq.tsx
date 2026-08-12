@@ -4,7 +4,6 @@ import * as React from "react";
 import { ChevronDown, Info } from "lucide-react";
 import { FAQ_TABS, type FaqTab } from "@/lib/data/faq";
 import { SegmentedRoot, SegmentedItem } from "@/components/ui/toggle-group";
-import { Card } from "@/components/ui/card";
 import { useT } from "@/lib/i18n/LanguageProvider";
 
 type TabId = FaqTab["id"];
@@ -54,20 +53,18 @@ export function Faq() {
           </div>
         )}
 
-        {/* categories → Q/A accordions */}
-        <div className="mt-8 space-y-8">
+        {/* categories → Q/A accordions. No card container: the wide gap between
+            categories vs the hairline between questions carries the hierarchy. */}
+        <div className="mt-10 space-y-12">
           {tab.categories.map((cat) => (
             <div key={cat.name}>
-              <h2 className="mb-3 text-xs font-medium uppercase tracking-wider text-muted-2">
+              <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-2">
                 {cat.name}
               </h2>
-              <Card className="px-4 sm:px-5">
+              <div className="mt-1 divide-y divide-border">
                 {cat.faqs.map((f) => (
-                  <details
-                    key={f.q}
-                    className="group border-b border-border last:border-0"
-                  >
-                    <summary className="flex cursor-pointer list-none items-center justify-between gap-3 rounded-sm py-4 text-sm font-medium text-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/50 [&::-webkit-details-marker]:hidden">
+                  <details key={f.q} className="group">
+                    <summary className="flex cursor-pointer list-none items-center justify-between gap-3 py-4 text-sm font-medium text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/50 [&::-webkit-details-marker]:hidden">
                       <span>{f.q}</span>
                       <ChevronDown className="size-4 shrink-0 text-muted-2 transition-transform duration-200 group-open:rotate-180" />
                     </summary>
@@ -76,7 +73,7 @@ export function Faq() {
                     </p>
                   </details>
                 ))}
-              </Card>
+              </div>
             </div>
           ))}
         </div>

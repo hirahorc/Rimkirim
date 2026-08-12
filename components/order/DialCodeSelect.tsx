@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { Command } from "cmdk";
-import { Check, ChevronsUpDown, Search } from "lucide-react";
+import { Check, ChevronDown, Search } from "lucide-react";
 import { ALL_COUNTRIES, COUNTRIES, getCountry } from "@/lib/data/countries";
 import { DIAL_BY_ISO, dialCodeFor } from "@/lib/data/dial-codes";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -67,7 +67,7 @@ export function DialCodeSelect({
             <Flag code={selected?.code} size={14} />
             <span className="tabular-nums text-foreground">{dial ?? "–"}</span>
           </span>
-          <ChevronsUpDown className="size-3.5 shrink-0 text-muted-2" />
+          <ChevronDown className="size-4 shrink-0 text-muted-2" />
         </button>
       </PopoverTrigger>
       <PopoverContent className="p-0">
