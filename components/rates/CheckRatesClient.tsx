@@ -115,10 +115,9 @@ export function CheckRatesClient() {
 
       {isAdvance ? (
         <>
-          {/* two-up on md+ so two options sit in one viewport — this is a
-              comparison surface. items-start keeps an expanded breakdown from
-              stretching its row neighbour. mobile stays single-column. */}
-          <div className="grid items-start gap-4 md:grid-cols-2">
+          {/* single column at every width — cards stack top-to-bottom so each
+              option (and its expandable breakdown) gets the full row width. */}
+          <div className="grid items-start gap-4">
             {quote.options.map((opt) => (
               <RateCard
                 key={opt.vendor.id}
