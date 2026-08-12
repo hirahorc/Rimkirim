@@ -1,18 +1,9 @@
 "use client";
 
 import * as React from "react";
-import {
-  ClipboardList,
-  UserRound,
-  Package,
-  FileText,
-  Truck,
-  ReceiptText,
-  Plane,
-  ShieldCheck,
-} from "lucide-react";
 import { useT, useLanguage } from "@/lib/i18n/LanguageProvider";
 import { Card } from "@/components/ui/card";
+import { TooltipProvider, InfoTip } from "@/components/ui/tooltip";
 import { getCountry } from "@/lib/data/countries";
 import { dialCodeFor } from "@/lib/data/dial-codes";
 import { formatCurrency } from "@/lib/data/currencies";
@@ -30,25 +21,25 @@ import {
 
 const dash = "–";
 
+/**
+ * De-boxed section: no card, no icon chip. The section title (display, dark)
+ * anchors the group; the wide gap between sections vs the hairline between
+ * rows carries the hierarchy — same language as the FAQ, not stacked cards.
+ */
 function Section({
-  icon: Icon,
   title,
   children,
 }: {
-  icon: React.ComponentType<{ className?: string }>;
   title: string;
   children: React.ReactNode;
 }) {
   return (
-    <Card className="p-5 sm:p-6">
-      <h2 className="flex items-center gap-2 font-display text-base font-semibold tracking-tight">
-        <span className="grid size-6 place-items-center rounded-xs bg-brand/10 text-brand-ink">
-          <Icon className="size-3.5" />
-        </span>
+    <section>
+      <h2 className="font-display text-base font-semibold tracking-tight text-foreground">
         {title}
       </h2>
       <div className="mt-3 divide-y divide-border">{children}</div>
-    </Card>
+    </section>
   );
 }
 
@@ -114,22 +105,37 @@ export function OrderSummary({ order }: { order: Order }) {
   const isMa = order.context?.service === "moving-abroad";
 
   return (
-    <div className="space-y-4">
-      <EligibilityCard order={order} />
-      <CustomerCard order={order} />
-      <ItemsCard order={order} />
-      <ComplianceCard order={order} />
-      <PickupCard order={order} locale={locale} />
-      {order.status !== "draft" && <PendingCards order={order} />}
-      {order.status === "cancelled" && (
-        <Card className="border-danger/40 bg-danger/10 p-4 text-sm text-danger">
-          {t("order.tdCancelledNotice")}
-        </Card>
-      )}
-      {isMa && (
-        <p className="px-1 text-xs text-muted-2">{t("order.tdMaNote")}</p>
-      )}
-    </div>
+    // lead with the substance a customer actually verifies (who/where → what →
+    // when → docs); the eligibility questionnaire replay is demoted near the
+    // end. wide gap between de-boxed sections carries the grouping.
+    <TooltipProvider delayDuration={150}>
+      <div className="space-y-10">
+        <CustomerCard order={order} />
+        <ItemsCard order={order} />
+        <PickupCard order={order} locale={locale} />
+        <ComplianceCard order={order} />
+        <EligibilityCard order={order} />
+        {order.status !== "draft" && <PendingCards order={order} />}
+        {order.status === "cancelled" && (
+          <Card className="border-danger/40 bg-danger/10 p-4 text-sm text-danger">
+            {t("order.tdCancelledNotice")}
+          </Card>
+        )}
+        {isMa && (
+          <p className="text-xs text-muted-2">{t("order.tdMaNote")}</p>
+        )}
+      </div>
+    </TooltipProvider>
+  );
+}
+
+/** A row label with an inline info tooltip, for terms a first-timer won't know. */
+function TipLabel({ label, tip }: { label: string; tip: string }) {
+  return (
+    <span className="inline-flex items-center gap-1">
+      {label}
+      <InfoTip content={tip} />
+    </span>
   );
 }
 
@@ -145,7 +151,7 @@ function EligibilityCard({ order }: { order: Order }) {
   });
 
   return (
-    <Section icon={ClipboardList} title={t("order.tdEligibility")}>
+    <Section title={t("order.tdEligibility")}>
       <Row label={t("order.tdShippingPersonal")}>{yesNo(a.shippingPersonal)}</Row>
       {isMa ? (
         <Row label={t("order.tdArrived")}>{yesNo(a.arrivedAtDestination)}</Row>
@@ -169,7 +175,11 @@ function EligibilityCard({ order }: { order: Order }) {
           </Row>
         </>
       )}
-      <Row label={t("order.coPackingCode")}>
+      <Row
+        label={
+          <TipLabel label={t("order.coPackingCode")} tip={t("order.tdPackingTip")} />
+        }
+      >
         {packing ?? t("order.tdNotProvided")}
       </Row>
     </Section>
@@ -199,38 +209,46 @@ function CustomerCard({ order }: { order: Order }) {
   const data = order.modules.customerInfo.data as
     | { sender?: Party; receiver?: Party; owner?: Owner }
     | undefined;
+  const owner = data?.owner;
+  const ownerPhoneOrigin =
+    owner?.phoneOriginCountry && owner?.phoneOrigin
+      ? `${dialCodeFor(owner.phoneOriginCountry)} ${owner.phoneOrigin}`
+      : null;
+  const ownerPhoneDest =
+    owner?.phoneDestinationCountry && owner?.phoneDestination
+      ? `${dialCodeFor(owner.phoneDestinationCountry)} ${owner.phoneDestination}`
+      : null;
 
   return (
-    <Section icon={UserRound} title={t("order.modCustomer")}>
+    <Section title={t("order.modCustomer")}>
       <div className="py-2">
-        <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-muted-2">
+        <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-muted">
           {t("order.ciSectionSender")}
         </p>
         <PartyRows party={data?.sender} />
       </div>
       <div className="py-2">
-        <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-muted-2">
+        <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-muted">
           {t("order.ciSectionReceiver")}
         </p>
         <PartyRows party={data?.receiver} />
       </div>
       <div className="py-2">
-        <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-muted-2">
+        <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-muted">
           {t("order.ciSectionOwner")}
         </p>
         <Row label={t("order.ciFullName")}>{val(data?.owner?.fullName)}</Row>
-        <Row label={t("order.ciPhoneOrigin")}>
-          {data?.owner?.phoneOriginCountry && data?.owner?.phoneOrigin
-            ? `${dialCodeFor(data.owner.phoneOriginCountry)} ${data.owner.phoneOrigin}`
-            : dash}
-        </Row>
-        <Row label={t("order.ciPhoneDestination")}>
-          {data?.owner?.phoneDestinationCountry &&
-          data?.owner?.phoneDestination
-            ? `${dialCodeFor(data.owner.phoneDestinationCountry)} ${data.owner.phoneDestination}`
-            : dash}
-        </Row>
-        <Row label={t("order.ciEmail")}>{val(data?.owner?.email)}</Row>
+        {/* the owner's two phones + email are optional — hide when unfilled
+            rather than stacking dashes */}
+        {ownerPhoneOrigin && (
+          <Row label={t("order.ciPhoneOrigin")}>{ownerPhoneOrigin}</Row>
+        )}
+        {ownerPhoneDest && (
+          <Row label={t("order.ciPhoneDestination")}>{ownerPhoneDest}</Row>
+        )}
+        {data?.owner?.email && (
+          <Row label={t("order.ciEmail")}>{data.owner.email}</Row>
+        )}
       </div>
     </Section>
   );
@@ -269,7 +287,7 @@ function ItemsCard({ order }: { order: Order }) {
   const totalPrice = (order.selectedRate?.perKg ?? 0) * totalCw;
 
   return (
-    <Section icon={Package} title={t("order.modItems")}>
+    <Section title={t("order.modItems")}>
       <Row label={t("order.itCurrency")}>{currency}</Row>
       {packages.length === 0 && (
         <Row label={t("order.itPackagesHeading")}>{t("order.tdNotProvided")}</Row>
@@ -290,7 +308,7 @@ function ItemsCard({ order }: { order: Order }) {
         );
         return (
           <div key={i} className="py-2">
-            <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-muted-2">
+            <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-muted">
               {t("order.itPackageN")} {i + 1}
             </p>
             <Row label={t("order.itPackaging")}>{pkgTypeLabel(t, p?.packaging)}</Row>
@@ -298,7 +316,11 @@ function ItemsCard({ order }: { order: Order }) {
               {val(p?.length)} × {val(p?.width)} × {val(p?.height)} cm
             </Row>
             <Row label={t("order.tdWeight")}>{val(p?.weight)} kg</Row>
-            <Row label={t("order.tdChargeable")}>
+            <Row
+              label={
+                <TipLabel label={t("order.tdChargeable")} tip={t("pkg.chgTooltip")} />
+              }
+            >
               {formatNumber(cw, 1)} kg
               {basis === "volumetric" && (
                 <span className="ml-1 text-xs text-muted-2">
@@ -313,7 +335,7 @@ function ItemsCard({ order }: { order: Order }) {
             </Row>
             {items.length > 0 && (
               <div className="mt-1.5 overflow-hidden rounded-md border border-border">
-                <div className="grid grid-cols-[1fr_auto_auto_auto] gap-2 bg-surface-2 px-3 py-1.5 text-[10px] font-medium uppercase tracking-wide text-muted-2">
+                <div className="grid grid-cols-[1fr_auto_auto_auto] gap-2 bg-surface-2 px-3 py-1.5 text-xs font-medium uppercase tracking-wide text-muted-2">
                   <span>{t("order.itColDescription")}</span>
                   <span className="text-right">{t("order.itColQty")}</span>
                   <span className="text-right">{t("order.itColValue")}</span>
@@ -400,7 +422,7 @@ function ComplianceCard({ order }: { order: Order }) {
     .filter((e) => e.label);
 
   return (
-    <Section icon={FileText} title={t("order.modCompliance")}>
+    <Section title={t("order.modCompliance")}>
       {entries.map(({ key, label }) => (
         <Row key={key} label={t(label!)}>
           {docs[key] ? (
@@ -412,7 +434,7 @@ function ComplianceCard({ order }: { order: Order }) {
       ))}
       {(data?.otherDocs ?? []).length > 0 && (
         <div className="py-2">
-          <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-muted-2">
+          <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-muted">
             {t("order.coOtherDocs")}
           </p>
           {(data?.otherDocs ?? []).map((d, i) => (
@@ -476,7 +498,7 @@ function PickupCard({
         : dash;
 
   return (
-    <Section icon={Truck} title={t("order.modPickup")}>
+    <Section title={t("order.modPickup")}>
       <Row label={t("order.puPicName")}>{val(data?.picName)}</Row>
       <Row label={t("order.puPicPhone")}>{phone}</Row>
       <Row label={t("order.puBuildingType")}>
@@ -496,65 +518,65 @@ function PickupCard({
       <Row label={t("order.puDate")}>{date}</Row>
       <Row label={t("order.puTime")}>{val(data?.time)}</Row>
       <Row label={t("order.puStandbyLabel")}>{standby}</Row>
-      <Row label={t("order.puNotesCourier")}>{val(data?.notesCourier)}</Row>
+      {/* courier notes are optional — omit the row entirely when empty */}
+      {data?.notesCourier && (
+        <Row label={t("order.puNotesCourier")}>{data.notesCourier}</Row>
+      )}
     </Section>
   );
 }
 
+/**
+ * The three ops-produced slots (quotation, AWB, clearance) folded into one
+ * compact section — one row each, the real value when it exists, a muted
+ * "pending" line otherwise. Total chargeable weight is not repeated here
+ * (Items already shows it). The live QuotationCard up top owns the full
+ * quotation once it arrives, so the quotation row drops out then.
+ */
 function PendingCards({ order }: { order: Order }) {
   const t = useT();
-  const totalCw = totalChargeableWeight(
-    (order.modules.items.data as { packages?: Pkg[] } | undefined)?.packages?.map(
-      (p) => ({
-        weight: Number(p?.weight) || 0,
-        length: Number(p?.length) || 0,
-        width: Number(p?.width) || 0,
-        height: Number(p?.height) || 0,
-        quantity: 1,
-      }),
-    ) ?? [],
-  );
   const rate = order.selectedRate;
+  const clearanceDone =
+    order.status === "clearance" ||
+    order.status === "delivery" ||
+    order.status === "delivered";
 
   return (
-    <>
+    <Section title={t("order.tdNextSection")}>
       {!order.quotation && (
-        <Section icon={ReceiptText} title={t("order.tdQuotationSection")}>
-          {rate && (
-            <Row label={t("order.tdBaseRate")}>
+        <Row label={t("order.tdQuotationSection")}>
+          {rate ? (
+            <>
               <span className="font-mono font-medium tabular-nums">
                 {formatIDR(rate.perKg)}
               </span>{" "}
-              <span className="text-xs font-normal text-muted-2">
-                / {t("order.tdPerKg")}
+              <span className="text-xs text-muted-2">
+                / {t("order.tdPerKg")} · {t("order.tdQuotationPending")}
               </span>
-            </Row>
+            </>
+          ) : (
+            <span className="text-muted-2">{t("order.tdQuotationPending")}</span>
           )}
-          <Row label={t("order.itTotalCw")}>{formatNumber(totalCw, 1)} kg</Row>
-          <p className="py-2 text-sm text-muted-2">{t("order.tdQuotationPending")}</p>
-        </Section>
+        </Row>
       )}
-
-      <Section icon={Plane} title={t("order.tdAwbSection")}>
+      <Row
+        label={
+          <TipLabel label={t("order.tdAwbSection")} tip={t("order.tdAwbTip")} />
+        }
+      >
         {order.awb ? (
-          <>
-            <Row label={t("order.tdAwbNumber")}>
-              <span className="font-mono font-medium text-foreground">{order.awb}</span>
-            </Row>
-            <p className="py-2 text-sm text-muted-2">{t("order.tdAwbStable")}</p>
-          </>
+          <span className="font-mono font-medium text-foreground">{order.awb}</span>
         ) : (
-          <p className="py-2 text-sm text-muted-2">{t("order.tdAwbPending")}</p>
+          <span className="text-muted-2">{t("order.tdAwbPending")}</span>
         )}
-      </Section>
-
-      <Section icon={ShieldCheck} title={t("order.stepClearance")}>
-        {order.status === "clearance" || order.status === "delivery" || order.status === "delivered" ? (
-          <p className="py-2 text-sm text-muted-2">{t("order.tdClearanceDone")}</p>
-        ) : (
-          <p className="py-2 text-sm text-muted-2">{t("order.tdClearancePending")}</p>
-        )}
-      </Section>
-    </>
+      </Row>
+      <Row label={t("order.stepClearance")}>
+        <span className="text-muted-2">
+          {clearanceDone
+            ? t("order.tdClearanceDone")
+            : t("order.tdClearancePending")}
+        </span>
+      </Row>
+    </Section>
   );
 }

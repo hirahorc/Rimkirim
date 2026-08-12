@@ -6,7 +6,8 @@ import { useRouter } from "next/navigation";
 import {
   Loader2,
   ArrowLeft,
-  Package,
+  CalendarDays,
+  Plane,
   Route as RouteIcon,
   PenLine,
 } from "lucide-react";
@@ -77,6 +78,16 @@ export function OrderDetail({ id }: { id: string }) {
   const isDraft = order.status === "draft";
   const identifier = order.bookingNumber;
 
+  // the "needs you / in progress" tier — anything time-sensitive or live.
+  // gated so the zone wrapper never renders an empty band with a top margin.
+  const showRevision = !!order.revisionModule && order.status === "review";
+  const hasLivePanels =
+    !!order.attention ||
+    showRevision ||
+    !!order.quotation ||
+    order.status === "pickup" ||
+    order.status === "clearance";
+
   return (
     <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6 sm:py-10">
       <Link
@@ -110,13 +121,13 @@ export function OrderDetail({ id }: { id: string }) {
         <div className="mt-5 space-y-3 border-t border-border pt-5 text-sm">
           <div className="flex items-center justify-between gap-3">
             <span className="flex items-center gap-1.5 text-muted-2">
-              <Package className="size-4" /> {t("order.ordersCreatedAt")}
+              <CalendarDays className="size-4" /> {t("order.ordersCreatedAt")}
             </span>
             <span className="text-muted">{date}</span>
           </div>
           <div className="flex items-center justify-between gap-3">
             <span className="flex items-center gap-1.5 text-muted-2">
-              <Package className="size-4" /> {t("order.serviceBfg")}
+              <Plane className="size-4" /> {t("order.serviceLabel")}
             </span>
             <span className="text-muted">{t(serviceKey)}</span>
           </div>
@@ -135,52 +146,50 @@ export function OrderDetail({ id }: { id: string }) {
         </div>
       </Card>
 
+      {/* status tier — reads as one concern with the identity card above,
+          so it sits tight (mt-3) rather than at the between-tier interval */}
       {!isDraft && (
-        <Card className="mt-4 p-4 sm:p-5">
+        <Card className="mt-3 p-4 sm:p-5">
           <StatusStepper status={order.status as OrderPhase} />
         </Card>
       )}
-      <AttentionBanner attention={order.attention} />
 
-      {order.revisionModule && order.status === "review" && (
-        <div className="mt-4">
-          <RevisionCard
-            orderId={order.id}
-            moduleId={order.revisionModule}
-            note={order.revisionNote}
-          />
+      {/* live tier — what needs the customer or is changing right now. one
+          generous break separates it from status; the panels sit tight to
+          each other so they read as a single "in progress" band */}
+      {hasLivePanels && (
+        <div className="mt-8 space-y-3">
+          <AttentionBanner attention={order.attention} />
+          {showRevision && (
+            <RevisionCard
+              orderId={order.id}
+              moduleId={order.revisionModule!}
+              note={order.revisionNote}
+            />
+          )}
+          {order.quotation && <QuotationCard order={order} />}
+          {order.status === "pickup" && <PickupPanel order={order} />}
+          {order.status === "clearance" && <ClearancePanel order={order} />}
         </div>
       )}
 
-      {order.quotation && (
-        <div className="mt-4">
-          <QuotationCard order={order} />
-        </div>
-      )}
-
-      {order.status === "pickup" && (
-        <div className="mt-4">
-          <PickupPanel order={order} />
-        </div>
-      )}
-
-      {order.status === "clearance" && (
-        <div className="mt-4">
-          <ClearancePanel order={order} />
-        </div>
-      )}
-
-      <div className="mt-4">
-        <OrderTimeline events={order.timeline} />
+      {/* reference tier — the archival record: timeline + the full replay of
+          everything the customer entered. a labeled hairline break drops it a
+          clear step below the live tier so it reads as look-it-up material */}
+      <div className="mt-12 flex items-center gap-3">
+        <h2 className="text-xs font-medium uppercase tracking-wide text-muted-2">
+          {t("order.tdRecordHeading")}
+        </h2>
+        <span className="h-px flex-1 bg-border" />
       </div>
-
-      <div className="mt-4">
+      <div className="mt-5 space-y-4">
+        <OrderTimeline events={order.timeline} />
         <OrderSummary order={order} />
       </div>
 
       {isDraft && (
         <>
-          <p className="mt-3 text-center text-xs text-muted-2">
+          <p className="mt-8 text-center text-xs text-muted-2">
             {t("order.draftNote")}
           </p>
           <Button

@@ -561,9 +561,11 @@ const id = {
     ordersEmptyCta: "Mulai order baru",
     ordersCreatedAt: "Dibuat",
     ordersRoute: "Rute",
+    serviceLabel: "Layanan",
     serviceBfg: "Back For Good",
     serviceMa: "Moving Abroad",
     // tracking detail
+    tdRecordHeading: "Detail pesanan",
     tdAttention: "Perlu perhatian",
     tdEligibility: "Kelayakan & Clearance",
     tdShippingPersonal: "Barang pribadi",
@@ -579,6 +581,11 @@ const id = {
     tdPhotos: "Foto pengukuran",
     tdUploaded: "Tersedia",
     tdMissing: "Belum diunggah",
+    tdPackingTip:
+      "Kode packing list Rimkirim (RK-PL-XXXXXX) — daftar resmi isi kirimanmu yang dipakai untuk verifikasi bea cukai.",
+    tdAwbTip:
+      "Air Waybill: nomor resi dari kurir 3PL untuk melacak paket di jaringan mereka. Beda dari Nomor Booking Rimkirim yang tetap sama.",
+    tdNextSection: "Proses berikutnya",
     tdQuotationSection: "Quotation",
     tdQuotationPending: "Menunggu quotation resmi dari tim Rimkirim.",
     tdBaseRate: "Tarif dasar",
@@ -1562,9 +1569,11 @@ const en: Messages = {
     ordersEmptyCta: "Start a new order",
     ordersCreatedAt: "Created",
     ordersRoute: "Route",
+    serviceLabel: "Service",
     serviceBfg: "Back For Good",
     serviceMa: "Moving Abroad",
     // tracking detail
+    tdRecordHeading: "Order details",
     tdAttention: "Needs attention",
     tdEligibility: "Eligibility & Clearance",
     tdShippingPersonal: "Personal belongings",
@@ -1580,6 +1589,11 @@ const en: Messages = {
     tdPhotos: "Measurement photos",
     tdUploaded: "Uploaded",
     tdMissing: "Not uploaded",
+    tdPackingTip:
+      "Rimkirim packing-list code (RK-PL-XXXXXX): the official manifest of your shipment's contents, used to verify it through customs.",
+    tdAwbTip:
+      "Air Waybill: the tracking number from the 3PL courier for their own network. Separate from your Rimkirim booking number, which stays the same.",
+    tdNextSection: "What's next",
     tdQuotationSection: "Quotation",
     tdQuotationPending: "Waiting for the official quotation from the Rimkirim team.",
     tdBaseRate: "Base rate",
