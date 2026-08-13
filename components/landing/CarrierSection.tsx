@@ -28,8 +28,11 @@ import { useT } from "@/lib/i18n/LanguageProvider";
  * list is capped narrow enough that it can only ever be a centered 3 + 3 — aramex
  * can't creep up into row one, which is what made the mid-widths orphan a lone
  * logo. At `md` it becomes a single non-wrapping row with `justify-between`, so the
- * spacing distributes evenly across the content width at every size instead of
- * clustering in the middle.
+ * whitespace between adjacent marks is identical across the strip — the gap from
+ * one logo's edge to the next is the same everywhere. (This relies on every logo
+ * being cropped tight to its ink: a mark with transparent padding in its viewBox
+ * would fake an uneven gap, which is exactly what the FedEx file did before it was
+ * cropped to 0 0 2300 684.)
  *
  * Files live in /public/carriers. `sf-express.svg` ships in-repo; the rest are
  * dropped in with the filenames below. A new logo only needs its intrinsic aspect
@@ -42,7 +45,7 @@ type Carrier = { name: string; src: string; aspect: number; capScale?: number };
 
 const CARRIERS: Carrier[] = [
   { name: "DHL", src: "/carriers/dhl.svg", aspect: 6.92 },
-  { name: "FedEx", src: "/carriers/fedex.svg", aspect: 4.31 },
+  { name: "FedEx", src: "/carriers/fedex.svg", aspect: 3.36 },
   { name: "UPS", src: "/carriers/ups.svg", aspect: 0.843 },
   { name: "Aramex", src: "/carriers/aramex.svg", aspect: 6.15 },
   { name: "SF Express", src: "/carriers/sf-express.svg", aspect: 1 },
