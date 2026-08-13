@@ -87,40 +87,44 @@ export function ComplianceForm() {
     <ModuleShell moduleId="compliance">
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <Card className="space-y-4 p-5">
-          <p className="text-sm font-medium">{t("order.coHeading")}</p>
-          {docs.map((d) => (
-            <div key={d.key}>
-              <div className="mb-1 flex flex-wrap items-center gap-2">
-                <span className="text-xs font-medium text-muted">
-                  {t(d.labelKey)}
-                  {d.required && <span className="ml-0.5 text-danger">*</span>}
-                </span>
-                {d.noteKey && (
-                  <span className="rounded-full border border-border bg-surface-2 px-2 py-0.5 text-[10px] text-muted-2">
-                    {t(d.noteKey)}
+          <h2 className="font-display font-semibold">{t("order.coHeading")}</h2>
+          {/* each doc is one unit (label + timing pill → control → help); the
+              row gap is wider than the intra-row gaps so rows read as distinct */}
+          <div className="space-y-5">
+            {docs.map((d) => (
+              <div key={d.key}>
+                <div className="mb-1.5 flex flex-wrap items-center gap-2">
+                  <span className="text-xs font-medium text-muted">
+                    {t(d.labelKey)}
+                    {d.required && <span className="ml-0.5 text-danger">*</span>}
                   </span>
+                  {d.noteKey && (
+                    <span className="rounded-full border border-border bg-surface-2 px-2 py-0.5 text-[10px] text-muted-2">
+                      {t(d.noteKey)}
+                    </span>
+                  )}
+                </div>
+                <Controller
+                  control={control}
+                  name={`docs.${d.key}` as const}
+                  render={({ field }) => (
+                    <FileUpload value={field.value} onChange={field.onChange} />
+                  )}
+                />
+                {d.helpKey && (
+                  <p className="mt-1.5 flex items-start gap-1.5 text-xs text-muted-2">
+                    <Info className="mt-0.5 size-3.5 shrink-0" />
+                    {t(d.helpKey)}
+                  </p>
                 )}
               </div>
-              <Controller
-                control={control}
-                name={`docs.${d.key}` as const}
-                render={({ field }) => (
-                  <FileUpload value={field.value} onChange={field.onChange} />
-                )}
-              />
-              {d.helpKey && (
-                <p className="mt-1 flex items-start gap-1.5 text-xs text-muted-2">
-                  <Info className="mt-0.5 size-3.5 shrink-0" />
-                  {t(d.helpKey)}
-                </p>
-              )}
-            </div>
-          ))}
+            ))}
+          </div>
         </Card>
 
         {/* other supporting documents */}
-        <Card className="space-y-3 p-5">
-          <p className="text-sm font-medium">{t("order.coOtherDocs")}</p>
+        <Card className="space-y-4 p-5">
+          <h2 className="font-display font-semibold">{t("order.coOtherDocs")}</h2>
           {fields.map((f, i) => (
             <div key={f.id} className="flex flex-col gap-2 sm:flex-row sm:items-start">
               <Input

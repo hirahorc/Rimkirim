@@ -197,9 +197,11 @@ export function ItemsForm() {
         })}
         className="space-y-4"
       >
-        {/* currency + carried packages */}
+        {/* currency — titled like every other module's lead card; the h2 is the
+            field's label, so the SelectField carries only an ariaLabel below */}
         <Card className="space-y-4 p-5">
-          <Field label={t("order.itCurrency")} hint={t("order.itCurrencyHelp")}>
+          <h2 className="font-display font-semibold">{t("order.itCurrency")}</h2>
+          <Field hint={t("order.itCurrencyHelp")}>
             <Controller
               control={control}
               name="currency"
@@ -236,12 +238,12 @@ export function ItemsForm() {
         {/* packages section header: title + count, collapse control, jump chips */}
         <div className="space-y-2">
           <div className="flex items-center justify-between gap-2">
-            <h3 className="flex items-center gap-2 font-display font-semibold">
+            <h2 className="flex items-center gap-2 font-display font-semibold">
               {t("order.itPackagesHeading")}
               <span className="rounded-full bg-surface-2 px-2 py-0.5 text-xs font-medium text-muted tabular-nums">
                 {fields.length}
               </span>
-            </h3>
+            </h2>
             {fields.length > 1 && (
               <button
                 type="button"
