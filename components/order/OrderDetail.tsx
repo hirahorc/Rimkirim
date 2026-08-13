@@ -182,7 +182,7 @@ export function OrderDetail({ id }: { id: string }) {
         </h2>
         <span className="h-px flex-1 bg-border" />
       </div>
-      <div className="mt-5 space-y-4">
+      <div className="mt-5 space-y-10">
         <OrderTimeline events={order.timeline} />
         <OrderSummary order={order} />
       </div>

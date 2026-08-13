@@ -1,9 +1,11 @@
 "use client";
 
 import * as React from "react";
+import { ChevronDown } from "lucide-react";
 import { useT, useLanguage } from "@/lib/i18n/LanguageProvider";
 import { Card } from "@/components/ui/card";
 import { TooltipProvider, InfoTip } from "@/components/ui/tooltip";
+import { cn } from "@/lib/utils/cn";
 import { getCountry } from "@/lib/data/countries";
 import { dialCodeFor } from "@/lib/data/dial-codes";
 import { formatCurrency } from "@/lib/data/currencies";
@@ -180,7 +182,7 @@ function EligibilityCard({ order }: { order: Order }) {
           <TipLabel label={t("order.coPackingCode")} tip={t("order.tdPackingTip")} />
         }
       >
-        {packing ?? t("order.tdNotProvided")}
+        {packing ?? dash}
       </Row>
     </Section>
   );
@@ -286,11 +288,44 @@ function ItemsCard({ order }: { order: Order }) {
   );
   const totalPrice = (order.selectedRate?.perKg ?? 0) * totalCw;
 
+  // Collapse packages so a many-package shipment isn't a long read-only wall.
+  // Auto default: ≤3 open, >3 collapsed to summaries (the totals below never
+  // collapse — they are what the collapsing is for). Read-only, so no
+  // validation/error-expand concern the order form has to handle.
+  const manyPackages = packages.length > 3;
+  const [openIdx, setOpenIdx] = React.useState<Set<number>>(() =>
+    manyPackages ? new Set() : new Set(packages.map((_, i) => i)),
+  );
+  const isOpen = (i: number) => openIdx.has(i);
+  const toggle = (i: number) =>
+    setOpenIdx((prev) => {
+      const next = new Set(prev);
+      next.has(i) ? next.delete(i) : next.add(i);
+      return next;
+    });
+  const anyOpen = packages.some((_, i) => openIdx.has(i));
+  const expandAll = () => setOpenIdx(new Set(packages.map((_, i) => i)));
+  const collapseAll = () => setOpenIdx(new Set());
+
   return (
     <Section title={t("order.modItems")}>
       <Row label={t("order.itCurrency")}>{currency}</Row>
       {packages.length === 0 && (
-        <Row label={t("order.itPackagesHeading")}>{t("order.tdNotProvided")}</Row>
+        <Row label={t("order.itPackagesHeading")}>{dash}</Row>
+      )}
+      {manyPackages && (
+        <div className="flex justify-end py-2">
+          <button
+            type="button"
+            onClick={anyOpen ? collapseAll : expandAll}
+            className="inline-flex items-center gap-1 text-xs text-muted transition-colors hover:text-foreground"
+          >
+            <ChevronDown
+              className={cn("size-3.5 transition-transform", !anyOpen && "-rotate-90")}
+            />
+            {anyOpen ? t("order.itCollapseAll") : t("order.itExpandAll")}
+          </button>
+        </div>
       )}
       {packages.map((p, i) => {
         const dims = {
@@ -306,64 +341,127 @@ function ItemsCard({ order }: { order: Order }) {
           (s, it) => s + (Number(it?.value) || 0) * (Number(it?.quantity) || 0),
           0,
         );
+        const open = isOpen(i);
+        // one-line summary when collapsed (same shape as the order form)
+        const itemCount = items.filter((it) => (it?.name ?? "").trim()).length;
+        const hasAny =
+          dims.weight > 0 ||
+          dims.length > 0 ||
+          dims.width > 0 ||
+          dims.height > 0 ||
+          itemCount > 0;
+        const summary = hasAny
+          ? [
+              dims.weight > 0 && `${formatNumber(dims.weight)}kg`,
+              (dims.length > 0 || dims.width > 0 || dims.height > 0) &&
+                `${dims.length}×${dims.width}×${dims.height}`,
+              itemCount > 0 && `${itemCount} ${t("order.itItemsWord")}`,
+            ]
+              .filter(Boolean)
+              .join(" · ")
+          : t("order.itPackageEmpty");
         return (
           <div key={i} className="py-2">
-            <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-muted">
-              {t("order.itPackageN")} {i + 1}
-            </p>
-            <Row label={t("order.itPackaging")}>{pkgTypeLabel(t, p?.packaging)}</Row>
-            <Row label={t("order.tdDimensions")}>
-              {val(p?.length)} × {val(p?.width)} × {val(p?.height)} cm
-            </Row>
-            <Row label={t("order.tdWeight")}>{val(p?.weight)} kg</Row>
-            <Row
-              label={
-                <TipLabel label={t("order.tdChargeable")} tip={t("pkg.chgTooltip")} />
-              }
+            <button
+              type="button"
+              onClick={() => toggle(i)}
+              aria-expanded={open}
+              className="flex w-full items-center gap-2 text-left"
             >
-              {formatNumber(cw, 1)} kg
-              {basis === "volumetric" && (
-                <span className="ml-1 text-xs text-muted-2">
-                  ({t("order.tdVolumetric")})
-                </span>
+              <ChevronDown
+                className={cn(
+                  "size-4 shrink-0 text-muted transition-transform",
+                  !open && "-rotate-90",
+                )}
+              />
+              <span className="shrink-0 text-xs font-semibold uppercase tracking-wide text-muted">
+                {t("order.itPackageN")} {i + 1}
+              </span>
+              {!open && (
+                <span className="truncate text-xs text-muted-2">{summary}</span>
               )}
-            </Row>
-            <Row label={t("order.tdPhotos")}>
-              {p?.photos && Object.keys(p.photos).length > 0
-                ? t("order.tdUploaded")
-                : t("order.tdMissing")}
-            </Row>
-            {items.length > 0 && (
-              <div className="mt-1.5 overflow-hidden rounded-md border border-border">
-                <div className="grid grid-cols-[1fr_auto_auto_auto] gap-2 bg-surface-2 px-3 py-1.5 text-xs font-medium uppercase tracking-wide text-muted-2">
-                  <span>{t("order.itColDescription")}</span>
-                  <span className="text-right">{t("order.itColQty")}</span>
-                  <span className="text-right">{t("order.itColValue")}</span>
-                  <span className="text-right">{t("order.itColTotal")}</span>
-                </div>
-                {items.map((it, j) => (
-                  <div
-                    key={j}
-                    className="grid grid-cols-[1fr_auto_auto_auto] gap-2 border-t border-border px-3 py-1.5 text-sm"
-                  >
-                    <span className="truncate">{val(it?.name)}</span>
-                    <span className="text-right tabular-nums text-muted">
-                      {val(it?.quantity)}
+            </button>
+            {open && (
+              <div className="mt-1">
+                <Row label={t("order.itPackaging")}>{pkgTypeLabel(t, p?.packaging)}</Row>
+                <Row label={t("order.tdDimensions")}>
+                  {val(p?.length)} × {val(p?.width)} × {val(p?.height)} cm
+                </Row>
+                <Row label={t("order.tdWeight")}>{val(p?.weight)} kg</Row>
+                <Row
+                  label={
+                    <TipLabel label={t("order.tdChargeable")} tip={t("pkg.chgTooltip")} />
+                  }
+                >
+                  {formatNumber(cw, 1)} kg
+                  {basis === "volumetric" && (
+                    <span className="ml-1 text-xs text-muted-2">
+                      ({t("order.tdVolumetric")})
                     </span>
-                    <span className="text-right font-mono tabular-nums text-muted">
-                      {formatCurrency(Number(it?.value) || 0, currency)}
-                    </span>
-                    <span className="text-right font-mono font-medium tabular-nums">
-                      {formatCurrency(
-                        (Number(it?.value) || 0) * (Number(it?.quantity) || 0),
-                        currency,
-                      )}
-                    </span>
+                  )}
+                </Row>
+                <Row label={t("order.tdPhotos")}>
+                  {p?.photos && Object.keys(p.photos).length > 0
+                    ? t("order.tdUploaded")
+                    : t("order.tdMissing")}
+                </Row>
+                {items.length > 0 && (
+                  // a real table: columns align natively across header/body/
+                  // footer (the old per-row grids sized independently and drift
+                  // as soon as a number gets wider); numeric cells never wrap.
+                  <div className="mt-1.5 overflow-hidden rounded-md border border-border">
+                    <table className="w-full border-collapse text-sm">
+                      <thead>
+                        <tr className="bg-surface-2 text-xs uppercase tracking-wide text-muted-2">
+                          <th scope="col" className="px-3 py-1.5 text-left font-medium">
+                            {t("order.itColDescription")}
+                          </th>
+                          <th scope="col" className="px-3 py-1.5 text-right font-medium">
+                            {t("order.itColQty")}
+                          </th>
+                          <th scope="col" className="whitespace-nowrap px-3 py-1.5 text-right font-medium">
+                            {t("order.itColValue")}
+                          </th>
+                          <th scope="col" className="px-3 py-1.5 text-right font-medium">
+                            {t("order.itColTotal")}
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {items.map((it, j) => (
+                          <tr key={j} className="border-t border-border align-top">
+                            <td className="px-3 py-1.5">{val(it?.name)}</td>
+                            <td className="px-3 py-1.5 text-right tabular-nums text-muted">
+                              {val(it?.quantity)}
+                            </td>
+                            <td className="whitespace-nowrap px-3 py-1.5 text-right font-mono tabular-nums text-muted">
+                              {formatCurrency(Number(it?.value) || 0, currency)}
+                            </td>
+                            <td className="whitespace-nowrap px-3 py-1.5 text-right font-mono font-medium tabular-nums">
+                              {formatCurrency(
+                                (Number(it?.value) || 0) * (Number(it?.quantity) || 0),
+                                currency,
+                              )}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                      <tfoot>
+                        <tr className="border-t border-border bg-surface-2">
+                          <td
+                            colSpan={3}
+                            className="px-3 py-1.5 text-right text-xs uppercase tracking-wide text-muted-2"
+                          >
+                            {t("order.itColTotal")}
+                          </td>
+                          <td className="whitespace-nowrap px-3 py-1.5 text-right font-mono text-sm font-medium tabular-nums">
+                            {formatCurrency(pkgValue, currency)}
+                          </td>
+                        </tr>
+                      </tfoot>
+                    </table>
                   </div>
-                ))}
-                <div className="border-t border-border bg-surface-2 px-3 py-1.5 text-right font-mono text-sm font-medium tabular-nums">
-                  {formatCurrency(pkgValue, currency)}
-                </div>
+                )}
               </div>
             )}
           </div>

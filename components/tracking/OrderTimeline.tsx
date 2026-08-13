@@ -1,10 +1,7 @@
 "use client";
 
-import * as React from "react";
-import { Activity } from "lucide-react";
 import type { TimelineEvent, TimelineEventType } from "@/lib/store/useOrderStore";
 import { useLanguage, useT } from "@/lib/i18n/LanguageProvider";
-import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils/cn";
 
 const DOT: Record<TimelineEventType, string> = {
@@ -38,14 +35,13 @@ export function OrderTimeline({ events }: { events: TimelineEvent[] }) {
   });
 
   return (
-    <Card className="p-5 sm:p-6">
-      <h2 className="flex items-center gap-2 font-display text-base font-semibold tracking-tight">
-        <span className="grid size-6 place-items-center rounded-xs bg-brand/10 text-brand-ink">
-          <Activity className="size-3.5" />
-        </span>
+    // de-boxed to match OrderSummary's Section language — the whole reference
+    // zone reads as one document; the dotted timeline itself carries the shape.
+    <section>
+      <h2 className="font-display text-base font-semibold tracking-tight text-foreground">
         {t("order.tdTimeline")}
       </h2>
-      <ol className="mt-4">
+      <ol className="mt-3">
         {sorted.map((ev, i) => (
           <li key={ev.id} className="relative flex gap-3 pb-5 last:pb-0">
             {i < sorted.length - 1 && (
@@ -66,6 +62,6 @@ export function OrderTimeline({ events }: { events: TimelineEvent[] }) {
           </li>
         ))}
       </ol>
-    </Card>
+    </section>
   );
 }
