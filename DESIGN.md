@@ -461,6 +461,35 @@ the active link is a Panel-2 pill instead. Same principle, inverted fill.
 - **`.link-mark`** — inline links: Ink text with a 2px Live Lime underline stroke (hover → Lime
   Dim). Lime marks the link without ever colouring the words.
 
+### De-boxed record (signature)
+The read-only counterpart to the card. A long reference record — the order summary, the FAQ — is
+**not** a stack of Panel-1 cards; it is one continuous document divided by space and hairlines. Each
+section is a display-font **Title** (Ink, 20px `tracking-tight` or 16px on dense records) sitting
+directly on the page over a `divide-y` hairline list of label/value rows — no container, no icon
+chip. Sections are separated by a generous `space-y-10` (40px); rows inside by a 1px hairline. A
+sub-group within a section (Sender / Receiver, Paket N) is a 12px uppercase eyebrow.
+
+**The Label-Ramp Rule.** Once the card is gone, the eyebrow is the only grouping cue, so the label
+tiers step in darkness, not size: section title **Ink** → sub-group eyebrow **Readout Grey** → row
+label **Dim Grey**, with the value in Ink and one step larger than its label. Same-colour parent and
+child labels read as one flat list.
+
+**The De-Box Rule.** Reach for a card when content is a *grouped, liftable unit* (a rate option, a
+choice). Reach for a de-boxed record when content is a *long read you scan* — cards there just add
+walls the eye has to climb. Never nest a card inside the record.
+
+### Line-item table
+Tabular data (the items inside a package) is a real semantic **`<table>`** inside a `rounded-md`
+hairline-fenced container — never a set of per-row `grid` divs. The header sits on Panel 2 with 12px
+uppercase Dim-Grey labels; body rows are hairline-separated; the description column flexes and wraps
+while every **numeric column is right-aligned, Mono `tabular-nums`, and `whitespace-nowrap`** so a
+currency figure never breaks mid-number; a Panel-2 `tfoot` carries the total, aligned under its
+column.
+
+**The Real-Table Rule.** Columns must align across header, body, and footer — which independent
+per-row grids cannot guarantee, because each row sizes its own tracks and they drift apart the moment
+a number grows. If it has columns that must line up, it is a `<table>`.
+
 ## Do's and Don'ts
 
 ### Do:
@@ -486,3 +515,5 @@ the active link is a Panel-2 pill instead. Same principle, inverted fill.
   text contrast in the one theme.
 - **Don't** let a second accent colour compete with Live Lime for "the answer"; status colours
   signal state, they don't take the primary voice.
+- **Don't** wrap a long read-only record in a stack of cards, or rebuild a data table from per-row
+  `grid` divs — use a de-boxed hairline record and a real `<table>` (The De-Box / Real-Table Rules).
