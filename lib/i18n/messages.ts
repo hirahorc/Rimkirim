@@ -120,6 +120,9 @@ const id = {
     maBody:
       "Pindah ke luar negeri untuk kerja, studi, atau menetap? Kirim barang personal maupun household goods dengan penanganan yang pasti.",
   },
+  carrier: {
+    eyebrow: "Dikirim bersama partner kurir tepercaya",
+  },
   why: {
     heading: "Kenapa Rimkirim",
     subtitle: "Ribuan orang mempercayakan kepindahan mereka ke kami.",
@@ -1140,6 +1143,9 @@ const en: Messages = {
     maDir: "Indonesia → Overseas",
     maBody:
       "Relocating abroad for work, study, or to settle down? Ship personal items or household goods with dependable handling.",
+  },
+  carrier: {
+    eyebrow: "Shipped with trusted carrier partners",
   },
   why: {
     heading: "Why Rimkirim",
