@@ -949,6 +949,10 @@ const id = {
     buildOther: "Lainnya",
     // file upload
     upload: "Unggah file",
+    uploadMax: "Maks. 5 MB",
+    viewFile: "Lihat file",
+    previewUnavailable:
+      "Pratinjau hanya tersedia untuk file yang baru kamu unggah di sesi ini.",
     // moving abroad entry
     maComingSoon: "Order Moving Abroad segera hadir",
   },
@@ -1950,6 +1954,10 @@ const en: Messages = {
     buildHouse: "House",
     buildOther: "Others",
     upload: "Upload file",
+    uploadMax: "Max 5 MB",
+    viewFile: "View file",
+    previewUnavailable:
+      "Preview is only available for files you uploaded in this session.",
     maComingSoon: "Moving Abroad order is coming soon",
   },
   ops: {
