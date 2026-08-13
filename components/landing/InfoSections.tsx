@@ -25,7 +25,7 @@ export function ServiceSection() {
       <div className="grid gap-5 md:grid-cols-2">
         <Card className="relative overflow-hidden p-6">
           <div className="relative">
-            <span className="grid size-11 place-items-center rounded-md bg-brand/15 text-brand-ink">
+            <span className="grid size-11 place-items-center rounded-md bg-surface-3 text-foreground">
               <Home className="size-5" />
             </span>
             <h3 className="mt-4 font-display text-xl font-semibold tracking-tight">
@@ -89,11 +89,13 @@ export function WhySection() {
               key={title}
               className="w-[78%] shrink-0 snap-start p-5 sm:w-auto sm:shrink"
             >
-              <span className="grid size-10 place-items-center rounded-md bg-brand/15 text-brand-ink">
+              <span className="grid size-10 place-items-center rounded-md bg-surface-3 text-foreground">
                 <Icon className="size-5" />
               </span>
-              <h3 className="mt-4 font-medium">{title}</h3>
-              <p className="mt-1.5 text-sm text-muted">{body}</p>
+              <h3 className="mt-4 font-display text-lg font-semibold tracking-tight">
+                {title}
+              </h3>
+              <p className="mt-1.5 text-sm leading-relaxed text-muted">{body}</p>
             </Card>
           ))}
         </div>
