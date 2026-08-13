@@ -28,6 +28,15 @@ const dash = "–";
  * anchors the group; the wide gap between sections vs the hairline between
  * rows carries the hierarchy — same language as the FAQ, not stacked cards.
  */
+/** The one section-title style, shared so every section head reads identically. */
+function SectionTitle({ children }: { children: React.ReactNode }) {
+  return (
+    <h2 className="font-display text-base font-semibold tracking-tight text-foreground">
+      {children}
+    </h2>
+  );
+}
+
 function Section({
   title,
   children,
@@ -37,11 +46,32 @@ function Section({
 }) {
   return (
     <section>
-      <h2 className="font-display text-base font-semibold tracking-tight text-foreground">
-        {title}
-      </h2>
+      <SectionTitle>{title}</SectionTitle>
       <div className="mt-3 divide-y divide-border">{children}</div>
     </section>
+  );
+}
+
+/**
+ * A named group *within* a section (Sender / Receiver / Owner). The grouping is
+ * carried by the eyebrow plus the space above it — the rows inside keep the exact
+ * same hairline rhythm as every flat section, so the whole record reads as one
+ * consistent ledger instead of Customer Info collapsing into denser blocks.
+ */
+function SubGroup({
+  label,
+  children,
+}: {
+  label: React.ReactNode;
+  children: React.ReactNode;
+}) {
+  return (
+    <div>
+      <p className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-muted">
+        {label}
+      </p>
+      <div className="divide-y divide-border">{children}</div>
+    </div>
   );
 }
 
@@ -55,7 +85,9 @@ function Row({
   return (
     <div className="flex items-start justify-between gap-4 py-2">
       <span className="shrink-0 text-xs text-muted-2">{label}</span>
-      <span className="text-right text-sm">{children}</span>
+      {/* tabular-nums here aligns every numeric value down the right column —
+          dims, weights, dates, phone digits — and is inert on prose values. */}
+      <span className="text-right text-sm tabular-nums">{children}</span>
     </div>
   );
 }
@@ -182,7 +214,7 @@ function EligibilityCard({ order }: { order: Order }) {
           <TipLabel label={t("order.coPackingCode")} tip={t("order.tdPackingTip")} />
         }
       >
-        {packing ?? dash}
+        {packing ? <span className="font-mono">{packing}</span> : dash}
       </Row>
     </Section>
   );
@@ -221,38 +253,35 @@ function CustomerCard({ order }: { order: Order }) {
       ? `${dialCodeFor(owner.phoneDestinationCountry)} ${owner.phoneDestination}`
       : null;
 
+  // Three peer parties, each a real sub-group: eyebrow + a hairline row list,
+  // separated by space rather than a single divider, so the groups stay distinct
+  // while every row keeps the same ledger rhythm as the rest of the record.
   return (
-    <Section title={t("order.modCustomer")}>
-      <div className="py-2">
-        <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-muted">
-          {t("order.ciSectionSender")}
-        </p>
-        <PartyRows party={data?.sender} />
+    <section>
+      <SectionTitle>{t("order.modCustomer")}</SectionTitle>
+      <div className="mt-3 space-y-6">
+        <SubGroup label={t("order.ciSectionSender")}>
+          <PartyRows party={data?.sender} />
+        </SubGroup>
+        <SubGroup label={t("order.ciSectionReceiver")}>
+          <PartyRows party={data?.receiver} />
+        </SubGroup>
+        <SubGroup label={t("order.ciSectionOwner")}>
+          <Row label={t("order.ciFullName")}>{val(data?.owner?.fullName)}</Row>
+          {/* the owner's two phones + email are optional — hide when unfilled
+              rather than stacking dashes */}
+          {ownerPhoneOrigin && (
+            <Row label={t("order.ciPhoneOrigin")}>{ownerPhoneOrigin}</Row>
+          )}
+          {ownerPhoneDest && (
+            <Row label={t("order.ciPhoneDestination")}>{ownerPhoneDest}</Row>
+          )}
+          {data?.owner?.email && (
+            <Row label={t("order.ciEmail")}>{data.owner.email}</Row>
+          )}
+        </SubGroup>
       </div>
-      <div className="py-2">
-        <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-muted">
-          {t("order.ciSectionReceiver")}
-        </p>
-        <PartyRows party={data?.receiver} />
-      </div>
-      <div className="py-2">
-        <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-muted">
-          {t("order.ciSectionOwner")}
-        </p>
-        <Row label={t("order.ciFullName")}>{val(data?.owner?.fullName)}</Row>
-        {/* the owner's two phones + email are optional — hide when unfilled
-            rather than stacking dashes */}
-        {ownerPhoneOrigin && (
-          <Row label={t("order.ciPhoneOrigin")}>{ownerPhoneOrigin}</Row>
-        )}
-        {ownerPhoneDest && (
-          <Row label={t("order.ciPhoneDestination")}>{ownerPhoneDest}</Row>
-        )}
-        {data?.owner?.email && (
-          <Row label={t("order.ciEmail")}>{data.owner.email}</Row>
-        )}
-      </div>
-    </Section>
+    </section>
   );
 }
 
@@ -471,10 +500,10 @@ function ItemsCard({ order }: { order: Order }) {
         <>
           <div className="py-2">
             <Row label={t("order.itTotalCw")}>
-              {formatNumber(totalCw, 1)} kg
+              <span className="font-medium">{formatNumber(totalCw, 1)} kg</span>
             </Row>
             <Row label={t("order.itTotalValue")}>
-              <span className="font-mono tabular-nums">
+              <span className="font-mono font-medium tabular-nums">
                 {formatCurrency(totalValue, currency)}
               </span>
             </Row>
@@ -482,7 +511,7 @@ function ItemsCard({ order }: { order: Order }) {
           {totalPrice > 0 && (
             <div className="py-2">
               <Row label={t("order.itTotalPrice")}>
-                <span className="font-mono tabular-nums">
+                <span className="font-mono font-medium tabular-nums">
                   {formatIDR(totalPrice)}
                 </span>
               </Row>
@@ -519,30 +548,37 @@ function ComplianceCard({ order }: { order: Order }) {
     .map((key) => ({ key, label: docLabelKey(key) }))
     .filter((e) => e.label);
 
+  // The fixed doc checklist is the section's primary hairline row list; the
+  // free-form "other docs" is a real sub-group beneath it — same eyebrow + spaced
+  // treatment as Customer Info, so no section mixes two grouping models.
   return (
-    <Section title={t("order.modCompliance")}>
-      {entries.map(({ key, label }) => (
-        <Row key={key} label={t(label!)}>
-          {docs[key] ? (
-            <span className="font-mono text-xs text-muted">{docs[key]}</span>
-          ) : (
-            <span className="text-muted-2">{t("order.tdMissing")}</span>
-          )}
-        </Row>
-      ))}
-      {(data?.otherDocs ?? []).length > 0 && (
-        <div className="py-2">
-          <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-muted">
-            {t("order.coOtherDocs")}
-          </p>
-          {(data?.otherDocs ?? []).map((d, i) => (
-            <Row key={i} label={val(d?.name)}>
-              <span className="font-mono text-xs text-muted">{val(d?.file)}</span>
+    <section>
+      <SectionTitle>{t("order.modCompliance")}</SectionTitle>
+      <div className="mt-3">
+        <div className="divide-y divide-border">
+          {entries.map(({ key, label }) => (
+            <Row key={key} label={t(label!)}>
+              {docs[key] ? (
+                <span className="font-mono text-xs text-muted">{docs[key]}</span>
+              ) : (
+                <span className="text-muted-2">{t("order.tdMissing")}</span>
+              )}
             </Row>
           ))}
         </div>
-      )}
-    </Section>
+        {(data?.otherDocs ?? []).length > 0 && (
+          <div className="mt-6">
+            <SubGroup label={t("order.coOtherDocs")}>
+              {(data?.otherDocs ?? []).map((d, i) => (
+                <Row key={i} label={val(d?.name)}>
+                  <span className="font-mono text-xs text-muted">{val(d?.file)}</span>
+                </Row>
+              ))}
+            </SubGroup>
+          </div>
+        )}
+      </div>
+    </section>
   );
 }
 
