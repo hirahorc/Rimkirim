@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { useRouter } from "next/navigation";
-import { Loader2, PackageX, Info } from "lucide-react";
+import { Loader2, PackageX, Info, ArrowUpRight } from "lucide-react";
 import { useCalculatorStore, useStoreHydrated } from "@/lib/store/useCalculatorStore";
 import { useT } from "@/lib/i18n/LanguageProvider";
 import { calculateQuotes, type QuoteInput } from "@/lib/pricing/quote";
@@ -135,8 +135,9 @@ export function CheckRatesClient() {
             <span>
               {t("rates.advanceCaveat")}{" "}
               <SurchargeInfoDialog>
-                <button type="button" className="link-mark">
+                <button type="button" className="link-mark inline-flex items-center gap-0.5">
                   {t("rateCard.lihatRincian")}
+                  <ArrowUpRight className="size-3.5" aria-hidden />
                 </button>
               </SurchargeInfoDialog>
             </span>

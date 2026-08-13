@@ -19,6 +19,7 @@ import { CarrierMark } from "./CarrierMark";
 import { formatIDR } from "@/lib/utils/currency";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { RouteArrow } from "@/components/ui/route-arrow";
 import { Button } from "@/components/ui/button";
 import { useStartOrder } from "@/components/order/useStartOrder";
 import { useT } from "@/lib/i18n/LanguageProvider";
@@ -30,7 +31,7 @@ function RouteLine({ route }: { route: RouteInfo }) {
     <div className="flex items-center gap-2 text-sm text-muted">
       {route.origin && <Flag code={route.origin.code} size={14} />}
       <span>{route.origin?.name ?? "–"}</span>
-      <span className="text-muted-2">→</span>
+      <RouteArrow />
       {route.destination && <Flag code={route.destination.code} size={14} />}
       <span>{route.destination?.name ?? "–"}</span>
     </div>

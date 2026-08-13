@@ -16,6 +16,7 @@ import { Flag } from "@/components/shared/Flag";
 import { useLanguage, useT } from "@/lib/i18n/LanguageProvider";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { RouteArrow } from "@/components/ui/route-arrow";
 import { OrderStatusBadge } from "./OrderStatusBadge";
 
 /** "Pesanan Saya" — the signed-in user's submitted orders. */
@@ -103,7 +104,7 @@ function OrderCard({ order, locale }: { order: Order; locale: "id" | "en" }) {
           <p className="mt-2 flex items-center gap-1.5 text-sm text-muted">
             <Flag code={order.context?.originCountry} size={13} />
             <span>{origin?.name ?? "–"}</span>
-            <span className="text-muted-2">→</span>
+            <RouteArrow />
             <Flag code={order.context?.destCountry} size={13} />
             <span>{dest?.name ?? "–"}</span>
           </p>

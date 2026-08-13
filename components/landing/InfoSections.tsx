@@ -9,6 +9,7 @@ import {
   Package,
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
+import { RouteArrow } from "@/components/ui/route-arrow";
 import { useT } from "@/lib/i18n/LanguageProvider";
 
 export function ServiceSection() {
@@ -30,7 +31,11 @@ export function ServiceSection() {
             <h3 className="mt-4 font-display text-xl font-semibold tracking-tight">
               {t("service.bfgTitle")}
             </h3>
-            <p className="mt-1 text-sm text-foreground">{t("service.bfgDir")}</p>
+            <p className="mt-1 inline-flex items-center gap-1.5 text-sm text-foreground">
+              {t("service.bfgFrom")}
+              <RouteArrow />
+              {t("service.bfgTo")}
+            </p>
             <p className="mt-3 text-sm text-muted">{t("service.bfgBody")}</p>
           </div>
         </Card>
@@ -41,7 +46,11 @@ export function ServiceSection() {
           <h3 className="mt-4 font-display text-xl font-semibold tracking-tight">
             {t("service.maTitle")}
           </h3>
-          <p className="mt-1 text-sm text-muted">{t("service.maDir")}</p>
+          <p className="mt-1 inline-flex items-center gap-1.5 text-sm text-muted">
+            {t("service.maFrom")}
+            <RouteArrow />
+            {t("service.maTo")}
+          </p>
           <p className="mt-3 text-sm text-muted">{t("service.maBody")}</p>
         </Card>
       </div>

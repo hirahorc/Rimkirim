@@ -22,6 +22,7 @@ import { Flag } from "@/components/shared/Flag";
 import { useLanguage, useT } from "@/lib/i18n/LanguageProvider";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { RouteArrow } from "@/components/ui/route-arrow";
 import { CopyButton } from "./CopyButton";
 import { OrderStatusBadge } from "./OrderStatusBadge";
 import { StatusStepper } from "@/components/tracking/StatusStepper";
@@ -138,7 +139,7 @@ export function OrderDetail({ id }: { id: string }) {
             <span className="flex items-center gap-1.5 text-muted">
               <Flag code={order.context?.originCountry} size={13} />
               {origin?.name ?? "–"}
-              <span className="text-muted-2">→</span>
+              <RouteArrow />
               <Flag code={order.context?.destCountry} size={13} />
               {dest?.name ?? "–"}
             </span>

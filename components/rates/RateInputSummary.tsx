@@ -8,6 +8,7 @@ import { Flag } from "@/components/shared/Flag";
 import { formatNumber } from "@/lib/utils/currency";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { RouteArrow } from "@/components/ui/route-arrow";
 import { useT } from "@/lib/i18n/LanguageProvider";
 
 export function RateInputSummary({
@@ -35,7 +36,7 @@ export function RateInputSummary({
         <span className="flex items-center gap-1.5 text-muted">
           {route.origin && <Flag code={route.origin.code} size={12} />}
           {route.origin?.name ?? "–"}
-          <span className="text-muted-2">→</span>
+          <RouteArrow />
           {route.destination && <Flag code={route.destination.code} size={12} />}
           {route.destination?.name ?? "–"}
         </span>
