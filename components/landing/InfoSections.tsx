@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { RouteArrow } from "@/components/ui/route-arrow";
+import { StackingCards } from "@/components/landing/StackingCards";
 import { useT } from "@/lib/i18n/LanguageProvider";
 
 export function ServiceSection() {
@@ -75,20 +76,16 @@ export function WhySection() {
           </h2>
           <p className="mx-auto mt-3 max-w-xl text-muted">{t("why.subtitle")}</p>
         </div>
-        {/* below sm these become a snapping strip that bleeds to the viewport
-            edge, with the next card peeking so the swipe is discoverable;
-            tabIndex keeps the overflow reachable without a pointer */}
+        {/* mobile: pure-CSS sticky "stacking cards on scroll" (full-bleed).
+            sm and up: the restrained multi-column grid takes over */}
+        <StackingCards items={reasons} />
         <div
-          className="scroll-strip -mx-4 flex snap-x snap-mandatory scroll-px-4 gap-4 overflow-x-auto px-4 pb-1 sm:mx-0 sm:grid sm:grid-cols-2 sm:snap-none sm:overflow-visible sm:px-0 sm:pb-0 lg:grid-cols-4"
-          tabIndex={0}
+          className="hidden gap-4 sm:grid sm:grid-cols-2 lg:grid-cols-4"
           role="group"
           aria-label={t("why.heading")}
         >
           {reasons.map(({ icon: Icon, title, body }) => (
-            <Card
-              key={title}
-              className="w-[78%] shrink-0 snap-start p-5 sm:w-auto sm:shrink"
-            >
+            <Card key={title} className="p-5">
               <span className="grid size-10 place-items-center rounded-md bg-surface-3 text-foreground">
                 <Icon className="size-5" />
               </span>
