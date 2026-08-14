@@ -45,8 +45,8 @@ function Stars({
 }
 
 /**
- * Wrap each `highlights` phrase found in the quote with a lime highlighter
- * mark. Phrases are exact substrings (longest first, so a longer phrase wins
+ * Emphasise each `highlights` phrase found in the quote with a heavier font
+ * weight. Phrases are exact substrings (longest first, so a longer phrase wins
  * over a shorter overlap), so the visible text is byte-for-byte the verbatim
  * quote — only presentation changes.
  */
@@ -59,9 +59,9 @@ function highlightQuote(quote: string, highlights?: string[]) {
   const re = new RegExp(`(${pattern})`, "g");
   return quote.split(re).map((part, i) =>
     highlights.includes(part) ? (
-      <mark key={i} className="mark">
+      <strong key={i} className="font-semibold">
         {part}
-      </mark>
+      </strong>
     ) : (
       part
     ),

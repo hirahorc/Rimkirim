@@ -261,12 +261,10 @@ input[type="date"].date-field::-webkit-calendar-picker-indicator {
   text-decoration-color: var(--brand-dim);
 }
 
-/* The highlighter: the phrases we mark (hero headline + testimonial quotes).
-   Lime is a FILL behind dark ink — never a text colour (on daylight it would
-   be illegible). box-decoration-break keeps the mark intact when the phrase
-   wraps to a second line. */
-.hero-mark,
-.mark {
+/* The highlighter: the one phrase we mark. Lime is a FILL behind dark ink —
+   never a text colour (on daylight it would be illegible). box-decoration-break
+   keeps the mark intact when the phrase wraps to a second line. */
+.hero-mark {
   background: var(--brand-soft);
   color: var(--brand-ink);
   padding: 0 0.14em;
