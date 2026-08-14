@@ -126,11 +126,18 @@ const id = {
     eyebrow: "Dikirim bersama partner kurir tepercaya",
   },
   testimonial: {
-    eyebrow: "Ulasan Google",
+    eyebrow: "Dipercaya pelanggan",
     heading: "Sudah pindah, tanpa drama.",
     ratingScore: "4,9",
     ratingLabel: "dari 5 · Ulasan Google",
-    source: "Google",
+    routeTo: "ke Indonesia",
+    origins: {
+      bristol: "Bristol",
+      adelaide: "Adelaide",
+      czechia: "Ceko",
+      england: "Inggris",
+      newYork: "New York",
+    },
   },
   why: {
     heading: "Kenapa Rimkirim",
@@ -1166,11 +1173,18 @@ const en: Messages = {
     eyebrow: "Shipped with trusted carrier partners",
   },
   testimonial: {
-    eyebrow: "Google reviews",
+    eyebrow: "Trusted by customers",
     heading: "Moved, without the drama.",
     ratingScore: "4.9",
     ratingLabel: "out of 5 · Google reviews",
-    source: "Google",
+    routeTo: "to Indonesia",
+    origins: {
+      bristol: "Bristol",
+      adelaide: "Adelaide",
+      czechia: "Czechia",
+      england: "England",
+      newYork: "New York",
+    },
   },
   why: {
     heading: "Why Rimkirim",

@@ -2,8 +2,6 @@
 
 import { Star } from "lucide-react";
 import { Card } from "@/components/ui/card";
-import { Flag } from "@/components/shared/Flag";
-import { RouteArrow } from "@/components/ui/route-arrow";
 import { cn } from "@/lib/utils/cn";
 import { useT } from "@/lib/i18n/LanguageProvider";
 import { TESTIMONIALS, RATING_SCORE } from "@/lib/data/testimonials";
@@ -81,7 +79,7 @@ export function TestimonialSection() {
         {/* variable-length quotes pack cleanly in CSS columns (masonry) — no
             ragged grid rows, no JS; on a phone it collapses to one column */}
         <div className="mx-auto mt-12 max-w-5xl columns-1 gap-4 sm:columns-2 lg:columns-3">
-          {TESTIMONIALS.map(({ name, rating, quote, route }) => (
+          {TESTIMONIALS.map(({ name, rating, quote, origin }) => (
             <Card
               key={name}
               className="testi-card mb-4 break-inside-avoid p-5 transition-colors hover:border-border-strong"
@@ -105,17 +103,11 @@ export function TestimonialSection() {
                 {quote}
               </blockquote>
 
-              <div className="mt-4 flex items-center justify-between gap-2 text-xs text-muted-2">
-                <span>{t("testimonial.source")}</span>
-                {route && (
-                  <span className="inline-flex items-center gap-1.5">
-                    <Flag code={route.code} size={13} />
-                    <span>{route.label}</span>
-                    <RouteArrow className="size-3" />
-                    <Flag code="ID" size={13} />
-                  </span>
-                )}
-              </div>
+              {origin && (
+                <p className="mt-4 text-xs text-muted-2">
+                  {t(`testimonial.origins.${origin}`)} {t("testimonial.routeTo")}
+                </p>
+              )}
             </Card>
           ))}
         </div>
