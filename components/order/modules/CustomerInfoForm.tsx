@@ -246,6 +246,7 @@ export function CustomerInfoForm() {
               </Button>
             </div>
           </div>
+          <p className="-mt-1 text-sm text-muted">{t("order.ciOwnerHint")}</p>
           <Field label={t("order.ciFullName")} error={errors.owner?.fullName?.message}>
             <Input placeholder={t("order.ciPhName")} {...register("owner.fullName", req)} />
           </Field>
