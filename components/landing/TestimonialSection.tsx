@@ -44,6 +44,30 @@ function Stars({
   );
 }
 
+/**
+ * Wrap each `highlights` phrase found in the quote with a lime highlighter
+ * mark. Phrases are exact substrings (longest first, so a longer phrase wins
+ * over a shorter overlap), so the visible text is byte-for-byte the verbatim
+ * quote — only presentation changes.
+ */
+function highlightQuote(quote: string, highlights?: string[]) {
+  if (!highlights?.length) return quote;
+  const ordered = [...highlights].sort((a, b) => b.length - a.length);
+  const pattern = ordered
+    .map((h) => h.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"))
+    .join("|");
+  const re = new RegExp(`(${pattern})`, "g");
+  return quote.split(re).map((part, i) =>
+    highlights.includes(part) ? (
+      <mark key={i} className="mark">
+        {part}
+      </mark>
+    ) : (
+      part
+    ),
+  );
+}
+
 export function TestimonialSection() {
   const t = useT();
   return (
@@ -76,15 +100,34 @@ export function TestimonialSection() {
           </div>
         </div>
 
-        {/* variable-length quotes pack cleanly in CSS columns (masonry) — no
-            ragged grid rows, no JS; on a phone it collapses to one column */}
-        <div className="mx-auto mt-12 max-w-5xl columns-1 gap-4 sm:columns-2 lg:columns-3">
-          {TESTIMONIALS.map(({ name, rating, quote, origin, affiliation }) => (
+        {/* mobile: a full-bleed swipe carousel — every card stretches to the
+            tallest one (items-stretch), so short reviews carry white space at
+            the bottom; the next card peeks to signal the swipe. sm and up:
+            variable-length quotes pack cleanly in CSS columns (masonry) */}
+        <div
+          className="scroll-strip -mx-4 mt-12 flex snap-x snap-mandatory scroll-px-4 gap-4 overflow-x-auto px-4 pb-1 sm:mx-auto sm:block sm:max-w-5xl sm:columns-2 sm:snap-none sm:overflow-visible sm:px-0 sm:pb-0 lg:columns-3"
+          tabIndex={0}
+          role="group"
+          aria-label={t("testimonial.heading")}
+        >
+          {TESTIMONIALS.map(({ name, quote, origin, affiliation, highlights }) => (
             <Card
               key={name}
-              className="testi-card mb-4 break-inside-avoid p-5 transition-colors hover:border-border-strong"
+              className="testi-card mb-4 flex w-[85%] shrink-0 snap-start break-inside-avoid flex-col p-5 transition-colors hover:border-border-strong sm:w-auto sm:shrink"
             >
-              <div className="flex items-center gap-3">
+              <blockquote className="whitespace-pre-line text-sm leading-relaxed text-foreground">
+                {highlightQuote(quote, highlights)}
+              </blockquote>
+
+              {origin && (
+                <p className="mt-4 text-xs text-muted-2">
+                  {t(`testimonial.origins.${origin}`)} {t("testimonial.routeTo")}
+                </p>
+              )}
+
+              {/* attribution pinned to the card foot (mt-auto) — on the equal-
+                  height mobile cards this leaves open space above it for imagery */}
+              <div className="mt-auto flex items-center gap-3 pt-6">
                 <span
                   aria-hidden
                   className="grid size-10 shrink-0 place-items-center rounded-full bg-surface-3 text-sm font-semibold text-foreground"
@@ -100,19 +143,8 @@ export function TestimonialSection() {
                       {t(`testimonial.affiliations.${affiliation}`)}
                     </p>
                   )}
-                  <Stars value={rating} label={`${rating}/5`} />
                 </div>
               </div>
-
-              <blockquote className="mt-3 whitespace-pre-line text-sm leading-relaxed text-foreground">
-                {quote}
-              </blockquote>
-
-              {origin && (
-                <p className="mt-4 text-xs text-muted-2">
-                  {t(`testimonial.origins.${origin}`)} {t("testimonial.routeTo")}
-                </p>
-              )}
             </Card>
           ))}
         </div>
