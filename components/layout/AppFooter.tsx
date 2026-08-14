@@ -19,6 +19,9 @@ export function AppFooter() {
           <div className="max-w-xs">
             <Logo height={32} />
             <p className="mt-3 text-sm text-muted">{t("footer.tagline")}</p>
+            <address className="mt-4 text-sm not-italic leading-relaxed text-muted-2">
+              {t("footer.address")}
+            </address>
           </div>
           <div className="grid grid-cols-2 gap-8 text-sm sm:grid-cols-3">
             <FooterCol
@@ -62,7 +65,6 @@ export function AppFooter() {
               </Link>
             </div>
           </div>
-          <span className="block">{t("footer.disclaimer")}</span>
         </div>
       </div>
     </footer>

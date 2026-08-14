@@ -138,7 +138,9 @@ const id = {
     r4Body: "Breakdown tarif jelas: base rate, chargeable weight, sampai surcharge.",
   },
   footer: {
-    tagline: "International Shipping Assistant",
+    tagline: "International Moving Assistant",
+    address:
+      "Jl. Jambu Blok FA 5 No. 15, Menteng Bintaro, Bintaro Jaya Sektor 7, South Tangerang, Banten, 15412",
     colLayanan: "Layanan",
     colPerusahaan: "Perusahaan",
     colBantuan: "Bantuan",
@@ -152,7 +154,6 @@ const id = {
     linkFaq: "FAQ",
     linkLacak: "Lacak Kiriman",
     rights: "Semua hak dilindungi.",
-    disclaimer: "Tarif bersifat estimasi & dapat berubah sesuai detail kiriman.",
     legalTerms: "Ketentuan Layanan",
     legalPrivacy: "Kebijakan Privasi",
   },
@@ -1168,7 +1169,9 @@ const en: Messages = {
     r4Body: "A clear rate breakdown: base rate, chargeable weight, down to surcharges.",
   },
   footer: {
-    tagline: "International Shipping Assistant",
+    tagline: "International Moving Assistant",
+    address:
+      "Jl. Jambu Blok FA 5 No. 15, Menteng Bintaro, Bintaro Jaya Sektor 7, South Tangerang, Banten, 15412",
     colLayanan: "Services",
     colPerusahaan: "Company",
     colBantuan: "Help",
@@ -1182,7 +1185,6 @@ const en: Messages = {
     linkFaq: "FAQ",
     linkLacak: "Track Shipment",
     rights: "All rights reserved.",
-    disclaimer: "Rates are estimates & may change based on shipment details.",
     legalTerms: "Terms of Service",
     legalPrivacy: "Privacy Policy",
   },
