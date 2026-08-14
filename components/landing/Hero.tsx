@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { ShieldCheck, Globe2, Sparkles } from "lucide-react";
+import { ShieldCheck, DoorOpen, Truck } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useT } from "@/lib/i18n/LanguageProvider";
 
@@ -63,10 +63,10 @@ export function Hero() {
             <ShieldCheck className="size-4 text-foreground" /> {t("hero.trustClearance")}
           </span>
           <span className="flex items-center gap-1.5">
-            <Globe2 className="size-4 text-foreground" /> {t("hero.trustCountries")}
+            <DoorOpen className="size-4 text-foreground" /> {t("hero.trustDoorToDoor")}
           </span>
           <span className="flex items-center gap-1.5">
-            <Sparkles className="size-4 text-foreground" /> {t("hero.trustInstant")}
+            <Truck className="size-4 text-foreground" /> {t("hero.trustPickup")}
           </span>
         </div>
         </div>

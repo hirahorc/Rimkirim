@@ -105,8 +105,8 @@ const id = {
     subtitle:
       "Rimkirim bantu kamu kirim barang lintas negara: dari luar negeri pulang ke Indonesia, atau dari Indonesia ke seluruh dunia.",
     trustClearance: "Clearance ditangani penuh",
-    trustCountries: "220+ negara",
-    trustInstant: "Estimasi instan",
+    trustDoorToDoor: "Door to door",
+    trustPickup: "Pickup gratis",
   },
   service: {
     heading: "Dua arah, satu tim yang sama",
@@ -1161,8 +1161,8 @@ const en: Messages = {
     subtitle:
       "Rimkirim helps you ship across borders: from overseas back home to Indonesia, or from Indonesia to the rest of the world.",
     trustClearance: "Full clearance handling",
-    trustCountries: "220+ countries",
-    trustInstant: "Instant estimate",
+    trustDoorToDoor: "Door to door",
+    trustPickup: "Free pickup",
   },
   service: {
     heading: "Two directions, one and the same team",
