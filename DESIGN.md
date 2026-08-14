@@ -22,7 +22,7 @@ colors:
 typography:
   display:
     fontFamily: "Space Grotesk, Inter, sans-serif"
-    fontSize: "clamp(2.375rem, 6.5vw, 4.75rem)"
+    fontSize: "clamp(2rem, 7.5vw, 4.75rem)"
     fontWeight: 500
     lineHeight: 1.05
     letterSpacing: "-0.02em"
@@ -227,7 +227,7 @@ instrument readout. The pairing reads competent and calm, not corporate. These t
 unchanged from the previous visual world — the palette moved, the voice did not.
 
 ### Hierarchy
-- **Display** (Space Grotesk 500, `clamp(2.375rem, 6.5vw, 4.75rem)` = 38px -> 76px, line-height
+- **Display** (Space Grotesk 500, `clamp(2rem, 7.5vw, 4.75rem)` = 32px -> 76px, line-height
   1.05, tracking -0.02em): Hero headline only, set as individually rising words. Medium weight, not
   bold: at 76px the lighter cut reads editorial and confident rather than shouty, and it keeps the
   lime highlighter behind it feeling like a mark rather than a block.

@@ -41,22 +41,24 @@ export function Hero() {
       </div>
       <div className="hero-settle relative">
         <div className="reveal-stagger mx-auto max-w-4xl px-4 pt-20 text-center sm:px-6 sm:pt-28">
-        <Badge variant="brand" className="mx-auto mb-6">
+        <Badge variant="brand" className="mx-auto mb-5 sm:mb-6">
           {t("hero.badge")}
         </Badge>
-        {/* display type runs 38px -> 76px; medium weight keeps it editorial
-            rather than shouty at the large end */}
-        <h1 className="hero-headline font-display text-[clamp(2.375rem,6.5vw,4.75rem)] font-medium leading-[1.05] tracking-[-0.02em]">
+        {/* display type runs 32px -> 76px; the 7.5vw slope keeps it fluid across
+            the phone range (the old 38px floor pinned every phone to one heavy
+            size and crowded the margins) while the ceiling holds desktop at 76px.
+            Medium weight keeps it editorial rather than shouty at the large end */}
+        <h1 className="hero-headline font-display text-[clamp(2rem,7.5vw,4.75rem)] font-medium leading-[1.05] tracking-[-0.02em]">
           <Words text={line} startIndex={0} />
           <br />
           <span className="hero-mark">
             <Words text={highlight} startIndex={lineCount} />
           </span>
         </h1>
-        <p className="mx-auto mt-7 max-w-2xl text-lg leading-relaxed text-muted sm:text-xl">
+        <p className="mx-auto mt-5 max-w-2xl text-base leading-relaxed text-muted sm:mt-7 sm:text-xl">
           {t("hero.subtitle")}
         </p>
-        <div className="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-muted-2">
+        <div className="mt-7 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-muted-2 sm:mt-8">
           <span className="flex items-center gap-1.5">
             <ShieldCheck className="size-4 text-foreground" /> {t("hero.trustClearance")}
           </span>
