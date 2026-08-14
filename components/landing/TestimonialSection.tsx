@@ -79,7 +79,7 @@ export function TestimonialSection() {
         {/* variable-length quotes pack cleanly in CSS columns (masonry) — no
             ragged grid rows, no JS; on a phone it collapses to one column */}
         <div className="mx-auto mt-12 max-w-5xl columns-1 gap-4 sm:columns-2 lg:columns-3">
-          {TESTIMONIALS.map(({ name, rating, quote, origin }) => (
+          {TESTIMONIALS.map(({ name, rating, quote, origin, affiliation }) => (
             <Card
               key={name}
               className="testi-card mb-4 break-inside-avoid p-5 transition-colors hover:border-border-strong"
@@ -95,6 +95,11 @@ export function TestimonialSection() {
                   <cite className="block truncate font-medium not-italic text-foreground">
                     {name}
                   </cite>
+                  {affiliation && (
+                    <p className="truncate text-xs text-muted-2">
+                      {t(`testimonial.affiliations.${affiliation}`)}
+                    </p>
+                  )}
                   <Stars value={rating} label={`${rating}/5`} />
                 </div>
               </div>

@@ -136,7 +136,16 @@ const id = {
       adelaide: "Adelaide",
       czechia: "Ceko",
       england: "Inggris",
+      germany: "Jerman",
       newYork: "New York",
+    },
+    affiliations: {
+      bristol: "Alumni University of Bristol",
+      adelaide: "Alumni University of Adelaide",
+      munich: "Alumni Technische Universität München",
+      charles: "Alumni Charles University",
+      manchester: "Alumni University of Manchester",
+      kbri: "KBRI",
     },
   },
   why: {
@@ -1183,7 +1192,16 @@ const en: Messages = {
       adelaide: "Adelaide",
       czechia: "Czechia",
       england: "England",
+      germany: "Germany",
       newYork: "New York",
+    },
+    affiliations: {
+      bristol: "University of Bristol alumnus",
+      adelaide: "University of Adelaide alumnus",
+      munich: "Technical University of Munich alumnus",
+      charles: "Charles University alumnus",
+      manchester: "University of Manchester alumnus",
+      kbri: "KBRI",
     },
   },
   why: {
