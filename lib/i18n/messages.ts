@@ -125,6 +125,13 @@ const id = {
   carrier: {
     eyebrow: "Dikirim bersama partner kurir tepercaya",
   },
+  testimonial: {
+    eyebrow: "Ulasan Google",
+    heading: "Sudah pindah, tanpa drama.",
+    ratingScore: "4,9",
+    ratingLabel: "dari 5 · Ulasan Google",
+    source: "Google",
+  },
   why: {
     heading: "Kenapa Rimkirim",
     subtitle: "Ribuan orang mempercayakan kepindahan mereka ke kami.",
@@ -1157,6 +1164,13 @@ const en: Messages = {
   },
   carrier: {
     eyebrow: "Shipped with trusted carrier partners",
+  },
+  testimonial: {
+    eyebrow: "Google reviews",
+    heading: "Moved, without the drama.",
+    ratingScore: "4.9",
+    ratingLabel: "out of 5 · Google reviews",
+    source: "Google",
   },
   why: {
     heading: "Why Rimkirim",

@@ -373,6 +373,30 @@ input[type="date"].date-field::-webkit-calendar-picker-indicator {
   }
 }
 
+/* Testimonial cards rise into place as they enter the viewport — a per-card
+   view-timeline, so each fades up on its own as you scroll past it. No stagger
+   bookkeeping, no JS. Same @supports + no-preference guards as the hero: an
+   unsupporting browser or reduced-motion user simply gets the static cards. */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    @keyframes testi-rise {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    .testi-card {
+      animation: testi-rise linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 45%;
+    }
+  }
+}
+
 /* Respect users who prefer reduced motion: show everything, no movement. */
 @media (prefers-reduced-motion: reduce) {
   .animate-fade-up,
@@ -381,7 +405,8 @@ input[type="date"].date-field::-webkit-calendar-picker-indicator {
   .reveal-pop,
   .reveal-bg,
   .reveal-stagger > *,
-  .hero-word {
+  .hero-word,
+  .testi-card {
     animation: none !important;
     opacity: 1 !important;
     transform: none !important;

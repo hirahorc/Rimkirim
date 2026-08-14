@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Hero } from "@/components/landing/Hero";
 import { ShipmentCalculator } from "@/components/landing/ShipmentCalculator";
 import { ServiceSection, WhySection } from "@/components/landing/InfoSections";
+import { TestimonialSection } from "@/components/landing/TestimonialSection";
 import { CarrierSection } from "@/components/landing/CarrierSection";
 import { FaqTeaser } from "@/components/landing/FaqTeaser";
 import { CookieConsent } from "@/components/landing/CookieConsent";
@@ -23,6 +24,7 @@ export default function Home() {
       </section>
       <ServiceSection />
       <WhySection />
+      <TestimonialSection />
       <CarrierSection />
       <FaqTeaser />
       <CookieConsent />
