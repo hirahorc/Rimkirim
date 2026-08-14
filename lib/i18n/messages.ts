@@ -103,7 +103,7 @@ const id = {
     titleLine: "Pulang atau pindah,",
     titleHighlight: "tanpa drama.",
     subtitle:
-      "Rimkirim bantu kamu kirim barang lintas negara: dari luar negeri pulang ke Indonesia, atau dari Indonesia ke seluruh dunia. Cek tarifnya sekarang, harga jelas di depan.",
+      "Rimkirim bantu kamu kirim barang lintas negara: dari luar negeri pulang ke Indonesia, atau dari Indonesia ke seluruh dunia.",
     trustClearance: "Clearance ditangani penuh",
     trustCountries: "220+ negara",
     trustInstant: "Estimasi instan",
@@ -1159,7 +1159,7 @@ const en: Messages = {
     titleLine: "Move home or abroad,",
     titleHighlight: "drama-free.",
     subtitle:
-      "Rimkirim helps you ship across borders: from overseas back home to Indonesia, or from Indonesia to the rest of the world. Check your rate now, with pricing clear up front.",
+      "Rimkirim helps you ship across borders: from overseas back home to Indonesia, or from Indonesia to the rest of the world.",
     trustClearance: "Full clearance handling",
     trustCountries: "220+ countries",
     trustInstant: "Instant estimate",
