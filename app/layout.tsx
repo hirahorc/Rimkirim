@@ -4,7 +4,9 @@ import "./globals.css";
 import { AppHeader } from "@/components/layout/AppHeader";
 import { AppFooter } from "@/components/layout/AppFooter";
 import { Toaster } from "@/components/ui/toaster";
+import { EnvBadge } from "@/components/system/EnvBadge";
 import { LanguageProvider } from "@/lib/i18n/LanguageProvider";
+import { IS_PRODUCTION } from "@/lib/env";
 
 const spaceGrotesk = Space_Grotesk({
   variable: "--font-space-grotesk",
@@ -48,6 +50,8 @@ export const metadata: Metadata = {
     description: DESCRIPTION,
     images: ["/rimkirim-logo.png"],
   },
+  // keep staging / preview builds out of search results — only production is indexable
+  robots: IS_PRODUCTION ? undefined : { index: false, follow: false },
 };
 
 export const viewport: Viewport = {
@@ -70,6 +74,7 @@ export default function RootLayout({
           <main className="flex-1">{children}</main>
           <AppFooter />
           <Toaster />
+          <EnvBadge />
         </LanguageProvider>
       </body>
     </html>
