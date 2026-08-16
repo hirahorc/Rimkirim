@@ -93,9 +93,14 @@ export function PickupForm() {
         )}
         className="space-y-4"
       >
-        <Card className="space-y-4 p-5">
-          <div className="flex items-center justify-between gap-2">
-            <h2 className="font-display font-semibold">{t("order.modPickup")}</h2>
+        {/* Details — who the courier meets and where. The page <h1> already
+            says "Pickup Details & Schedule"; these two cards are its two halves,
+            so the section titles name the parts without repeating the whole. */}
+        <Card className="space-y-4 p-5 sm:p-6">
+          <div className="flex flex-wrap items-center justify-between gap-x-2 gap-y-1">
+            <h2 className="font-display text-base font-semibold tracking-tight">
+              {t("order.puSecDetails")}
+            </h2>
             {sender && (
               <Button type="button" variant="ghost" size="sm" onClick={fillFromSender}>
                 <Copy className="size-3.5" /> {t("order.puSameAsSender")}
@@ -203,26 +208,37 @@ export function PickupForm() {
           <Field label={t("order.puNotesCourier")}>
             <Textarea placeholder={t("order.puPhNotes")} {...register("notesCourier")} />
           </Field>
+        </Card>
 
-          <div className="grid gap-4 sm:grid-cols-2">
-            <Field label={t("order.puDate")} error={errors.date?.message}>
+        {/* Schedule — when the courier comes. Split into its own card so the
+            time-window chips get full width and never cram into a half column;
+            the date and the standby stepper cap at max-w-xs so a lone control
+            doesn't stretch across the whole page. */}
+        <Card className="space-y-4 p-5 sm:p-6">
+          <h2 className="font-display text-base font-semibold tracking-tight">
+            {t("order.puSecSchedule")}
+          </h2>
+
+          <Field label={t("order.puDate")} error={errors.date?.message}>
+            <div className="sm:max-w-xs">
               <DateInput {...register("date", req)} />
-            </Field>
-            <Field label={t("order.puTime")} error={errors.time?.message}>
-              <Controller
-                control={control}
-                name="time"
-                rules={req}
-                render={({ field }) => (
-                  <ChipGroup
-                    value={field.value}
-                    onChange={field.onChange}
-                    options={PICKUP_WINDOWS.map((w) => ({ value: w, label: w }))}
-                  />
-                )}
-              />
-            </Field>
-          </div>
+            </div>
+          </Field>
+
+          <Field label={t("order.puTime")} error={errors.time?.message}>
+            <Controller
+              control={control}
+              name="time"
+              rules={req}
+              render={({ field }) => (
+                <ChipGroup
+                  value={field.value}
+                  onChange={field.onChange}
+                  options={PICKUP_WINDOWS.map((w) => ({ value: w, label: w }))}
+                />
+              )}
+            />
+          </Field>
 
           <Field label={t("order.puStandbyLabel")} hint={t("order.puStandbyHint")}>
             <Controller
