@@ -538,7 +538,7 @@ const id = {
     // Phase 3 — module hub
     hubTitle: "Formulir order kamu",
     hubSubtitle:
-      "Isi keempat modul ini. Kamu bisa menyimpan sebagai draft dan melanjutkan kapan saja.",
+      "Isi keempat bagian ini. Kamu bisa menyimpan sebagai draft dan melanjutkan kapan saja.",
     bookingNumberLabel: "Nomor Booking",
     copy: "Salin",
     copied: "Disalin ke clipboard",
@@ -554,7 +554,7 @@ const id = {
     statusInProgress: "Sedang diisi",
     statusComplete: "Selesai",
     statusLocked: "Terkunci",
-    pickupLockedNote: "Selesaikan 3 modul lainnya untuk membuka jadwal pickup.",
+    pickupLockedNote: "Selesaikan 3 bagian lainnya untuk membuka jadwal pickup.",
     packingListTitle: "Packing List",
     packingListPending:
       "Otomatis dibuat setelah Informasi Customer & Barang selesai.",
@@ -562,10 +562,10 @@ const id = {
     generatePdf: "Generate PDF",
     comingSoon: "segera",
     finalCta: "Lanjutkan permintaan order",
-    finalDisabledNote: "Selesaikan semua modul untuk melanjutkan.",
-    hubProgress: "{n} dari {total} modul selesai",
+    finalDisabledNote: "Selesaikan semua bagian untuk melanjutkan.",
+    hubProgress: "{n} dari {total} bagian selesai",
     hubNext: "Lanjut",
-    hubAllDone: "Semua modul lengkap — tinggal satu langkah lagi.",
+    hubAllDone: "Semua bagian lengkap — tinggal satu langkah lagi.",
     moduleSavedToast: "tersimpan",
     baTitle: "Ketentuan & Persetujuan",
     baSubtitle: "Baca dan setujui sebelum booking dibuat.",
@@ -654,7 +654,7 @@ const id = {
     attQuotationReady:
       "Quotation telah diterbitkan. Setujui di halaman order untuk melanjutkan.",
     attRevision:
-      "Tim kami butuh revisi di salah satu modulmu. Lihat detail & tombol perbaiki di bawah.",
+      "Tim kami butuh revisi di salah satu bagian formulirmu. Lihat detail & tombol perbaiki di bawah.",
     attPickupFailed:
       "Pickup pertama gagal. Tim kami akan mengatur ulang penjemputan.",
     attPickupFailCustomer:
@@ -781,10 +781,10 @@ const id = {
     quApprovedToast: "Quotation disetujui. Pickup akan dijadwalkan.",
     // revision flow (revisionModule)
     revTitle: "Revisi Diperlukan",
-    revBody: "Selesaikan modul ini untuk melanjutkan:",
+    revBody: "Selesaikan bagian ini untuk melanjutkan:",
     revCta: "Perbaiki sekarang",
-    revDialogTitle: "Modul yang ingin direvisi",
-    revDialogHint: "Order akan kembali ke Review sampai modul diperbaiki.",
+    revDialogTitle: "Bagian yang ingin direvisi",
+    revDialogHint: "Order akan kembali ke Review sampai bagian itu diperbaiki.",
     revRequested: "Revisi diminta. Order kembali ke Review.",
     revNote: "Catatan dari tim",
     evQuotationApproved: "Quotation disetujui. Pickup dijadwalkan.",
@@ -1081,7 +1081,7 @@ const id = {
     clAwaitTax: "Menunggu customer membayar pajak (SPTNP).",
     clNpdRoundLabel: "NPD ke-",
     revise: "Minta revisi dokumen",
-    reviseModule: "Modul yang perlu diperbaiki",
+    reviseModule: "Bagian yang perlu diperbaiki",
     reviseNotePlaceholder: "Catatan untuk customer (opsional)",
     reviseCta: "Minta revisi",
     reviseToast: "Permintaan revisi dikirim ke customer.",
@@ -1624,7 +1624,7 @@ const en: Messages = {
     clPassengerReq1: "Flight Ticket / Boarding Pass",
     hubTitle: "Your order form",
     hubSubtitle:
-      "Complete all four modules. You can save as a draft and continue anytime.",
+      "Complete all four sections. You can save as a draft and continue anytime.",
     bookingNumberLabel: "Booking Number",
     copy: "Copy",
     copied: "Copied to clipboard",
@@ -1640,7 +1640,7 @@ const en: Messages = {
     statusInProgress: "In progress",
     statusComplete: "Complete",
     statusLocked: "Locked",
-    pickupLockedNote: "Complete the other 3 modules to unlock pickup scheduling.",
+    pickupLockedNote: "Complete the other 3 sections to unlock pickup scheduling.",
     packingListTitle: "Packing List",
     packingListPending:
       "Auto-created once Customer Information & Items are complete.",
@@ -1648,10 +1648,10 @@ const en: Messages = {
     generatePdf: "Generate PDF",
     comingSoon: "soon",
     finalCta: "Continue order request",
-    finalDisabledNote: "Complete all modules to continue.",
-    hubProgress: "{n} of {total} modules complete",
+    finalDisabledNote: "Complete all sections to continue.",
+    hubProgress: "{n} of {total} sections complete",
     hubNext: "Continue",
-    hubAllDone: "All modules complete — just one step left.",
+    hubAllDone: "All sections complete — just one step left.",
     moduleSavedToast: "saved",
     baTitle: "Terms & Agreement",
     baSubtitle: "Read and agree before your booking is created.",
@@ -1738,7 +1738,7 @@ const en: Messages = {
     attQuotationReady:
       "A quotation has been issued. Approve it on the order page to continue.",
     attRevision:
-      "Our team needs a revision in one of your modules. See the details & the Fix button below.",
+      "Our team needs a revision in one of your form sections. See the details & the Fix button below.",
     attPickupFailed:
       "The first pickup failed. Our team will reschedule the pickup.",
     attPickupFailCustomer:
@@ -1865,10 +1865,10 @@ const en: Messages = {
     quApprovedToast: "Quotation approved. Pickup will be scheduled.",
     // revision flow (revisionModule)
     revTitle: "Revision Required",
-    revBody: "Complete this module to continue:",
+    revBody: "Complete this section to continue:",
     revCta: "Fix now",
-    revDialogTitle: "Module to revise",
-    revDialogHint: "The order returns to Review until the module is fixed.",
+    revDialogTitle: "Section to revise",
+    revDialogHint: "The order returns to Review until the section is fixed.",
     revRequested: "Revision requested. Order back to Review.",
     revNote: "Note from the team",
     evQuotationApproved: "Quotation approved. Pickup scheduled.",
@@ -2155,7 +2155,7 @@ const en: Messages = {
     clAwaitTax: "Awaiting the customer's tax payment (SPTNP).",
     clNpdRoundLabel: "NPD #",
     revise: "Request a document revision",
-    reviseModule: "Module to fix",
+    reviseModule: "Section to fix",
     reviseNotePlaceholder: "Note for the customer (optional)",
     reviseCta: "Request revision",
     reviseToast: "Revision request sent to the customer.",

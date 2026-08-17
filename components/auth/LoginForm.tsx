@@ -51,7 +51,6 @@ export function LoginForm({ next }: { next: string | null }) {
         <RateReceipt
           context={pendingStart.context}
           rate={pendingStart.rate}
-          variant="card"
           className="mb-5"
         />
       )}
