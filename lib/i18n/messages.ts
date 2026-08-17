@@ -919,7 +919,7 @@ const id = {
     ciSectionReceiver: "Penerima",
     ciSectionOwner: "Pemilik kiriman",
     ciOwnerHint:
-      "Orang yang memiliki barang yang dikirim — sering kali sama dengan pengirim atau penerima. Kedua nomor kami pakai untuk menghubungi di kedua negara.",
+      "Orang yang memiliki barang yang dikirim, sering kali sama dengan pengirim atau penerima. Kedua nomor kami pakai untuk menghubungi di kedua negara.",
     ciCountry: "Negara",
     ciFullAddress: "Alamat lengkap",
     ciPhoneOrigin: "Nomor telepon (negara asal)",
@@ -1998,7 +1998,7 @@ const en: Messages = {
     ciSectionReceiver: "Receiver",
     ciSectionOwner: "Shipment owner",
     ciOwnerHint:
-      "The person who owns the goods being shipped — often the same as the sender or receiver. We use both numbers to reach them on either end.",
+      "The person who owns the goods being shipped, often the same as the sender or receiver. We use both numbers to reach them on either end.",
     ciCountry: "Country",
     ciFullAddress: "Full address",
     ciPhoneOrigin: "Phone number (origin)",
