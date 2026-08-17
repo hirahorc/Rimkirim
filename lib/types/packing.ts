@@ -74,6 +74,8 @@ export interface PackingList {
   createdAt: number;
   updatedAt: number;
   data: PackingListData;
+  /** present when the list is derived from an order (read-only here) */
+  source?: { orderId: string; bookingNumber: string | null };
 }
 
 export const emptyParty: Party = {

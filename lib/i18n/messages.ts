@@ -1147,6 +1147,9 @@ const id = {
     notFound: "Packing list tidak ditemukan",
     notFoundBody: "Mungkin sudah dihapus, atau tautannya bukan milik akun ini.",
     packagesShort: "paket",
+    fromOrder: "Dari pesanan",
+    fromOrderNote: "Dibuat otomatis dari formulir pesananmu. Ubah lewat pesanannya.",
+    viewOrder: "Lihat pesanan",
     updatedAt: "Diubah",
     prefilledToast: "Data packing list dipakai",
     prefilledToastBody:
@@ -2274,6 +2277,9 @@ const en: Messages = {
     notFound: "Packing list not found",
     notFoundBody: "It may have been deleted, or the link belongs to another account.",
     packagesShort: "pkg",
+    fromOrder: "From order",
+    fromOrderNote: "Built automatically from your order form. Edit it through the order.",
+    viewOrder: "View order",
     updatedAt: "Updated",
     prefilledToast: "Packing list data applied",
     prefilledToastBody:

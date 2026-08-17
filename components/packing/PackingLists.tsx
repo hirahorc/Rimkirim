@@ -12,7 +12,11 @@ import {
   Download,
   PenLine,
   Trash2,
+  Package,
+  ArrowUpRight,
 } from "lucide-react";
+import { useMyOrders, useOrderHydrated } from "@/lib/store/useOrderStore";
+import { packingListFromOrder } from "@/lib/order/order-packing";
 import {
   useMyPackingLists,
   usePackingHydrated,
@@ -40,7 +44,18 @@ export function PackingLists() {
   const hydrated = usePackingHydrated();
   const authHydrated = useAuthHydrated();
   const user = useCurrentUser();
-  const lists = useMyPackingLists(user?.email ?? null);
+  const ownLists = useMyPackingLists(user?.email ?? null);
+  const orderHydrated = useOrderHydrated();
+  const orders = useMyOrders(user?.email ?? null);
+  // lists an order built on its own sit next to the standalone ones; an order
+  // that reused a standalone code isn't shown twice
+  const lists = React.useMemo(() => {
+    const ownCodes = new Set(ownLists.map((l) => l.code));
+    const fromOrders = orders
+      .map(packingListFromOrder)
+      .filter((l): l is PackingList => l !== null && !ownCodes.has(l.code));
+    return [...ownLists, ...fromOrders].sort((a, b) => b.updatedAt - a.updatedAt);
+  }, [ownLists, orders]);
   const remove = usePackingListStore((s) => s.remove);
   const [pendingDelete, setPendingDelete] = React.useState<PackingList | null>(null);
 
@@ -49,7 +64,7 @@ export function PackingLists() {
     if (!user) router.replace("/masuk?next=/packing-list");
   }, [hydrated, authHydrated, user, router]);
 
-  if (!hydrated || !authHydrated) {
+  if (!hydrated || !authHydrated || !orderHydrated) {
     return (
       <div className="flex min-h-[50vh] items-center justify-center text-muted">
         <Loader2 className="size-5 animate-spin" />
@@ -142,9 +157,17 @@ function PackingListCard({
     <Card className="p-4 transition-colors hover:border-border-strong">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between sm:gap-3">
         <div className="min-w-0 flex-1">
-          <p className="flex items-center gap-1.5 font-mono text-sm font-semibold text-foreground">
+          <p className="flex flex-wrap items-center gap-1.5 font-mono text-sm font-semibold text-foreground">
             {pl.code}
             <CopyButton value={pl.code} />
+            {pl.source && (
+              <span className="inline-flex items-center gap-1 rounded-full bg-surface-2 px-2 py-0.5 font-sans text-xs font-medium text-muted">
+                <Package className="size-3" /> {t("pl.fromOrder")}
+                {pl.source.bookingNumber && (
+                  <span className="font-mono">{pl.source.bookingNumber}</span>
+                )}
+              </span>
+            )}
           </p>
           <p className="mt-2 flex items-center gap-1.5 text-sm text-muted">
             <Flag code={pl.data.sender.country} size={13} />
@@ -173,19 +196,32 @@ function PackingListCard({
           {busy ? <Loader2 className="size-3.5 animate-spin" /> : <Download className="size-3.5" />}
           {busy ? t("pl.downloading") : t("pl.download")}
         </Button>
-        <Button asChild size="sm" variant="ghost">
-          <Link href={`/packing-list/${pl.id}`}>
-            <PenLine className="size-3.5" /> {t("pl.edit")}
-          </Link>
-        </Button>
-        <Button
-          size="sm"
-          variant="ghost"
-          className="ml-auto hover:text-danger"
-          onClick={onDelete}
-        >
-          <Trash2 className="size-3.5" /> {t("pl.delete")}
-        </Button>
+        {pl.source ? (
+          <>
+            <Button asChild size="sm" variant="ghost">
+              <Link href={`/pesanan/${pl.source.orderId}`}>
+                <ArrowUpRight className="size-3.5" /> {t("pl.viewOrder")}
+              </Link>
+            </Button>
+            <span className="ml-auto text-xs text-muted-2">{t("pl.fromOrderNote")}</span>
+          </>
+        ) : (
+          <>
+            <Button asChild size="sm" variant="ghost">
+              <Link href={`/packing-list/${pl.id}`}>
+                <PenLine className="size-3.5" /> {t("pl.edit")}
+              </Link>
+            </Button>
+            <Button
+              size="sm"
+              variant="ghost"
+              className="ml-auto hover:text-danger"
+              onClick={onDelete}
+            >
+              <Trash2 className="size-3.5" /> {t("pl.delete")}
+            </Button>
+          </>
+        )}
       </div>
     </Card>
   );
