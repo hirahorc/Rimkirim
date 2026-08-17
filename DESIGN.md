@@ -202,7 +202,8 @@ white carries far more visual weight than the same fill on near-black.
 
 **The Marker Rule.** Lime is a **fill behind dark ink**, never ink itself. Emphasis in text is
 carried by weight and Ink; when a phrase must be singled out it gets the highlighter treatment
-(`.hero-mark`) or a lime underline stroke (`.link-mark`). This is the load-bearing rule of the
+(`.hero-mark`). Inline links are the one exception to Ink-only text: they are conventional
+link blue (`.link-mark`) so they read as links at a glance. This is the load-bearing rule of the
 light system.
 
 **The No-Gradient Rule.** Surfaces are solid fills. No gradient backgrounds, no ambient glows, no
@@ -466,8 +467,8 @@ the active link is a Panel-2 pill instead. Same principle, inverted fill.
 - **`.hero-mark`** — the highlighter: Soft Lime fill behind Ink-on-Lime, `0.12em` radius, with
   `box-decoration-break: clone` so the mark survives a line wrap. Reserved for the single hero
   phrase.
-- **`.link-mark`** — inline links: Ink text with a 2px Live Lime underline stroke (hover → Lime
-  Dim). Lime marks the link without ever colouring the words.
+- **`.link-mark`** — inline links: conventional link blue (`--info`) with a soft underline that
+  darkens on hover. Lime is never used to mark a link.
 
 ### De-boxed record (signature)
 The read-only counterpart to the card. A long reference record — the order summary, the FAQ — is

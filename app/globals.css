@@ -292,17 +292,19 @@ input[type="date"].date-field::-webkit-calendar-picker-indicator {
 
 /* Inline text links. Lime can't be a text colour on daylight, so the accent
    moves to the underline stroke: dark ink, lime marker beneath. */
+/* Inline links read as links: conventional blue with an underline. */
 .link-mark {
-  color: var(--foreground);
+  color: var(--info);
   font-weight: 500;
   text-decoration-line: underline;
-  text-decoration-color: var(--brand);
-  text-decoration-thickness: 2px;
+  text-decoration-color: color-mix(in srgb, var(--info) 45%, transparent);
   text-underline-offset: 3px;
-  transition: text-decoration-color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: color 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+    text-decoration-color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .link-mark:hover {
-  text-decoration-color: var(--brand-dim);
+  color: color-mix(in srgb, var(--info) 80%, black);
+  text-decoration-color: currentColor;
 }
 
 /* The highlighter: the one phrase we mark. Lime is a FILL behind dark ink —
