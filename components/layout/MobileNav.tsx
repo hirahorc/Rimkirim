@@ -15,8 +15,9 @@ import { cn } from "@/lib/utils/cn";
 const NAV_LINKS = [
   { href: "/articles", key: "nav.article" },
   { href: "/about", key: "nav.about" },
-  { href: "/expat-relocation", key: "nav.expat" },
   { href: "/faq", key: "nav.faq" },
+  // always last: rightmost on desktop, bottom of the sheet on mobile
+  { href: "/expat-relocation", key: "nav.expat", accent: true },
 ] as const;
 
 /** Mobile-only hamburger that opens a right slide-over sheet with the nav. */
@@ -56,16 +57,20 @@ export function MobileNav() {
             {NAV_LINKS.map((n) => {
               const active =
                 pathname === n.href || pathname.startsWith(`${n.href}/`);
+              const accent = "accent" in n && n.accent;
               return (
                 <Link
                   key={n.href}
                   href={n.href}
                   onClick={close}
+                  data-label={accent ? t(n.key) : undefined}
                   className={cn(
                     "flex min-h-[48px] items-center rounded-full px-4 text-base transition-colors",
-                    active
-                      ? "bg-surface-2 font-medium text-foreground"
-                      : "text-muted hover:bg-surface-2 hover:text-foreground",
+                    accent
+                      ? "nav-expat font-medium"
+                      : active
+                        ? "bg-surface-2 font-medium text-foreground"
+                        : "text-muted hover:bg-surface-2 hover:text-foreground",
                   )}
                 >
                   {t(n.key)}
