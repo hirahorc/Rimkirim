@@ -92,6 +92,12 @@ function Row({
   );
 }
 
+/** A group/section with nothing filled in yet: one muted line, not a stack of dashes. */
+function EmptyLine() {
+  const t = useT();
+  return <p className="py-2 text-sm text-muted-2">{t("order.tdNotFilled")}</p>;
+}
+
 /** Empty-string/null/undefined → em-dash, otherwise the string form. */
 function val(x: unknown): string {
   return x === undefined || x === null || x === "" ? dash : String(x);
@@ -177,37 +183,34 @@ function EligibilityCard({ order }: { order: Order }) {
   const t = useT();
   const a = order.answers;
   const isMa = order.context?.service === "moving-abroad";
-  const yesNo = (b?: boolean) =>
-    b === true ? t("order.yes") : b === false ? t("order.no") : dash;
   const packing = effectivePackingCode({
     answers: a,
     generatedPackingCode: order.generatedPackingCode,
   });
 
+  // Condensed to the outcomes that matter as a record — the clearance path and the
+  // packing code. The gating yes/no answers (personal goods, lived-long, SKP,
+  // arrived) are resolved the moment the order has a path, so they'd only be noise.
+  const citizenship =
+    a.citizenship === "indonesian"
+      ? t("order.indonesian")
+      : a.citizenship === "foreigner"
+        ? t("order.foreigner")
+        : null;
+  const clearancePath =
+    order.clearance === "personal"
+      ? t("order.clPersonalTitle")
+      : order.clearance === "passenger"
+        ? t("order.clPassengerTitle")
+        : null;
+
   return (
     <Section title={t("order.tdEligibility")}>
-      <Row label={t("order.tdShippingPersonal")}>{yesNo(a.shippingPersonal)}</Row>
-      {isMa ? (
-        <Row label={t("order.tdArrived")}>{yesNo(a.arrivedAtDestination)}</Row>
-      ) : (
-        <>
-          <Row label={t("order.tdCitizenship")}>
-            {a.citizenship === "indonesian"
-              ? t("order.indonesian")
-              : a.citizenship === "foreigner"
-                ? t("order.foreigner")
-                : dash}
-          </Row>
-          <Row label={t("order.tdLivedLong")}>{yesNo(a.livedLongEnough)}</Row>
-          <Row label={t("order.tdCanSkp")}>{yesNo(a.canApplySKP)}</Row>
-          <Row label={t("order.stepClearance")}>
-            {order.clearance === "personal"
-              ? t("order.clPersonalTitle")
-              : order.clearance === "passenger"
-                ? t("order.clPassengerTitle")
-                : dash}
-          </Row>
-        </>
+      {!isMa && citizenship && (
+        <Row label={t("order.tdCitizenship")}>{citizenship}</Row>
+      )}
+      {!isMa && clearancePath && (
+        <Row label={t("order.stepClearance")}>{clearancePath}</Row>
       )}
       <Row
         label={
@@ -222,18 +225,29 @@ function EligibilityCard({ order }: { order: Order }) {
 
 function PartyRows({ party }: { party: Party | undefined }) {
   const t = useT();
-  const phone = party?.phoneCountry && party?.phone
-    ? `${dialCodeFor(party.phoneCountry)} ${party.phone}`
-    : dash;
+  const phone =
+    party?.phoneCountry && party?.phone
+      ? `${dialCodeFor(party.phoneCountry)} ${party.phone}`
+      : null;
+  const country = party?.country
+    ? (getCountry(party.country)?.name ?? party.country)
+    : null;
+  // only rows with a real value — a half-empty party shouldn't stack dashes
+  const rows: [string, React.ReactNode][] = [];
+  if (party?.fullName) rows.push([t("order.ciFullName"), party.fullName]);
+  if (country) rows.push([t("order.ciCountry"), country]);
+  if (party?.address) rows.push([t("order.ciFullAddress"), party.address]);
+  if (party?.email) rows.push([t("order.ciEmail"), party.email]);
+  if (phone) rows.push([t("order.ciPhone"), phone]);
+
+  if (rows.length === 0) return <EmptyLine />;
   return (
     <>
-      <Row label={t("order.ciFullName")}>{val(party?.fullName)}</Row>
-      <Row label={t("order.ciCountry")}>
-        {party?.country ? (getCountry(party.country)?.name ?? party.country) : dash}
-      </Row>
-      <Row label={t("order.ciFullAddress")}>{val(party?.address)}</Row>
-      <Row label={t("order.ciEmail")}>{val(party?.email)}</Row>
-      <Row label={t("order.ciPhone")}>{phone}</Row>
+      {rows.map(([label, value]) => (
+        <Row key={label} label={label}>
+          {value}
+        </Row>
+      ))}
     </>
   );
 }
@@ -267,17 +281,23 @@ function CustomerCard({ order }: { order: Order }) {
           <PartyRows party={data?.receiver} />
         </SubGroup>
         <SubGroup label={t("order.ciSectionOwner")}>
-          <Row label={t("order.ciFullName")}>{val(data?.owner?.fullName)}</Row>
-          {/* the owner's two phones + email are optional — hide when unfilled
-              rather than stacking dashes */}
-          {ownerPhoneOrigin && (
-            <Row label={t("order.ciPhoneOrigin")}>{ownerPhoneOrigin}</Row>
-          )}
-          {ownerPhoneDest && (
-            <Row label={t("order.ciPhoneDestination")}>{ownerPhoneDest}</Row>
-          )}
-          {data?.owner?.email && (
-            <Row label={t("order.ciEmail")}>{data.owner.email}</Row>
+          {/* every owner field is optional — show only what's filled, and a single
+              muted line when the whole group is empty, never a stack of dashes */}
+          {!owner?.fullName && !ownerPhoneOrigin && !ownerPhoneDest && !owner?.email ? (
+            <EmptyLine />
+          ) : (
+            <>
+              {owner?.fullName && (
+                <Row label={t("order.ciFullName")}>{owner.fullName}</Row>
+              )}
+              {ownerPhoneOrigin && (
+                <Row label={t("order.ciPhoneOrigin")}>{ownerPhoneOrigin}</Row>
+              )}
+              {ownerPhoneDest && (
+                <Row label={t("order.ciPhoneDestination")}>{ownerPhoneDest}</Row>
+              )}
+              {owner?.email && <Row label={t("order.ciEmail")}>{owner.email}</Row>}
+            </>
           )}
         </SubGroup>
       </div>
@@ -497,27 +517,30 @@ function ItemsCard({ order }: { order: Order }) {
         );
       })}
       {packages.length > 0 && (
-        <>
-          <div className="py-2">
-            <Row label={t("order.itTotalCw")}>
-              <span className="font-medium">{formatNumber(totalCw, 1)} kg</span>
-            </Row>
-            <Row label={t("order.itTotalValue")}>
-              <span className="font-mono font-medium tabular-nums">
-                {formatCurrency(totalValue, currency)}
-              </span>
-            </Row>
+        // totals footer: darker labels + heavier values so the shipment summary
+        // reads as the closing line of the ledger, not one more package row
+        <div className="space-y-2 py-3">
+          <div className="flex items-center justify-between gap-4">
+            <span className="text-xs text-muted">{t("order.itTotalCw")}</span>
+            <span className="text-sm font-medium tabular-nums">
+              {formatNumber(totalCw, 1)} kg
+            </span>
+          </div>
+          <div className="flex items-center justify-between gap-4">
+            <span className="text-xs text-muted">{t("order.itTotalValue")}</span>
+            <span className="font-mono text-sm font-medium tabular-nums">
+              {formatCurrency(totalValue, currency)}
+            </span>
           </div>
           {totalPrice > 0 && (
-            <div className="py-2">
-              <Row label={t("order.itTotalPrice")}>
-                <span className="font-mono font-medium tabular-nums">
-                  {formatIDR(totalPrice)}
-                </span>
-              </Row>
+            <div className="flex items-center justify-between gap-4">
+              <span className="text-xs text-muted">{t("order.itTotalPrice")}</span>
+              <span className="font-mono text-sm font-semibold tabular-nums text-foreground">
+                {formatIDR(totalPrice)}
+              </span>
             </div>
           )}
-        </>
+        </div>
       )}
     </Section>
   );
@@ -631,86 +654,87 @@ function PickupCard({
         ? `${data.standbyDuration} ${t("order.puStandbyUnit")}`
         : dash;
 
+  // nothing filled yet (a draft that hasn't reached pickup) → one muted line
+  const hasAny = !!(
+    data?.picName ||
+    (data?.picPhoneCountry && data?.picPhone) ||
+    data?.buildingType ||
+    data?.address ||
+    data?.date ||
+    data?.time ||
+    (data?.standbyDuration && data.standbyDuration !== "") ||
+    data?.notesCourier
+  );
+
   return (
     <Section title={t("order.modPickup")}>
-      <Row label={t("order.puPicName")}>{val(data?.picName)}</Row>
-      <Row label={t("order.puPicPhone")}>{phone}</Row>
-      <Row label={t("order.puBuildingType")}>
-        {buildingLabel(t, data?.buildingType)}
-      </Row>
-      {showAccessQs && (
+      {!hasAny ? (
+        <EmptyLine />
+      ) : (
         <>
-          <Row label={t("order.puFreightElevator")}>
-            {yesNo(data?.freightElevator)}
-          </Row>
-          <Row label={t("order.puReceptionist")}>
-            {yesNo(data?.receptionist)}
-          </Row>
+          {data?.picName && <Row label={t("order.puPicName")}>{data.picName}</Row>}
+          {phone !== dash && <Row label={t("order.puPicPhone")}>{phone}</Row>}
+          {data?.buildingType && (
+            <Row label={t("order.puBuildingType")}>
+              {buildingLabel(t, data.buildingType)}
+            </Row>
+          )}
+          {showAccessQs && (
+            <>
+              <Row label={t("order.puFreightElevator")}>
+                {yesNo(data?.freightElevator)}
+              </Row>
+              <Row label={t("order.puReceptionist")}>{yesNo(data?.receptionist)}</Row>
+            </>
+          )}
+          {data?.address && <Row label={t("order.puAddress")}>{data.address}</Row>}
+          {data?.date && <Row label={t("order.puDate")}>{date}</Row>}
+          {data?.time && <Row label={t("order.puTime")}>{data.time}</Row>}
+          {data?.standbyDuration != null && data.standbyDuration !== "" && (
+            <Row label={t("order.puStandbyLabel")}>{standby}</Row>
+          )}
+          {data?.notesCourier && (
+            <Row label={t("order.puNotesCourier")}>{data.notesCourier}</Row>
+          )}
         </>
-      )}
-      <Row label={t("order.puAddress")}>{val(data?.address)}</Row>
-      <Row label={t("order.puDate")}>{date}</Row>
-      <Row label={t("order.puTime")}>{val(data?.time)}</Row>
-      <Row label={t("order.puStandbyLabel")}>{standby}</Row>
-      {/* courier notes are optional — omit the row entirely when empty */}
-      {data?.notesCourier && (
-        <Row label={t("order.puNotesCourier")}>{data.notesCourier}</Row>
       )}
     </Section>
   );
 }
 
 /**
- * The three ops-produced slots (quotation, AWB, clearance) folded into one
- * compact section — one row each, the real value when it exists, a muted
- * "pending" line otherwise. Total chargeable weight is not repeated here
- * (Items already shows it). The live QuotationCard up top owns the full
- * quotation once it arrives, so the quotation row drops out then.
+ * Ops-produced values that aren't already surfaced elsewhere. Phase progress
+ * lives in the status stepper and the timeline, so the old "pending" placeholder
+ * rows (AWB pending / clearance pending) were pure duplication and are gone. This
+ * shows only concrete artifacts: the picked rate while a formal quotation is still
+ * pending, and the AWB once issued. The whole section hides when there's neither.
  */
 function PendingCards({ order }: { order: Order }) {
   const t = useT();
   const rate = order.selectedRate;
-  const clearanceDone =
-    order.status === "clearance" ||
-    order.status === "delivery" ||
-    order.status === "delivered";
+  const showRate = !order.quotation && !!rate;
+  const showAwb = !!order.awb;
+  if (!showRate && !showAwb) return null;
 
   return (
     <Section title={t("order.tdNextSection")}>
-      {!order.quotation && (
+      {showRate && (
         <Row label={t("order.tdQuotationSection")}>
-          {rate ? (
-            <>
-              <span className="font-mono font-medium tabular-nums">
-                {formatIDR(rate.perKg)}
-              </span>{" "}
-              <span className="text-xs text-muted-2">
-                / {t("order.tdPerKg")} · {t("order.tdQuotationPending")}
-              </span>
-            </>
-          ) : (
-            <span className="text-muted-2">{t("order.tdQuotationPending")}</span>
-          )}
+          <span className="font-mono font-medium tabular-nums">
+            {formatIDR(rate!.perKg)}
+          </span>{" "}
+          <span className="text-xs text-muted-2">
+            / {t("order.tdPerKg")} · {t("order.tdQuotationPending")}
+          </span>
         </Row>
       )}
-      <Row
-        label={
-          <TipLabel label={t("order.tdAwbSection")} tip={t("order.tdAwbTip")} />
-        }
-      >
-        {order.awb ? (
+      {showAwb && (
+        <Row
+          label={<TipLabel label={t("order.tdAwbSection")} tip={t("order.tdAwbTip")} />}
+        >
           <span className="font-mono font-medium text-foreground">{order.awb}</span>
-        ) : (
-          <span className="text-muted-2">{t("order.tdAwbPending")}</span>
-        )}
-      </Row>
-      <Row label={t("order.stepClearance")}>
-        <span className="text-muted-2">
-          {clearanceDone
-            ? t("order.tdClearanceDone")
-            : t("order.tdClearancePending")}
-        </span>
-      </Row>
+        </Row>
+      )}
     </Section>
   );
 }

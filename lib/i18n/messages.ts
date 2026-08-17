@@ -609,6 +609,7 @@ const id = {
     tdPhotos: "Foto pengukuran",
     tdUploaded: "Tersedia",
     tdMissing: "Belum diunggah",
+    tdNotFilled: "Belum diisi",
     tdPackingTip:
       "Kode packing list Rimkirim (RK-PL-XXXXXX) — daftar resmi isi kirimanmu yang dipakai untuk verifikasi bea cukai.",
     tdAwbTip:
@@ -1665,6 +1666,7 @@ const en: Messages = {
     tdPhotos: "Measurement photos",
     tdUploaded: "Uploaded",
     tdMissing: "Not uploaded",
+    tdNotFilled: "Not filled in yet",
     tdPackingTip:
       "Rimkirim packing-list code (RK-PL-XXXXXX): the official manifest of your shipment's contents, used to verify it through customs.",
     tdAwbTip:
