@@ -12,6 +12,8 @@ import {
   Hash,
   Sparkles,
   PartyPopper,
+  Download,
+  Loader2,
 } from "lucide-react";
 import {
   useOrderStore,
@@ -23,6 +25,8 @@ import {
 } from "@/lib/store/useOrderStore";
 import { MODULE_META } from "./module-meta";
 import { consumeJustSaved } from "./modules/shared";
+import { orderModulesToCipl } from "@/lib/pdf/cipl";
+import { useDownloadCipl } from "@/components/packing/useDownloadCipl";
 import { CopyButton } from "./CopyButton";
 import { BookingAgreementDialog } from "./BookingAgreementDialog";
 import { useT } from "@/lib/i18n/LanguageProvider";
@@ -102,6 +106,13 @@ export function ModuleHub() {
   const pickupUnlocked = isPickupUnlocked(modules);
   const packingCode = effectivePackingCode({ answers, generatedPackingCode });
   const canSubmit = allModulesComplete(modules);
+  const context = useOrderStore((s) => s.context);
+  // the document needs sender/receiver + packages — an in-progress CI (e.g.
+  // prefilled from a standalone list, owner still blank) is enough
+  const pdfReady =
+    modules.items.status === "complete" &&
+    Boolean((modules.customerInfo.data as { sender?: unknown } | undefined)?.sender);
+  const { busy: pdfBusy, download: downloadPdf } = useDownloadCipl();
 
   // the module completed on the way here — its check draws once, and the
   // progress bar fills from the previous count instead of rendering done
@@ -226,9 +237,34 @@ export function ModuleHub() {
             )}
           </div>
         </div>
-        <Button variant="secondary" size="sm" disabled className="shrink-0">
-          {t("order.generatePdf")} ({t("order.comingSoon")})
-        </Button>
+        <div className="shrink-0 sm:text-right">
+          <Button
+            variant="secondary"
+            size="sm"
+            disabled={!pdfReady || pdfBusy}
+            onClick={() =>
+              downloadPdf(
+                orderModulesToCipl({
+                  code: packingCode,
+                  customerInfo: modules.customerInfo.data,
+                  items: modules.items.data,
+                  pickup: modules.pickup.data,
+                  context,
+                }),
+              )
+            }
+          >
+            {pdfBusy ? (
+              <Loader2 className="size-3.5 animate-spin" />
+            ) : (
+              <Download className="size-3.5" />
+            )}
+            {pdfBusy ? t("pl.downloading") : t("order.generatePdf")}
+          </Button>
+          {!pdfReady && (
+            <p className="mt-1 max-w-[15rem] text-xs text-muted-2 sm:ml-auto">{t("order.generatePdfNote")}</p>
+          )}
+        </div>
       </Card>
 
       <div className="space-y-3">

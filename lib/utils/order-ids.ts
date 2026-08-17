@@ -26,6 +26,11 @@ export function makePackingCode(): string {
   return `RK-PL-${n}`;
 }
 
+/** Internal standalone packing-list id (not shown to the user), e.g. "RK-PLI-4KX9M2PT". */
+export function makePackingListId(): string {
+  return `RK-PLI-${randomChars(8)}`;
+}
+
 /** Internal order id (not shown to the user), e.g. "RK-O-4KX9-M2PT". */
 export function makeOrderId(): string {
   const c = randomChars(8);

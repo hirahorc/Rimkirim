@@ -1,33 +1,20 @@
 "use client";
 
-import {
-  useForm,
-  Controller,
-  type Control,
-  type UseFormRegister,
-  type FieldPath,
-} from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { Info, Copy } from "lucide-react";
 import { useOrderStore } from "@/lib/store/useOrderStore";
 import { INDONESIA } from "@/lib/data/countries";
+import { emptyParty, type Party } from "@/lib/types/packing";
 import { useT } from "@/lib/i18n/LanguageProvider";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { CountrySelect } from "@/components/shared/CountrySelect";
-import { DialCodeSelect } from "@/components/order/DialCodeSelect";
+import { PartyFields } from "@/components/shared/forms/PartyFields";
+import { PhoneInput } from "@/components/shared/forms/PhoneInput";
 import { ModuleShell, useSaveModule, readModuleData, Field } from "./shared";
 
-interface Party {
-  fullName: string;
-  country: string;
-  address: string;
-  email: string;
-  phoneCountry: string;
-  phone: string;
-}
-interface CustomerForm {
+export interface CustomerForm {
   sender: Party;
   receiver: Party;
   owner: {
@@ -39,15 +26,6 @@ interface CustomerForm {
     email: string;
   };
 }
-
-const emptyParty: Party = {
-  fullName: "",
-  country: "",
-  address: "",
-  email: "",
-  phoneCountry: "",
-  phone: "",
-};
 
 export function CustomerInfoForm() {
   const t = useT();
@@ -148,40 +126,14 @@ export function CustomerInfoForm() {
         {/* Sender */}
         <Card className="space-y-4 p-5">
           <h2 className="font-display font-semibold">{t("order.ciSectionSender")}</h2>
-          <Field label={t("order.ciFullName")} error={errors.sender?.fullName?.message}>
-            <Input placeholder={t("order.ciPhName")} {...register("sender.fullName", req)} />
-          </Field>
-          <Field label={t("order.ciCountry")} error={errors.sender?.country?.message}>
-            <Controller
-              control={control}
-              name="sender.country"
-              rules={{ required: t("err.selectCountry") }}
-              render={({ field }) => (
-                <CountrySelect
-                  value={field.value}
-                  onChange={field.onChange}
-                  locked={isExport}
-                  ariaLabel={t("order.ciCountry")}
-                />
-              )}
-            />
-          </Field>
-          <Field label={t("order.ciFullAddress")} error={errors.sender?.address?.message}>
-            <Input placeholder={t("order.ciPhAddress")} {...register("sender.address", req)} />
-          </Field>
-          <div className="grid gap-4 sm:grid-cols-2">
-            <Field label={t("order.ciEmail")} error={errors.sender?.email?.message}>
-              <Input type="email" placeholder={t("order.ciPhEmail")} {...register("sender.email", req)} />
-            </Field>
-            <Field label={t("order.ciPhoneOrigin")} error={errors.sender?.phone?.message}>
-              <PhoneInput
-                control={control}
-                register={register}
-                codeName="sender.phoneCountry"
-                numberName="sender.phone"
-              />
-            </Field>
-          </div>
+          <PartyFields
+            control={control}
+            register={register}
+            errors={errors}
+            name="sender"
+            countryLocked={isExport}
+            phoneLabelKey="order.ciPhoneOrigin"
+          />
         </Card>
 
         {/* Receiver */}
@@ -192,45 +144,15 @@ export function CustomerInfoForm() {
               <Copy className="size-3.5" /> {t("order.ciSameAsSender")}
             </Button>
           </div>
-          <Field label={t("order.ciFullName")} error={errors.receiver?.fullName?.message}>
-            <Input placeholder={t("order.ciPhName")} {...register("receiver.fullName", req)} />
-          </Field>
-          <Field label={t("order.ciCountry")}>
-            <Controller
-              control={control}
-              name="receiver.country"
-              render={({ field }) => (
-                <CountrySelect
-                  value={field.value}
-                  onChange={field.onChange}
-                  locked={!isExport}
-                  ariaLabel={t("order.ciCountry")}
-                />
-              )}
-            />
-          </Field>
-          <Field
-            label={t("order.ciFullAddress")}
-            error={errors.receiver?.address?.message}
-          >
-            <Input placeholder={t("order.ciPhAddress")} {...register("receiver.address", req)} />
-          </Field>
-          <div className="grid gap-4 sm:grid-cols-2">
-            <Field label={t("order.ciEmail")} error={errors.receiver?.email?.message}>
-              <Input type="email" placeholder={t("order.ciPhEmail")} {...register("receiver.email", req)} />
-            </Field>
-            <Field
-              label={t("order.ciPhoneDestination")}
-              error={errors.receiver?.phone?.message}
-            >
-              <PhoneInput
-                control={control}
-                register={register}
-                codeName="receiver.phoneCountry"
-                numberName="receiver.phone"
-              />
-            </Field>
-          </div>
+          <PartyFields
+            control={control}
+            register={register}
+            errors={errors}
+            name="receiver"
+            countryLocked={!isExport}
+            countryRequired={false}
+            phoneLabelKey="order.ciPhoneDestination"
+          />
         </Card>
 
         {/* Shipment Owner */}
@@ -281,41 +203,5 @@ export function CustomerInfoForm() {
         </Button>
       </form>
     </ModuleShell>
-  );
-}
-
-/** Country dial-code dropdown glued to a phone-number input. */
-function PhoneInput({
-  control,
-  register,
-  codeName,
-  numberName,
-}: {
-  control: Control<CustomerForm>;
-  register: UseFormRegister<CustomerForm>;
-  codeName: FieldPath<CustomerForm>;
-  numberName: FieldPath<CustomerForm>;
-}) {
-  const t = useT();
-  return (
-    <div className="flex gap-2">
-      <div className="w-28 shrink-0">
-        <Controller
-          control={control}
-          name={codeName}
-          render={({ field }) => (
-            <DialCodeSelect
-              value={(field.value as string) || ""}
-              onChange={field.onChange}
-            />
-          )}
-        />
-      </div>
-      <Input
-        className="flex-1"
-        placeholder={t("order.ciPhPhone")}
-        {...register(numberName, { required: t("err.required") })}
-      />
-    </div>
   );
 }

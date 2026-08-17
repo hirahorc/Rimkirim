@@ -8,7 +8,6 @@ import { toast } from "sonner";
 import { useOrderStore, type ModuleId } from "@/lib/store/useOrderStore";
 import { getModuleMeta } from "../module-meta";
 import { useT } from "@/lib/i18n/LanguageProvider";
-import { Label, FieldError } from "@/components/ui/input";
 
 /** Back link + module title shell. */
 export function ModuleShell({
@@ -65,24 +64,4 @@ export function readModuleData(moduleId: ModuleId): Record<string, unknown> {
   return useOrderStore.getState().modules[moduleId].data ?? {};
 }
 
-/** Labeled field wrapper with optional hint + error. */
-export function Field({
-  label,
-  hint,
-  error,
-  children,
-}: {
-  label?: React.ReactNode;
-  hint?: React.ReactNode;
-  error?: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <div>
-      {label && <Label>{label}</Label>}
-      {children}
-      {hint && <p className="mt-1 text-xs text-muted-2">{hint}</p>}
-      <FieldError>{error}</FieldError>
-    </div>
-  );
-}
+export { Field } from "@/components/shared/forms/Field";

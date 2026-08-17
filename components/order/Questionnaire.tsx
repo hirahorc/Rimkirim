@@ -17,6 +17,10 @@ import { useOrderStore } from "@/lib/store/useOrderStore";
 import type { Citizenship } from "@/lib/store/useOrderStore";
 import { getCountry } from "@/lib/data/countries";
 import { validatePackingCode } from "@/lib/data/packing-list";
+import { findOwnedByCode } from "@/lib/store/usePackingListStore";
+import { mapPackingToModules } from "@/lib/order/packing-prefill";
+import { useCurrentUser } from "@/lib/store/useAuthStore";
+import { toast } from "sonner";
 import { useT } from "@/lib/i18n/LanguageProvider";
 import { Card } from "@/components/ui/card";
 import { Input, Label } from "@/components/ui/input";
@@ -81,6 +85,8 @@ export function Questionnaire() {
   const context = useOrderStore((s) => s.context);
   const answers = useOrderStore((s) => s.answers);
   const setAnswers = useOrderStore((s) => s.setAnswers);
+  const prefillFromPackingList = useOrderStore((s) => s.prefillFromPackingList);
+  const user = useCurrentUser();
 
   const [outcome, setOutcome] = React.useState<null | "ineligible" | "foreigner">(
     null,
@@ -93,7 +99,7 @@ export function Questionnaire() {
     const code = (answers.packingCode ?? "").trim();
     if (!code) return;
     setCodeStatus("checking");
-    const ok = await validatePackingCode(code);
+    const ok = await validatePackingCode(code, user?.email);
     setCodeStatus(ok ? "found" : "not-found");
   };
 
@@ -123,10 +129,23 @@ export function Questionnaire() {
         e !== undefined &&
         packingCodeOk);
 
+  // a code from one of the user's own packing lists carries its data along:
+  // CI + Items land in the form pre-filled instead of being typed twice
+  const applyOwnPackingList = () => {
+    if (e !== true || codeStatus !== "found") return;
+    const own = findOwnedByCode(user?.email, answers.packingCode ?? "");
+    if (!own) return;
+    prefillFromPackingList(mapPackingToModules(own.data, context));
+    toast.success(t("pl.prefilledToast"), {
+      description: t("pl.prefilledToastBody").replace("{code}", own.code),
+    });
+  };
+
   const onSubmit = () => {
     if (a === false) return setOutcome("ineligible");
+    if (!isExport && b === "foreigner") return setOutcome("foreigner");
+    applyOwnPackingList();
     if (isExport) return router.push("/pesan/modul");
-    if (b === "foreigner") return setOutcome("foreigner");
     router.push("/pesan/clearance");
   };
 

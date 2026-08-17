@@ -480,6 +480,8 @@ interface OrderStoreState {
   setAnswers: (patch: Partial<QuestionnaireAnswers>) => void;
   setClearance: (c: ClearanceKind) => void;
   saveModule: (id: ModuleId, data: Record<string, unknown>) => void;
+  /** Seed CI (in-progress: owner still missing) + Items (complete) from a standalone packing list; never overwrites started modules. */
+  prefillFromPackingList: (data: { customerInfo: Record<string, unknown>; items: Record<string, unknown> }) => void;
   /** create a booking number once, on entering the order form */
   ensureBookingNumber: () => void;
   /** generate a packing code once CI+Items are done and none was supplied */
@@ -656,6 +658,20 @@ export const useOrderStore = create<OrderStoreState>()(
         updateDraft(set, (o) => ({
           modules: { ...o.modules, [id]: { status: "complete", data } },
         })),
+      prefillFromPackingList: (data) =>
+        updateDraft(set, (o) => {
+          const modules = { ...o.modules };
+          let changed = false;
+          if (o.modules.customerInfo.status === "not-started") {
+            modules.customerInfo = { status: "in-progress", data: data.customerInfo };
+            changed = true;
+          }
+          if (o.modules.items.status === "not-started") {
+            modules.items = { status: "complete", data: data.items };
+            changed = true;
+          }
+          return changed ? { modules } : null;
+        }),
       ensureBookingNumber: () =>
         updateDraft(set, (o) =>
           o.bookingNumber ? null : { bookingNumber: makeBookingNumber() },
