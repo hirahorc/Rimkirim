@@ -86,8 +86,12 @@
   --shadow-overlay: var(--elevation-overlay);
 }
 
-* {
-  border-color: var(--border);
+/* Default border colour. Must live in a layer: unlayered rules outrank every
+   `@layer utilities` declaration, which would silently kill `border-<colour>`. */
+@layer base {
+  * {
+    border-color: var(--border);
+  }
 }
 
 html {
