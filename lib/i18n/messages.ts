@@ -1104,17 +1104,17 @@ const id = {
   pl: {
     listTitle: "Packing List Saya",
     listSubtitle:
-      "Buat Commercial Invoice / Packing List kapan saja — tanpa harus memesan dulu. Kodenya bisa langsung dipakai saat kamu memesan.",
+      "Buat Commercial Invoice / Packing List kapan saja tanpa harus memesan dulu. Kodenya bisa langsung dipakai saat kamu memesan.",
     newCta: "Buat packing list",
     empty: "Belum ada packing list",
     emptyBody:
-      "Isi pengirim, penerima, dan isi paketmu sekali — kami buatkan kode dan PDF-nya.",
+      "Isi pengirim, penerima, dan isi paketmu sekali. Kami buatkan kode dan PDF-nya.",
     emptyCta: "Buat packing list pertama",
     createTitle: "Buat packing list",
     createSubtitle:
       "Isi seperti yang akan tercetak di dokumen. Data ini dibaca petugas bea cukai, jadi tulis deskripsi barang dalam bahasa Inggris.",
     editTitle: "Ubah packing list",
-    editSubtitle: "Kodenya tetap sama — PDF yang kamu unduh berikutnya memakai data terbaru.",
+    editSubtitle: "Kodenya tetap sama. PDF yang kamu unduh berikutnya memakai data terbaru.",
     backToList: "Packing List Saya",
     codeLabel: "Kode packing list",
     sectionShipment: "Pengiriman",
@@ -1141,7 +1141,7 @@ const id = {
     deleteConfirm: "Ya, hapus",
     cancel: "Batal",
     createdToast: "Packing list tersimpan",
-    createdToastBody: "Kode {code} siap dipakai — PDF bisa diunduh kapan saja.",
+    createdToastBody: "Kode {code} siap dipakai. PDF bisa diunduh kapan saja.",
     updatedToast: "Packing list diperbarui",
     deletedToast: "Packing list dihapus",
     notFound: "Packing list tidak ditemukan",
@@ -2231,17 +2231,17 @@ const en: Messages = {
   pl: {
     listTitle: "My Packing Lists",
     listSubtitle:
-      "Create a Commercial Invoice / Packing List any time — no order needed. The code is ready to use when you do book.",
+      "Create a Commercial Invoice / Packing List any time, no order needed. The code is ready to use when you do book.",
     newCta: "New packing list",
     empty: "No packing lists yet",
     emptyBody:
-      "Fill in the sender, receiver and what's in each package once — we issue the code and the PDF.",
+      "Fill in the sender, receiver and what's in each package once. We issue the code and the PDF.",
     emptyCta: "Create your first packing list",
     createTitle: "New packing list",
     createSubtitle:
       "Fill it in as it should print on the document. Customs officers read this, so describe goods in English.",
     editTitle: "Edit packing list",
-    editSubtitle: "The code stays the same — the next PDF you download uses the latest data.",
+    editSubtitle: "The code stays the same. The next PDF you download uses the latest data.",
     backToList: "My Packing Lists",
     codeLabel: "Packing list code",
     sectionShipment: "Shipment",
@@ -2268,7 +2268,7 @@ const en: Messages = {
     deleteConfirm: "Yes, delete",
     cancel: "Cancel",
     createdToast: "Packing list saved",
-    createdToastBody: "Code {code} is ready to use — download the PDF any time.",
+    createdToastBody: "Code {code} is ready to use. Download the PDF any time.",
     updatedToast: "Packing list updated",
     deletedToast: "Packing list deleted",
     notFound: "Packing list not found",
