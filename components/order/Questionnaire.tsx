@@ -306,6 +306,9 @@ export function Questionnaire() {
             </Question>
 
             <Question n={4} question={t("order.qD")}>
+              {/* SKP is the one term here a first-timer won't know — explain
+                  it right where it's asked, not behind a tap */}
+              <p className="mt-1.5 text-xs text-muted-2">{t("order.jargSkp")}</p>
               <Choice
                 value={d}
                 onChange={(v) => setAnswers({ canApplySKP: v })}

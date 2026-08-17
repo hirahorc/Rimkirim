@@ -604,6 +604,19 @@ const id = {
     // tracking detail
     tdRecordHeading: "Detail pesanan",
     tdAttention: "Perlu perhatian",
+    tdGoodNews: "Kabar baik",
+    contactWa: "Hubungi tim Rimkirim",
+    // customs jargon, explained in place (AttentionBanner EXPLAIN map)
+    jargAwb:
+      "AWB (Air Waybill) adalah nomor resi dari kurir untuk melacak paketmu — beda dari Nomor Booking Rimkirim.",
+    jargBarpin: "Barpin adalah portal Bea Cukai tempat data kirimanmu didaftarkan.",
+    jargNpd: "NPD adalah surat permintaan dokumen tambahan dari Bea Cukai.",
+    jargSptnp:
+      "SPTNP adalah surat penetapan dari Bea Cukai yang berisi tagihan pajak kirimanmu.",
+    jargSppbl:
+      "SPPBL adalah surat persetujuan Bea Cukai untuk mengeluarkan barang dengan dokumen tambahan.",
+    jargSkp:
+      "SKP (Surat Keterangan Pindah) diterbitkan KBRI/KJRI sebagai bukti kamu pindah kembali ke Indonesia.",
     tdEligibility: "Kelayakan & Clearance",
     tdShippingPersonal: "Barang pribadi",
     tdCitizenship: "Kewarganegaraan",
@@ -624,14 +637,15 @@ const id = {
       "Air Waybill: nomor resi dari kurir 3PL untuk melacak paket di jaringan mereka. Beda dari Nomor Booking Rimkirim yang tetap sama.",
     tdNextSection: "Proses berikutnya",
     tdQuotationSection: "Quotation",
-    tdQuotationPending: "Menunggu quotation resmi dari tim Rimkirim.",
+    tdQuotationPending:
+      "Menunggu quotation resmi dari tim Rimkirim. Biasanya terbit dalam 1–2 hari kerja — kami kabari begitu siap.",
     tdBaseRate: "Tarif dasar",
     tdPerKg: "per kg chargeable",
     tdAwbSection: "AWB & Pengiriman",
     tdAwbPending:
-      "Nomor AWB & detail pengiriman muncul setelah pickup dibooking.",
+      "Nomor AWB & detail pengiriman muncul setelah pickup dibooking. Biasanya pickup terjadwal 1–3 hari kerja setelah quotation disetujui.",
     tdClearancePending:
-      "Proses clearance akan muncul setelah barang tiba di Indonesia.",
+      "Proses clearance akan muncul setelah barang tiba di Indonesia. Proses normalnya 3–7 hari kerja.",
     tdCancelledNotice: "Pesanan ini dibatalkan.",
     tdMaNote:
       "Tracking Moving Abroad disiapkan menyusul. Layanan ini masih dalam pengembangan.",
@@ -639,7 +653,7 @@ const id = {
     attQuotationReady:
       "Quotation telah diterbitkan. Setujui di halaman order untuk melanjutkan.",
     attRevision:
-      "Tim kami butuh revisi dokumen pada modul Compliance.",
+      "Tim kami butuh revisi di salah satu modulmu. Lihat detail & tombol perbaiki di bawah.",
     attPickupFailed:
       "Pickup pertama gagal. Tim kami akan mengatur ulang penjemputan.",
     attPickupFailCustomer:
@@ -647,14 +661,14 @@ const id = {
     attPickupFailFedEx:
       "Pickup gagal karena FedEx. Bukan salahmu: dispute internal, tanpa biaya. Pilih opsi untuk melanjutkan.",
     attNeedsNewAwb:
-      "Pickup gagal 3× karena kesalahan di sisi kamu. Minta AWB baru untuk melanjutkan.",
+      "Pickup gagal 3× karena kendala di sisi kamu. Untuk melanjutkan, minta AWB baru — pilih jadwal & metode baru, tim kami yang mengurus sisanya.",
     attAwbIssued: "AWB baru diterbitkan. Pickup dijadwalkan ulang.",
     attPickupRescheduled:
       "Pickup dijadwalkan ulang. Tim kami akan menjemput sesuai jadwal baru.",
     attDropOffRequested:
       "Titipkan paket di lokasi drop-off FedEx dalam 2 hari, atau AWB akan diganti.",
     attAwbChanged:
-      "AWB diganti. Drop-off tidak dilakukan dalam 2 hari. Pickup dijadwalkan ulang.",
+      "AWB diganti karena drop-off melewati batas 2 hari. Tim kami menjadwalkan ulang pickup — kami kabari jadwal barunya.",
     attClearanceReleased:
       "Clearance selesai. Barang disetujui untuk dikeluarkan dari Bea Cukai.",
     attClearanceReleasedExtra:
@@ -670,7 +684,7 @@ const id = {
     attClearanceTax:
       "Bea Cukai menerbitkan SPTNP. Bayar pajak agar barang bisa dikeluarkan.",
     attClearanceReject:
-      "Pengajuan ditolak Bea Cukai. Proses clearance diulang dari awal.",
+      "Pengajuan ditolak Bea Cukai. Tim kami menyiapkan permohonan baru dan mengulang clearance dari awal — tidak ada yang perlu kamu lakukan sekarang. Perlu diketahui: biaya warehouse tetap berjalan selama proses ini.",
     // clearance sub-flow — spine labels (components/tracking/ClearancePanel)
     clSpinePre: "Pre-Clearance",
     clSpineBarpin: "Konfirmasi Barpin",
@@ -687,7 +701,7 @@ const id = {
     clDescSubmitted:
       "Diajukan ke Bea Cukai (link Barpin) dan ke FedEx (link Barpin + dokumen) untuk diproses.",
     clDescBcReview:
-      "Bea Cukai sedang memproses pengajuan kirimanmu.",
+      "Bea Cukai sedang memproses pengajuan kirimanmu. Biasanya 3–7 hari kerja — kami kabari setiap perkembangan.",
     clDescNpd:
       "Bea Cukai meminta dokumen tambahan (NPD). Tim kami melengkapi lalu mengajukan ulang.",
     clDescSppb: "SPPB terbit. Barang disetujui untuk dikeluarkan dari Bea Cukai.",
@@ -696,7 +710,7 @@ const id = {
     clDescSptnp:
       "SPTNP terbit. Kiriman belum memenuhi syarat bebas bea, jadi ada pajak yang harus dibayar sebelum barang dikeluarkan.",
     clDescReject:
-      "Pengajuan ditolak. Proses clearance harus diulang dari awal dengan permohonan baru; biaya warehouse tetap berjalan.",
+      "Pengajuan ditolak. Tim kami mengulang proses clearance dari awal dengan permohonan baru; biaya warehouse tetap berjalan selama proses ini.",
     // clearance result badges
     clResultSppb: "SPPB: Dikeluarkan",
     clResultSppbl: "SPPBL: Dikeluarkan (+dokumen)",
@@ -830,7 +844,8 @@ const id = {
     pickDropOffCta: "Sudah drop off",
     pickDropOffConfirmedToast:
       "Konfirmasi dikirim. Tim ops akan memproses kirimanmu.",
-    pickDropOffAwaitOps: "Drop-off dikonfirmasi, menunggu konfirmasi tim ops.",
+    pickDropOffAwaitOps:
+      "Drop-off dikonfirmasi, menunggu konfirmasi tim ops. Biasanya terkonfirmasi dalam 1 hari kerja.",
     // AWB section
     tdAwbNumber: "Nomor AWB",
     tdAwbStable:
@@ -1669,6 +1684,19 @@ const en: Messages = {
     // tracking detail
     tdRecordHeading: "Order details",
     tdAttention: "Needs attention",
+    tdGoodNews: "Good news",
+    contactWa: "Chat the Rimkirim team",
+    // customs jargon, explained in place (AttentionBanner EXPLAIN map)
+    jargAwb:
+      "The AWB (Air Waybill) is the courier's tracking number for your package — separate from your Rimkirim booking number.",
+    jargBarpin: "Barpin is the customs portal where your shipment data is registered.",
+    jargNpd: "An NPD is a letter from Customs requesting additional documents.",
+    jargSptnp:
+      "An SPTNP is the customs assessment letter that states the tax due on your shipment.",
+    jargSppbl:
+      "An SPPBL is the customs approval to release goods with additional documents.",
+    jargSkp:
+      "The SKP (relocation certificate) is issued by the Indonesian embassy (KBRI/KJRI) as proof you're moving back to Indonesia.",
     tdEligibility: "Eligibility & Clearance",
     tdShippingPersonal: "Personal belongings",
     tdCitizenship: "Citizenship",
@@ -1689,14 +1717,15 @@ const en: Messages = {
       "Air Waybill: the tracking number from the 3PL courier for their own network. Separate from your Rimkirim booking number, which stays the same.",
     tdNextSection: "What's next",
     tdQuotationSection: "Quotation",
-    tdQuotationPending: "Waiting for the official quotation from the Rimkirim team.",
+    tdQuotationPending:
+      "Waiting for the official quotation from the Rimkirim team. Usually issued within 1–2 business days — we'll let you know the moment it's ready.",
     tdBaseRate: "Base rate",
     tdPerKg: "per chargeable kg",
     tdAwbSection: "AWB & Shipment",
     tdAwbPending:
-      "The AWB number & shipping details appear once the pickup is booked.",
+      "The AWB number & shipping details appear once the pickup is booked. Pickup is usually scheduled 1–3 business days after the quotation is approved.",
     tdClearancePending:
-      "Clearance status will appear once the goods arrive in Indonesia.",
+      "Clearance status will appear once the goods arrive in Indonesia. The normal process takes 3–7 business days.",
     tdCancelledNotice: "This order was cancelled.",
     tdMaNote:
       "Moving Abroad tracking is coming soon. This service is still in development.",
@@ -1704,7 +1733,7 @@ const en: Messages = {
     attQuotationReady:
       "A quotation has been issued. Approve it on the order page to continue.",
     attRevision:
-      "Our team needs you to revise the documents in the Compliance module.",
+      "Our team needs a revision in one of your modules. See the details & the Fix button below.",
     attPickupFailed:
       "The first pickup failed. Our team will reschedule the pickup.",
     attPickupFailCustomer:
@@ -1712,14 +1741,14 @@ const en: Messages = {
     attPickupFailFedEx:
       "Pickup failed due to FedEx. Not your fault: internal dispute, no cost. Choose how to continue.",
     attNeedsNewAwb:
-      "Pickup failed 3× due to issues on your side. Request a new AWB to continue.",
+      "Pickup failed 3× due to issues on your side. To continue, request a new AWB — pick a new date & method and our team handles the rest.",
     attAwbIssued: "New AWB issued. Pickup rescheduled.",
     attPickupRescheduled:
       "Pickup rescheduled. Our team will collect on the new schedule.",
     attDropOffRequested:
       "Drop the package at a FedEx location within 2 days, or the AWB will be changed.",
     attAwbChanged:
-      "AWB changed. The drop-off missed the 2-day deadline. Pickup rescheduled.",
+      "The AWB was changed because the drop-off missed the 2-day deadline. Our team is rescheduling the pickup — we'll share the new schedule.",
     attClearanceReleased:
       "Clearance complete. The goods were approved for release by Customs.",
     attClearanceReleasedExtra:
@@ -1735,7 +1764,7 @@ const en: Messages = {
     attClearanceTax:
       "Customs issued an SPTNP. Pay the tax so the goods can be released.",
     attClearanceReject:
-      "Submission rejected by Customs. The clearance process restarts from the beginning.",
+      "Customs rejected the submission. Our team is preparing a new application and restarting clearance from the beginning — nothing for you to do right now. Heads up: warehouse costs keep running during this process.",
     // clearance sub-flow — spine labels (components/tracking/ClearancePanel)
     clSpinePre: "Pre-Clearance",
     clSpineBarpin: "Barpin confirm",
@@ -1751,7 +1780,8 @@ const en: Messages = {
       "Your shipment data is prepared on the Barpin portal. Review then confirm, or request a revision if something needs adjusting.",
     clDescSubmitted:
       "Submitted to Customs (Barpin link) and to FedEx (Barpin link + documents) for processing.",
-    clDescBcReview: "Customs is processing your submission.",
+    clDescBcReview:
+      "Customs is processing your submission. Usually 3–7 business days — we'll update you at every step.",
     clDescNpd:
       "Customs requested additional documents (NPD). Our team completes them and resubmits.",
     clDescSppb: "SPPB issued. The goods are approved for release by Customs.",
@@ -1760,7 +1790,7 @@ const en: Messages = {
     clDescSptnp:
       "SPTNP issued. The shipment didn't qualify for exemption, so there's a tax to pay before the goods are released.",
     clDescReject:
-      "Submission rejected. Clearance must restart from the beginning with a new application; warehouse costs keep running.",
+      "The submission was rejected. Our team restarts clearance from the beginning with a new application; warehouse costs keep running while this happens.",
     // clearance result badges
     clResultSppb: "SPPB: Released",
     clResultSppbl: "SPPBL: Released (+docs)",
@@ -1896,7 +1926,7 @@ const en: Messages = {
     pickDropOffConfirmedToast:
       "Confirmation sent. The ops team will process your shipment.",
     pickDropOffAwaitOps:
-      "Drop-off confirmed, waiting for the ops team to confirm.",
+      "Drop-off confirmed, waiting for the ops team to confirm. Usually confirmed within 1 business day.",
     // AWB section
     tdAwbNumber: "AWB number",
     tdAwbStable:

@@ -92,7 +92,12 @@ export function PickupPanel({ order }: { order: Order }) {
               className="flex-1"
               onClick={() => {
                 reschedulePickup(order.id);
-                toast.success(t("order.pickChoiceRepickupToast"));
+                // guarded no-op outside a pending choice — toast only on effect
+                const now = useOrderStore
+                  .getState()
+                  .orders.find((o) => o.id === order.id);
+                if (now && !now.pickupChoicePending)
+                  toast.success(t("order.pickChoiceRepickupToast"));
               }}
             >
               <RefreshCcw /> {t("order.pickChoiceRepickup")}
@@ -102,7 +107,10 @@ export function PickupPanel({ order }: { order: Order }) {
               variant="secondary"
               onClick={() => {
                 chooseDropOff(order.id);
-                toast.info(t("order.pickChoiceDropOffToast"));
+                const now = useOrderStore
+                  .getState()
+                  .orders.find((o) => o.id === order.id);
+                if (now?.dropOff) toast.info(t("order.pickChoiceDropOffToast"));
               }}
             >
               <Store /> {t("order.pickChoiceDropOff")}
@@ -146,7 +154,11 @@ export function PickupPanel({ order }: { order: Order }) {
             variant="secondary"
             onClick={() => {
               confirmDropOff(order.id);
-              toast.success(t("order.pickDropOffConfirmedToast"));
+              const now = useOrderStore
+                .getState()
+                .orders.find((o) => o.id === order.id);
+              if (now?.dropOff?.fulfilledAt)
+                toast.success(t("order.pickDropOffConfirmedToast"));
             }}
           >
             <CheckCircle2 /> {t("order.pickDropOffCta")}

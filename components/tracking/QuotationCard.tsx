@@ -262,7 +262,13 @@ export function QuotationCard({ order }: { order: Order }) {
               className="w-full"
               onClick={() => {
                 approveQuotation(order.id);
-                toast.success(t("order.quApprovedToast"));
+                // the store action is a guarded no-op outside `quotation` —
+                // only celebrate if the approval actually landed
+                const now = useOrderStore
+                  .getState()
+                  .orders.find((o) => o.id === order.id);
+                if (now?.status === "pickup")
+                  toast.success(t("order.quApprovedToast"));
               }}
             >
               <CheckCircle2 /> {t("order.quApprove")}

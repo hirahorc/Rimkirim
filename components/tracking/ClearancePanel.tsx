@@ -180,7 +180,12 @@ export function ClearancePanel({ order }: { order: Order }) {
             className="flex-1"
             onClick={() => {
               confirmBarpin(order.id);
-              toast.success(t("order.clConfirmBarpinToast"));
+              // guarded no-op outside barpin-confirm — toast only on effect
+              const now = useOrderStore
+                .getState()
+                .orders.find((o) => o.id === order.id);
+              if (now?.barpinConfirmedAt)
+                toast.success(t("order.clConfirmBarpinToast"));
             }}
           >
             <FileCheck2 /> {t("order.clConfirmBarpinCta")}
@@ -190,7 +195,11 @@ export function ClearancePanel({ order }: { order: Order }) {
             className="flex-1"
             onClick={() => {
               requestBarpinRevision(order.id);
-              toast.info(t("order.clRequestRevisionToast"));
+              const now = useOrderStore
+                .getState()
+                .orders.find((o) => o.id === order.id);
+              if (now?.attention === "order.attClearanceBarpinRevision")
+                toast.info(t("order.clRequestRevisionToast"));
             }}
           >
             <PenLine /> {t("order.clRequestRevisionCta")}
@@ -212,7 +221,10 @@ export function ClearancePanel({ order }: { order: Order }) {
             className="mt-3"
             onClick={() => {
               payClearanceTax(order.id);
-              toast.success(t("order.clPayTaxToast"));
+              const now = useOrderStore
+                .getState()
+                .orders.find((o) => o.id === order.id);
+              if (now?.taxPaidAt) toast.success(t("order.clPayTaxToast"));
             }}
           >
             <Receipt /> {t("order.clPayTaxCta")}
