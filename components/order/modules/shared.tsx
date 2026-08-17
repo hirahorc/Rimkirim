@@ -4,6 +4,7 @@ import * as React from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
+import { toast } from "sonner";
 import { useOrderStore, type ModuleId } from "@/lib/store/useOrderStore";
 import { getModuleMeta } from "../module-meta";
 import { useT } from "@/lib/i18n/LanguageProvider";
@@ -35,12 +36,26 @@ export function ModuleShell({
   );
 }
 
-/** Save the module data (marks complete) and return to the hub. */
+/* The module completed on the way back to the hub, so the hub can play its
+   one-time completion animation. In-memory on purpose: a page refresh forgets
+   it, and the animation only belongs to the moment right after saving. */
+let justSaved: ModuleId | null = null;
+export function consumeJustSaved(): ModuleId | null {
+  const v = justSaved;
+  justSaved = null;
+  return v;
+}
+
+/** Save the module data (marks complete), confirm it, and return to the hub. */
 export function useSaveModule(moduleId: ModuleId) {
   const router = useRouter();
+  const t = useT();
   const saveModule = useOrderStore((s) => s.saveModule);
   return (data: Record<string, unknown>) => {
     saveModule(moduleId, data);
+    const meta = getModuleMeta(moduleId);
+    toast.success(`${meta ? t(meta.titleKey) : ""} ${t("order.moduleSavedToast")}`.trim());
+    justSaved = moduleId;
     router.push("/pesan/modul");
   };
 }

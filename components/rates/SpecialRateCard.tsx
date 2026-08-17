@@ -142,6 +142,8 @@ export function SpecialRateCard({
               startOrder({
                 perKg: tier.pricePerKg,
                 label: `${special.carrier} ${special.service}`,
+                etaMin: special.etaMin,
+                etaMax: special.etaMax,
               })
             }
           >

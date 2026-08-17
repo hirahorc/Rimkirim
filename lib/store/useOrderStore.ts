@@ -38,6 +38,10 @@ export interface SelectedRate {
   perKg: number;
   /** carrier + service (or "Special Rate") */
   label: string;
+  /** display-only extras for the receipt strip; absent on older drafts */
+  total?: number;
+  etaMin?: number;
+  etaMax?: number;
 }
 
 /** One package row's surcharge breakdown, frozen into the quotation snapshot. */

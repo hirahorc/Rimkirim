@@ -256,6 +256,40 @@ input[type="date"].date-field::-webkit-calendar-picker-indicator {
   animation: enter-fade 0.8s ease both;
 }
 
+/* ------------------------------------------------------------------ */
+/*  Earned motion — a milestone the user just reached may play one    */
+/*  animation, once. Never looping, never decorative.                 */
+/* ------------------------------------------------------------------ */
+
+/* A checkmark stroke that draws itself (dasharray sized to the path). */
+@keyframes check-draw {
+  from {
+    stroke-dashoffset: 24;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+.check-draw {
+  stroke-dasharray: 24;
+  animation: check-draw 0.45s var(--ease-out-soft) 0.15s both;
+}
+
+/* Status banner easing in when its content changes. */
+@keyframes banner-enter {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.banner-enter {
+  animation: banner-enter 0.35s var(--ease-out-soft) both;
+}
+
 /* Inline text links. Lime can't be a text colour on daylight, so the accent
    moves to the underline stroke: dark ink, lime marker beneath. */
 .link-mark {
@@ -416,7 +450,9 @@ input[type="date"].date-field::-webkit-calendar-picker-indicator {
   .reveal-bg,
   .reveal-stagger > *,
   .hero-word,
-  .testi-card {
+  .testi-card,
+  .check-draw,
+  .banner-enter {
     animation: none !important;
     opacity: 1 !important;
     transform: none !important;

@@ -77,6 +77,12 @@ export function ClearanceOptions() {
   return (
     <div>
       <header className="mb-6 text-center">
+        {/* the questionnaire's positive outcome, said out loud — the negative
+            outcomes get a full card, so passing deserves at least a sentence */}
+        <p className="mb-2 inline-flex items-center gap-1.5 text-sm font-medium text-success">
+          <Check className="size-4" strokeWidth={3} />
+          {t("order.clEligibleNote")}
+        </p>
         <p className="text-sm font-medium uppercase tracking-wide text-muted-2">
           {t("order.clEyebrow")}
         </p>

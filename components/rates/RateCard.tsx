@@ -112,6 +112,9 @@ export function RateCard({
               startOrder({
                 perKg: quote.baseRatePerKg,
                 label: `${vendor.carrier} ${vendor.service}`,
+                total: quote.total,
+                etaMin: quote.etaMin,
+                etaMax: quote.etaMax,
               })
             }
           >

@@ -3,7 +3,16 @@
 import * as React from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Lock, Check, ChevronRight, FileText, Hash, Sparkles, PartyPopper } from "lucide-react";
+import {
+  Lock,
+  Check,
+  CheckCircle2,
+  ChevronRight,
+  FileText,
+  Hash,
+  Sparkles,
+  PartyPopper,
+} from "lucide-react";
 import {
   useOrderStore,
   isPickupUnlocked,
@@ -13,6 +22,7 @@ import {
   type ModuleStatus,
 } from "@/lib/store/useOrderStore";
 import { MODULE_META } from "./module-meta";
+import { consumeJustSaved } from "./modules/shared";
 import { CopyButton } from "./CopyButton";
 import { BookingAgreementDialog } from "./BookingAgreementDialog";
 import { useT } from "@/lib/i18n/LanguageProvider";
@@ -21,7 +31,16 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils/cn";
 
-function StatusBadge({ status, locked }: { status: ModuleStatus; locked?: boolean }) {
+function StatusBadge({
+  status,
+  locked,
+  justDone,
+}: {
+  status: ModuleStatus;
+  locked?: boolean;
+  /** the module was completed on this visit — draw the check once */
+  justDone?: boolean;
+}) {
   const t = useT();
   if (locked)
     return (
@@ -32,7 +51,23 @@ function StatusBadge({ status, locked }: { status: ModuleStatus; locked?: boolea
   if (status === "complete")
     return (
       <Badge variant="success">
-        <Check className="size-3" /> {t("order.statusComplete")}
+        {justDone ? (
+          <svg
+            viewBox="0 0 24 24"
+            className="size-3"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth={3}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden
+          >
+            <path className="check-draw" d="M4 12.5l5 5L20 6.5" />
+          </svg>
+        ) : (
+          <Check className="size-3" />
+        )}
+        {t("order.statusComplete")}
       </Badge>
     );
   if (status === "in-progress")
@@ -68,9 +103,32 @@ export function ModuleHub() {
   const packingCode = effectivePackingCode({ answers, generatedPackingCode });
   const canSubmit = allModulesComplete(modules);
 
+  // the module completed on the way here — its check draws once, and the
+  // progress bar fills from the previous count instead of rendering done
+  const [justDone] = React.useState(() => consumeJustSaved());
+  const completeCount = MODULE_META.filter(
+    (m) => modules[m.id as ModuleId].status === "complete",
+  ).length;
+  const [barCount, setBarCount] = React.useState(
+    justDone ? Math.max(0, completeCount - 1) : completeCount,
+  );
+  React.useEffect(() => {
+    if (barCount === completeCount) return;
+    // double rAF so the start width paints before the transition target lands
+    const raf = requestAnimationFrame(() =>
+      requestAnimationFrame(() => setBarCount(completeCount)),
+    );
+    return () => cancelAnimationFrame(raf);
+  }, [barCount, completeCount]);
+
+  const nextUp = MODULE_META.find((m) => {
+    const locked = m.locksUntilOthers && !pickupUnlocked;
+    return !locked && modules[m.id as ModuleId].status !== "complete";
+  })?.id;
+
   if (submitted) {
     return (
-      <Card className="mx-auto max-w-md p-8 text-center">
+      <Card className="reveal-pop mx-auto max-w-md p-8 text-center">
         <div className="mx-auto grid size-16 place-items-center rounded-full bg-brand/15 text-brand-ink">
           <PartyPopper className="size-8" />
         </div>
@@ -109,6 +167,20 @@ export function ModuleHub() {
           {t("order.hubTitle")}
         </h1>
         <p className="mt-1.5 text-sm text-muted">{t("order.hubSubtitle")}</p>
+        {/* the user's progress, said in numbers and shown as a filling bar */}
+        <div className="mt-4">
+          <p className="text-sm font-medium text-foreground">
+            {t("order.hubProgress")
+              .replace("{n}", String(completeCount))
+              .replace("{total}", String(MODULE_META.length))}
+          </p>
+          <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-surface-3">
+            <div
+              className="h-full rounded-full bg-brand transition-[width] duration-500 ease-out"
+              style={{ width: `${(barCount / MODULE_META.length) * 100}%` }}
+            />
+          </div>
+        </div>
       </header>
 
       {/* order created: booking number */}
@@ -163,16 +235,20 @@ export function ModuleHub() {
         {MODULE_META.map((m) => {
           const locked = m.locksUntilOthers && !pickupUnlocked;
           const status = modules[m.id as ModuleId].status;
+          const isNext = m.id === nextUp;
           const Inner = (
             <Card
               className={cn(
                 "flex items-center gap-4 p-4 transition-colors",
-                locked ? "opacity-60" : "hover:border-border-strong",
+                locked && "opacity-60",
+                // the next card to fill gets the lime frame (the same "this
+                // one" signal the cheapest rate card uses)
+                !locked && (isNext ? "border-brand/50" : "hover:border-border-strong"),
               )}
             >
               <span
                 className={cn(
-                  "grid size-11 shrink-0 place-items-center rounded-md",
+                  "grid size-11 shrink-0 place-items-center rounded-md transition-colors",
                   status === "complete"
                     ? "bg-brand/15 text-brand-ink"
                     : "bg-surface-3 text-muted",
@@ -184,8 +260,15 @@ export function ModuleHub() {
                 <p className="font-medium">{t(m.titleKey)}</p>
                 <p className="truncate text-sm text-muted">{t(m.descKey)}</p>
               </div>
-              <StatusBadge status={status} locked={locked} />
-              {!locked && <ChevronRight className="size-4 shrink-0 text-muted-2" />}
+              <StatusBadge status={status} locked={locked} justDone={m.id === justDone} />
+              {!locked &&
+                (isNext ? (
+                  <span className="inline-flex shrink-0 items-center gap-0.5 rounded-full bg-brand py-1 pl-2.5 pr-1.5 text-xs font-semibold text-brand-ink">
+                    {t("order.hubNext")} <ChevronRight className="size-3.5" />
+                  </span>
+                ) : (
+                  <ChevronRight className="size-4 shrink-0 text-muted-2" />
+                ))}
             </Card>
           );
           return locked ? (
@@ -205,8 +288,15 @@ export function ModuleHub() {
         </p>
       )}
 
+      {/* all four complete: name the moment before asking for the booking */}
+      {canSubmit && (
+        <p className="mt-6 flex items-center justify-center gap-1.5 text-sm font-medium text-success">
+          <CheckCircle2 className="size-4" /> {t("order.hubAllDone")}
+        </p>
+      )}
+
       {/* final CTA */}
-      <div className="mt-6">
+      <div className={canSubmit ? "mt-3" : "mt-6"}>
         <Button
           size="lg"
           className="w-full"

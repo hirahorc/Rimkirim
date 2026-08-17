@@ -7,6 +7,7 @@ import { useOrderStore, useOrderHydrated } from "@/lib/store/useOrderStore";
 import { useAuthHydrated, useCurrentUser } from "@/lib/store/useAuthStore";
 import { useT } from "@/lib/i18n/LanguageProvider";
 import { cn } from "@/lib/utils/cn";
+import { RateReceipt } from "./RateReceipt";
 
 /** Which stepper step the current path maps to (1-indexed). */
 function stepFromPath(pathname: string, isExport: boolean): number {
@@ -25,6 +26,7 @@ export function OrderShell({ children }: { children: React.ReactNode }) {
   const authHydrated = useAuthHydrated();
   const user = useCurrentUser();
   const context = useOrderStore((s) => s.context);
+  const selectedRate = useOrderStore((s) => s.selectedRate);
   const pendingStart = useOrderStore((s) => s.pendingStart);
   const startOrder = useOrderStore((s) => s.startOrder);
   const setPendingStart = useOrderStore((s) => s.setPendingStart);
@@ -114,6 +116,9 @@ export function OrderShell({ children }: { children: React.ReactNode }) {
           );
         })}
       </ol>
+
+      {/* the rate decision that started this flow, kept in sight throughout */}
+      <RateReceipt context={context} rate={selectedRate} variant="strip" className="mb-6" />
 
       {children}
     </div>

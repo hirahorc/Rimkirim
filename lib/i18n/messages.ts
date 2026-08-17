@@ -467,6 +467,9 @@ const id = {
     stepForm: "Formulir Order",
     back: "Kembali",
     continue: "Lanjut",
+    // rate receipt — the choice from /cek-tarif, kept in sight after the click
+    receiptSaved: "Pilihan kamu tersimpan",
+    receiptSigninNote: "Masuk untuk melanjutkan order ini.",
     // Phase 1 — questionnaire
     qHeading: "Cek kelayakan pengiriman kamu",
     qSubheading:
@@ -505,6 +508,7 @@ const id = {
       "Alur Back For Good ditujukan untuk Warga Negara Indonesia. Untuk relokasi WNA ke Indonesia, kami punya layanan khusus.",
     foreignerCta: "Ke halaman relokasi WNA",
     // Phase 2 — clearance
+    clEligibleNote: "Kamu memenuhi syarat",
     clEyebrow: "Berdasarkan jawabanmu",
     clTitle: "Ini pendekatan customs clearance yang paling cocok untukmu",
     clBenefits: "Keuntungan",
@@ -559,6 +563,10 @@ const id = {
     comingSoon: "segera",
     finalCta: "Lanjutkan permintaan order",
     finalDisabledNote: "Selesaikan semua modul untuk melanjutkan.",
+    hubProgress: "{n} dari {total} modul selesai",
+    hubNext: "Lanjut",
+    hubAllDone: "Semua modul lengkap — tinggal satu langkah lagi.",
+    moduleSavedToast: "tersimpan",
     baTitle: "Ketentuan & Persetujuan",
     baSubtitle: "Baca dan setujui sebelum booking dibuat.",
     baScrollHint: "Gulir sampai bawah untuk mengaktifkan persetujuan.",
@@ -1531,6 +1539,9 @@ const en: Messages = {
     stepForm: "Order Form",
     back: "Back",
     continue: "Continue",
+    // rate receipt — the choice from /cek-tarif, kept in sight after the click
+    receiptSaved: "Your selection is saved",
+    receiptSigninNote: "Sign in to continue this order.",
     qHeading: "Check your shipment eligibility",
     qSubheading:
       "A few quick questions to make sure the service fits & to determine the right clearance.",
@@ -1566,6 +1577,7 @@ const en: Messages = {
     foreignerBody:
       "The Back For Good flow is for Indonesian citizens. For foreigner relocation to Indonesia, we have a dedicated service.",
     foreignerCta: "Go to foreigner relocation",
+    clEligibleNote: "You're eligible",
     clEyebrow: "Based on your answer",
     clTitle: "Here is the most suitable customs clearance approach for you",
     clBenefits: "Benefits",
@@ -1618,6 +1630,10 @@ const en: Messages = {
     comingSoon: "soon",
     finalCta: "Continue order request",
     finalDisabledNote: "Complete all modules to continue.",
+    hubProgress: "{n} of {total} modules complete",
+    hubNext: "Continue",
+    hubAllDone: "All modules complete — just one step left.",
+    moduleSavedToast: "saved",
     baTitle: "Terms & Agreement",
     baSubtitle: "Read and agree before your booking is created.",
     baScrollHint: "Scroll to the bottom to enable the agreement.",

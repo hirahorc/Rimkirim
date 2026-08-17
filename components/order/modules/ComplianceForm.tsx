@@ -2,6 +2,7 @@
 
 import { useForm, useFieldArray, Controller } from "react-hook-form";
 import { Plus, Trash2, Info } from "lucide-react";
+import { toast } from "sonner";
 import { useOrderStore } from "@/lib/store/useOrderStore";
 import { FileUpload } from "../FileUpload";
 import { useT } from "@/lib/i18n/LanguageProvider";
@@ -77,6 +78,7 @@ export function ComplianceForm() {
     const missing = docs.filter((d) => d.required && !data.docs?.[d.key]);
     if (missing.length) {
       setError("root", { message: t("order.coMandatoryNote") });
+      toast.error(t("order.coMandatoryNote"));
       return;
     }
     clearErrors("root");

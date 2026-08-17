@@ -6,15 +6,21 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { loginSchema, type LoginValues } from "@/lib/schemas/auth";
 import { useAuthStore } from "@/lib/store/useAuthStore";
+import { useOrderStore, useOrderHydrated } from "@/lib/store/useOrderStore";
 import { useT } from "@/lib/i18n/LanguageProvider";
 import { Input, FieldError } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { AuthShell } from "./AuthShell";
+import { RateReceipt } from "@/components/order/RateReceipt";
 
 export function LoginForm({ next }: { next: string | null }) {
   const t = useT();
   const router = useRouter();
   const logIn = useAuthStore((s) => s.logIn);
+  // a rate choice stashed before login — keep the decision in sight while
+  // the visitor signs in, so the login wall doesn't swallow it
+  const orderHydrated = useOrderHydrated();
+  const pendingStart = useOrderStore((s) => s.pendingStart);
 
   const {
     register,
@@ -41,6 +47,14 @@ export function LoginForm({ next }: { next: string | null }) {
       switchPre={t("auth.loginLinkPre")}
       switchLabel={t("auth.loginLink")}
     >
+      {orderHydrated && pendingStart && (
+        <RateReceipt
+          context={pendingStart.context}
+          rate={pendingStart.rate}
+          variant="card"
+          className="mb-5"
+        />
+      )}
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
         <div>
           <label className="mb-1.5 block text-xs font-medium text-muted">
