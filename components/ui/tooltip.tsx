@@ -26,7 +26,7 @@ export const TooltipContent = React.forwardRef<
       sideOffset={sideOffset}
       collisionPadding={collisionPadding}
       className={cn(
-        "tip-bubble z-50 w-max max-w-[15rem] rounded-lg bg-foreground px-2.5 py-2 text-center text-sm leading-normal text-background shadow-tip",
+        "tip-bubble z-50 w-max max-w-[16rem] rounded-[6px] bg-foreground px-3.5 py-2.5 text-center text-sm leading-normal text-background shadow-tip",
         className,
       )}
       {...props}
