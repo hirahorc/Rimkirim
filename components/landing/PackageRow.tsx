@@ -138,7 +138,7 @@ export function PackageRow({
           <div className="flex items-center justify-between gap-3 px-3 py-2 sm:flex-col sm:items-start sm:gap-1">
             <span className="flex items-center gap-1 text-[10px] font-medium uppercase tracking-wide text-muted-2">
               {t("pkg.volumetrik")}
-              <InfoTip content={t("pkg.volTooltip")} />
+              <InfoTip content={t("pkg.volTooltip")} label={t("pkg.volumetrik")} />
             </span>
             <span
               className={cn(
@@ -152,7 +152,7 @@ export function PackageRow({
           <div className="flex items-center justify-between gap-3 px-3 py-2 sm:flex-col sm:items-start sm:gap-1">
             <span className="flex items-center gap-1 text-[10px] font-medium uppercase tracking-wide text-muted-2">
               {t("pkg.chargeable")}
-              <InfoTip content={t("pkg.chgTooltip")} />
+              <InfoTip content={t("pkg.chgTooltip")} label={t("pkg.chargeable")} />
             </span>
             <Badge variant={untouched ? "neutral" : "brand"}>{kg(chg)}</Badge>
           </div>

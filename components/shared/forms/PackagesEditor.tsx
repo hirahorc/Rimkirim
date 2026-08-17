@@ -493,7 +493,7 @@ function PackageBlock({
         <div>
           <p className="mb-2 flex items-center gap-1.5 text-sm font-medium">
             {t("order.itPhotos")}
-            <InfoTip content={t("order.itPhotosTooltip")} />
+            <InfoTip content={t("order.itPhotosTooltip")} label={t("order.itPhotos")} />
           </p>
           <div className="grid gap-2 sm:grid-cols-2">
             {photoKeys.map(([key, labelKey]) => (

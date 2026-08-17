@@ -174,7 +174,7 @@ function TipLabel({ label, tip }: { label: string; tip: string }) {
   return (
     <span className="inline-flex items-center gap-1">
       {label}
-      <InfoTip content={tip} />
+      <InfoTip content={tip} label={label} />
     </span>
   );
 }

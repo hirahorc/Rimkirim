@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import * as TooltipPrimitive from "@radix-ui/react-tooltip";
-import { Info } from "lucide-react";
+import { HelpCircle } from "lucide-react";
 import { useT } from "@/lib/i18n/LanguageProvider";
 import { cn } from "@/lib/utils/cn";
 
@@ -10,37 +10,79 @@ export const TooltipProvider = TooltipPrimitive.Provider;
 export const Tooltip = TooltipPrimitive.Root;
 export const TooltipTrigger = TooltipPrimitive.Trigger;
 
+/**
+ * Ink bubble with a small arrow, above the trigger by default; radix flips or
+ * shifts it away from the viewport edge. Enter/exit motion lives in globals
+ * (.tip-bubble[data-state=…]) keyed off radix's data-state.
+ */
 export const TooltipContent = React.forwardRef<
   React.ElementRef<typeof TooltipPrimitive.Content>,
   React.ComponentPropsWithoutRef<typeof TooltipPrimitive.Content>
->(({ className, sideOffset = 6, ...props }, ref) => (
+>(({ className, side = "top", sideOffset = 8, collisionPadding = 8, children, ...props }, ref) => (
   <TooltipPrimitive.Portal>
     <TooltipPrimitive.Content
       ref={ref}
+      side={side}
       sideOffset={sideOffset}
+      collisionPadding={collisionPadding}
       className={cn(
-        "z-50 max-w-[240px] rounded-sm border border-border-strong bg-surface-2 px-3 py-2 text-xs leading-relaxed text-foreground shadow-overlay",
-        "data-[state=delayed-open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=delayed-open]:fade-in-0",
+        "tip-bubble z-50 w-max max-w-[15rem] rounded-lg bg-foreground px-2.5 py-2 text-center text-sm leading-normal text-background shadow-tip",
         className,
       )}
       {...props}
-    />
+    >
+      {children}
+      <TooltipPrimitive.Arrow width={8} height={4} className="fill-foreground" />
+    </TooltipPrimitive.Content>
   </TooltipPrimitive.Portal>
 ));
 TooltipContent.displayName = "TooltipContent";
 
-/** Convenience: an info (i) icon that shows `content` on hover/focus. */
-export function InfoTip({ content }: { content: React.ReactNode }) {
+/**
+ * A help (?) icon that explains `content` on hover, keyboard focus, or tap.
+ * `label` names the thing being explained for assistive tech ("Info: Volumetric").
+ */
+export function InfoTip({ content, label }: { content: React.ReactNode; label?: string }) {
   const t = useT();
+  // controlled so a tap (no hover on touch) can toggle it too; the tap's own
+  // trailing pointer/focus events would close it again, so ignore closes for a
+  // moment after a tap-open
+  const [open, setOpen] = React.useState(false);
+  const tapAt = React.useRef(0);
+  // what a tap should do is decided at pointer-down, before radix's own
+  // focus/click handlers churn the state during the same gesture
+  const wasOpenAtDown = React.useRef(false);
+  const onOpenChange = (v: boolean) => {
+    if (!v && Date.now() - tapAt.current < 400) return;
+    setOpen(v);
+  };
   return (
-    <Tooltip>
+    <Tooltip open={open} onOpenChange={onOpenChange}>
       <TooltipTrigger asChild>
         <button
           type="button"
-          className="inline-grid place-items-center text-muted-2 transition-colors hover:text-foreground focus-visible:text-foreground focus-visible:outline-none"
-          aria-label={t("common.moreInfo")}
+          onPointerDown={() => {
+            wasOpenAtDown.current = open;
+          }}
+          onClick={(e) => {
+            // radix closes on click; preventDefault keeps our toggle in charge
+            e.preventDefault();
+            const next = !wasOpenAtDown.current;
+            if (next) tapAt.current = Date.now();
+            setOpen(next);
+          }}
+          className={cn(
+            "relative inline-grid size-[1.125rem] shrink-0 cursor-help place-items-center rounded-full text-muted-2 opacity-55 transition-[opacity,color] duration-200",
+            "hover:text-muted hover:opacity-100 focus-visible:text-muted focus-visible:opacity-100",
+            "focus-visible:outline-2 focus-visible:outline-offset-[3px] focus-visible:outline-accent",
+            // 28px hit target without growing the visual
+            "after:absolute after:-inset-[5px] after:rounded-full",
+          )}
+          aria-label={
+            label ? t("common.infoAbout").replace("{label}", label) : t("common.moreInfo")
+          }
         >
-          <Info className="size-3.5" />
+          <HelpCircle className="size-[1.125rem]" strokeWidth={2} />
         </button>
       </TooltipTrigger>
       <TooltipContent>{content}</TooltipContent>

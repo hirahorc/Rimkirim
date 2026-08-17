@@ -12,6 +12,7 @@ const id = {
     tagline: "International Shipping Assistant",
     close: "Tutup",
     moreInfo: "Info selengkapnya",
+    infoAbout: "Info: {label}",
   },
   cookie: {
     text: "Kami memakai cookie untuk meningkatkan pengalamanmu di situs ini. Dengan melanjutkan, kamu setuju dengan penggunaan cookie kami.",
@@ -1172,6 +1173,7 @@ const en: Messages = {
     tagline: "International Shipping Assistant",
     close: "Close",
     moreInfo: "More info",
+    infoAbout: "Info: {label}",
   },
   cookie: {
     text: "We use cookies to improve your experience on this site. By continuing, you agree to our use of cookies.",

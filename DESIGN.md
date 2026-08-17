@@ -469,6 +469,10 @@ the active link is a Panel-2 pill instead. Same principle, inverted fill.
   phrase.
 - **`.link-mark`** — inline links: conventional link blue (`--info`) with a soft underline that
   darkens on hover. Lime is never used to mark a link.
+- **Tooltip (`InfoTip`)** — an 18px help-circle trigger (muted, 55% → 100% on hover/focus,
+  28px hit target, `cursor: help`) opening an Ink bubble: white 14px text, 8px radius, small
+  arrow, soft shadow, `max-width: 15rem`, above by default and shifted/flipped off the viewport
+  edge. Motion 100ms in (lift + 0.95 scale) / 100ms out; opens on hover, focus, and tap.
 
 ### De-boxed record (signature)
 The read-only counterpart to the card. A long reference record — the order summary, the FAQ — is
