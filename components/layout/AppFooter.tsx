@@ -31,6 +31,7 @@ export function AppFooter() {
                 [t("footer.linkMa"), "/#layanan"],
                 [t("nav.expat"), "/expat-relocation"],
                 [t("footer.linkHitung"), "/#kalkulator"],
+                [t("footer.linkPackingList"), "/packing-list/buat"],
               ]}
             />
             <FooterCol
