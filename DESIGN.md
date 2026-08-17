@@ -312,7 +312,15 @@ sense that the page is still there underneath.
 ## Motion
 
 **One authored moment, and it belongs to the hero.** Everything else is a 0.2s
-`cubic-bezier(0.4, 0, 0.2, 1)` colour/border transition on hover and focus.
+`cubic-bezier(0.4, 0, 0.2, 1)` colour/border transition on hover and focus — with one
+sanctioned exception:
+
+**Earned motion.** A milestone the user just reached may play one animation, once: the check
+that draws itself on a just-completed module (`check-draw`), the hub progress bar filling to
+its new count, a status banner easing in when its state changes (`banner-enter`), the
+Delivered node drawing its check. Earned motion marks an achievement at the moment it
+happens — it never loops, never decorates idle UI, and never plays on mere page load of an
+unchanged state. 0.3–0.5s, `--ease-out-soft`, always guarded by `prefers-reduced-motion`.
 
 - **Entrance** (time-based, on load): the header drops in, hero children cascade up on a
   0.05s-per-item stagger, the headline arrives word by word, and the calculator pops in last.

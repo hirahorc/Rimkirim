@@ -42,6 +42,9 @@ export function StatusStepper({ status }: { status: OrderPhase }) {
       {PHASE_STEPS.map((phase, i) => {
         const done = !cancelled && currentIdx > -1 && i < currentIdx;
         const current = i === currentIdx;
+        // the journey's last node fills like the done ones and draws its
+        // check once — the rail visibly finishes instead of idling
+        const arrived = status === "delivered" && phase === "delivered";
         return (
           <div
             key={phase}
@@ -58,15 +61,28 @@ export function StatusStepper({ status }: { status: OrderPhase }) {
               <span
                 className={cn(
                   "grid size-6 shrink-0 place-items-center rounded-full border-2",
-                  done && "border-brand bg-brand text-brand-ink",
+                  (done || arrived) && "border-brand bg-brand text-brand-ink",
                   // on daylight a lime hairline reads ~1.5:1, so the live step
                   // is framed in ink and marked with a lime core instead
-                  current && "border-foreground bg-background text-brand-ink",
+                  current && !arrived && "border-foreground bg-background text-brand-ink",
                   !done && !current && "border-border bg-surface-2 text-muted-2",
                   cancelled && "border-border bg-surface-2 text-muted-2",
                 )}
               >
-                {done ? (
+                {arrived ? (
+                  <svg
+                    viewBox="0 0 24 24"
+                    className="size-3.5"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth={3}
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    aria-hidden
+                  >
+                    <path className="check-draw" d="M4 12.5l5 5L20 6.5" />
+                  </svg>
+                ) : done ? (
                   <Check className="size-3.5" strokeWidth={3} />
                 ) : cancelled ? (
                   <X className="size-3.5" />

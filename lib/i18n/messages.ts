@@ -686,6 +686,8 @@ const id = {
       "Bea Cukai menerbitkan SPTNP. Bayar pajak agar barang bisa dikeluarkan.",
     attClearanceReject:
       "Pengajuan ditolak Bea Cukai. Tim kami menyiapkan permohonan baru dan mengulang clearance dari awal — tidak ada yang perlu kamu lakukan sekarang. Perlu diketahui: biaya warehouse tetap berjalan selama proses ini.",
+    attDelivered:
+      "Kirimanmu sudah sampai di tujuan. Terima kasih sudah pindah bersama Rimkirim!",
     // clearance sub-flow — spine labels (components/tracking/ClearancePanel)
     clSpinePre: "Pre-Clearance",
     clSpineBarpin: "Konfirmasi Barpin",
@@ -1768,6 +1770,8 @@ const en: Messages = {
       "Customs issued an SPTNP. Pay the tax so the goods can be released.",
     attClearanceReject:
       "Customs rejected the submission. Our team is preparing a new application and restarting clearance from the beginning — nothing for you to do right now. Heads up: warehouse costs keep running during this process.",
+    attDelivered:
+      "Your shipment has arrived at its destination. Thank you for moving with Rimkirim!",
     // clearance sub-flow — spine labels (components/tracking/ClearancePanel)
     clSpinePre: "Pre-Clearance",
     clSpineBarpin: "Barpin confirm",

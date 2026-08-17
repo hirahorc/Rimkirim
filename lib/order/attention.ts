@@ -11,6 +11,8 @@ export const POSITIVE_ATTENTION = new Set([
   "order.attPickupRescheduled",
   "order.attClearanceReleased",
   "order.attClearanceReleasedExtra",
+  // synthetic: OrderDetail raises it for delivered orders with no attention
+  "order.attDelivered",
 ]);
 
 /** States where the ball is in the customer's court. */

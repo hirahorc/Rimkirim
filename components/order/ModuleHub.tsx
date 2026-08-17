@@ -260,7 +260,11 @@ export function ModuleHub() {
                 <p className="font-medium">{t(m.titleKey)}</p>
                 <p className="truncate text-sm text-muted">{t(m.descKey)}</p>
               </div>
-              <StatusBadge status={status} locked={locked} justDone={m.id === justDone} />
+              {/* on the next-up card the Continue pill already says it all —
+                  at phone width the "Not started" badge just crowds the title */}
+              <span className={cn("contents", isNext && "hidden sm:contents")}>
+                <StatusBadge status={status} locked={locked} justDone={m.id === justDone} />
+              </span>
               {!locked &&
                 (isNext ? (
                   <span className="inline-flex shrink-0 items-center gap-0.5 rounded-full bg-brand py-1 pl-2.5 pr-1.5 text-xs font-semibold text-brand-ink">

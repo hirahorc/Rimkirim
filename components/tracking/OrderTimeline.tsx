@@ -22,6 +22,19 @@ export const EVENT_DOT: Record<TimelineEventType, string> = {
   awb: "bg-brand",
 };
 
+/* Phase milestones read a step heavier than housekeeping events (attention
+   raised/cleared, AWB churn) so the log doubles as an achievement trail. */
+const MILESTONE = new Set<TimelineEventType>([
+  "submitted",
+  "resubmitted",
+  "quotation",
+  "pickup",
+  "in-transit",
+  "clearance",
+  "delivery",
+  "delivered",
+]);
+
 /** Vertical activity log for an order — newest event on top. */
 export function OrderTimeline({ events }: { events: TimelineEvent[] }) {
   const t = useT();
@@ -56,7 +69,16 @@ export function OrderTimeline({ events }: { events: TimelineEvent[] }) {
               )}
             />
             <div>
-              <p className="text-sm">{t(ev.messageKey)}</p>
+              <p
+                className={cn(
+                  "text-sm",
+                  MILESTONE.has(ev.type)
+                    ? "font-medium text-foreground"
+                    : "text-muted",
+                )}
+              >
+                {t(ev.messageKey)}
+              </p>
               <p className="mt-0.5 text-xs text-muted-2">
                 {timeFmt.format(ev.at)}
               </p>

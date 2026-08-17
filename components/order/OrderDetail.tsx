@@ -82,8 +82,12 @@ export function OrderDetail({ id }: { id: string }) {
   // the "needs you / in progress" tier — anything time-sensitive or live.
   // gated so the zone wrapper never renders an empty band with a top margin.
   const showRevision = !!order.revisionModule && order.status === "review";
+  // the journey's end deserves at least a success banner, not a bare stepper
+  const attention =
+    order.attention ??
+    (order.status === "delivered" ? "order.attDelivered" : null);
   const hasLivePanels =
-    !!order.attention ||
+    !!attention ||
     showRevision ||
     !!order.quotation ||
     order.status === "pickup" ||
@@ -160,7 +164,7 @@ export function OrderDetail({ id }: { id: string }) {
           each other so they read as a single "in progress" band */}
       {hasLivePanels && (
         <div className="mt-8 space-y-3">
-          <AttentionBanner attention={order.attention} />
+          <AttentionBanner attention={attention} />
           {showRevision && (
             <RevisionCard
               orderId={order.id}
