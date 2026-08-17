@@ -7,6 +7,7 @@ import { LanguageToggle } from "./LanguageToggle";
 import { MobileNav } from "./MobileNav";
 import { AccountMenu } from "@/components/auth/AccountMenu";
 import { NotificationBell } from "@/components/notifications/NotificationBell";
+import { LiveOrderToasts } from "@/components/notifications/LiveOrderToasts";
 import { Button } from "@/components/ui/button";
 import { useCurrentUser } from "@/lib/store/useAuthStore";
 import { useT } from "@/lib/i18n/LanguageProvider";
@@ -62,6 +63,7 @@ export function AppHeader() {
               {/* "Pesanan Saya" lives only in the profile menu (AccountMenu) —
                   the header keeps just the bell + profile when signed in */}
               <NotificationBell />
+              <LiveOrderToasts />
               <AccountMenu />
             </>
           ) : (

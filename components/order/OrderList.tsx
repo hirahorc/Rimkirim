@@ -3,13 +3,23 @@
 import * as React from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Loader2, ArrowRight, PackageSearch, PenLine } from "lucide-react";
+import {
+  Loader2,
+  ArrowRight,
+  PackageSearch,
+  PenLine,
+  AlertTriangle,
+} from "lucide-react";
 import {
   useMyOrders,
   useOrderHydrated,
   useOrderStore,
   type Order,
+  type OrderPhase,
 } from "@/lib/store/useOrderStore";
+import { ACTION_ATTENTION } from "@/lib/order/attention";
+import { PHASE_STEPS } from "@/components/tracking/StatusStepper";
+import { cn } from "@/lib/utils/cn";
 import { useAuthHydrated, useCurrentUser } from "@/lib/store/useAuthStore";
 import { getCountry } from "@/lib/data/countries";
 import { Flag } from "@/components/shared/Flag";
@@ -92,6 +102,9 @@ function OrderCard({ order, locale }: { order: Order; locale: "id" | "en" }) {
   }).format(new Date(order.createdAt));
   const isDraft = order.status === "draft";
   const identifier = order.bookingNumber;
+  const needsAction =
+    order.attention !== null && ACTION_ATTENTION.has(order.attention);
+  const phaseIdx = PHASE_STEPS.indexOf(order.status as OrderPhase);
 
   return (
     <Card className="p-4 transition-colors hover:border-border-strong">
@@ -116,6 +129,39 @@ function OrderCard({ order, locale }: { order: Order; locale: "id" | "en" }) {
           </p>
         </div>
       </div>
+      {/* where the order sits in the 7 phases, at a glance */}
+      {phaseIdx >= 0 && (
+        <div className="mt-3 flex items-center gap-1" aria-hidden>
+          {PHASE_STEPS.map((p, i) => (
+            <span
+              key={p}
+              className={cn(
+                "h-1 flex-1 rounded-full",
+                i < phaseIdx
+                  ? "bg-brand"
+                  : i === phaseIdx
+                    ? "bg-foreground"
+                    : "bg-surface-3",
+              )}
+            />
+          ))}
+        </div>
+      )}
+      {/* the ball is in the user's court — say so on the list, not only inside */}
+      {needsAction && (
+        <Link
+          href={`/pesanan/${order.id}`}
+          className="mt-3 flex items-start gap-2 border-t border-border pt-3 text-sm"
+        >
+          <AlertTriangle className="mt-0.5 size-4 shrink-0 text-warning" />
+          <span className="min-w-0">
+            <span className="font-semibold text-warning">
+              {t("order.listNeedsAction")}
+            </span>{" "}
+            <span className="text-foreground">{t(order.attention!)}</span>
+          </span>
+        </Link>
+      )}
       {isDraft && (
         <div className="mt-3 flex items-center justify-between gap-3 border-t border-border pt-3">
           <p className="text-xs text-muted-2">{t("order.draftNote")}</p>

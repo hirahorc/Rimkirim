@@ -597,6 +597,7 @@ const id = {
     ordersEmpty: "Belum ada pesanan.",
     ordersEmptyCta: "Mulai order baru",
     ordersCreatedAt: "Dibuat",
+    listNeedsAction: "Perlu tindakan kamu:",
     ordersRoute: "Rute",
     serviceLabel: "Layanan",
     serviceBfg: "Back For Good",
@@ -1090,6 +1091,7 @@ const id = {
     title: "Notifikasi",
     unread: "belum dibaca",
     empty: "Belum ada notifikasi.",
+    view: "Lihat pesanan",
   },
   lang: {
     label: "Bahasa",
@@ -1677,6 +1679,7 @@ const en: Messages = {
     ordersEmpty: "No orders yet.",
     ordersEmptyCta: "Start a new order",
     ordersCreatedAt: "Created",
+    listNeedsAction: "Action needed:",
     ordersRoute: "Route",
     serviceLabel: "Service",
     serviceBfg: "Back For Good",
@@ -2160,6 +2163,7 @@ const en: Messages = {
     title: "Notifications",
     unread: "unread",
     empty: "No notifications yet.",
+    view: "View order",
   },
   lang: {
     label: "Language",

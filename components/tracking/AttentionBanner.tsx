@@ -1,29 +1,15 @@
 "use client";
 
 import { AlertTriangle, CheckCircle2, MessageCircle } from "lucide-react";
+import {
+  POSITIVE_ATTENTION,
+  DARK_ATTENTION,
+} from "@/lib/order/attention";
 import { useT } from "@/lib/i18n/LanguageProvider";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils/cn";
 
 const WA_URL = "https://wa.me/6281234567890";
-
-/* Good news must not wear the warning costume: these attention states report
-   progress, not problems, so they render as a success banner. */
-const POSITIVE = new Set([
-  "order.attAwbIssued",
-  "order.attPickupScheduled",
-  "order.attPickupRescheduled",
-  "order.attClearanceReleased",
-  "order.attClearanceReleasedExtra",
-]);
-
-/* The hardest states carry a direct line to a human. */
-const DARK = new Set([
-  "order.attClearanceReject",
-  "order.attNeedsNewAwb",
-  "order.attAwbChanged",
-  "order.attClearanceTax",
-]);
 
 /* Customs jargon explained in place — one plain sentence right where the
    unfamiliar term (and the anxiety) appears. */
@@ -45,7 +31,7 @@ const EXPLAIN: Record<string, string> = {
 export function AttentionBanner({ attention }: { attention: string | null }) {
   const t = useT();
   if (!attention) return null;
-  const positive = POSITIVE.has(attention);
+  const positive = POSITIVE_ATTENTION.has(attention);
   const Icon = positive ? CheckCircle2 : AlertTriangle;
   const explain = EXPLAIN[attention];
   return (
@@ -74,7 +60,7 @@ export function AttentionBanner({ attention }: { attention: string | null }) {
         </p>
         <p className="mt-0.5 text-sm text-foreground">{t(attention)}</p>
         {explain && <p className="mt-1 text-xs text-muted">{t(explain)}</p>}
-        {DARK.has(attention) && (
+        {DARK_ATTENTION.has(attention) && (
           <a
             href={WA_URL}
             target="_blank"

@@ -4,7 +4,9 @@ import type { TimelineEvent, TimelineEventType } from "@/lib/store/useOrderStore
 import { useLanguage, useT } from "@/lib/i18n/LanguageProvider";
 import { cn } from "@/lib/utils/cn";
 
-const DOT: Record<TimelineEventType, string> = {
+/** Event-type dot colours — shared with the notification bell so an event
+ *  reads the same in the log and in the popover. */
+export const EVENT_DOT: Record<TimelineEventType, string> = {
   created: "border-border bg-surface-2",
   submitted: "bg-brand",
   resubmitted: "bg-brand",
@@ -50,7 +52,7 @@ export function OrderTimeline({ events }: { events: TimelineEvent[] }) {
             <span
               className={cn(
                 "relative mt-1.5 size-3 shrink-0 rounded-full border",
-                DOT[ev.type],
+                EVENT_DOT[ev.type],
               )}
             />
             <div>

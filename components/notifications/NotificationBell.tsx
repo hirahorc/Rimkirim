@@ -8,10 +8,12 @@ import {
   useOrderStore,
   useOrderHydrated,
 } from "@/lib/store/useOrderStore";
+import type { TimelineEventType } from "@/lib/store/useOrderStore";
 import {
   useNotificationsStore,
   useNotificationsHydrated,
 } from "@/lib/store/useNotificationsStore";
+import { EVENT_DOT } from "@/components/tracking/OrderTimeline";
 import { useAuthHydrated, useCurrentUser } from "@/lib/store/useAuthStore";
 import { useLanguage, useT } from "@/lib/i18n/LanguageProvider";
 import {
@@ -26,6 +28,7 @@ interface NotificationItem {
   at: number;
   /** insertion sequence (higher = later) — deterministic tiebreaker for `at`. */
   seq: number;
+  type: TimelineEventType;
   messageKey: string;
   orderId: string;
   identifier: string | null;
@@ -53,6 +56,7 @@ function useNotifications(): NotificationItem[] {
           key: `${o.id}:${e.id}`,
           at: e.at,
           seq: items.length,
+          type: e.type,
           messageKey: e.messageKey,
           orderId: o.id,
           identifier: o.bookingNumber,
@@ -134,15 +138,26 @@ export function NotificationBell() {
                   href={`/pesanan/${n.orderId}`}
                   onClick={() => setOpen(false)}
                   className={cn(
-                    "flex flex-col gap-0.5 rounded-md px-2 py-2.5 transition-colors hover:bg-surface-2",
+                    "flex gap-2.5 rounded-md px-2 py-2.5 transition-colors hover:bg-surface-2",
                     n.at > readUpTo && "bg-surface-2/60",
                   )}
                 >
-                  <span className="text-sm">{t(n.messageKey)}</span>
-                  <span className="flex items-center gap-2 text-xs text-muted-2">
-                    <span className="font-mono">{n.identifier ?? "–"}</span>
-                    <span>·</span>
-                    <span>{timeFmt.format(n.at)}</span>
+                  {/* same colour language as the order timeline: lime =
+                      progress, amber = needs attention, green = delivered */}
+                  <span
+                    aria-hidden
+                    className={cn(
+                      "mt-1.5 size-2 shrink-0 rounded-full border border-transparent",
+                      EVENT_DOT[n.type],
+                    )}
+                  />
+                  <span className="flex min-w-0 flex-col gap-0.5">
+                    <span className="text-sm">{t(n.messageKey)}</span>
+                    <span className="flex items-center gap-2 text-xs text-muted-2">
+                      <span className="font-mono">{n.identifier ?? "–"}</span>
+                      <span>·</span>
+                      <span>{timeFmt.format(n.at)}</span>
+                    </span>
                   </span>
                 </Link>
               </li>
