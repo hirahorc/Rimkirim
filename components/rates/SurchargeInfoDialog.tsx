@@ -289,22 +289,16 @@ export function SurchargeInfoDialog({ children }: { children: React.ReactNode })
         </DialogHeader>
 
         <Tabs defaultValue="handling" className="flex min-h-0 flex-1 flex-col">
-          <div className="px-5 sm:px-6">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger
-                value="handling"
-                className="h-auto whitespace-normal px-2 py-2 text-center text-xs leading-tight sm:text-sm"
-              >
-                {t("surcharge.tabHandling")}
-              </TabsTrigger>
-              <TabsTrigger
-                value="logistic"
-                className="h-auto whitespace-normal px-2 py-2 text-center text-xs leading-tight sm:text-sm"
-              >
-                {t("surcharge.tabLogistic")}
-              </TabsTrigger>
-            </TabsList>
-          </div>
+          {/* the list carries the padding so its rule runs edge to edge, while
+              the two triggers split the padded width between them */}
+          <TabsList variant="underline" className="px-5 sm:px-6">
+            <TabsTrigger variant="underline" value="handling">
+              {t("surcharge.tabHandling")}
+            </TabsTrigger>
+            <TabsTrigger variant="underline" value="logistic">
+              {t("surcharge.tabLogistic")}
+            </TabsTrigger>
+          </TabsList>
 
           <div className="scroll-thin min-h-0 flex-1 overflow-y-auto">
             <div className="pl-5 pr-[14px] pb-5 pt-4 sm:px-6 sm:pb-6 sm:pt-5">

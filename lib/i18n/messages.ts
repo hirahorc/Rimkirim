@@ -340,7 +340,7 @@ const id = {
   surcharge: {
     title: "Surcharge Information",
     desc: "Rincian biaya penanganan tambahan dan biaya logistik lainnya.",
-    tabHandling: "Additional Handling Surcharge",
+    tabHandling: "Handling Surcharge",
     tabLogistic: "Other Logistic Costs",
     handlingHeading: "Additional Handling Surcharge",
     handlingIntroPre:
@@ -1411,7 +1411,7 @@ const en: Messages = {
   surcharge: {
     title: "Surcharge Information",
     desc: "Details regarding additional handling fees and other logistic costs.",
-    tabHandling: "Additional Handling Surcharge",
+    tabHandling: "Handling Surcharge",
     tabLogistic: "Other Logistic Costs",
     handlingHeading: "Additional Handling Surcharge",
     handlingIntroPre:
