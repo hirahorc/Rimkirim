@@ -1568,6 +1568,13 @@ export function useMyOrders(email: string | null): Order[] {
   );
 }
 
+/** Every order the user owns, drafts included (for linkage checks, not lists). */
+export function useAllMyOrders(email: string | null): Order[] {
+  return useOrderStore(
+    useShallow((s) => (email ? s.orders.filter((o) => o.ownerEmail === email) : [])),
+  );
+}
+
 /**
  * Client hydration flag (mirrors useCalculatorStore's pattern) so guards don't
  * redirect before the persisted order state has loaded.

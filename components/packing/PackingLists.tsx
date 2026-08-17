@@ -15,8 +15,8 @@ import {
   Package,
   ArrowUpRight,
 } from "lucide-react";
-import { useMyOrders, useOrderHydrated } from "@/lib/store/useOrderStore";
-import { packingListFromOrder } from "@/lib/order/order-packing";
+import { useAllMyOrders, useOrderHydrated } from "@/lib/store/useOrderStore";
+import { packingListFromOrder, orderUsingCode } from "@/lib/order/order-packing";
 import {
   useMyPackingLists,
   usePackingHydrated,
@@ -35,6 +35,7 @@ import { RouteArrow } from "@/components/ui/route-arrow";
 import { CopyButton } from "@/components/order/CopyButton";
 import { DeletePackingListDialog } from "./DeletePackingListDialog";
 import { useDownloadCipl } from "./useDownloadCipl";
+import { useOpenOrder } from "./useOpenOrder";
 
 /** "Packing List Saya" — the signed-in user's standalone packing lists. */
 export function PackingLists() {
@@ -46,15 +47,37 @@ export function PackingLists() {
   const user = useCurrentUser();
   const ownLists = useMyPackingLists(user?.email ?? null);
   const orderHydrated = useOrderHydrated();
-  const orders = useMyOrders(user?.email ?? null);
-  // lists an order built on its own sit next to the standalone ones; an order
-  // that reused a standalone code isn't shown twice
+  const orders = useAllMyOrders(user?.email ?? null);
+  // one rule: a packing list linked to an order is owned by that order — its
+  // data comes from the order's modules and it's edited there. Standalone
+  // lists whose code an order picked up therefore show as the order's version.
   const lists = React.useMemo(() => {
-    const ownCodes = new Set(ownLists.map((l) => l.code));
-    const fromOrders = orders
-      .map(packingListFromOrder)
-      .filter((l): l is PackingList => l !== null && !ownCodes.has(l.code));
-    return [...ownLists, ...fromOrders].sort((a, b) => b.updatedAt - a.updatedAt);
+    const fromOrders = new Map(
+      orders
+        .map(packingListFromOrder)
+        .filter((l): l is PackingList => l !== null)
+        .map((l) => [l.code, l] as const),
+    );
+    const merged: PackingList[] = ownLists.map((l) => {
+      const viaOrder = fromOrders.get(l.code);
+      if (viaOrder) {
+        fromOrders.delete(l.code);
+        return viaOrder;
+      }
+      const linked = orderUsingCode(orders, l.code);
+      // linked but the order hasn't filled its modules yet: still read-only
+      return linked
+        ? {
+            ...l,
+            source: {
+              orderId: linked.id,
+              bookingNumber: linked.bookingNumber,
+              draft: linked.status === "draft",
+            },
+          }
+        : l;
+    });
+    return [...merged, ...fromOrders.values()].sort((a, b) => b.updatedAt - a.updatedAt);
   }, [ownLists, orders]);
   const remove = usePackingListStore((s) => s.remove);
   const [pendingDelete, setPendingDelete] = React.useState<PackingList | null>(null);
@@ -144,6 +167,7 @@ function PackingListCard({
 }) {
   const t = useT();
   const { busy, download } = useDownloadCipl();
+  const openOrder = useOpenOrder();
   const origin = getCountry(pl.data.sender.country);
   const dest = getCountry(pl.data.receiver.country);
   const sum = summarizeItems(pl.data.items);
@@ -198,10 +222,8 @@ function PackingListCard({
         </Button>
         {pl.source ? (
           <>
-            <Button asChild size="sm" variant="ghost">
-              <Link href={`/pesanan/${pl.source.orderId}`}>
-                <ArrowUpRight className="size-3.5" /> {t("pl.viewOrder")}
-              </Link>
+            <Button size="sm" variant="ghost" onClick={() => openOrder(pl.source!)}>
+              <ArrowUpRight className="size-3.5" /> {t("pl.viewOrder")}
             </Button>
             <span className="ml-auto text-xs text-muted-2">{t("pl.fromOrderNote")}</span>
           </>

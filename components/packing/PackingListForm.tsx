@@ -5,7 +5,9 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useForm, Controller } from "react-hook-form";
 import { toast } from "sonner";
-import { ArrowLeft, Copy, Download, Loader2, FileQuestion } from "lucide-react";
+import { ArrowLeft, ArrowUpRight, Copy, Download, Loader2, FileQuestion, Package } from "lucide-react";
+import { useAllMyOrders, useOrderHydrated } from "@/lib/store/useOrderStore";
+import { orderUsingCode } from "@/lib/order/order-packing";
 import {
   usePackingListStore,
   usePackingList,
@@ -36,6 +38,7 @@ import {
 } from "@/components/shared/forms/PackagesEditor";
 import { CopyButton } from "@/components/order/CopyButton";
 import { useDownloadCipl } from "./useDownloadCipl";
+import { useOpenOrder } from "./useOpenOrder";
 
 /** Flat form values: the editor expects `currency`/`packages` at the top level. */
 interface PackingFormValues extends ItemsData {
@@ -73,6 +76,11 @@ export function PackingListForm({ id }: { id?: string }) {
   const user = useCurrentUser();
   const existing = usePackingList(id ?? null);
   const owned = existing && user && existing.ownerEmail === user.email ? existing : undefined;
+  const orderHydrated = useOrderHydrated();
+  const orders = useAllMyOrders(user?.email ?? null);
+  // linked to an order → the order owns it; edit happens there
+  const linkedOrder = owned ? orderUsingCode(orders, owned.code) : undefined;
+  const openOrder = useOpenOrder();
 
   const path = id ? `/packing-list/${id}` : "/packing-list/buat";
   React.useEffect(() => {
@@ -80,7 +88,7 @@ export function PackingListForm({ id }: { id?: string }) {
     if (!user) router.replace(`/masuk?next=${encodeURIComponent(path)}`);
   }, [hydrated, authHydrated, user, router, path]);
 
-  if (!hydrated || !authHydrated) {
+  if (!hydrated || !authHydrated || !orderHydrated) {
     return (
       <div className="flex min-h-[50vh] items-center justify-center text-muted">
         <Loader2 className="size-5 animate-spin" />
@@ -88,6 +96,42 @@ export function PackingListForm({ id }: { id?: string }) {
     );
   }
   if (!user) return null;
+
+  if (owned && linkedOrder) {
+    return (
+      <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6 sm:py-10">
+        <Card className="p-10 text-center">
+          <div className="mx-auto grid size-14 place-items-center rounded-full bg-surface-2 text-muted-2">
+            <Package className="size-7" />
+          </div>
+          <p className="mt-4 font-medium">{t("pl.linkedTitle")}</p>
+          <p className="mx-auto mt-1 max-w-sm text-sm text-muted">
+            {linkedOrder.bookingNumber && linkedOrder.status !== "draft"
+              ? t("pl.linkedBody").replace("{order}", linkedOrder.bookingNumber)
+              : t("pl.linkedBodyDraft")}
+          </p>
+          <div className="mt-5 flex flex-col justify-center gap-2 sm:flex-row">
+            <Button
+              onClick={() =>
+                openOrder({
+                  orderId: linkedOrder.id,
+                  bookingNumber: linkedOrder.bookingNumber,
+                  draft: linkedOrder.status === "draft",
+                })
+              }
+            >
+              <ArrowUpRight className="size-4" /> {t("pl.viewOrder")}
+            </Button>
+            <Button asChild variant="secondary">
+              <Link href="/packing-list">
+                <ArrowLeft className="size-4" /> {t("pl.backToList")}
+              </Link>
+            </Button>
+          </div>
+        </Card>
+      </div>
+    );
+  }
 
   if (id && !owned) {
     return (

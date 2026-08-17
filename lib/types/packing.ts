@@ -75,7 +75,7 @@ export interface PackingList {
   updatedAt: number;
   data: PackingListData;
   /** present when the list is derived from an order (read-only here) */
-  source?: { orderId: string; bookingNumber: string | null };
+  source?: { orderId: string; bookingNumber: string | null; draft: boolean };
 }
 
 export const emptyParty: Party = {

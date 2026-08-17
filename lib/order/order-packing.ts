@@ -30,6 +30,12 @@ export function packingListFromOrder(order: Order): PackingList | null {
       purpose: "household",
       items,
     },
-    source: { orderId: order.id, bookingNumber: order.bookingNumber },
+    source: { orderId: order.id, bookingNumber: order.bookingNumber, draft: order.status === "draft" },
   };
+}
+
+/** The user's order that uses this packing code, if any. */
+export function orderUsingCode(orders: Order[], code: string): Order | undefined {
+  const n = code.trim().toUpperCase();
+  return orders.find((o) => effectivePackingCode(o) === n);
 }

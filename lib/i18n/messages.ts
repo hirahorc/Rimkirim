@@ -1148,7 +1148,12 @@ const id = {
     notFoundBody: "Mungkin sudah dihapus, atau tautannya bukan milik akun ini.",
     packagesShort: "paket",
     fromOrder: "Dari pesanan",
-    fromOrderNote: "Dibuat otomatis dari formulir pesananmu. Ubah lewat pesanannya.",
+    fromOrderNote: "Terhubung ke pesanan. Ubah lewat formulir pesanannya.",
+    linkedTitle: "Packing list ini terhubung ke pesanan",
+    linkedBody:
+      "Kodenya sudah dipakai di pesanan {order}, jadi datanya ikut formulir pesanan itu. Ubah lewat sana supaya dokumen dan pesanan tetap sama.",
+    linkedBodyDraft:
+      "Kodenya sudah dipakai di pesanan yang masih kamu isi, jadi datanya ikut formulir pesanan itu. Lanjutkan pesanannya untuk mengubah.",
     viewOrder: "Lihat pesanan",
     updatedAt: "Diubah",
     prefilledToast: "Data packing list dipakai",
@@ -2278,7 +2283,12 @@ const en: Messages = {
     notFoundBody: "It may have been deleted, or the link belongs to another account.",
     packagesShort: "pkg",
     fromOrder: "From order",
-    fromOrderNote: "Built automatically from your order form. Edit it through the order.",
+    fromOrderNote: "Linked to an order. Edit it through the order form.",
+    linkedTitle: "This packing list is linked to an order",
+    linkedBody:
+      "Its code is used by order {order}, so its data follows that order form. Edit it there so the document and the order stay in sync.",
+    linkedBodyDraft:
+      "Its code is used by an order you're still filling in, so its data follows that order form. Continue the order to make changes.",
     viewOrder: "View order",
     updatedAt: "Updated",
     prefilledToast: "Packing list data applied",
