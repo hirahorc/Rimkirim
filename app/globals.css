@@ -26,6 +26,10 @@
   --brand-dim: #a3d600; /* hover for lime fills */
   --brand-ink: #282828; /* text placed on top of brand fills */
 
+  /* accent — the second, sanctioned colour. Unlike lime (fill-only), this one
+     may be used as coloured ink or an underline stroke. */
+  --accent: #9c26f5;
+
   /* status — tuned for a light canvas (the old pastels wash out on white) */
   --success: #16a34a;
   --warning: #b45309;
@@ -57,6 +61,8 @@
   --color-brand-soft: var(--brand-soft);
   --color-brand-dim: var(--brand-dim);
   --color-brand-ink: var(--brand-ink);
+
+  --color-accent: var(--accent);
 
   --color-success: var(--success);
   --color-warning: var(--warning);

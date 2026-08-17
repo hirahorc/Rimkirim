@@ -314,7 +314,7 @@ export function SurchargeInfoDialog({ children }: { children: React.ReactNode })
               </h3>
               <p className="mt-1 text-sm leading-relaxed text-muted">
                 {t("surcharge.handlingIntroPre")}{" "}
-                <span className="text-foreground">
+                <span className="font-medium text-accent">
                   {t("surcharge.handlingIntroHighlight")}
                 </span>
               </p>
