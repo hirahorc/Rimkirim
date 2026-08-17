@@ -8,13 +8,19 @@ import {
   MessageCircle,
   PenLine,
   Clock3,
+  Check,
+  Info,
+  Warehouse,
+  ChevronDown,
 } from "lucide-react";
 import { useOrderStore, type Order } from "@/lib/store/useOrderStore";
 import { useLanguage, useT } from "@/lib/i18n/LanguageProvider";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { formatIDR } from "@/lib/utils/currency";
+import { formatIDR, formatNumber } from "@/lib/utils/currency";
+import { formatCurrency } from "@/lib/data/currencies";
+import { cn } from "@/lib/utils/cn";
 import { RevisionDialog } from "./RevisionDialog";
 
 const WA_URL = "https://wa.me/6281234567890";
@@ -25,9 +31,13 @@ export function QuotationCard({ order }: { order: Order }) {
   const { locale } = useLanguage();
   const approveQuotation = useOrderStore((s) => s.approveQuotation);
   const [revOpen, setRevOpen] = React.useState(false);
+  // breakdown detail is collapsible; open by default so the payable is shown up front
+  const [breakdownOpen, setBreakdownOpen] = React.useState(true);
 
   if (!order.quotation) return null;
   const qu = order.quotation;
+  // only packages that actually triggered a surcharge earn a breakdown row
+  const surchargePkgs = (qu.packages ?? []).filter((p) => p.triggered.length > 0);
   const pendingApproval = order.status === "quotation";
   const approved = [
     "pickup",
@@ -76,25 +86,173 @@ export function QuotationCard({ order }: { order: Order }) {
         </div>
         <p className="mt-1 text-xs text-muted-2">
           <span className="font-mono tabular-nums">{formatIDR(qu.perKg)}</span> /{" "}
-          {t("order.tdPerKg")} · {qu.chargeableKg} kg ·{" "}
+          {t("order.tdPerKg")} · {formatNumber(qu.chargeableKg)} kg ·{" "}
           {t("order.quIssued")} {dateFmt.format(qu.issuedAt)}
         </p>
 
-        <div className="mt-4 divide-y divide-border rounded-md border border-border">
-          {qu.items.map((it) => (
-            <div
-              key={it.labelKey}
-              className="flex items-center justify-between gap-3 px-3 py-2 text-sm"
-            >
-              <span className="text-muted">{t(it.labelKey)}</span>
-              <span className="font-mono font-medium tabular-nums">
-                {formatIDR(it.amount)}
+        {/* Breakdown — what is billed: base rate + the one charged surcharge per package.
+            Collapsible (open by default) so the long detail can be tidied away; the big
+            Total above stays visible either way. */}
+        <div className="mt-5">
+          <button
+            type="button"
+            onClick={() => setBreakdownOpen((v) => !v)}
+            aria-expanded={breakdownOpen}
+            aria-controls="quotation-breakdown"
+            className="flex w-full items-center justify-between gap-2 text-xs font-medium uppercase tracking-wide text-muted-2 transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/40"
+          >
+            {t("order.quSecBreakdown")}
+            <ChevronDown
+              className={cn(
+                "size-4 transition-transform",
+                !breakdownOpen && "-rotate-90",
+              )}
+            />
+          </button>
+
+          {breakdownOpen && (
+          <div id="quotation-breakdown" className="mt-3 space-y-3">
+            <div className="flex items-baseline justify-between gap-3 text-sm">
+              <span className="text-muted">
+                {t("order.tdBaseRate")}{" "}
+                <span className="text-muted-2">
+                  (<span className="font-mono tabular-nums">{formatIDR(qu.perKg)}</span>
+                  {" × "}
+                  {formatNumber(qu.chargeableKg)} kg)
+                </span>
+              </span>
+              <span className="shrink-0 font-mono font-medium tabular-nums">
+                {formatIDR(qu.baseRate)}
               </span>
             </div>
-          ))}
-          <div className="flex items-center justify-between gap-3 bg-surface-2 px-3 py-2 text-sm font-semibold">
-            <span>{t("order.quTotal")}</span>
-            <span className="font-mono tabular-nums">{formatIDR(qu.total)}</span>
+
+            {/* per-package surcharges: every triggered line shown; the charged one
+                carries a check, the rest are struck through (only the highest counts) */}
+            {surchargePkgs.map((pkg) => (
+              <div key={pkg.index} className="rounded-md bg-surface-2 p-3">
+                <div className="flex items-center justify-between gap-3">
+                  <p className="text-xs font-semibold text-foreground">
+                    {t("order.quPackage")} {pkg.index}
+                  </p>
+                  <p className="font-mono text-xs tabular-nums text-muted-2">
+                    {formatNumber(pkg.weightKg)}kg · {formatNumber(pkg.length)}×
+                    {formatNumber(pkg.width)}×{formatNumber(pkg.height)}
+                  </p>
+                </div>
+                <ul className="mt-2 space-y-1.5">
+                  {pkg.triggered.map((s) => (
+                    <li
+                      key={s.code}
+                      className="flex items-start justify-between gap-3 text-sm"
+                    >
+                      <span
+                        className={cn(
+                          "flex items-start gap-1.5",
+                          s.applied ? "text-foreground" : "text-muted-2 line-through",
+                        )}
+                      >
+                        {s.applied ? (
+                          <Check className="mt-0.5 size-3.5 shrink-0" strokeWidth={3} />
+                        ) : (
+                          <span className="mt-0.5 size-3.5 shrink-0" aria-hidden />
+                        )}
+                        {s.label}
+                      </span>
+                      <span
+                        className={cn(
+                          "shrink-0 font-mono tabular-nums",
+                          s.applied
+                            ? "font-medium text-foreground"
+                            : "text-muted-2 line-through",
+                        )}
+                      >
+                        {formatIDR(s.amount)}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+
+            <div className="flex items-center justify-between gap-3 text-sm">
+              <span className="text-muted">{t("order.quSurcharge")}</span>
+              <span
+                className={cn(
+                  "shrink-0 font-mono tabular-nums",
+                  qu.surchargeTotal > 0 ? "font-medium text-foreground" : "text-muted-2",
+                )}
+              >
+                {formatIDR(qu.surchargeTotal)}
+              </span>
+            </div>
+
+            <div className="flex items-center justify-between gap-3 border-t border-border pt-3 text-sm font-semibold">
+              <span>{t("order.quTotal")}</span>
+              <span className="font-mono tabular-nums">{formatIDR(qu.total)}</span>
+            </div>
+          </div>
+          )}
+        </div>
+
+        {/* Information — shown for transparency but NOT part of the payable total */}
+        <div className="mt-6 border-t border-dashed border-border pt-5">
+          <p className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-muted-2">
+            <Info className="size-3.5" />
+            {t("order.quSecInfo")}
+          </p>
+
+          {/* Potential tax — always zero here; Indonesian Customs sets the final figure */}
+          <div className="mt-3">
+            <p className="text-sm font-semibold text-foreground">{t("order.quSecTax")}</p>
+            <div className="mt-2 space-y-1.5">
+              <div className="flex items-center justify-between gap-3 text-sm">
+                <span className="text-muted">{t("order.quTaxEstimatedValue")}</span>
+                <span className="shrink-0 font-mono tabular-nums text-foreground">
+                  {formatCurrency(qu.declaredValue, qu.declaredCurrency)}
+                </span>
+              </div>
+              {(
+                [
+                  ["order.quTaxImportDuty", qu.taxes.importDuty],
+                  ["order.quTaxVat", qu.taxes.vat],
+                  ["order.quTaxIncomeTax", qu.taxes.incomeTax],
+                ] as const
+              ).map(([key, amount]) => (
+                <div
+                  key={key}
+                  className="flex items-center justify-between gap-3 text-sm"
+                >
+                  <span className="text-muted">{t(key)}</span>
+                  <span className="shrink-0 font-mono tabular-nums text-muted-2">
+                    {formatIDR(amount)}
+                  </span>
+                </div>
+              ))}
+            </div>
+            <p className="mt-2 text-xs leading-relaxed text-muted-2">
+              {t("order.quTaxCaption")}
+            </p>
+          </div>
+
+          {/* Warehouse fee — only accrues past the free window; never in the total */}
+          <div className="mt-5">
+            <p className="flex items-center gap-1.5 text-sm font-semibold text-foreground">
+              <Warehouse className="size-3.5" />
+              {t("order.quSecWarehouse")}
+            </p>
+            <p className="mt-1 text-sm text-muted">
+              <span className="font-mono tabular-nums">
+                {formatIDR(qu.warehousePerKgPerDay)}
+              </span>
+              {t("order.quWarehousePerKgDay")} · {t("order.quWarehouseFreeNote")}
+            </p>
+            <p className="mt-0.5 text-sm text-muted">
+              {t("order.quWarehouseFromDay")}{" "}
+              <span className="font-mono font-medium tabular-nums text-foreground">
+                {formatIDR(qu.warehousePerDay)}
+              </span>
+              {t("order.quWarehousePerDay")}
+            </p>
           </div>
         </div>
 

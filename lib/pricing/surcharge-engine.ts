@@ -21,6 +21,8 @@ export interface SurchargeLine {
   amount: number; // IDR, per single package
   /** true if driven by an optional user flag rather than dimensions */
   optional?: boolean;
+  /** true on the single line actually charged (the highest) — set in `triggered` */
+  applied?: boolean;
 }
 
 export interface PackageAssessment {
@@ -30,7 +32,10 @@ export interface PackageAssessment {
   shortest: number;
   girth: number;
   volume: number; // cm³
+  /** the applied (highest) surcharge only — the amount actually charged */
   surcharges: SurchargeLine[];
+  /** every surcharge the package triggered, highest first, `applied` on the winner */
+  triggered: SurchargeLine[];
   /** sum of surcharge amounts for one package */
   surchargeTotal: number;
 }
@@ -158,6 +163,11 @@ export function assessPackage(p: PackageDims, flags: SurchargeFlags = {}): Packa
     (max, l) => (max === null || l.amount > max.amount ? l : max),
     null,
   );
+  // Every triggered line, highest first, flagged so the UI can show what the
+  // package hit vs. the one line that is actually charged (the domain rule).
+  const triggered = [...surcharges]
+    .sort((a, b) => b.amount - a.amount)
+    .map((l) => ({ ...l, applied: l === highest }));
   const appliedSurcharges = highest ? [highest] : [];
   const surchargeTotal = highest ? highest.amount : 0;
 
@@ -169,6 +179,7 @@ export function assessPackage(p: PackageDims, flags: SurchargeFlags = {}): Packa
     girth,
     volume,
     surcharges: appliedSurcharges,
+    triggered,
     surchargeTotal,
   };
 }
@@ -207,4 +218,47 @@ export function aggregateSurcharges(packages: PackageWithFlags[]): {
   const lines = [...byCode.values()];
   const total = lines.reduce((s, l) => s + l.amount, 0);
   return { lines, total };
+}
+
+/** Per-package surcharge breakdown — what each package triggered and what it's charged. */
+export interface PackageSurchargeBreakdown {
+  /** 1-based package-row index */
+  index: number;
+  quantity: number;
+  /** every surcharge triggered, highest first, `applied` on the charged one */
+  triggered: SurchargeLine[];
+  /** the single charged (highest) line, or null if none triggered */
+  applied: SurchargeLine | null;
+  /** applied.amount × quantity */
+  appliedTotal: number;
+}
+
+/**
+ * Break a shipment down package-by-package for the quotation: every triggered
+ * surcharge per package (so the customer sees what was assessed and waived) plus
+ * the one line actually charged. Unlike `aggregateSurcharges` — which buckets by
+ * code across the whole shipment for the rate comparison — this keeps each
+ * package distinct.
+ */
+export function assessShipmentSurcharges(packages: PackageWithFlags[]): {
+  packages: PackageSurchargeBreakdown[];
+  appliedTotal: number;
+} {
+  const rows = packages.map((p, i) => {
+    const qty = Math.max(1, p.quantity);
+    const { triggered } = assessPackage(p, {
+      nonStandardPackaging: p.nonStandardPackaging,
+      nonStackable: p.nonStackable,
+    });
+    const applied = triggered.find((l) => l.applied) ?? null;
+    return {
+      index: i + 1,
+      quantity: qty,
+      triggered,
+      applied,
+      appliedTotal: (applied?.amount ?? 0) * qty,
+    };
+  });
+  const appliedTotal = rows.reduce((s, r) => s + r.appliedTotal, 0);
+  return { packages: rows, appliedTotal };
 }

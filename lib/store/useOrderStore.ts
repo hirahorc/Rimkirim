@@ -10,7 +10,14 @@ import {
   makeOrderId,
   makePackingCode,
 } from "@/lib/utils/order-ids";
-import { totalChargeableWeight } from "@/lib/utils/chargeable-weight";
+import {
+  totalChargeableWeight,
+  chargeableWeight,
+} from "@/lib/utils/chargeable-weight";
+import {
+  assessShipmentSurcharges,
+  type SurchargeLine,
+} from "@/lib/pricing/surcharge-engine";
 import { useAuthStore } from "./useAuthStore";
 
 export type Citizenship = "indonesian" | "foreigner";
@@ -33,18 +40,46 @@ export interface SelectedRate {
   label: string;
 }
 
-/** One line of the itemized quotation breakdown (label is an i18n key). */
-export interface QuotationItem {
-  labelKey: string;
-  amount: number;
+/** One package row's surcharge breakdown, frozen into the quotation snapshot. */
+export interface QuotationPackage {
+  /** 1-based package index */
+  index: number;
+  /** actual weight (kg) and dimensions (cm), for the row heading */
+  weightKg: number;
+  length: number;
+  width: number;
+  height: number;
+  chargeableKg: number;
+  /** every surcharge triggered, highest first, `applied` flag on the charged one */
+  triggered: SurchargeLine[];
+  /** amount actually charged for this row (applied × 1; rows are single packages) */
+  appliedTotal: number;
 }
 
-/** The official quotation issued by ops (mock — numbers are demo-only). */
+/**
+ * The official quotation issued by ops (mock — numbers are demo-only).
+ *
+ * The payable total is base rate + the one charged surcharge per package. Tax and
+ * warehouse fields are **informational only** and deliberately excluded from `total`:
+ * clearance handling, insurance and pickup are free, taxes are settled by Indonesian
+ * Customs, and warehouse only accrues if the goods sit past the free window.
+ */
 export interface Quotation {
-  total: number; // IDR
+  total: number; // IDR — base + surcharge, the amount approved
   perKg: number; // IDR charged per chargeable kg
   chargeableKg: number;
-  items: QuotationItem[];
+  baseRate: number; // round(perKg × chargeableKg)
+  surchargeTotal: number; // Σ charged surcharge across packages
+  packages: QuotationPackage[];
+  // --- informational, NOT part of `total` ---
+  /** declared goods value (in `declaredCurrency`) — the tax basis */
+  declaredValue: number;
+  declaredCurrency: string;
+  /** always zero here; final tax is determined by Indonesian Customs */
+  taxes: { importDuty: number; vat: number; incomeTax: number };
+  warehousePerKgPerDay: number; // IDR 2,000
+  warehouseFreeDays: number; // first 3 days free
+  warehousePerDay: number; // round(perKgPerDay × chargeableKg)
   validUntil: number;
   issuedAt: number;
 }
@@ -186,45 +221,89 @@ export function makeAwb(): string {
   return `${group()} ${group()} ${group()}`;
 }
 
-/** Loose package shape as saved by the Items module (for weight math). */
+/** Loose package shape as saved by the Items module (for weight math + value). */
 interface Pkg {
   weight?: number;
   length?: number;
   width?: number;
   height?: number;
   quantity?: number;
+  /** declared contents — value is in the shipment's chosen currency */
+  items?: { value?: number; quantity?: number }[];
 }
+
+/** Warehouse fee: IDR/kg/day, charged only after the free window. */
+const WAREHOUSE_PER_KG_PER_DAY = 2000;
+const WAREHOUSE_FREE_DAYS = 3;
 
 /** Build a demo quotation from the order's selected rate + item dimensions. */
 export function buildQuotation(
   order: Pick<Order, "modules" | "selectedRate">,
 ): Quotation {
-  const packages = (order.modules.items.data as { packages?: Pkg[] } | undefined)
-    ?.packages ?? [];
-  const chargeableKg = totalChargeableWeight(
-    packages.map((p) => ({
-      weight: Number(p?.weight) || 0,
-      length: Number(p?.length) || 0,
-      width: Number(p?.width) || 0,
-      height: Number(p?.height) || 0,
-      quantity: 1,
-    })),
-  );
+  const itemsData = order.modules.items.data as
+    | { currency?: string; packages?: Pkg[] }
+    | undefined;
+  const packages = itemsData?.packages ?? [];
+
+  // each package row is a single physical package (quantity 1) for weight + surcharge
+  const dimsPkgs = packages.map((p) => ({
+    weight: Number(p?.weight) || 0,
+    length: Number(p?.length) || 0,
+    width: Number(p?.width) || 0,
+    height: Number(p?.height) || 0,
+    quantity: 1,
+  }));
+
+  const chargeableKg = totalChargeableWeight(dimsPkgs);
   const perKg = order.selectedRate?.perKg ?? 135000;
-  const freight = Math.round(perKg * chargeableKg);
-  const items: QuotationItem[] = [
-    { labelKey: "order.quFeeFreight", amount: freight },
-    { labelKey: "order.quFeeInsurance", amount: Math.round(freight * 0.015) },
-    { labelKey: "order.quFeeClearance", amount: 750000 },
-    { labelKey: "order.quFeePickup", amount: 150000 },
-  ];
-  const total = items.reduce((sum, i) => sum + i.amount, 0);
+  const baseRate = Math.round(perKg * chargeableKg);
+
+  // per-package surcharge breakdown (only the highest per package is charged)
+  const shipment = assessShipmentSurcharges(dimsPkgs);
+  const surchargeTotal = shipment.appliedTotal;
+  const quotationPackages: QuotationPackage[] = shipment.packages.map((r, i) => {
+    const src = dimsPkgs[i];
+    return {
+      index: r.index,
+      weightKg: src.weight,
+      length: src.length,
+      width: src.width,
+      height: src.height,
+      chargeableKg: chargeableWeight(src),
+      triggered: r.triggered,
+      appliedTotal: r.appliedTotal,
+    };
+  });
+
+  const total = baseRate + surchargeTotal;
+
+  // declared value (Σ item value × qty) drives the tax basis; taxes stay zero
+  const declaredValue = packages.reduce((sum, p) => {
+    const contents = Array.isArray(p?.items) ? p.items : [];
+    return (
+      sum +
+      contents.reduce(
+        (s, it) => s + (Number(it?.value) || 0) * (Number(it?.quantity) || 0),
+        0,
+      )
+    );
+  }, 0);
+  const declaredCurrency = itemsData?.currency || "USD";
+
   const now = Date.now();
   return {
     total,
     perKg,
     chargeableKg,
-    items,
+    baseRate,
+    surchargeTotal,
+    packages: quotationPackages,
+    declaredValue,
+    declaredCurrency,
+    taxes: { importDuty: 0, vat: 0, incomeTax: 0 },
+    warehousePerKgPerDay: WAREHOUSE_PER_KG_PER_DAY,
+    warehouseFreeDays: WAREHOUSE_FREE_DAYS,
+    warehousePerDay: Math.round(WAREHOUSE_PER_KG_PER_DAY * chargeableKg),
     validUntil: now + QUOTATION_VALID_MS,
     issuedAt: now,
   };
@@ -1319,7 +1398,12 @@ export const useOrderStore = create<OrderStoreState>()(
             ...o,
             attention: o.attention ?? null,
             timeline: o.timeline ?? [],
-            quotation: o.quotation ?? null,
+            // pre-breakdown quotations lack the surcharge/tax/warehouse fields;
+            // re-derive from the order so the enriched card never reads undefined.
+            quotation:
+              o.quotation && (o.quotation as Partial<Quotation>).baseRate === undefined
+                ? buildQuotation(o)
+                : o.quotation ?? null,
             revisionModule: o.revisionModule ?? null,
             revisionNote: o.revisionNote ?? null,
             opsNotice: o.opsNotice ?? null,
