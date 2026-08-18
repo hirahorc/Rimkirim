@@ -319,7 +319,6 @@ export function ShipmentCalculator() {
                 <PackageRow
                   key={f.id}
                   index={i}
-                  control={control}
                   register={register}
                   errors={errors}
                   values={packages?.[i]}

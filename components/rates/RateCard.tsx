@@ -1,6 +1,6 @@
 "use client";
 
-import { Clock, Zap, BadgePercent } from "lucide-react";
+import { Clock } from "lucide-react";
 import type { VendorQuote } from "@/lib/pricing/quote";
 import { CarrierMark } from "./CarrierMark";
 import { formatIDR } from "@/lib/utils/currency";
@@ -10,13 +10,10 @@ import { Button } from "@/components/ui/button";
 import { PriceBreakdown } from "./PriceBreakdown";
 import { useStartOrder } from "@/components/order/useStartOrder";
 import { useT } from "@/lib/i18n/LanguageProvider";
-import { cn } from "@/lib/utils/cn";
 
 interface RateCardProps {
   quote: VendorQuote;
   chargeableWeight: number;
-  cheapest?: boolean;
-  fastest?: boolean;
   /** hide the order CTA (e.g. domestic price unavailable → order via support) */
   orderBlocked?: boolean;
 }
@@ -24,22 +21,15 @@ interface RateCardProps {
 export function RateCard({
   quote,
   chargeableWeight,
-  cheapest,
-  fastest,
   orderBlocked,
 }: RateCardProps) {
   const t = useT();
   const startOrder = useStartOrder();
   const { vendor } = quote;
   return (
-    <Card
-      className={cn(
-        "overflow-hidden transition-colors",
-        // lime border marks the recommended (cheapest) pick only — the special
-        // rate isn't always the best price, so it doesn't earn the lime frame
-        cheapest ? "border-brand/50" : "hover:border-border-strong",
-      )}
-    >
+    // every option is presented neutrally: no "cheapest"/"fastest" pick, no
+    // lime frame — the choice is the customer's, not the system's
+    <Card className="overflow-hidden transition-colors hover:border-border-strong">
       {/* header */}
       <div className="flex items-start justify-between gap-3 p-5 pb-4">
         <div className="flex items-center gap-3">
@@ -55,24 +45,8 @@ export function RateCard({
             <p className="text-xs text-muted">{vendor.service}</p>
           </div>
         </div>
-        <div className="flex flex-col items-end gap-1">
-          {/* "Special Rate" is a type marker, not a value claim — neutral chip,
-              no lime/Sparkles, so it never poses as the best deal when it isn't.
-              Lime stays reserved for Termurah/Tercepat (the real value signals). */}
-          {quote.isSpecial && (
-            <Badge variant="neutral">{t("special.badge")}</Badge>
-          )}
-          {cheapest && (
-            <Badge variant="brand">
-              <BadgePercent className="size-3" /> {t("rateCard.termurah")}
-            </Badge>
-          )}
-          {fastest && (
-            <Badge variant="info">
-              <Zap className="size-3" /> {t("rateCard.tercepat")}
-            </Badge>
-          )}
-        </div>
+        {/* "Special Rate" is a type marker, not a value claim — neutral chip */}
+        {quote.isSpecial && <Badge variant="neutral">{t("special.badge")}</Badge>}
       </div>
 
       {/* eta only — route + chargeable weight live once in the recap bar above,
@@ -107,7 +81,7 @@ export function RateCard({
         <div className="p-5 pt-3">
           <Button
             className="w-full"
-            variant={cheapest ? "brand" : "secondary"}
+            variant="secondary"
             onClick={() =>
               startOrder({
                 perKg: quote.baseRatePerKg,

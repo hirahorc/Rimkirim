@@ -20,7 +20,7 @@ export interface StackingCard {
 
 /** Opaque skins, one per card. Alternating light → dark → lime → dark keeps
  *  each hand-off legible. Lime is a fill behind dark ink only (never text). */
-const SKINS = [
+export const STACK_SKINS = [
   "bg-surface-3 text-foreground",
   "bg-foreground text-background",
   "bg-brand text-brand-ink",
@@ -36,7 +36,7 @@ export function StackingCards({ items }: { items: StackingCard[] }) {
         <article
           key={title}
           className={`sticky top-0 z-[1] flex h-[100svh] w-full flex-col justify-start overflow-hidden px-7 pt-28 ${
-            SKINS[i % SKINS.length]
+            STACK_SKINS[i % STACK_SKINS.length]
           }`}
         >
           <div className="mx-auto w-full max-w-md">

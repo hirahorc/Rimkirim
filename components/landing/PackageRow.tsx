@@ -1,12 +1,7 @@
 "use client";
 
 import { Trash2 } from "lucide-react";
-import type {
-  UseFormRegister,
-  FieldErrors,
-  Control,
-} from "react-hook-form";
-import { Controller } from "react-hook-form";
+import type { UseFormRegister, FieldErrors } from "react-hook-form";
 import type { CalculatorValues } from "@/lib/schemas/calculator";
 import {
   volumetricWeight,
@@ -16,7 +11,6 @@ import {
 } from "@/lib/utils/chargeable-weight";
 import { Input, Label, FieldError } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Checkbox } from "@/components/ui/checkbox";
 import { InfoTip } from "@/components/ui/tooltip";
 import { formatNumber } from "@/lib/utils/currency";
 import { useT } from "@/lib/i18n/LanguageProvider";
@@ -24,7 +18,6 @@ import { cn } from "@/lib/utils/cn";
 
 interface PackageRowProps {
   index: number;
-  control: Control<CalculatorValues>;
   register: UseFormRegister<CalculatorValues>;
   errors: FieldErrors<CalculatorValues>;
   values: CalculatorValues["packages"][number];
@@ -34,7 +27,6 @@ interface PackageRowProps {
 
 export function PackageRow({
   index,
-  control,
   register,
   errors,
   values,
@@ -154,7 +146,14 @@ export function PackageRow({
               {t("pkg.chargeable")}
               <InfoTip content={t("pkg.chgTooltip")} label={t("pkg.chargeable")} />
             </span>
-            <Badge variant={untouched ? "neutral" : "brand"}>{kg(chg)}</Badge>
+            {/* pull the pill back by its own padding so the number lines up
+                with the actual/volumetric values above it */}
+            <Badge
+              variant={untouched ? "neutral" : "brand"}
+              className="-my-1 -mr-3 tabular-nums sm:-ml-3 sm:mr-0"
+            >
+              {kg(chg)}
+            </Badge>
           </div>
         </div>
         {!untouched && dims.quantity > 1 && (
@@ -165,44 +164,6 @@ export function PackageRow({
             </span>
           </div>
         )}
-      </div>
-
-      {/* per-package optional conditions */}
-      <div className="mt-3 grid gap-2 sm:grid-cols-2">
-        <Controller
-          control={control}
-          name={`packages.${index}.nonStandardPackaging`}
-          render={({ field }) => (
-            <label className="flex cursor-pointer items-start gap-2 text-xs text-muted">
-              <Checkbox
-                checked={field.value}
-                onCheckedChange={(v) => field.onChange(Boolean(v))}
-                aria-label={t("pkg.packagingLabel")}
-              />
-              <span>
-                {t("pkg.packagingLabel")}
-                <span className="ml-1 text-muted-2">{t("pkg.packagingHint")}</span>
-              </span>
-            </label>
-          )}
-        />
-        <Controller
-          control={control}
-          name={`packages.${index}.nonStackable`}
-          render={({ field }) => (
-            <label className="flex cursor-pointer items-start gap-2 text-xs text-muted">
-              <Checkbox
-                checked={field.value}
-                onCheckedChange={(v) => field.onChange(Boolean(v))}
-                aria-label={t("pkg.nonStackableLabel")}
-              />
-              <span>
-                {t("pkg.nonStackableLabel")}
-                <span className="ml-1 text-muted-2">{t("pkg.nonStackableHint")}</span>
-              </span>
-            </label>
-          )}
-        />
       </div>
     </div>
   );

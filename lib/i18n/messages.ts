@@ -232,10 +232,6 @@ const id = {
       "Berat volumetrik = (P × L × T) ÷ 5000. Menghitung ruang yang ditempati paket, bukan hanya beratnya.",
     chgTooltip:
       "Chargeable weight = nilai terbesar antara berat aktual dan berat volumetrik. Tarif dihitung dari angka ini.",
-    packagingLabel: "Kemasan bukan kardus corrugated / dilapisi plastik",
-    packagingHint: "(Packaging Surcharge)",
-    nonStackableLabel: "Paket tidak bisa ditumpuk",
-    nonStackableHint: "(Non-Stackable, khusus Large)",
     wajibDiisi: "Wajib diisi",
     beratHarus: "Berat harus > 0",
     min1: "Min. 1",
@@ -289,8 +285,6 @@ const id = {
     paketUnit: "paket",
   },
   rateCard: {
-    termurah: "Termurah",
-    tercepat: "Tercepat",
     totalEstimasi: "Total estimasi",
     perKg: "Per kg",
     hari: "hari",
@@ -1393,10 +1387,6 @@ const en: Messages = {
       "Volumetric weight = (L × W × H) ÷ 5000. It measures the space a package takes up, not just its weight.",
     chgTooltip:
       "Chargeable weight = the greater of actual weight and volumetric weight. The rate is calculated from this figure.",
-    packagingLabel: "Packaging isn't a corrugated box / wrapped in plastic",
-    packagingHint: "(Packaging Surcharge)",
-    nonStackableLabel: "Package can't be stacked",
-    nonStackableHint: "(Non-Stackable, Large only)",
     wajibDiisi: "Required",
     beratHarus: "Weight must be > 0",
     min1: "Min. 1",
@@ -1450,8 +1440,6 @@ const en: Messages = {
     paketUnit: "packages",
   },
   rateCard: {
-    termurah: "Cheapest",
-    tercepat: "Fastest",
     totalEstimasi: "Total estimate",
     perKg: "Per kg",
     hari: "days",

@@ -10,7 +10,7 @@ import {
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { RouteArrow } from "@/components/ui/route-arrow";
-import { StackingCards } from "@/components/landing/StackingCards";
+import { StackingCards, STACK_SKINS } from "@/components/landing/StackingCards";
 import { useT } from "@/lib/i18n/LanguageProvider";
 
 export function ServiceSection() {
@@ -84,16 +84,25 @@ export function WhySection() {
           role="group"
           aria-label={t("why.heading")}
         >
-          {reasons.map(({ icon: Icon, title, body }) => (
-            <Card key={title} className="p-5">
-              <span className="grid size-10 place-items-center rounded-md bg-surface-3 text-foreground">
-                <Icon className="size-5" />
-              </span>
-              <h3 className="mt-4 font-display text-lg font-semibold tracking-tight">
+          {reasons.map(({ title, body }, i) => (
+            // same opaque skins + ghost index as the mobile stack, in the grid
+            <article
+              key={title}
+              className={`relative flex min-h-[17rem] flex-col overflow-hidden rounded-[6px] p-6 pb-14 ${
+                STACK_SKINS[i % STACK_SKINS.length]
+              }`}
+            >
+              <h3 className="font-display text-xl font-semibold leading-tight tracking-tight">
                 {title}
               </h3>
-              <p className="mt-1.5 text-sm leading-relaxed text-muted">{body}</p>
-            </Card>
+              <p className="mt-2.5 text-sm leading-relaxed opacity-80">{body}</p>
+              <span
+                aria-hidden
+                className="pointer-events-none absolute -bottom-6 -right-2 font-display text-[7rem] font-bold leading-none opacity-[0.07]"
+              >
+                {i + 1}
+              </span>
+            </article>
           ))}
         </div>
       </div>
