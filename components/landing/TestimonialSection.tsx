@@ -99,13 +99,13 @@ function FeaturedTestimonial({
         className,
       )}
     >
-      <div className="relative aspect-[4/3] sm:aspect-auto sm:min-h-[18rem]">
+      <div className="relative aspect-[16/10] sm:aspect-auto sm:min-h-[18rem]">
         {photo ? (
           <Image
             src={photo}
             alt={name}
             fill
-            sizes="(min-width: 640px) 45vw, 92vw"
+            sizes="(min-width: 640px) 45vw, 85vw"
             className="object-cover"
           />
         ) : (
@@ -179,20 +179,20 @@ export function TestimonialSection() {
           className="mx-auto mt-12 hidden max-w-5xl sm:grid"
         />
 
-        {/* mobile: a full-bleed swipe carousel — the hook is the first, wider
-            slide; the rest size to their own content (items-start — the hook
-            is far taller than any quote, so stretching would leave the others
-            mostly empty); the next card peeks to signal the swipe. sm and up:
-            variable-length quotes pack cleanly in CSS columns (masonry) */}
+        {/* mobile: a full-bleed swipe carousel — the hook is the first slide;
+            every card is the same width and stretches to the tallest one
+            (items-stretch), attribution pinned to the foot; the next card peeks
+            to signal the swipe. sm and up: variable-length quotes pack cleanly
+            in CSS columns (masonry) */}
         <div
-          className="scroll-strip -mx-4 mt-12 flex snap-x snap-mandatory items-start scroll-px-4 gap-4 overflow-x-auto px-4 pb-1 sm:mx-auto sm:mt-6 sm:block sm:max-w-5xl sm:columns-2 sm:snap-none sm:overflow-visible sm:px-0 sm:pb-0 lg:columns-3"
+          className="scroll-strip -mx-4 mt-12 flex snap-x snap-mandatory items-stretch scroll-px-4 gap-4 overflow-x-auto px-4 pb-1 sm:mx-auto sm:mt-6 sm:block sm:max-w-5xl sm:columns-2 sm:snap-none sm:overflow-visible sm:px-0 sm:pb-0 lg:columns-3"
           tabIndex={0}
           role="group"
           aria-label={t("testimonial.heading")}
         >
           <FeaturedTestimonial
             item={featured}
-            className="w-[92%] shrink-0 snap-start sm:hidden"
+            className="mb-4 w-[85%] shrink-0 snap-start sm:hidden"
           />
           {rest.map(({ name, quote, origin, affiliation, highlights }) => (
             <Card
