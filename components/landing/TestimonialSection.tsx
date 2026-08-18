@@ -106,22 +106,21 @@ function FeaturedTestimonial({
             alt={name}
             fill
             sizes="(min-width: 640px) 45vw, 85vw"
-            className="object-cover"
+            // keep the person centred with headroom; the wall/sign may crop
+            className="object-cover object-[68%_25%]"
           />
         ) : (
           <PortraitPlaceholder initial={name.trim().charAt(0).toUpperCase()} />
         )}
-        {/* attribution lives on the photo; the translucent ink plate keeps it
-            legible once a real photo replaces the placeholder */}
-        <div className="absolute bottom-0 left-0 max-w-full p-4 sm:p-5">
-          <div className="inline-block rounded-md bg-foreground/75 px-3 py-2 backdrop-blur-sm">
-            <cite className="block truncate text-sm font-medium not-italic">{name}</cite>
-            {affiliation && (
-              <p className="truncate text-xs text-background/70">
-                {t(`testimonial.affiliations.${affiliation}`)}
-              </p>
-            )}
-          </div>
+        {/* attribution lives on the photo, over a dark→transparent scrim
+            (requested — the one gradient in the system, functional, on imagery only) */}
+        <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-foreground/85 via-foreground/45 to-transparent px-4 pb-4 pt-16 sm:px-5 sm:pb-5">
+          <cite className="block truncate text-sm font-medium not-italic">{name}</cite>
+          {affiliation && (
+            <p className="truncate text-xs text-background/70">
+              {t(`testimonial.affiliations.${affiliation}`)}
+            </p>
+          )}
         </div>
       </div>
 
