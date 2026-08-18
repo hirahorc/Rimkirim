@@ -125,11 +125,13 @@ function FeaturedTestimonial({
       </div>
 
       <div className="flex flex-col p-6 sm:p-8">
-        <blockquote className="whitespace-pre-line text-sm leading-relaxed">
+        {/* short quote in a tall panel: centre it optically on sm+; the route
+            caption keeps the foot so the two columns share a baseline */}
+        <blockquote className="whitespace-pre-line text-sm leading-relaxed sm:my-auto sm:max-w-[46ch]">
           {highlightQuote(quote, highlights)}
         </blockquote>
         {origin && (
-          <p className="mt-auto pt-6 text-xs text-background/60">
+          <p className="mt-auto pt-6 text-xs text-background/70">
             {t(`testimonial.origins.${origin}`)} {t("testimonial.routeTo")}
           </p>
         )}
@@ -184,19 +186,19 @@ export function TestimonialSection() {
             to signal the swipe. sm and up: variable-length quotes pack cleanly
             in CSS columns (masonry) */}
         <div
-          className="scroll-strip -mx-4 mt-12 flex snap-x snap-mandatory items-stretch scroll-px-4 gap-4 overflow-x-auto px-4 pb-1 sm:mx-auto sm:mt-6 sm:block sm:max-w-5xl sm:columns-2 sm:snap-none sm:overflow-visible sm:px-0 sm:pb-0 lg:columns-3"
+          className="scroll-strip -mx-4 mt-12 flex snap-x snap-mandatory items-stretch scroll-px-4 gap-4 overflow-x-auto px-4 pb-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-foreground/40 sm:mx-auto sm:mt-6 sm:block sm:max-w-5xl sm:columns-2 sm:snap-none sm:overflow-visible sm:px-0 sm:pb-0 lg:columns-3"
           tabIndex={0}
           role="group"
           aria-label={t("testimonial.heading")}
         >
           <FeaturedTestimonial
             item={featured}
-            className="mb-4 w-[85%] shrink-0 snap-start sm:hidden"
+            className="w-[85%] shrink-0 snap-start sm:hidden"
           />
           {rest.map(({ name, quote, origin, affiliation, highlights }) => (
             <Card
               key={name}
-              className="testi-card mb-4 flex w-[85%] shrink-0 snap-start break-inside-avoid flex-col p-5 transition-colors hover:border-border-strong sm:w-auto sm:shrink"
+              className="testi-card flex w-[85%] shrink-0 snap-start break-inside-avoid flex-col p-5 transition-colors hover:border-border-strong sm:mb-4 sm:w-auto sm:shrink"
             >
               <blockquote className="whitespace-pre-line text-sm leading-relaxed text-foreground">
                 {highlightQuote(quote, highlights)}
