@@ -50,6 +50,11 @@ export const TESTIMONIALS: Testimonial[] = [
     origin: "bristol",
     affiliation: "bristol",
     highlights: ["faster than i expected", "everything arrived safely and was intact", "very satisfied"],
+    featured: true,
+    // NOTE: supplied by marketing as an illustrative graduation image (Bristol),
+    // not a verified photo of this reviewer — swap for a consented photo before
+    // presenting it as such.
+    photo: "/testimonials/daelyn.jpg",
   },
   {
     name: "Elita Nuraeny",
@@ -59,7 +64,6 @@ export const TESTIMONIALS: Testimonial[] = [
     origin: "adelaide",
     affiliation: "adelaide",
     highlights: ["arrived safely (and quickly!)", "very professional, attentive, and helpful", "Highly recommended!"],
-    featured: true,
   },
   {
     name: "Nurul",
