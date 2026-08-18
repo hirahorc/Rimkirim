@@ -5,7 +5,7 @@ import { ArticlesIndex } from "@/components/articles/ArticlesIndex";
 export const metadata: Metadata = {
   title: "Article · Rimkirim",
   description:
-    "Panduan bea cukai, biaya, dan persiapan pindah lintas negara dari Rimkirim — Bahasa Indonesia & English.",
+    "Panduan bea cukai, biaya, dan persiapan pindah lintas negara dari Rimkirim, tersedia dalam Bahasa Indonesia & English.",
   alternates: { canonical: "/articles" },
 };
 

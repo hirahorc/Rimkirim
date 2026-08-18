@@ -1,7 +1,7 @@
 ---
 title: "How Rimkirim Prices Your Shipment: The Quotation Explained"
 metaTitle: "How Rimkirim Prices Your Shipment: Quote Explained"
-description: "See exactly how your Rimkirim shipping quote is calculated — chargeable weight, surcharges, duties, warehouse fees, a full worked example, and when you pay."
+description: "See exactly how your Rimkirim shipping quote is calculated: chargeable weight, surcharges, duties, warehouse fees, a full worked example, and when you pay."
 keyword: "how rimkirim prices your shipment"
 category: fees
 lang: en
@@ -10,11 +10,11 @@ date: 2026-08-10
 cover: /articles/cara-rimkirim-menghitung-biaya-kirim.jpg
 ---
 
-We don't publish a one-size-fits-all rate card, because no two moves are the same. Instead we quote each shipment individually — and we'd rather show you exactly how that number is built than hide it. Here's every component, a full worked example, when you actually pay, and what happens if the measured size differs.
+We don't publish a one-size-fits-all rate card, because no two moves are the same. Instead we quote each shipment individually, and we'd rather show you exactly how that number is built than hide it. Here's every component, a full worked example, when you actually pay, and what happens if the measured size differs.
 
 ## Why We Quote Instead of Listing Rates
 
-Two shipments that look alike can cost very differently. A box of books and a box of pillows can weigh the same but take up wildly different space; the same 20 kg costs more from one country than another; and one shipment may need handling another doesn't. A flat published rate would either overcharge the simple shipments or undercharge the complex ones — so we quote on your actual shipment, and walk you through the maths below.
+Two shipments that look alike can cost very differently. A box of books and a box of pillows can weigh the same but take up wildly different space; the same 20 kg costs more from one country than another; and one shipment may need handling another doesn't. A flat published rate would either overcharge the simple shipments or undercharge the complex ones. So we quote on your actual shipment, and walk you through the maths below.
 
 ## The Four Parts of Your Bill
 
@@ -22,14 +22,14 @@ An air-freight shipment has up to four cost components. Most shipments only real
 
 | # | Component | Who It's Paid To |
 |---|---|---|
-| 1 | Base shipping cost — rate per kg × chargeable weight | Rimkirim |
-| 2 | Additional handling surcharge — only if a box needs special handling | Rimkirim |
-| 3 | Import duties & taxes — Bea Masuk, PPN, PPh, when applicable | Paid directly to Bea Cukai (customs) |
-| 4 | Warehouse fee — only if clearance runs past 3 days *(sample terms — confirm current threshold and rate with our team)* | Rimkirim |
+| 1 | Base shipping cost: rate per kg × chargeable weight | Rimkirim |
+| 2 | Additional handling surcharge: only if a box needs special handling | Rimkirim |
+| 3 | Import duties & taxes: Bea Masuk, PPN, PPh, when applicable | Paid directly to Bea Cukai (customs) |
+| 4 | Warehouse fee: only if clearance runs past 3 days *(sample terms; confirm current threshold and rate with our team)* | Rimkirim |
 
 ## Chargeable Weight, Explained
 
-Air freight is priced on weight — but not just what the scale shows. For each box, the courier takes the greater of its actual weight and its volumetric (dimensional) weight:
+Air freight is priced on weight, but not just what the scale shows. For each box, the courier takes the greater of its actual weight and its volumetric (dimensional) weight:
 
 ```
 Length × Width × Height (cm) ÷ 5,000 = volumetric kg
@@ -37,7 +37,7 @@ Length × Width × Height (cm) ÷ 5,000 = volumetric kg
 
 Per box, the higher of actual and volumetric is what counts.
 
-Those per-box figures are then added together into one shipment total, and the total is rounded up once — the same way FedEx and other express carriers calculate it. (Rounding the whole shipment once, rather than each box separately, keeps your chargeable weight consistent with what the courier actually bills.)
+Those per-box figures are then added together into one shipment total, and the total is rounded up once, the same way FedEx and other express carriers calculate it. (Rounding the whole shipment once, rather than each box separately, keeps your chargeable weight consistent with what the courier actually bills.)
 
 If a box's dimensions give a higher number than the scale, it counts on the volumetric figure. This is why a large, light box can cost more than a small, heavy one.
 
@@ -54,7 +54,7 @@ After the shipment total is found, it's rounded up before it's charged, followin
 
 ## A Full Worked Example
 
-Here's a real two-box shipment from Manchester to Jakarta, calculated end to end. *(The per-kg rate shown is a sample — your actual rate depends on your origin country.)*
+Here's a real two-box shipment from Manchester to Jakarta, calculated end to end. *(The per-kg rate shown is a sample; your actual rate depends on your origin country.)*
 
 **Manchester, UK → Jakarta Selatan, Indonesia · 2 boxes**
 
@@ -65,18 +65,18 @@ Here's a real two-box shipment from Manchester to Jakarta, calculated end to end
 | Box 1 | 14 kg · 56 × 60 × 40 cm |
 | Box 2 | 17 kg · 60 × 60 × 50 cm |
 
-**Step 1 — Chargeable weight (greater per box, then summed)**
+**Step 1: Chargeable weight (greater per box, then summed)**
 
 | Calculation | Result |
 |---|---|
 | Box 1 volumetric: 56 × 60 × 40 = 134,400 cm³ ÷ 5,000 | 26.88 kg |
-| Box 1 — greater of 14 kg actual vs 26.88 kg | 26.88 kg |
+| Box 1: greater of 14 kg actual vs 26.88 kg | 26.88 kg |
 | Box 2 volumetric: 60 × 60 × 50 = 180,000 cm³ ÷ 5,000 | 36.00 kg |
-| Box 2 — greater of 17 kg actual vs 36.00 kg | 36.00 kg |
+| Box 2: greater of 17 kg actual vs 36.00 kg | 36.00 kg |
 | Sum of both boxes (26.88 + 36.00) | 62.88 kg |
 | Shipment total, rounded up | **63 kg** |
 
-**Step 2 — Add up the four components**
+**Step 2: Add up the four components**
 
 | Component | Amount |
 |---|---|
@@ -90,7 +90,7 @@ That's the whole model: chargeable weight drives the base cost, surcharges and w
 
 ## Import Duties and Taxes
 
-These are government charges, not Rimkirim fees — paid directly to Bea Cukai (customs), and they depend entirely on your customs scheme. The components are Bea Masuk (import duty), PPN (VAT), and PPh (income tax).
+These are government charges, not Rimkirim fees. They're paid directly to Bea Cukai (customs), and they depend entirely on your customs scheme. The components are Bea Masuk (import duty), PPN (VAT), and PPh (income tax).
 
 **Barang Pindahan (relocation goods, for those eligible):** we can help apply for a Bea Masuk exemption, so eligible household goods generally clear duty-free. The final exemption decision rests with the customs officer at inspection.
 
@@ -105,9 +105,9 @@ Every import passes through a temporary storage warehouse while customs inspects
 | Period (from Arrival in Indonesia) | Fee |
 |---|---|
 | Days 1–3 | Free |
-| Day 4 onward | IDR 2,000 / kg / day *(sample rate — confirm current pricing with our team)* |
+| Day 4 onward | IDR 2,000 / kg / day *(sample rate; confirm current pricing with our team)* |
 
-Having every document ready before your goods land is the best way to keep clearance — and therefore storage — short.
+Having every document ready before your goods land is the best way to keep clearance short and storage costs low.
 
 ## When You Actually Pay
 
@@ -115,13 +115,13 @@ This is the part most people get wrong, so it's worth being clear:
 
 **1. You get an estimate up front.** Based on the weight and dimensions you give us, so you know the likely cost before you commit.
 
-**2. The invoice comes after re-measurement.** We only issue the actual invoice once our courier partner's operations team has weighed and measured your boxes themselves — which usually happens when your shipment reaches the destination country. The final figure is based on those measured numbers.
+**2. The invoice comes after re-measurement.** We only issue the actual invoice once our courier partner's operations team has weighed and measured your boxes themselves, which usually happens when your shipment reaches the destination country. The final figure is based on those measured numbers.
 
 Why it works this way: the courier's measured weight and dimensions are what the shipment is actually charged on. Estimating up front and invoicing on the measured figures keeps the final bill accurate rather than guessed.
 
 ## If the Measured Size Differs From Yours
 
-Your estimate can change if the courier's measured weight or dimensions differ from what you measured at home. If the final figures come back larger — pushing the cost up — you're not stuck with it:
+Your estimate can change if the courier's measured weight or dimensions differ from what you measured at home. If the final figures come back larger and push the cost up, you're not stuck with it:
 
 1. Before pickup, photograph your boxes on a scale and with a tape measure showing their dimensions.
 2. If the measured size later disagrees, send us those photos as evidence.
@@ -133,7 +133,7 @@ Your estimate can change if the courier's measured weight or dimensions differ f
 
 **Why didn't I just get a price per kilo?** Because the kilo that's charged depends on each box's size as well as its weight, and the rate depends on your origin country. A quote reflects your actual shipment instead of a rough average.
 
-**Can the final amount change after the estimate?** Yes — it's recalculated on the courier's measured weight and dimensions. If those differ from what you measured, the invoice follows the measured figures (with the appeal route above if they come back larger).
+**Can the final amount change after the estimate?** Yes. It's recalculated on the courier's measured weight and dimensions. If those differ from what you measured, the invoice follows the measured figures (with the appeal route above if they come back larger).
 
 **Are customs duties part of my Rimkirim quote?** No. Duties and import taxes are government charges paid directly to Bea Cukai, assessed separately based on your customs scheme. They're distinct from your shipping cost.
 
@@ -141,6 +141,6 @@ Your estimate can change if the courier's measured weight or dimensions differ f
 
 ## Get Your Own Quote
 
-Every shipment is different, which is exactly why we don't hand out a flat rate card. Send us your box count, weights, and dimensions, and our team will walk you through a quote built the same way as the example above — no hidden components, no surprises at the end.
+Every shipment is different, which is exactly why we don't hand out a flat rate card. Send us your box count, weights, and dimensions, and our team will walk you through a quote built the same way as the example above: no hidden components, no surprises at the end.
 
 **Ready to see what your shipment would cost? Reach out to the Rimkirim team on WhatsApp for a free, itemized quote.**

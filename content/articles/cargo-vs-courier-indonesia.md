@@ -47,7 +47,7 @@ Cargo lebih sesuai ketika barang yang akan dikirim sudah mulai memiliki volume a
 
 Misalnya, kalian sedang pindah rumah, pindah kantor, atau kembali ke Indonesia setelah tinggal di luar negeri. Daripada mengirim barang satu per satu, cargo memungkinkan barang dikirim sebagai satu shipment sehingga prosesnya dapat lebih terorganisir.
 
-Untuk layanan pindahan internasional Rimkirim, pengiriman barang dapat dimulai dari 21 kg dan menangani shipment hingga ratusan kilogram. Dalam beberapa pengiriman, Rimkirim juga telah menangani barang pindahan dengan berat hingga 800 kg — dan seperti dijelaskan di [breakdown biaya kirim barang ke Indonesia](/articles/cara-rimkirim-menghitung-biaya-kirim), biaya cargo umumnya dihitung berdasarkan berat dan volume ini, bukan per paket seperti courier.
+Untuk layanan pindahan internasional Rimkirim, pengiriman barang dapat dimulai dari 21 kg dan menangani shipment hingga ratusan kilogram. Dalam beberapa pengiriman, Rimkirim juga telah menangani barang pindahan dengan berat hingga 800 kg. Seperti dijelaskan di [breakdown biaya kirim barang ke Indonesia](/articles/cara-rimkirim-menghitung-biaya-kirim), biaya cargo umumnya dihitung berdasarkan berat dan volume ini, bukan per paket seperti courier.
 
 ## Bagaimana Menentukan Layanan yang Tepat?
 

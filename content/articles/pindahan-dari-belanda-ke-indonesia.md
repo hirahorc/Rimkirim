@@ -12,7 +12,7 @@ cover: /articles/pindahan-dari-belanda-ke-indonesia.jpg
 
 Memutuskan pulang dan memulai proses pindahan dari Belanda ke Indonesia bukan sekadar memesan tiket pesawat. Ada urusan dokumen kepabeanan, ketentuan bea masuk, hingga barang rumah tangga yang sudah bertahun-tahun menemani Anda di negeri kincir angin. Tanpa persiapan yang tepat, proses ini bisa memakan waktu lebih lama dan berpotensi menimbulkan biaya tak terduga di pelabuhan atau bandara kedatangan.
 
-Artikel ini membahas apa yang perlu Anda ketahui sebelum memulai pindahan dari Belanda ke Indonesia — mulai dari dasar hukum terbaru, dokumen yang wajib disiapkan di KBRI Den Haag, tahapan pemeriksaan bea cukai, sampai barang apa saja yang tidak mendapat fasilitas pembebasan.
+Artikel ini membahas apa yang perlu Anda ketahui sebelum memulai pindahan dari Belanda ke Indonesia: mulai dari dasar hukum terbaru, dokumen yang wajib disiapkan di KBRI Den Haag, tahapan pemeriksaan bea cukai, sampai barang apa saja yang tidak mendapat fasilitas pembebasan.
 
 ## Apa Itu "Barang Pindahan" dan Siapa yang Berhak Mendapat Pembebasan Bea Masuk?
 
@@ -27,16 +27,16 @@ Ketentuan mengenai barang pindahan sempat diatur oleh PMK Nomor 28/PMK.04/2008, 
 Beberapa prinsip utama yang berlaku:
 
 - Barang pindahan harus tiba bersamaan dengan pemiliknya, atau paling lama dalam rentang waktu tertentu sebelum/sesudah kedatangan pemilik.
-- Barang harus berasal dari negara domisili sebelumnya — dalam kasus Anda, Belanda.
+- Barang harus berasal dari negara domisili sebelumnya, dalam kasus Anda Belanda.
 - Fasilitas berlaku untuk barang keperluan rumah tangga untuk pemakaian pribadi, bukan barang dagangan.
 
-*Catatan: sebagian ketentuan teknis seperti jangka waktu minimal tinggal di Indonesia dan batas hari kedatangan barang berpotensi berbeda penerapannya per kasus — tim Rimkirim akan membantu Anda mengecek kesesuaiannya sebelum pengiriman.*
+*Catatan: sebagian ketentuan teknis seperti jangka waktu minimal tinggal di Indonesia dan batas hari kedatangan barang berpotensi berbeda penerapannya per kasus; tim Rimkirim akan membantu Anda mengecek kesesuaiannya sebelum pengiriman.*
 
 ## Dokumen yang Wajib Disiapkan untuk Pindahan dari Belanda ke Indonesia
 
 ### 1. Surat Keterangan Pindah dari KBRI Den Haag
 
-Ini adalah dokumen inti yang menjadi dasar pengajuan fasilitas pembebasan bea masuk. Surat ini diterbitkan oleh Perwakilan RI di negara domisili Anda — untuk Anda yang tinggal di Belanda, berarti KBRI Den Haag. Penerbitan surat ini pada prinsipnya tidak dipungut biaya, namun waktu prosesnya bervariasi tergantung kelengkapan dokumen pendukung.
+Ini adalah dokumen inti yang menjadi dasar pengajuan fasilitas pembebasan bea masuk. Surat ini diterbitkan oleh Perwakilan RI di negara domisili Anda. Untuk Anda yang tinggal di Belanda, berarti KBRI Den Haag. Penerbitan surat ini pada prinsipnya tidak dipungut biaya, namun waktu prosesnya bervariasi tergantung kelengkapan dokumen pendukung.
 
 ### 2. Dokumen Pendukung Sesuai Alasan Kepulangan
 
@@ -52,11 +52,11 @@ Setibanya barang di Indonesia, importir (atau kuasanya) perlu mengajukan Pemberi
 
 ## Tahapan Proses Bea Cukai Barang Pindahan
 
-1. **Sebelum berangkat** — Ajukan Surat Keterangan Pindah ke KBRI Den Haag beserta dokumen pendukung.
-2. **Pengiriman barang** — Barang dikirim melalui jalur laut atau udara, idealnya dalam rentang waktu yang sesuai dengan kedatangan Anda.
-3. **Kedatangan di Indonesia** — Ajukan PIBK ke kantor pabean tempat barang masuk.
-4. **Pemeriksaan fisik** — Petugas Bea Cukai berhak memeriksa barang untuk memastikan kesesuaian dengan dokumen dan ketentuan yang berlaku.
-5. **Penerbitan SPPB** — Jika seluruh syarat terpenuhi dan tidak ada temuan barang larangan/pembatasan (lartas), Bea Cukai menerbitkan Surat Persetujuan Pengeluaran Barang (SPPB) sebagai dasar barang dapat diambil.
+1. **Sebelum berangkat.** Ajukan Surat Keterangan Pindah ke KBRI Den Haag beserta dokumen pendukung.
+2. **Pengiriman barang.** Barang dikirim melalui jalur laut atau udara, idealnya dalam rentang waktu yang sesuai dengan kedatangan Anda.
+3. **Kedatangan di Indonesia.** Ajukan PIBK ke kantor pabean tempat barang masuk.
+4. **Pemeriksaan fisik.** Petugas Bea Cukai berhak memeriksa barang untuk memastikan kesesuaian dengan dokumen dan ketentuan yang berlaku.
+5. **Penerbitan SPPB.** Jika seluruh syarat terpenuhi dan tidak ada temuan barang larangan/pembatasan (lartas), Bea Cukai menerbitkan Surat Persetujuan Pengeluaran Barang (SPPB) sebagai dasar barang dapat diambil.
 
 ## Barang yang Tidak Mendapat Fasilitas Pembebasan
 
@@ -78,7 +78,7 @@ Untuk kategori-kategori ini, tetap ada jalur pengiriman terpisah, namun dengan m
 
 ## Kenapa Perlu Partner yang Paham Regulasi Pindahan Internasional
 
-Regulasi barang pindahan cukup teknis dan dapat berubah — pembaruan PMK 25/2025 adalah contohnya. Sebagai *#InternationalMovingAssistant*, Rimkirim membantu Anda memetakan dokumen yang dibutuhkan, memberikan panduan pengemasan (bukan layanan pengemasan langsung), serta mendampingi proses pengiriman dari Belanda hingga barang tiba di Indonesia. Setiap kasus memiliki kondisi berbeda, sehingga pembebasan bea masuk tetap bergantung pada pemenuhan syarat oleh pihak Bea Cukai, bukan jaminan mutlak dari penyedia jasa mana pun.
+Regulasi barang pindahan cukup teknis dan dapat berubah; pembaruan PMK 25/2025 adalah contohnya. Sebagai *#InternationalMovingAssistant*, Rimkirim membantu Anda memetakan dokumen yang dibutuhkan, memberikan panduan pengemasan (bukan layanan pengemasan langsung), serta mendampingi proses pengiriman dari Belanda hingga barang tiba di Indonesia. Setiap kasus memiliki kondisi berbeda, sehingga pembebasan bea masuk tetap bergantung pada pemenuhan syarat oleh pihak Bea Cukai, bukan jaminan mutlak dari penyedia jasa mana pun.
 
 ## Pertanyaan yang Sering Diajukan
 

@@ -10,7 +10,7 @@ date: 2026-08-03
 cover: /articles/cargo-vs-courier-indonesia.jpg
 ---
 
-Cargo and courier can both get your belongings from one place to another, but the two services work quite differently — in shipping method, volume handled, and what kind of sender they're built for.
+Cargo and courier can both get your belongings from one place to another, but the two services work quite differently: in shipping method, volume handled, and what kind of sender they're built for.
 
 So when should you use courier, and when does cargo make more sense? Understanding the difference makes it easier to pick the service that actually fits what you're shipping.
 
@@ -18,7 +18,7 @@ So when should you use courier, and when does cargo make more sense? Understandi
 
 Courier is a shipping service typically used for sending documents or individual packages, with a process built around speed and simplicity. It covers a wide range of needs, from documents and personal parcels to items bought online.
 
-Because it's designed around handling individual packages, courier tends to be the better fit when you're not shipping much — and you need something straightforward.
+Because it's designed around handling individual packages, courier tends to be the better fit when you're not shipping much and you need something straightforward.
 
 ## What Is Cargo?
 
@@ -43,11 +43,11 @@ Courier makes sense when you only need to send a few items or packages individua
 
 ## When Should You Use Cargo?
 
-Cargo is the better fit once what you're shipping starts adding up in volume or weight — especially if it's several boxes or multiple items you want sent together.
+Cargo is the better fit once what you're shipping starts adding up in volume or weight, especially if it's several boxes or multiple items you want sent together.
 
 This is the case if you're moving house, relocating an office, or moving back to Indonesia after living abroad. Instead of shipping items one at a time, cargo lets everything go as a single shipment, which keeps the whole process more organized.
 
-For Rimkirim's international relocation service, shipments can start from as little as 21 kg, scaling up to several hundred kilograms. In some cases, Rimkirim has handled relocation shipments weighing up to 800 kg — and as covered in our breakdown of [what it costs to ship your belongings back to Indonesia](/articles/how-rimkirim-prices-your-shipment), cargo pricing is generally calculated by weight and volume rather than per package the way courier is.
+For Rimkirim's international relocation service, shipments can start from as little as 21 kg, scaling up to several hundred kilograms. In some cases, Rimkirim has handled relocation shipments weighing up to 800 kg. As covered in our breakdown of [what it costs to ship your belongings back to Indonesia](/articles/how-rimkirim-prices-your-shipment), cargo pricing is generally calculated by weight and volume rather than per package the way courier is.
 
 ## How Do You Decide Which Service Is Right?
 
@@ -65,7 +65,7 @@ If what you're shipping is part of a move and the volume is substantial, cargo i
 
 Sending a small package or a full relocation shipment? Rimkirim can help either way.
 
-Every shipping need is different, which is why Rimkirim doesn't just handle large-volume shipments — we also support smaller, individual package needs.
+Every shipping need is different, which is why Rimkirim doesn't just handle large-volume shipments; we also support smaller, individual package needs.
 
 For international relocation, Rimkirim handles shipments starting from 21 kg all the way up to several hundred kilograms, with experience managing relocations as large as 800 kg. Our team can help you find the right shipping solution based on the type, quantity, and specific needs of what you're moving.
 

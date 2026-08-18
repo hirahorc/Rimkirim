@@ -12,7 +12,7 @@ cover: /articles/pindahan-dari-australia-ke-indonesia-panduan-mahasiswa.jpg
 
 After finishing your studies in Australia, there's a lot to prepare before returning to Indonesia. Besides handling documents, booking flight tickets, and completing university administration, students also need to think about how to bring all their personal belongings home.
 
-Over time, the things you've accumulated while living in Australia inevitably grow — from clothes and textbooks to household items and electronics. When your studies end, bringing all these items as flight luggage often becomes impractical and can add extra costs due to baggage capacity limits.
+Over time, the things you've accumulated while living in Australia inevitably grow: from clothes and textbooks to household items and electronics. When your studies end, bringing all these items as flight luggage often becomes impractical and can add extra costs due to baggage capacity limits.
 
 So, what needs to be prepared to make the moving process go smoothly?
 
@@ -22,9 +22,9 @@ Before you start packing, take the time to sort your belongings by priority. Aft
 
 Start by separating items you'll actually use again in Indonesia, such as clothes, books, electronics, or other personal necessities. Items you no longer need can be sold, given to friends, or donated so they don't add to your shipping load.
 
-However, don't decide too hastily. During your studies, there may be many beloved items that accompanied your daily life — from your favorite mug that kept you company during late-night assignments, the jacket you wore through your first winter, a notebook full of notes, to small decorations that made your room feel like home.
+However, don't decide too hastily. During your studies, there may be many beloved items that accompanied your daily life: from your favorite mug that kept you company during late-night assignments, the jacket you wore through your first winter, a notebook full of notes, to small decorations that made your room feel like home.
 
-They may not be worth much, but each item holds a story and is part of your college journey in Australia. Meanwhile, items you no longer need — especially larger ones — can be sold to friends, offered at a *garage sale*, or donated.
+They may not be worth much, but each item holds a story and is part of your college journey in Australia. Meanwhile, items you no longer need, especially larger ones, can be sold to friends, offered at a *garage sale*, or donated.
 
 By sorting your belongings early on, the packing process becomes more organized. You'll also be able to estimate shipping volume more accurately, making costs more efficient.
 
@@ -54,13 +54,13 @@ If the items you're bringing are limited to clothes, study documents, or persona
 
 ### Using Cargo Services
 
-Meanwhile, if you've accumulated a lot of belongings during your studies — such as several boxes of clothes, books, kitchenware, electronics, or dorm equipment — using a cargo service will be more practical and efficient. Your items will be shipped separately from your flight, so you won't need to carry multiple suitcases when you return and can travel more comfortably.
+Meanwhile, if you've accumulated a lot of belongings during your studies, such as several boxes of clothes, books, kitchenware, electronics, or dorm equipment, using a cargo service will be more practical and efficient. Your items will be shipped separately from your flight, so you won't need to carry multiple suitcases when you return and can travel more comfortably.
 
 For students returning after several years of study, cargo services are also a solution for shipping large quantities of belongings without worrying about flight baggage limits.
 
 ## 4. Pack Your Belongings Properly
 
-Proper packing plays an important role in keeping your items in good condition during international shipping. This is especially true if you're bringing fragile items, electronics, or items with sentimental value — secure packaging can help minimize the risk of damage during transit.
+Proper packing plays an important role in keeping your items in good condition during international shipping. This is especially true if you're bringing fragile items, electronics, or items with sentimental value; secure packaging can help minimize the risk of damage during transit.
 
 To keep your items protected, here are a few things to pay attention to when packing:
 
@@ -106,6 +106,6 @@ To make the process of moving from Australia to Indonesia go more smoothly, here
 
 Managing a move from Australia to Indonesia isn't just about shipping items. There are various things to prepare, from complete documentation and packing to scheduling pickups and Customs inspections. Without careful preparation, the return process can become more complicated and time-consuming.
 
-By using **Rimkirim**, you can get support throughout the shipping process — from consultations about required documents and determining pickup schedules, to information about the shipping process and *customs clearance*. This way, you can focus more on wrapping up matters before returning to Indonesia without having to worry about handling everything yourself.
+By using **Rimkirim**, you can get support throughout the shipping process: from consultations about required documents and determining pickup schedules, to information about the shipping process and *customs clearance*. This way, you can focus more on wrapping up matters before returning to Indonesia without having to worry about handling everything yourself.
 
 Choosing an experienced service provider also helps ensure your items are shipped through the proper procedures, making the return process more practical, safe, and well-planned.

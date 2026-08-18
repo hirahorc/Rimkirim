@@ -10,9 +10,9 @@ date: 2026-08-07
 cover: /articles/checklist-pindahan-dari-luar-negeri-ke-indonesia.jpg
 ---
 
-A clear checklist for moving back to Indonesia can make the whole process of returning home a lot more organized — especially if you've been living abroad for years and have accumulated more belongings than you realize. Without proper preparation, the move can feel a lot more complicated and take longer than expected.
+A clear checklist for moving back to Indonesia can make the whole process of returning home a lot more organized, especially if you've been living abroad for years and have accumulated more belongings than you realize. Without proper preparation, the move can feel a lot more complicated and take longer than expected.
 
-Many people planning to move to Indonesia focus only on their travel documents. But there's a lot more to prepare — from sorting your belongings and choosing a shipping method, to setting a budget and making sure your goods and paperwork are ready before shipping.
+Many people planning to move to Indonesia focus only on their travel documents. But there's a lot more to prepare: from sorting your belongings and choosing a shipping method, to setting a budget and making sure your goods and paperwork are ready before shipping.
 
 To make your move easier to prepare for, here's a checklist you can use as a guide before shipping your belongings from abroad to Indonesia.
 
@@ -54,7 +54,7 @@ There's no single best method for everyone. The right choice depends on what you
 
 ### 4. Set a Budget and a Buffer
 
-The cost of an international move isn't just the shipping fee. There are other components to factor in from the start — packing materials, add-on services, temporary storage if needed, and other costs that can come up along the way.
+The cost of an international move isn't just the shipping fee. There are other components to factor in from the start: packing materials, add-on services, temporary storage if needed, and other costs that can come up along the way.
 
 It's worth putting together a full cost estimate before settling on a shipping method. Compare a few service options and make sure you understand exactly what's included in each price.
 
