@@ -465,8 +465,32 @@ input[type="date"].date-field::-webkit-calendar-picker-indicator {
   }
 }
 
+/* Dialog: overlay fades, panel rises 8px and settles from 0.97. Centring
+   lives in the `translate` property (Tailwind -translate-x/y-1/2), so the
+   keyframes only touch `transform` and compose with it. Radix keeps the node
+   mounted while the exit animation runs (data-state="closed"). */
+@keyframes dlg-overlay-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes dlg-overlay-out { from { opacity: 1; } to { opacity: 0; } }
+@keyframes dlg-panel-in {
+  from { opacity: 0; transform: translateY(8px) scale(0.97); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes dlg-panel-out {
+  from { opacity: 1; transform: none; }
+  to { opacity: 0; transform: translateY(4px) scale(0.98); }
+}
+.dlg-overlay[data-state="open"] { animation: dlg-overlay-in 200ms ease-out both; }
+.dlg-overlay[data-state="closed"] { animation: dlg-overlay-out 150ms ease-in both; }
+.dlg-panel[data-state="open"] { animation: dlg-panel-in 260ms var(--ease-out-soft) both; }
+.dlg-panel[data-state="closed"] { animation: dlg-panel-out 150ms cubic-bezier(0.11, 0, 0.5, 0) both; }
+
 /* Respect users who prefer reduced motion: show everything, no movement. */
 @media (prefers-reduced-motion: reduce) {
+  /* the panel's translate is its centring, so only the animation goes */
+  .dlg-overlay,
+  .dlg-panel {
+    animation: none !important;
+  }
   .animate-fade-up,
   .reveal,
   .reveal-down,

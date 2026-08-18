@@ -2,6 +2,7 @@
 
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
 import { LanguageToggle } from "@/components/layout/LanguageToggle";
+import { cn } from "@/lib/utils/cn";
 
 /** A bilingual string: { id, en }. Legal copy is authored inline (not through
  * the i18n catalog) to avoid bloating the parity-enforced message types. */
@@ -38,17 +39,28 @@ type Locale = "id" | "en";
 export function LegalBody({
   doc,
   locale,
+  embed = false,
 }: {
   doc: LegalDocData;
   locale: Locale;
+  /** Inside a dialog: the dialog owns the h2, so headings step down one level
+   *  and the document title sits quieter; measure is capped for reading. */
+  embed?: boolean;
 }) {
   const tx = (l: L) => (locale === "en" ? l.en : l.id);
+  const Title = embed ? "h3" : "h1";
+  const Section = embed ? "h4" : "h2";
   return (
-    <div>
+    <div className={cn(embed && "max-w-[62ch]")}>
       <header className="border-b border-border pb-6">
-        <h1 className="font-display text-2xl font-bold tracking-tight sm:text-3xl">
+        <Title
+          className={cn(
+            "font-display font-bold tracking-tight",
+            embed ? "text-xl sm:text-2xl" : "text-2xl sm:text-3xl",
+          )}
+        >
           {tx(doc.title)}
-        </h1>
+        </Title>
         <p className="mt-2 text-sm text-muted-2">{tx(doc.updated)}</p>
       </header>
 
@@ -59,9 +71,14 @@ export function LegalBody({
       <div className="mt-8 space-y-8">
         {doc.sections.map((s, i) => (
           <section key={i}>
-            <h2 className="font-display text-lg font-semibold sm:text-xl">
+            <Section
+              className={cn(
+                "font-display font-semibold",
+                embed ? "text-base sm:text-lg" : "text-lg sm:text-xl",
+              )}
+            >
               {i + 1}. {tx(s.heading)}
-            </h2>
+            </Section>
             <div className="mt-2 space-y-3">
               {s.paragraphs.map((p, j) => (
                 <p
