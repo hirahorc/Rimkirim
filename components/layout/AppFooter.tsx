@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Logo } from "./Logo";
+import { SocialLinks } from "./SocialLinks";
 import { useT } from "@/lib/i18n/LanguageProvider";
 import { isBareRoute, isOrderFlowRoute } from "@/lib/utils/routes";
 
@@ -22,6 +23,7 @@ export function AppFooter() {
             <address className="mt-4 text-sm not-italic leading-relaxed text-muted-2">
               {t("footer.address")}
             </address>
+            <SocialLinks label={t("footer.social")} className="-ml-2.5 mt-5" />
           </div>
           <div className="grid grid-cols-2 gap-8 text-sm sm:grid-cols-3">
             <FooterCol
