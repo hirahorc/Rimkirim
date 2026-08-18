@@ -107,7 +107,7 @@ function FeaturedTestimonial({
             fill
             sizes="(min-width: 640px) 45vw, 85vw"
             // keep the person centred with headroom; the wall/sign may crop
-            className="object-cover object-[68%_25%]"
+            className="object-cover object-[68%_38%]"
           />
         ) : (
           <PortraitPlaceholder initial={name.trim().charAt(0).toUpperCase()} />
