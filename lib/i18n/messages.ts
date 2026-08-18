@@ -579,7 +579,7 @@ const id = {
     confirmBody:
       "Terima kasih! Tim kami akan menghubungi kamu untuk konfirmasi jadwal & dokumen.",
     backHome: "Kembali ke beranda",
-    viewOrder: "Lihat status pesanan",
+    viewOrder: "Lihat Pesanan Saya",
     resumeDraft: "Lanjutkan mengisi",
     draftNote: "Draft tersimpan. Lanjutkan kapan saja.",
     // status phases
@@ -1726,7 +1726,7 @@ const en: Messages = {
     confirmBody:
       "Thank you! Our team will contact you to confirm the schedule & documents.",
     backHome: "Back to home",
-    viewOrder: "View order status",
+    viewOrder: "View My Orders",
     resumeDraft: "Continue filling",
     draftNote: "Draft saved. Continue anytime.",
     statusDraft: "Draft",

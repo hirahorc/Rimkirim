@@ -86,7 +86,6 @@ export function ModuleHub() {
   const answers = useOrderStore((s) => s.answers);
   const bookingNumber = useOrderStore((s) => s.bookingNumber);
   const generatedPackingCode = useOrderStore((s) => s.generatedPackingCode);
-  const orderId = useOrderStore((s) => s.activeDraftId);
   const ensureBookingNumber = useOrderStore((s) => s.ensureBookingNumber);
   const ensurePackingCode = useOrderStore((s) => s.ensurePackingCode);
   const submitOrder = useOrderStore((s) => s.submitOrder);
@@ -157,9 +156,9 @@ export function ModuleHub() {
         <Button
           className="mt-6 w-full"
           onClick={() => {
-            const id = orderId;
+            // detach from the draft, then land on the "Pesanan Saya" list
             reset();
-            router.push(id ? `/pesanan/${id}` : "/");
+            router.push("/pesanan");
           }}
         >
           {t("order.viewOrder")}
