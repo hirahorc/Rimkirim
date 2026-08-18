@@ -23,8 +23,7 @@ export const PopoverContent = React.forwardRef<
         // explicit var() is required — Tailwind v4 dropped the bare `[--foo]`
         // shorthand, so `w-[--radix-popover-trigger-width]` compiled to the
         // invalid `width: --radix-popover-trigger-width` and was ignored.
-        "z-50 min-w-[var(--radix-popover-trigger-width)] rounded-lg border border-border-strong bg-surface-2 p-1 text-foreground shadow-overlay outline-none",
-        "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
+        "pop-panel z-50 min-w-[var(--radix-popover-trigger-width)] rounded-lg border border-border-strong bg-surface-2 p-1 text-foreground shadow-overlay outline-none",
         className,
       )}
       {...props}

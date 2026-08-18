@@ -142,19 +142,6 @@ body {
   background: transparent;
 }
 
-/* date input: render in light scheme; hide the native icon but keep it as an
-   invisible click target over our own Calendar icon (drawn at right-3) */
-input[type="date"].date-field {
-  color-scheme: light;
-}
-input[type="date"].date-field::-webkit-calendar-picker-indicator {
-  margin-left: auto;
-  width: 2.25rem;
-  height: 100%;
-  opacity: 0;
-  cursor: pointer;
-}
-
 @keyframes fade-up {
   from {
     opacity: 0;
@@ -484,11 +471,27 @@ input[type="date"].date-field::-webkit-calendar-picker-indicator {
 .dlg-panel[data-state="open"] { animation: dlg-panel-in 260ms var(--ease-out-soft) both; }
 .dlg-panel[data-state="closed"] { animation: dlg-panel-out 150ms cubic-bezier(0.11, 0, 0.5, 0) both; }
 
+/* Popover panels (selects, date picker): a short lift from the trigger side. */
+@keyframes pop-in {
+  from { opacity: 0; transform: translateY(-4px) scale(0.98); }
+  to { opacity: 1; transform: none; }
+}
+.pop-panel {
+  transform-origin: var(--radix-popover-content-transform-origin);
+}
+.pop-panel[data-state="open"] { animation: pop-in 160ms var(--ease-out-soft) both; }
+.pop-panel[data-side="top"][data-state="open"] { animation-name: pop-in-up; }
+@keyframes pop-in-up {
+  from { opacity: 0; transform: translateY(4px) scale(0.98); }
+  to { opacity: 1; transform: none; }
+}
+
 /* Respect users who prefer reduced motion: show everything, no movement. */
 @media (prefers-reduced-motion: reduce) {
   /* the panel's translate is its centring, so only the animation goes */
   .dlg-overlay,
-  .dlg-panel {
+  .dlg-panel,
+  .pop-panel {
     animation: none !important;
   }
   .animate-fade-up,

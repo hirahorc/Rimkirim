@@ -14,6 +14,14 @@ const id = {
     moreInfo: "Info selengkapnya",
     infoAbout: "Info: {label}",
   },
+  date: {
+    field: "Tanggal",
+    placeholder: "Pilih tanggal",
+    prevMonth: "Bulan sebelumnya",
+    nextMonth: "Bulan berikutnya",
+    today: "Hari ini",
+    clear: "Hapus",
+  },
   cookie: {
     text: "Kami memakai cookie untuk meningkatkan pengalamanmu di situs ini. Dengan melanjutkan, kamu setuju dengan penggunaan cookie kami.",
     accept: "Terima",
@@ -1172,6 +1180,14 @@ const en: Messages = {
     close: "Close",
     moreInfo: "More info",
     infoAbout: "Info: {label}",
+  },
+  date: {
+    field: "Date",
+    placeholder: "Pick a date",
+    prevMonth: "Previous month",
+    nextMonth: "Next month",
+    today: "Today",
+    clear: "Clear",
   },
   cookie: {
     text: "We use cookies to improve your experience on this site. By continuing, you agree to our use of cookies.",

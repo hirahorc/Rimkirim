@@ -8,7 +8,8 @@ import { INDONESIA } from "@/lib/data/countries";
 import { BUILDING_TYPES, PICKUP_WINDOWS } from "../module-options";
 import { useT } from "@/lib/i18n/LanguageProvider";
 import { Card } from "@/components/ui/card";
-import { Input, DateInput, Textarea } from "@/components/ui/input";
+import { Input, Textarea } from "@/components/ui/input";
+import { DatePicker, todayIso } from "@/components/ui/date-picker";
 import { Button } from "@/components/ui/button";
 import { SelectField } from "@/components/ui/select-field";
 import { DialCodeSelect } from "@/components/order/DialCodeSelect";
@@ -221,7 +222,19 @@ export function PickupForm() {
 
           <Field label={t("order.puDate")} error={errors.date?.message}>
             <div className="sm:max-w-xs">
-              <DateInput {...register("date", req)} />
+              <Controller
+                control={control}
+                name="date"
+                rules={req}
+                render={({ field }) => (
+                  <DatePicker
+                    value={field.value}
+                    onChange={field.onChange}
+                    min={todayIso()}
+                    ariaLabel={t("order.puDate")}
+                  />
+                )}
+              />
             </div>
           </Field>
 

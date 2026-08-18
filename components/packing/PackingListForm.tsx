@@ -27,7 +27,8 @@ import { packingListToCipl } from "@/lib/pdf/cipl";
 import { useT } from "@/lib/i18n/LanguageProvider";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input, DateInput } from "@/components/ui/input";
+import { Input } from "@/components/ui/input";
+import { DatePicker } from "@/components/ui/date-picker";
 import { SelectField } from "@/components/ui/select-field";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Field } from "@/components/shared/forms/Field";
@@ -313,7 +314,18 @@ function FormBody({
             <h2 className="font-display font-semibold">{t("pl.sectionShipment")}</h2>
             <div className="grid gap-4 sm:grid-cols-2">
               <Field label={t("pl.shippingDate")} error={errors.shippingDate?.message}>
-                <DateInput {...register("shippingDate", req)} />
+                <Controller
+                  control={control}
+                  name="shippingDate"
+                  rules={req}
+                  render={({ field }) => (
+                    <DatePicker
+                      value={field.value}
+                      onChange={field.onChange}
+                      ariaLabel={t("pl.shippingDate")}
+                    />
+                  )}
+                />
               </Field>
               <Field label={t("pl.purpose")}>
                 <Controller

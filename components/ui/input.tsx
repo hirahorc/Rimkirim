@@ -1,5 +1,4 @@
 import * as React from "react";
-import { Calendar } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 
 export const Input = React.forwardRef<
@@ -45,34 +44,6 @@ export const Textarea = React.forwardRef<
   );
 });
 Textarea.displayName = "Textarea";
-
-/**
- * `<input type="date">` with a custom Calendar icon pinned right (matching the
- * Select chevron). The native picker indicator is kept as an invisible click
- * target over the icon (see `.date-field` in globals.css).
- */
-export const DateInput = React.forwardRef<
-  HTMLInputElement,
-  Omit<React.InputHTMLAttributes<HTMLInputElement>, "type">
->(({ className, ...props }, ref) => {
-  return (
-    <div className="relative">
-      <input
-        ref={ref}
-        type="date"
-        className={cn(
-          "date-field flex h-11 w-full rounded-md border border-border bg-surface-2 pl-3 pr-9 text-sm text-foreground transition-colors",
-          "focus-visible:outline-none focus-visible:border-foreground focus-visible:ring-2 focus-visible:ring-foreground/40",
-          "disabled:cursor-not-allowed disabled:opacity-50",
-          className,
-        )}
-        {...props}
-      />
-      <Calendar className="pointer-events-none absolute right-3 top-1/2 size-4 -translate-y-1/2 text-muted-2" />
-    </div>
-  );
-});
-DateInput.displayName = "DateInput";
 
 export function Label({
   className,
