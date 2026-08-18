@@ -91,7 +91,7 @@ function FeaturedTestimonial({
   className?: string;
 }) {
   const t = useT();
-  const { name, quote, origin, affiliation, highlights, rating, photo } = item;
+  const { name, quote, origin, affiliation, highlights, photo } = item;
   return (
     <article
       className={cn(
@@ -99,7 +99,7 @@ function FeaturedTestimonial({
         className,
       )}
     >
-      <div className="relative aspect-[4/3] sm:aspect-auto sm:min-h-[22rem]">
+      <div className="relative aspect-[4/3] sm:aspect-auto sm:min-h-[18rem]">
         {photo ? (
           <Image
             src={photo}
@@ -109,39 +109,31 @@ function FeaturedTestimonial({
             className="object-cover"
           />
         ) : (
-          <PortraitPlaceholder
-            initial={name.trim().charAt(0).toUpperCase()}
-            label={t("testimonial.photoPlaceholder")}
-          />
+          <PortraitPlaceholder initial={name.trim().charAt(0).toUpperCase()} />
         )}
-      </div>
-
-      <div className="flex flex-col p-6 sm:p-8 lg:p-10">
-        <div className="flex items-center justify-between gap-3">
-          <p className="text-xs font-medium uppercase tracking-[0.14em] text-background/60">
-            {t("testimonial.googleReview")}
-          </p>
-          <Stars value={rating} tone="light" starClass="size-4" />
-        </div>
-        <blockquote className="mt-4 whitespace-pre-line font-display text-lg font-medium leading-snug tracking-tight sm:text-xl lg:text-2xl">
-          {highlightQuote(quote, highlights)}
-        </blockquote>
-
-        <div className="mt-auto flex flex-col gap-1 pt-8 sm:flex-row sm:items-end sm:justify-between sm:gap-4">
-          <div className="min-w-0">
-            <cite className="block truncate font-medium not-italic">{name}</cite>
+        {/* attribution lives on the photo; the translucent ink plate keeps it
+            legible once a real photo replaces the placeholder */}
+        <div className="absolute bottom-0 left-0 max-w-full p-4 sm:p-5">
+          <div className="inline-block rounded-md bg-foreground/75 px-3 py-2 backdrop-blur-sm">
+            <cite className="block truncate text-sm font-medium not-italic">{name}</cite>
             {affiliation && (
-              <p className="truncate text-xs text-background/60">
+              <p className="truncate text-xs text-background/70">
                 {t(`testimonial.affiliations.${affiliation}`)}
               </p>
             )}
           </div>
-          {origin && (
-            <p className="shrink-0 text-xs text-background/60 sm:text-right">
-              {t(`testimonial.origins.${origin}`)} {t("testimonial.routeTo")}
-            </p>
-          )}
         </div>
+      </div>
+
+      <div className="flex flex-col p-6 sm:p-8">
+        <blockquote className="whitespace-pre-line text-sm leading-relaxed">
+          {highlightQuote(quote, highlights)}
+        </blockquote>
+        {origin && (
+          <p className="mt-auto pt-6 text-xs text-background/60">
+            {t(`testimonial.origins.${origin}`)} {t("testimonial.routeTo")}
+          </p>
+        )}
       </div>
     </article>
   );
