@@ -30,6 +30,15 @@ export interface Testimonial {
    * highlighter mark, never rewrites the text, so the review stays verbatim.
    */
   highlights?: string[];
+  /** The one review that becomes the section's hook card (photo + big quote). */
+  featured?: boolean;
+  /**
+   * Public path to the customer's photo (e.g. "/testimonials/elita.jpg").
+   * Only add a REAL photo of THIS customer with their explicit consent — the
+   * hook card is social proof, never stock imagery. Until then the card shows
+   * a non-human placeholder.
+   */
+  photo?: string;
 }
 
 export const TESTIMONIALS: Testimonial[] = [
@@ -50,6 +59,7 @@ export const TESTIMONIALS: Testimonial[] = [
     origin: "adelaide",
     affiliation: "adelaide",
     highlights: ["arrived safely (and quickly!)", "very professional, attentive, and helpful", "Highly recommended!"],
+    featured: true,
   },
   {
     name: "Nurul",

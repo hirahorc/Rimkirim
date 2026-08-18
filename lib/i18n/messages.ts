@@ -141,6 +141,8 @@ const id = {
     ratingScore: "4,9",
     ratingLabel: "dari 5 · Ulasan Google",
     routeTo: "ke Indonesia",
+    googleReview: "Ulasan Google",
+    photoPlaceholder: "Foto customer",
     origins: {
       bristol: "Bristol",
       adelaide: "Adelaide",
@@ -1308,6 +1310,8 @@ const en: Messages = {
     ratingScore: "4.9",
     ratingLabel: "out of 5 · Google reviews",
     routeTo: "to Indonesia",
+    googleReview: "Google review",
+    photoPlaceholder: "Customer photo",
     origins: {
       bristol: "Bristol",
       adelaide: "Adelaide",

@@ -1,10 +1,12 @@
 "use client";
 
+import Image from "next/image";
 import { Star } from "lucide-react";
 import { Card } from "@/components/ui/card";
+import { PortraitPlaceholder } from "@/components/ui/portrait-placeholder";
 import { cn } from "@/lib/utils/cn";
 import { useT } from "@/lib/i18n/LanguageProvider";
-import { TESTIMONIALS, RATING_SCORE } from "@/lib/data/testimonials";
+import { TESTIMONIALS, RATING_SCORE, type Testimonial } from "@/lib/data/testimonials";
 
 /**
  * Google Reviews social proof. Quotes render verbatim (see lib/data/testimonials).
@@ -15,10 +17,13 @@ function Stars({
   value,
   starClass = "size-3.5",
   label,
+  tone = "ink",
 }: {
   value: number;
   starClass?: string;
   label?: string;
+  /** `light` for stars sitting on the ink hook card */
+  tone?: "ink" | "light";
 }) {
   const filled = Math.round(value);
   return (
@@ -35,8 +40,12 @@ function Stars({
           className={cn(
             starClass,
             i < filled
-              ? "fill-foreground text-foreground"
-              : "fill-none text-border-strong",
+              ? tone === "light"
+                ? "fill-background text-background"
+                : "fill-foreground text-foreground"
+              : tone === "light"
+                ? "fill-none text-background/30"
+                : "fill-none text-border-strong",
           )}
         />
       ))}
@@ -68,8 +77,80 @@ function highlightQuote(quote: string, highlights?: string[]) {
   );
 }
 
+/**
+ * The hook: one pinned review on an ink card with the customer's photo. On
+ * sm+ it spans the full column above the masonry, photo left (~45%) bleeding to
+ * the card edge; on mobile it is the first, wider slide of the carousel with the
+ * photo on top. Until a consented photo exists, PortraitPlaceholder holds the slot.
+ */
+function FeaturedTestimonial({
+  item,
+  className,
+}: {
+  item: Testimonial;
+  className?: string;
+}) {
+  const t = useT();
+  const { name, quote, origin, affiliation, highlights, rating, photo } = item;
+  return (
+    <article
+      className={cn(
+        "testi-card grid overflow-hidden rounded-lg bg-foreground text-background sm:grid-cols-[minmax(0,45%)_1fr]",
+        className,
+      )}
+    >
+      <div className="relative aspect-[4/3] sm:aspect-auto sm:min-h-[22rem]">
+        {photo ? (
+          <Image
+            src={photo}
+            alt={name}
+            fill
+            sizes="(min-width: 640px) 45vw, 92vw"
+            className="object-cover"
+          />
+        ) : (
+          <PortraitPlaceholder
+            initial={name.trim().charAt(0).toUpperCase()}
+            label={t("testimonial.photoPlaceholder")}
+          />
+        )}
+      </div>
+
+      <div className="flex flex-col p-6 sm:p-8 lg:p-10">
+        <div className="flex items-center justify-between gap-3">
+          <p className="text-xs font-medium uppercase tracking-[0.14em] text-background/60">
+            {t("testimonial.googleReview")}
+          </p>
+          <Stars value={rating} tone="light" starClass="size-4" />
+        </div>
+        <blockquote className="mt-4 whitespace-pre-line font-display text-lg font-medium leading-snug tracking-tight sm:text-xl lg:text-2xl">
+          {highlightQuote(quote, highlights)}
+        </blockquote>
+
+        <div className="mt-auto flex flex-col gap-1 pt-8 sm:flex-row sm:items-end sm:justify-between sm:gap-4">
+          <div className="min-w-0">
+            <cite className="block truncate font-medium not-italic">{name}</cite>
+            {affiliation && (
+              <p className="truncate text-xs text-background/60">
+                {t(`testimonial.affiliations.${affiliation}`)}
+              </p>
+            )}
+          </div>
+          {origin && (
+            <p className="shrink-0 text-xs text-background/60 sm:text-right">
+              {t(`testimonial.origins.${origin}`)} {t("testimonial.routeTo")}
+            </p>
+          )}
+        </div>
+      </div>
+    </article>
+  );
+}
+
 export function TestimonialSection() {
   const t = useT();
+  const featured = TESTIMONIALS.find((x) => x.featured) ?? TESTIMONIALS[0];
+  const rest = TESTIMONIALS.filter((x) => x !== featured);
   return (
     <section
       id="ulasan"
@@ -100,17 +181,28 @@ export function TestimonialSection() {
           </div>
         </div>
 
-        {/* mobile: a full-bleed swipe carousel — every card stretches to the
-            tallest one (items-stretch), so short reviews carry white space at
-            the bottom; the next card peeks to signal the swipe. sm and up:
+        {/* sm+: the hook sits full-width above the masonry */}
+        <FeaturedTestimonial
+          item={featured}
+          className="mx-auto mt-12 hidden max-w-5xl sm:grid"
+        />
+
+        {/* mobile: a full-bleed swipe carousel — the hook is the first, wider
+            slide; the rest size to their own content (items-start — the hook
+            is far taller than any quote, so stretching would leave the others
+            mostly empty); the next card peeks to signal the swipe. sm and up:
             variable-length quotes pack cleanly in CSS columns (masonry) */}
         <div
-          className="scroll-strip -mx-4 mt-12 flex snap-x snap-mandatory scroll-px-4 gap-4 overflow-x-auto px-4 pb-1 sm:mx-auto sm:block sm:max-w-5xl sm:columns-2 sm:snap-none sm:overflow-visible sm:px-0 sm:pb-0 lg:columns-3"
+          className="scroll-strip -mx-4 mt-12 flex snap-x snap-mandatory items-start scroll-px-4 gap-4 overflow-x-auto px-4 pb-1 sm:mx-auto sm:mt-6 sm:block sm:max-w-5xl sm:columns-2 sm:snap-none sm:overflow-visible sm:px-0 sm:pb-0 lg:columns-3"
           tabIndex={0}
           role="group"
           aria-label={t("testimonial.heading")}
         >
-          {TESTIMONIALS.map(({ name, quote, origin, affiliation, highlights }) => (
+          <FeaturedTestimonial
+            item={featured}
+            className="w-[92%] shrink-0 snap-start sm:hidden"
+          />
+          {rest.map(({ name, quote, origin, affiliation, highlights }) => (
             <Card
               key={name}
               className="testi-card mb-4 flex w-[85%] shrink-0 snap-start break-inside-avoid flex-col p-5 transition-colors hover:border-border-strong sm:w-auto sm:shrink"
@@ -125,8 +217,7 @@ export function TestimonialSection() {
                 </p>
               )}
 
-              {/* attribution pinned to the card foot (mt-auto) — on the equal-
-                  height mobile cards this leaves open space above it for imagery */}
+              {/* attribution pinned to the card foot (mt-auto) */}
               <div className="mt-auto flex items-center gap-3 pt-6">
                 <span
                   aria-hidden
