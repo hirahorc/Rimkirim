@@ -14,9 +14,9 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils/cn";
 
 /**
- * Clearance route picker: a two-column comparison table. Column headers are
- * the radios; clicking anywhere in a column selects it. On small screens the
- * headers become a segmented control and the table shows one column at a time.
+ * Clearance route picker: two route cards side by side, each a radio. Their
+ * spec rows share a subgrid so facts line up across the pair. On small
+ * screens a segmented control picks which card is in view.
  */
 
 const KINDS: ClearanceKind[] = ["personal", "passenger"];
@@ -86,7 +86,7 @@ export function ClearanceOptions() {
         <p className="mt-1.5 max-w-xl text-sm text-muted">{t("order.clSubtitle")}</p>
       </header>
 
-      {/* mobile: segmented control picks the column in view */}
+      {/* mobile: segmented control picks the card in view */}
       <div className="mb-3 grid grid-cols-2 gap-1 rounded-full border border-border bg-surface-2 p-1 sm:hidden">
         {KINDS.map((k) => (
           <button
@@ -104,42 +104,42 @@ export function ClearanceOptions() {
         ))}
       </div>
 
+      {/* two route cards; on sm+ they share one row grid (subgrid) so every
+          spec lines up across the pair without a table */}
       <div
         role="radiogroup"
         aria-label={t("order.clTitle")}
-        className="overflow-hidden rounded-lg border border-border bg-background"
+        className="grid gap-4 sm:grid-cols-2 sm:grid-rows-[auto_repeat(5,auto)]"
       >
-        {/* header row */}
-        <div className="grid grid-cols-1 sm:grid-cols-[minmax(0,10rem)_1fr_1fr] md:grid-cols-[minmax(0,12rem)_1fr_1fr]">
-          <div className="hidden border-b border-border bg-surface-2 sm:block" />
-          {KINDS.map((k, i) => {
-            const enabled = allowed[k];
-            const isSelected = enabled && selected === k;
-            return (
-              <div
-                key={k}
-                role="radio"
-                aria-checked={isSelected}
-                aria-disabled={!enabled}
-                tabIndex={enabled ? 0 : -1}
-                onClick={() => pick(k)}
-                onKeyDown={(ev) => {
-                  if (enabled && (ev.key === "Enter" || ev.key === " ")) {
-                    ev.preventDefault();
-                    pick(k);
-                  }
-                }}
-                className={cn(
-                  "relative border-b border-border p-4 outline-none transition-colors sm:px-5 sm:py-6",
-                  i === 0 && "sm:border-l sm:border-l-border",
-                  i === 1 && "sm:border-l sm:border-l-border",
-                  viewed !== k && "hidden sm:block",
-                  enabled && "cursor-pointer hover:bg-surface-2/60",
-                  isSelected && "bg-brand/10 hover:bg-brand/10",
-                  !enabled && "bg-surface-2/40",
-                  "focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-foreground/50",
-                )}
-              >
+        {KINDS.map((k) => {
+          const enabled = allowed[k];
+          const isSelected = enabled && selected === k;
+          return (
+            <div
+              key={k}
+              role="radio"
+              aria-checked={isSelected}
+              aria-disabled={!enabled}
+              tabIndex={enabled ? 0 : -1}
+              onClick={() => pick(k)}
+              onKeyDown={(ev) => {
+                if (enabled && (ev.key === "Enter" || ev.key === " ")) {
+                  ev.preventDefault();
+                  pick(k);
+                }
+              }}
+              className={cn(
+                "grid overflow-hidden rounded-lg border bg-background outline-none transition-[border-color,box-shadow,background-color] sm:row-span-full sm:grid-rows-subgrid",
+                viewed !== k && "hidden sm:grid",
+                enabled && "cursor-pointer",
+                enabled && !isSelected && "border-border hover:border-border-strong",
+                isSelected && "border-foreground bg-brand/10 ring-2 ring-foreground/15",
+                !enabled && "border-border bg-surface-2/60",
+                "focus-visible:ring-2 focus-visible:ring-foreground/50",
+              )}
+            >
+              {/* card header = the radio */}
+              <div className="border-b border-border p-5 sm:p-6">
                 <div className="flex items-start gap-3">
                   <span
                     aria-hidden
@@ -187,36 +187,19 @@ export function ClearanceOptions() {
                   </p>
                 )}
               </div>
-            );
-          })}
-        </div>
 
-        {/* comparison rows */}
-        {ROWS.map((row, ri) => (
-          <div
-            key={row.key}
-            className={cn(
-              "grid grid-cols-1 sm:grid-cols-[minmax(0,10rem)_1fr_1fr] md:grid-cols-[minmax(0,12rem)_1fr_1fr]",
-              ri < ROWS.length - 1 && "border-b border-border",
-            )}
-          >
-            <div className="px-4 pt-3 text-xs font-medium uppercase tracking-[0.04em] text-muted-2 sm:bg-surface-2 sm:px-5 sm:py-4">
-              {t(row.labelKey)}
-            </div>
-            {KINDS.map((k) => {
-              const enabled = allowed[k];
-              const isSelected = enabled && selected === k;
-              return (
+              {/* specs: label over value, one per subgrid row */}
+              {ROWS.map((row, ri) => (
                 <div
-                  key={k}
-                  onClick={() => pick(k)}
+                  key={row.key}
                   className={cn(
-                    "px-4 pb-3 pt-1 sm:border-l sm:border-l-border sm:px-5 sm:py-4",
-                    viewed !== k && "hidden sm:block",
-                    enabled ? "cursor-pointer text-foreground" : "text-muted",
-                    isSelected && "sm:bg-brand/10",
+                    "px-5 py-4 sm:px-6",
+                    ri < ROWS.length - 1 && "border-b border-border/70",
                   )}
                 >
+                  <p className="mb-1 text-xs font-medium uppercase tracking-[0.04em] text-muted-2">
+                    {t(row.labelKey)}
+                  </p>
                   <CellValue
                     lead={t(`${PREFIX[k]}${row.key}`)}
                     note={"list" in row ? "" : t(`${PREFIX[k]}${row.key}Note`)}
@@ -225,10 +208,10 @@ export function ClearanceOptions() {
                     muted={!enabled}
                   />
                 </div>
-              );
-            })}
-          </div>
-        ))}
+              ))}
+            </div>
+          );
+        })}
       </div>
 
       <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
