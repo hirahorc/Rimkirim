@@ -15,9 +15,8 @@ import { InfoTip, TooltipProvider } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils/cn";
 
 /**
- * Clearance route picker: two route cards side by side, each a radio. Their
- * spec rows share a subgrid so facts line up across the pair. On small
- * screens a segmented control picks which card is in view.
+ * Clearance route picker: two route cards, each a radio (tap = choose). Side
+ * by side on sm+ with spec rows on a shared subgrid; stacked on small screens.
  */
 
 const KINDS: ClearanceKind[] = ["personal", "passenger"];
@@ -64,19 +63,12 @@ export function ClearanceOptions() {
   const [selected, setSelected] = React.useState<ClearanceKind | null>(
     soleAvailable,
   );
-  // the column shown on small screens (independent of the choice, so a locked
-  // route can still be read)
-  const [viewed, setViewed] = React.useState<ClearanceKind>(
-    soleAvailable ?? "personal",
-  );
-
   // the route you can actually take reads first; a locked route never leads
   const ordered: ClearanceKind[] = allowed.personal
     ? KINDS
     : [...KINDS].reverse();
 
   const pick = (k: ClearanceKind) => {
-    setViewed(k);
     if (allowed[k]) setSelected(k);
   };
 
@@ -106,9 +98,7 @@ export function ClearanceOptions() {
     const next =
       enabledKinds[(i + dir + enabledKinds.length) % enabledKinds.length];
     pick(next);
-    // on small screens the target card is display:none until `viewed` re-renders,
-    // so focus it on the next frame rather than synchronously
-    requestAnimationFrame(() => cardRefs.current[next]?.focus());
+    cardRefs.current[next]?.focus();
   };
 
   return (
@@ -151,34 +141,8 @@ export function ClearanceOptions() {
           </p>
         </header>
 
-        {/* mobile: segmented control picks the card in view */}
-        <div className="mb-3 grid grid-cols-2 gap-1 rounded-full border border-border bg-surface-2 p-1 sm:hidden">
-          {ordered.map((k) => (
-            <button
-              key={k}
-              type="button"
-              aria-pressed={selected === k && allowed[k]}
-              // one model on mobile: the pill both shows and (when allowed) chooses the route
-              onClick={() => pick(k)}
-              className={cn(
-                "flex items-center justify-center gap-1.5 rounded-full px-3 py-2 text-sm font-medium transition-colors",
-                // only the CHOSEN route gets the ink pill; a route merely in view
-                // is just darker text, so two pills never both look pressed
-                selected === k && allowed[k]
-                  ? "bg-foreground text-background"
-                  : viewed === k
-                    ? "text-foreground"
-                    : "text-muted",
-              )}
-            >
-              {!allowed[k] && <Lock className="size-3.5" />}
-              {t(`${PREFIX[k]}Title`)}
-            </button>
-          ))}
-        </div>
-
-        {/* two route cards; on sm+ they share one row grid (subgrid) so every
-          spec lines up across the pair without a table */}
+        {/* two route cards, stacked on small screens, side by side on sm+ where
+          they share one row grid (subgrid) so every spec lines up */}
         <div
           role="radiogroup"
           aria-label={t("order.clTitle")}
@@ -219,7 +183,6 @@ export function ClearanceOptions() {
                 }}
                 className={cn(
                   "grid overflow-hidden rounded-lg border bg-background outline-none transition-[border-color,background-color] sm:row-span-full sm:grid-rows-subgrid",
-                  viewed !== k && "hidden sm:grid",
                   enabled && "cursor-pointer",
                   enabled &&
                     !isSelected &&
