@@ -553,17 +553,31 @@ function ItemsCard({ order }: { order: Order }) {
       {packages.length > 0 && (
         // totals footer: darker labels + heavier values so the shipment summary
         // reads as the closing line of the ledger, not one more package row
+        // the closing line of the ledger: the figures a customer actually checks
+        // step up a size, and the estimate carries its own caveat right under it
         <div className="!border-t-2 !border-t-foreground/80 divide-y divide-border pt-1">
           <Row label={<span className="text-muted">{t("order.itTotalCw")}</span>}>
-            <span className="font-medium">{formatNumber(totalCw, 1)} kg</span>
+            <span className="text-base font-medium">{formatNumber(totalCw, 1)} kg</span>
           </Row>
           <Row label={<span className="text-muted">{t("order.itTotalValue")}</span>}>
-            <span className="font-mono font-medium">{formatCurrency(totalValue, currency)}</span>
+            <span className="font-mono text-base font-medium">
+              {formatCurrency(totalValue, currency)}
+            </span>
           </Row>
           {totalPrice > 0 && (
-            <Row label={<span className="text-muted">{t("order.itTotalPrice")}</span>}>
-              <span className="font-mono font-semibold text-foreground">{formatIDR(totalPrice)}</span>
-            </Row>
+            <div className="py-2">
+              <div className="flex items-start justify-between gap-4">
+                <span className="shrink-0 text-xs font-medium text-foreground">
+                  {t("order.itTotalPrice")}
+                </span>
+                <span className="font-mono text-lg font-semibold tabular-nums text-foreground">
+                  {formatIDR(totalPrice)}
+                </span>
+              </div>
+              <p className="mt-1 text-xs leading-relaxed text-muted-2 sm:text-right">
+                {t("order.itEstimateNote")}
+              </p>
+            </div>
           )}
         </div>
       )}
