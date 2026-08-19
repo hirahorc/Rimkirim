@@ -153,18 +153,27 @@ function Question({
       <Card
         ref={ref}
         id={`q${n}`}
-        className="scroll-mt-28 flex items-center gap-3 px-5 py-3 text-sm"
+        className="scroll-mt-28 flex flex-col gap-1 px-5 py-3 text-sm sm:flex-row sm:items-center sm:gap-3"
       >
-        <span className="tabular-nums text-muted-2">{n}.</span>
-        <span className="min-w-0 flex-1 truncate text-muted">{question}</span>
-        <span className="shrink-0 font-medium text-foreground">{answered}</span>
-        <button
-          type="button"
-          onClick={() => setEditing(true)}
-          className="link-mark shrink-0 text-xs"
-        >
-          {editLabel}
-        </button>
+        <span className="flex min-w-0 flex-1 gap-2">
+          <span className="tabular-nums text-muted-2">{n}.</span>
+          {/* phones keep the whole question (2 lines); desktop has room on one line */}
+          <span className="min-w-0 flex-1 text-muted line-clamp-2 sm:truncate">
+            {question}
+          </span>
+        </span>
+        <span className="flex items-center gap-3 pl-5 sm:pl-0">
+          <span className="shrink-0 font-medium text-foreground">
+            {answered}
+          </span>
+          <button
+            type="button"
+            onClick={() => setEditing(true)}
+            className="link-mark shrink-0 text-xs"
+          >
+            {editLabel}
+          </button>
+        </span>
       </Card>
     );
   }
@@ -418,6 +427,7 @@ export function Questionnaire() {
           label: t("order.ineligibleCta"),
           href: WA_URL,
           external: true,
+          tone: "secondary",
           icon: <MessageCircle className="size-4" />,
         }}
         alt={{ label: t("order.ineligibleAlt"), href: "/cek-tarif" }}
@@ -562,9 +572,6 @@ export function Questionnaire() {
                   editLabel={t("order.qEdit")}
                   question={t("order.qE")}
                 >
-                  <p className="mt-1.5 text-xs text-muted-2">
-                    {t("order.qCGloss")}
-                  </p>
                   <Choice
                     labelledBy={`q3-label`}
                     value={e}
@@ -623,6 +630,10 @@ export function Questionnaire() {
                   editLabel={t("order.qEdit")}
                   question={`${t("order.qCPre")} ${originName} ${t("order.qCPost")}`}
                 >
+                  {/* the stakes, before the answer: "Tidak" is a lane, not a rejection */}
+                  <p className="mt-1.5 text-xs text-muted-2">
+                    {t("order.qCGloss")}
+                  </p>
                   <Choice
                     labelledBy={`q3-label`}
                     value={c}
@@ -632,7 +643,6 @@ export function Questionnaire() {
                       { value: false, label: t("order.no") },
                     ]}
                   />
-                  {c !== undefined && d === undefined && laneReadout}
                 </Question>
 
                 {/* one question at a time: the next card appears once this one is answered */}
@@ -665,9 +675,12 @@ export function Questionnaire() {
                         { value: false, label: t("order.no") },
                       ]}
                     />
-                    {d !== undefined && laneReadout}
                   </Question>
                 )}
+
+                {/* the lane formed so far, outside the cards so it survives folding:
+                    after Q3 (what's still open) and after Q4 (the resolved lane) */}
+                {c !== undefined && !canSubmit && laneReadout}
 
                 {c !== undefined && d !== undefined && (
                   <Question
@@ -778,6 +791,8 @@ function OutcomeScreen({
     href: string;
     external: boolean;
     icon: React.ReactNode;
+    /** lime means "forward"; a hand-off (WhatsApp) wears the secondary coat */
+    tone?: "brand" | "secondary";
   };
   /** an optional second way forward (never a dead end) */
   alt?: { label: string; href: string };
@@ -817,7 +832,11 @@ function OutcomeScreen({
         </div>
       </div>
       <div className="mt-6 flex flex-col gap-2 sm:flex-row sm:flex-wrap">
-        <Button asChild className="w-full sm:w-auto">
+        <Button
+          asChild
+          variant={primary.tone ?? "brand"}
+          className="w-full sm:w-auto"
+        >
           {primary.external ? (
             <a href={primary.href} target="_blank" rel="noreferrer">
               {primary.icon} {primary.label}
