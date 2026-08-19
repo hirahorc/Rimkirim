@@ -323,8 +323,16 @@ export function ClearanceOptions() {
           })}
         </div>
 
-        <div className="mt-8 flex sm:justify-end">
+        <div className="mt-8 flex flex-col items-stretch gap-2 sm:items-end">
+          {/* say why the button is grey; the button itself is disabled, so the
+              hint is the only thing a mouse user gets */}
+          {!selected && (
+            <p id="cl-pick-hint" role="status" className="text-xs text-muted-2 sm:text-right">
+              {t("order.clPickHint")}
+            </p>
+          )}
           <Button
+            aria-describedby={selected ? undefined : "cl-pick-hint"}
             size="lg"
             className="w-full sm:w-auto sm:min-w-56"
             disabled={!selected}

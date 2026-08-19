@@ -587,6 +587,7 @@ const id = {
     clLockedSkp: "kamu tidak bisa mengurus SKP di KBRI / KJRI",
     clLockedJoin: " dan ",
     clChangeAnswers: "Ubah jawaban",
+    clPickHint: "Pilih salah satu jalur untuk lanjut",
     // Phase 3 — module hub
     hubTitle: "Formulir order kamu",
     hubSubtitle:
@@ -1791,6 +1792,7 @@ const en: Messages = {
     clLockedSkp: "you can't apply for an SKP at KBRI / KJRI",
     clLockedJoin: " and ",
     clChangeAnswers: "Change answers",
+    clPickHint: "Pick a route to continue",
     hubTitle: "Your order form",
     hubSubtitle:
       "Complete all four sections. You can save as a draft and continue anytime.",
