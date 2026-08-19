@@ -486,8 +486,21 @@ body {
   to { opacity: 1; transform: none; }
 }
 
+/* Route-card radio: the lime check pops in (scale from the dot) in 100ms,
+   same clock as the tooltip, so choosing a route feels like a stamp landing. */
+@keyframes radio-check-in {
+  from { transform: scale(0.4); opacity: 0; }
+  to { transform: none; opacity: 1; }
+}
+.radio-check-in {
+  animation: radio-check-in 100ms cubic-bezier(0.5, 1, 0.89, 1) both;
+}
+
 /* Respect users who prefer reduced motion: show everything, no movement. */
 @media (prefers-reduced-motion: reduce) {
+  .radio-check-in {
+    animation: none !important;
+  }
   /* the panel's translate is its centring, so only the animation goes */
   .dlg-overlay,
   .dlg-panel,

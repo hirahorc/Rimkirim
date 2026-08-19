@@ -202,7 +202,7 @@ export function ClearanceOptions() {
                     )}
                   >
                     {isSelected ? (
-                      <Check className="size-3" strokeWidth={3.5} />
+                      <Check className="radio-check-in size-3" strokeWidth={3.5} />
                     ) : !enabled ? (
                       <Lock className="size-2.5 text-muted-2" />
                     ) : null}
