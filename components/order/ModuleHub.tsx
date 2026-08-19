@@ -199,7 +199,8 @@ export function ModuleHub() {
           <Hash className="size-3.5" /> {t("order.bookingNumberLabel")}
         </p>
         <div className="mt-1 flex items-center gap-2">
-          <span className="font-display text-lg font-bold tracking-tight text-foreground">
+          {/* an identifier the customer will read out loud: mono, tabular (Numbers-Are-Mono) */}
+          <span className="font-mono text-lg font-semibold tabular-nums text-foreground">
             {bookingNumber ?? "–"}
           </span>
           {bookingNumber && <CopyButton value={bookingNumber} />}
