@@ -121,14 +121,22 @@ function Question({
   question,
   note,
   children,
+  answered,
+  editLabel,
 }: {
   n: number;
   question: string;
   /** small eyebrow naming what the answer does (e.g. "decides the clearance route") */
   note?: string;
   children: React.ReactNode;
+  /** the chosen answer's label: when set and the question is behind the active
+      one, the card folds to a single line (question · answer · Ubah) */
+  answered?: string;
+  editLabel?: string;
 }) {
   const ref = React.useRef<HTMLDivElement>(null);
+  const [editing, setEditing] = React.useState(false);
+  const folded = !!answered && !editing;
   // a question that appears below the fold on a phone announces itself by
   // sliding into view; mount-only, and skipped when motion is reduced
   React.useEffect(() => {
@@ -140,6 +148,26 @@ function Question({
     if (r.bottom > window.innerHeight)
       el.scrollIntoView({ behavior: "smooth", block: "nearest" });
   }, [n]);
+  if (folded) {
+    return (
+      <Card
+        ref={ref}
+        id={`q${n}`}
+        className="scroll-mt-28 flex items-center gap-3 px-5 py-3 text-sm"
+      >
+        <span className="tabular-nums text-muted-2">{n}.</span>
+        <span className="min-w-0 flex-1 truncate text-muted">{question}</span>
+        <span className="shrink-0 font-medium text-foreground">{answered}</span>
+        <button
+          type="button"
+          onClick={() => setEditing(true)}
+          className="link-mark shrink-0 text-xs"
+        >
+          {editLabel}
+        </button>
+      </Card>
+    );
+  }
   return (
     // id lets the clearance step deep-link back to the exact question
     <Card ref={ref} id={`q${n}`} className="scroll-mt-28 animate-fade-up p-5">
@@ -168,9 +196,6 @@ export function Questionnaire() {
   const prefillFromPackingList = useOrderStore((s) => s.prefillFromPackingList);
   const user = useCurrentUser();
 
-  const [outcome, setOutcome] = React.useState<
-    null | "ineligible" | "foreigner"
-  >(null);
   const [codeStatus, setCodeStatus] = React.useState<
     "idle" | "checking" | "found" | "not-found"
   >(() =>
@@ -239,16 +264,40 @@ export function Questionnaire() {
         ? t("order.qLanePersonal")
         : t("order.qLaneOpen");
   const laneReadout = (
-    <p className="mt-2 flex items-center gap-1.5 text-xs text-muted-2">
-      <ArrowRight className="size-3.5 shrink-0" aria-hidden /> {laneText}
+    <p
+      role="status"
+      className="mt-3 inline-flex max-w-full items-center gap-2 rounded-sm bg-surface-2 px-3 py-1.5 text-sm text-foreground"
+    >
+      <ArrowRight className="size-4 shrink-0 text-muted-2" aria-hidden />
+      <span className="min-w-0">{laneText}</span>
     </p>
   );
+  // the off-ramp IS the outcome: the card appears the moment the answer lands
   const offRamp: "ineligible" | "foreigner" | null =
     a === false
       ? "ineligible"
       : !isExport && b === "foreigner"
         ? "foreigner"
         : null;
+  const outcome = offRamp;
+  // questions behind the active one fold to a line; the active one stays open
+  const activeN = isExport
+    ? a === undefined
+      ? 1
+      : arrived === undefined
+        ? 2
+        : 3
+    : a === undefined
+      ? 1
+      : b === undefined
+        ? 2
+        : c === undefined
+          ? 3
+          : d === undefined
+            ? 4
+            : 5;
+  const fold = (n: number, label: string | undefined) =>
+    n < activeN && !offRamp ? label : undefined;
 
   const canSubmit = isExport
     ? a === false ||
@@ -275,8 +324,7 @@ export function Questionnaire() {
   };
 
   const onSubmit = () => {
-    if (a === false) return setOutcome("ineligible");
-    if (!isExport && b === "foreigner") return setOutcome("foreigner");
+    if (offRamp) return;
     applyOwnPackingList();
     if (isExport) return router.push("/pesan/modul");
     router.push("/pesan/clearance");
@@ -374,7 +422,7 @@ export function Questionnaire() {
         }}
         alt={{ label: t("order.ineligibleAlt"), href: "/cek-tarif" }}
         secondaryLabel={t("order.backToRates")}
-        onSecondary={() => setOutcome(null)}
+        onSecondary={() => setAnswers({ shippingPersonal: undefined })}
       />
     ) : outcome === "foreigner" ? (
       <OutcomeScreen
@@ -391,7 +439,7 @@ export function Questionnaire() {
         }}
         alt={{ label: t("order.ineligibleAlt"), href: "/cek-tarif" }}
         secondaryLabel={t("order.backToRates")}
-        onSecondary={() => setOutcome(null)}
+        onSecondary={() => setAnswers({ citizenship: undefined })}
       />
     ) : null;
 
@@ -416,11 +464,15 @@ export function Questionnaire() {
             {/* the shipment this check is about: the Open Desk readout the page
                 was missing (route · service · quoted rate) */}
             <p className="mt-3 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-foreground">
-              <span className="inline-flex items-center gap-1.5">
+              <Link
+                href="/cek-tarif"
+                className="inline-flex items-center gap-1.5 underline-offset-4 hover:underline"
+                title={t("order.qReceiptBack")}
+              >
                 {originName}
                 <RouteArrow className="text-muted-2" />
                 {destName}
-              </span>
+              </Link>
               <span className="text-muted-2">·</span>
               <span>
                 {isExport ? t("order.serviceMa") : t("order.serviceBfg")}
@@ -451,6 +503,15 @@ export function Questionnaire() {
               n={1}
               note={t("order.qGateNote")}
               question={t("order.qA")}
+              answered={fold(
+                1,
+                a === undefined
+                  ? undefined
+                  : a
+                    ? t("order.yes")
+                    : t("order.no"),
+              )}
+              editLabel={t("order.qEdit")}
             >
               {/* the gate term, defined where it's asked (same treatment as SKP) */}
               <p className="mt-1.5 text-xs text-muted-2">
@@ -465,11 +526,6 @@ export function Questionnaire() {
                   { value: false, label: t("order.no") },
                 ]}
               />
-              {offRamp === "ineligible" && (
-                <p className="mt-3 text-xs leading-relaxed text-muted">
-                  {t("order.qIneligibleInline")}
-                </p>
-              )}
             </Question>
 
             {/* Moving Abroad (export): lean questionnaire */}
@@ -477,6 +533,15 @@ export function Questionnaire() {
               <>
                 <Question
                   n={2}
+                  answered={fold(
+                    2,
+                    arrived === undefined
+                      ? undefined
+                      : arrived
+                        ? t("order.yes")
+                        : t("order.no"),
+                  )}
+                  editLabel={t("order.qEdit")}
                   question={`${t("order.qArrivedPre")} ${destName} ${t("order.qArrivedPost")}`}
                 >
                   <Choice
@@ -493,8 +558,13 @@ export function Questionnaire() {
                 <Question
                   n={3}
                   note={t("order.qOptionalNote")}
+                  answered={fold(3, e === false ? t("order.no") : undefined)}
+                  editLabel={t("order.qEdit")}
                   question={t("order.qE")}
                 >
+                  <p className="mt-1.5 text-xs text-muted-2">
+                    {t("order.qCGloss")}
+                  </p>
                   <Choice
                     labelledBy={`q3-label`}
                     value={e}
@@ -514,6 +584,15 @@ export function Questionnaire() {
               <Question
                 n={2}
                 note={t("order.qGateNote")}
+                answered={fold(
+                  2,
+                  b === undefined
+                    ? undefined
+                    : b === "indonesian"
+                      ? t("order.indonesian")
+                      : t("order.foreigner"),
+                )}
+                editLabel={t("order.qEdit")}
                 question={t("order.qB")}
               >
                 <Choice<Citizenship>
@@ -525,11 +604,6 @@ export function Questionnaire() {
                     { value: "foreigner", label: t("order.foreigner") },
                   ]}
                 />
-                {offRamp === "foreigner" && (
-                  <p className="mt-3 text-xs leading-relaxed text-muted">
-                    {t("order.qForeignerInline")}
-                  </p>
-                )}
               </Question>
             )}
 
@@ -538,6 +612,15 @@ export function Questionnaire() {
                 <Question
                   n={3}
                   note={t("order.qRoutingNote")}
+                  answered={fold(
+                    3,
+                    c === undefined
+                      ? undefined
+                      : c
+                        ? t("order.yes")
+                        : t("order.no"),
+                  )}
+                  editLabel={t("order.qEdit")}
                   question={`${t("order.qCPre")} ${originName} ${t("order.qCPost")}`}
                 >
                   <Choice
@@ -557,6 +640,15 @@ export function Questionnaire() {
                   <Question
                     n={4}
                     note={t("order.qRoutingNote")}
+                    answered={fold(
+                      4,
+                      d === undefined
+                        ? undefined
+                        : d
+                          ? t("order.yes")
+                          : t("order.no"),
+                    )}
+                    editLabel={t("order.qEdit")}
                     question={t("order.qD")}
                   >
                     {/* SKP is the one term here a first-timer won't know — explain
@@ -581,6 +673,8 @@ export function Questionnaire() {
                   <Question
                     n={5}
                     note={t("order.qOptionalNote")}
+                    answered={fold(5, e === false ? t("order.no") : undefined)}
+                    editLabel={t("order.qEdit")}
                     question={t("order.qE")}
                   >
                     <Choice
@@ -638,11 +732,7 @@ export function Questionnaire() {
               aria-describedby={canSubmit ? undefined : "q-submit-hint"}
               onClick={onSubmit}
             >
-              {offRamp === "ineligible"
-                ? t("order.qSeeOptions")
-                : offRamp === "foreigner"
-                  ? t("order.qToExpat")
-                  : t("order.seeResult")}
+              {t("order.seeResult")}
               <ArrowRight className="size-4" />
             </Button>
             {canSubmit && !offRamp && (
@@ -703,7 +793,7 @@ function OutcomeScreen({
   }, []);
   return (
     <Card
-      className="reveal-pop mt-3 p-6 sm:p-8"
+      className="reveal-pop mt-3 scroll-mt-28 p-6 sm:p-8"
       role="region"
       aria-live="polite"
     >
