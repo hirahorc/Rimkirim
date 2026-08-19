@@ -28,6 +28,8 @@ import { Input, Label } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { InfoTip, TooltipProvider } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils/cn";
+import { formatIDR } from "@/lib/utils/currency";
+import { RouteArrow } from "@/components/ui/route-arrow";
 
 const WA_URL = "https://wa.me/6281234567890";
 
@@ -160,6 +162,7 @@ export function Questionnaire() {
   const { locale } = useLanguage();
   const router = useRouter();
   const context = useOrderStore((s) => s.context);
+  const selectedRate = useOrderStore((s) => s.selectedRate);
   const answers = useOrderStore((s) => s.answers);
   const setAnswers = useOrderStore((s) => s.setAnswers);
   const prefillFromPackingList = useOrderStore((s) => s.prefillFromPackingList);
@@ -224,7 +227,7 @@ export function Questionnaire() {
   const answeredCount = [a, isExport ? arrived : b, c, d, e].filter(
     (v) => v !== undefined,
   ).length;
-  const currentQ = Math.min(answeredCount + 1, maxQuestions);
+  const answeredShown = Math.min(answeredCount, maxQuestions);
   // the lime door only leads forward; a branch that ends in a hand-off gets a
   // quieter, honest button (and says so under the answer that caused it)
   const offRamp: "ineligible" | "foreigner" | null =
@@ -373,6 +376,7 @@ export function Questionnaire() {
           external: false,
           icon: <ArrowRight className="size-4" />,
         }}
+        alt={{ label: t("order.ineligibleAlt"), href: "/cek-tarif" }}
         secondaryLabel={t("order.backToRates")}
         onSecondary={() => setOutcome(null)}
       />
@@ -396,10 +400,32 @@ export function Questionnaire() {
             <p className="mt-1.5 max-w-prose text-sm text-muted">
               {t("order.qSubheading")}
             </p>
+            {/* the shipment this check is about: the Open Desk readout the page
+                was missing (route · service · quoted rate) */}
+            <p className="mt-3 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-foreground">
+              <span className="inline-flex items-center gap-1.5">
+                {originName}
+                <RouteArrow className="text-muted-2" />
+                {destName}
+              </span>
+              <span className="text-muted-2">·</span>
+              <span>{isExport ? t("order.serviceMa") : t("order.serviceBfg")}</span>
+              {selectedRate && (
+                <>
+                  <span className="text-muted-2">·</span>
+                  <span className="font-mono tabular-nums">
+                    {formatIDR(selectedRate.perKg)}
+                    <span className="ml-1 text-xs text-muted-2">
+                      {t("order.qPerKg")}
+                    </span>
+                  </span>
+                </>
+              )}
+            </p>
             {maxQuestions > 1 && (
               <p className="mt-3 text-xs font-medium uppercase tracking-[0.04em] text-muted-2">
                 {t("order.qProgress")
-                  .replace("{n}", String(currentQ))
+                  .replace("{n}", String(answeredShown))
                   .replace("{max}", String(maxQuestions))}
               </p>
             )}
@@ -548,6 +574,12 @@ export function Questionnaire() {
           </div>
 
           <div className="mt-6">
+            {canSubmit && !offRamp && (
+              <p className="mb-2 flex items-center justify-center gap-1.5 text-center text-xs font-medium text-foreground">
+                <CheckCircle2 className="size-3.5 text-success" />{" "}
+                {t("order.qEligibleReadout")}
+              </p>
+            )}
             {!canSubmit && (
               <p
                 id="q-submit-hint"
