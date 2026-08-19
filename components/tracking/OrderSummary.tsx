@@ -83,16 +83,29 @@ function SubGroup({
 function Row({
   label,
   children,
+  prose = false,
 }: {
   label: React.ReactNode;
   children: React.ReactNode;
+  /** addresses, notes: sentences read left-aligned under their label on phones,
+      instead of ragged right-aligned fragments beside it */
+  prose?: boolean;
 }) {
   return (
-    <div className="flex items-start justify-between gap-4 py-2">
+    <div
+      className={cn(
+        "py-2",
+        prose
+          ? "flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between sm:gap-4"
+          : "flex items-start justify-between gap-4",
+      )}
+    >
       <span className="shrink-0 text-xs text-muted-2">{label}</span>
       {/* tabular-nums here aligns every numeric value down the right column —
           dims, weights, dates, phone digits — and is inert on prose values. */}
-      <span className="text-right text-sm tabular-nums">{children}</span>
+      <span className={cn("text-sm tabular-nums", prose ? "sm:text-right" : "text-right")}>
+        {children}
+      </span>
     </div>
   );
 }
@@ -256,18 +269,18 @@ function PartyRows({ party }: { party: Party | undefined }) {
     ? (getCountry(party.country)?.name ?? party.country)
     : null;
   // only rows with a real value — a half-empty party shouldn't stack dashes
-  const rows: [string, React.ReactNode][] = [];
+  const rows: [string, React.ReactNode, boolean?][] = [];
   if (party?.fullName) rows.push([t("order.ciFullName"), party.fullName]);
   if (country) rows.push([t("order.ciCountry"), country]);
-  if (party?.address) rows.push([t("order.ciFullAddress"), party.address]);
+  if (party?.address) rows.push([t("order.ciFullAddress"), party.address, true]);
   if (party?.email) rows.push([t("order.ciEmail"), party.email]);
   if (phone) rows.push([t("order.ciPhone"), phone]);
 
   if (rows.length === 0) return <EmptyLine />;
   return (
     <>
-      {rows.map(([label, value]) => (
-        <Row key={label} label={label}>
+      {rows.map(([label, value, prose]) => (
+        <Row key={label} label={label} prose={prose}>
           {value}
         </Row>
       ))}
@@ -710,14 +723,20 @@ function PickupCard({
           {showAccessQs && data?.receptionist != null && (
             <Row label={t("order.puReceptionist")}>{yesNo(data.receptionist)}</Row>
           )}
-          {data?.address && <Row label={t("order.puAddress")}>{data.address}</Row>}
+          {data?.address && (
+            <Row prose label={t("order.puAddress")}>
+              {data.address}
+            </Row>
+          )}
           {data?.date && <Row label={t("order.puDate")}>{date}</Row>}
           {data?.time && <Row label={t("order.puTime")}>{data.time}</Row>}
           {data?.standbyDuration != null && data.standbyDuration !== "" && (
             <Row label={t("order.puStandbyLabel")}>{standby}</Row>
           )}
           {data?.notesCourier && (
-            <Row label={t("order.puNotesCourier")}>{data.notesCourier}</Row>
+            <Row prose label={t("order.puNotesCourier")}>
+              {data.notesCourier}
+            </Row>
           )}
         </>
       )}
