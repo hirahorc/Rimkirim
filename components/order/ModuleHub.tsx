@@ -193,55 +193,46 @@ export function ModuleHub() {
         </div>
       </header>
 
-      {/* order created: booking number */}
-      <Card className="mb-4 p-5">
-        <p className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-muted-2">
-          <Hash className="size-3.5" /> {t("order.bookingNumberLabel")}
-        </p>
-        <div className="mt-1 flex items-center gap-2">
-          {/* an identifier the customer will read out loud: mono, tabular (Numbers-Are-Mono) */}
-          <span className="font-mono text-lg font-semibold tabular-nums text-foreground">
-            {bookingNumber ?? "–"}
-          </span>
-          {bookingNumber && <CopyButton value={bookingNumber} />}
-        </div>
-      </Card>
-
-      {/* packing list: code (or pending) + download place */}
-      <Card className="mb-5 flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex items-center gap-3">
-          <span
-            className={cn(
-              "grid size-10 shrink-0 place-items-center rounded-md",
-              packingCode ? "bg-brand/15 text-brand-ink" : "bg-surface-3 text-muted-2",
-            )}
-          >
-            <FileText className="size-5" />
-          </span>
-          <div>
-            <p className="flex items-center gap-1.5 font-medium">
-              {t("order.packingListTitle")}
-              {packingCode && (
-                <Badge variant="brand">
-                  <Sparkles className="size-3" /> {t("order.packingListReady")}
-                </Badge>
-              )}
-            </p>
-            {packingCode ? (
-              <div className="mt-0.5 flex items-center gap-1.5">
-                <span className="font-mono text-sm font-semibold">{packingCode}</span>
-                <CopyButton value={packingCode} />
-              </div>
-            ) : (
-              <p className="text-sm text-muted">{t("order.packingListPending")}</p>
-            )}
+      {/* the receipt: what the order already HAS (booking number, packing list,
+          document) in one quiet strip, so the body below is only the work */}
+      <Card className="mb-6 grid divide-y divide-border p-0 sm:grid-cols-[1fr_1fr_auto] sm:divide-x sm:divide-y-0">
+        <div className="px-4 py-3 sm:px-5">
+          <p className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-muted-2">
+            <Hash className="size-3.5" /> {t("order.bookingNumberLabel")}
+          </p>
+          <div className="mt-1 flex items-center gap-2">
+            {/* an identifier the customer will read out loud: mono, tabular (Numbers-Are-Mono) */}
+            <span className="font-mono text-base font-semibold tabular-nums text-foreground">
+              {bookingNumber ?? "–"}
+            </span>
+            {bookingNumber && <CopyButton value={bookingNumber} />}
           </div>
         </div>
-        <div className="shrink-0 sm:text-right">
+        <div className="px-4 py-3 sm:px-5">
+          <p className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-muted-2">
+            <FileText className="size-3.5" /> {t("order.packingListTitle")}
+            {packingCode && (
+              <Badge variant="brand">
+                <Sparkles className="size-3" /> {t("order.packingListReady")}
+              </Badge>
+            )}
+          </p>
+          {packingCode ? (
+            <div className="mt-1 flex items-center gap-2">
+              <span className="font-mono text-base font-semibold tabular-nums">{packingCode}</span>
+              <CopyButton value={packingCode} />
+            </div>
+          ) : (
+            <p className="mt-1 text-sm text-muted">{t("order.packingListPending")}</p>
+          )}
+        </div>
+        <div className="flex items-center px-4 py-3 sm:px-5">
           <Button
             variant="secondary"
             size="sm"
+            className="w-full sm:w-auto"
             disabled={!pdfReady || pdfBusy}
+            title={pdfReady ? undefined : t("order.generatePdfNote")}
             onClick={() =>
               downloadPdf(
                 orderModulesToCipl({
@@ -261,9 +252,6 @@ export function ModuleHub() {
             )}
             {pdfBusy ? t("pl.downloading") : t("order.generatePdf")}
           </Button>
-          {!pdfReady && (
-            <p className="mt-1 max-w-[15rem] text-xs text-muted-2 sm:ml-auto">{t("order.generatePdfNote")}</p>
-          )}
         </div>
       </Card>
 
