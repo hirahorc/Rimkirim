@@ -28,20 +28,36 @@ import { cn } from "@/lib/utils/cn";
 const KINDS: ClearanceKind[] = ["personal", "passenger"];
 type Scope = "m" | "d";
 
-/** `mono` marks a monetary row (Numbers-Are-Mono); `list` splits the value on "|". */
+/**
+ * Spec rows in two groups: the ones that DECIDE the choice (tax, cap, window)
+ * and the ones you then prepare (SKP, documents). Neutral, but weighted.
+ * `mono` marks a monetary row (Numbers-Are-Mono); `list` splits the value on "|".
+ */
 const ROWS = [
-  { key: "Tax", labelKey: "order.clRowTax" },
+  { key: "Tax", labelKey: "order.clRowTax", group: "decide" },
   {
     key: "ValueCap",
     labelKey: "order.clRowValueCap",
+    group: "decide",
     mono: true,
     tipKey: "order.clTipValueCap",
   },
-  { key: "Skp", labelKey: "order.clRowSkp", tipKey: "order.clTipSkp" },
-  { key: "Window", labelKey: "order.clRowWindow", tipKey: "order.clTipWindow" },
-  { key: "Docs", labelKey: "order.clRowDocs", list: true },
+  {
+    key: "Window",
+    labelKey: "order.clRowWindow",
+    group: "decide",
+    tipKey: "order.clTipWindow",
+  },
+  { key: "Skp", labelKey: "order.clRowSkp", group: "prepare", tipKey: "order.clTipSkp" },
+  { key: "Docs", labelKey: "order.clRowDocs", group: "prepare", list: true },
 ] as const;
 type Row = (typeof ROWS)[number];
+const GROUP_LABEL = { decide: "order.clGroupDecide", prepare: "order.clGroupPrepare" } as const;
+/** index of the first row of each group, where the group eyebrow sits */
+const GROUP_STARTS = ROWS.reduce<Record<string, number>>((acc, r, i) => {
+  if (!(r.group in acc)) acc[r.group] = i;
+  return acc;
+}, {});
 
 const PREFIX: Record<ClearanceKind, string> = {
   personal: "order.clPersonal",
@@ -71,6 +87,8 @@ export function ClearanceOptions() {
   const [selected, setSelected] = React.useState<ClearanceKind | null>(
     soleAvailable,
   );
+  // Enter/Space on a locked radio: say why instead of staying silent
+  const [lockedNudge, setLockedNudge] = React.useState("");
   // the route you can actually take reads first; a locked route never leads
   const ordered: ClearanceKind[] = allowed.personal
     ? KINDS
@@ -116,9 +134,10 @@ export function ClearanceOptions() {
       } else if (ev.key === "ArrowLeft" || ev.key === "ArrowUp") {
         ev.preventDefault();
         moveFocus(k, -1, scope);
-      } else if (allowed[k] && (ev.key === "Enter" || ev.key === " ")) {
+      } else if (ev.key === "Enter" || ev.key === " ") {
         ev.preventDefault();
-        pick(k);
+        if (allowed[k]) pick(k);
+        else setLockedNudge(`${t("order.clLockedTitle")}: ${lockedReasons.join(t("order.clLockedJoin"))}`);
       }
     };
 
@@ -138,7 +157,11 @@ export function ClearanceOptions() {
         aria-checked={isSelected}
         aria-disabled={!enabled}
         aria-labelledby={`${id}-title`}
-        aria-describedby={enabled ? `${id}-specs` : `${id}-locked ${id}-specs`}
+        aria-describedby={
+          enabled
+            ? scope === "d" ? `${id}-specs` : "cl-m-specs"
+            : `${id}-locked ${scope === "d" ? `${id}-specs` : "cl-m-specs"}`
+        }
         // a locked route stays reachable by Tab so its reason (and the way to
         // change it) is announced, it just can't be checked
         tabIndex={0}
@@ -163,7 +186,7 @@ export function ClearanceOptions() {
           {isSelected ? (
             <Check className="radio-check-in size-3" strokeWidth={3.5} />
           ) : !enabled ? (
-            <Lock className="size-2.5 text-muted-2" />
+            <Lock className="size-3 text-muted" strokeWidth={2.5} />
           ) : null}
         </span>
         <span className="min-w-0">
@@ -211,6 +234,16 @@ export function ClearanceOptions() {
       </Link>
     </p>
   );
+
+  const groupEyebrow = (ri: number) => {
+    const g = ROWS[ri].group;
+    if (GROUP_STARTS[g] !== ri) return null;
+    return (
+      <p className="mb-2 font-display text-sm font-semibold tracking-tight text-foreground">
+        {t(GROUP_LABEL[g])}
+      </p>
+    );
+  };
 
   const rowLabel = (row: Row) => (
     <p className="mb-1 flex items-center gap-1.5 text-xs font-medium uppercase tracking-[0.04em] text-muted-2">
@@ -265,14 +298,15 @@ export function ClearanceOptions() {
     <TooltipProvider delayDuration={150}>
       <div>
         <header className="mb-8 text-center">
-          {/* the questionnaire's positive outcome IS the eyebrow: lime-filled
-            check (Marker Rule), words in ink. The outer flex centres the pair,
-            the inner one keeps the check on the first line when the text wraps */}
+          {/* the questionnaire's positive outcome IS the eyebrow. Ink check on a
+            quiet disc: lime is reserved for the chosen route and the button
+            (One-Voice). The outer flex centres the pair, the inner one keeps
+            the check on the first line when the text wraps */}
           <p className="flex justify-center">
             <span className="inline-flex items-start gap-2 text-left text-sm font-medium text-foreground">
               <span
                 aria-hidden
-                className="mt-px grid size-5 shrink-0 place-items-center rounded-full bg-brand text-brand-ink"
+                className="mt-px grid size-5 shrink-0 place-items-center rounded-full bg-surface-3 text-foreground"
               >
                 <Check className="size-3" strokeWidth={3.5} />
               </span>
@@ -322,8 +356,12 @@ export function ClearanceOptions() {
                       className={cn(
                         "px-5 py-4 sm:px-6",
                         ri < ROWS.length - 1 && "border-b border-border/70",
+                        // the group break is a full-strength hairline, not a band
+                        GROUP_STARTS.prepare === ri && "pt-5",
+                        GROUP_STARTS.prepare === ri + 1 && "border-border",
                       )}
                     >
+                      {groupEyebrow(ri)}
                       {rowLabel(row)}
                       {cell(k, row)}
                     </div>
@@ -353,37 +391,62 @@ export function ClearanceOptions() {
           </div>
 
           {/* the comparison: one list, both routes per row, columns in the same
-            order as the radios above so they read like the cards */}
+            order as the radios above. The column headers pick too, and the
+            chosen column wears the same lime wash as its card, so what you
+            read and what you tapped are visibly the same thing. Both radios
+            are described by this one list. */}
           <div
-            id={`cl-m-${ordered[0]}-specs`}
-            className="mt-6 rounded-lg border border-border"
+            id="cl-m-specs"
+            className="mt-6 overflow-hidden rounded-lg border border-border"
           >
-            {/* the second radio is described by the same list */}
-            <span id={`cl-m-${ordered[1]}-specs`} className="sr-only">
-              {t("order.clCompareLabel")}
-            </span>
-            <div className="grid grid-cols-2 gap-x-4 border-b border-border px-4 py-2.5 text-xs font-medium uppercase tracking-[0.04em] text-muted-2">
-              {ordered.map((k) => (
-                <span
-                  key={k}
-                  className={cn(!allowed[k] && "text-muted-2/70")}
-                >
-                  {t(`${PREFIX[k]}Title`)}
-                </span>
-              ))}
+            <div className="grid grid-cols-2 border-b border-border">
+              {ordered.map((k) => {
+                const isSel = allowed[k] && selected === k;
+                return (
+                  <button
+                    key={k}
+                    type="button"
+                    tabIndex={-1}
+                    aria-hidden
+                    disabled={!allowed[k]}
+                    onClick={() => pick(k)}
+                    className={cn(
+                      "flex items-center gap-1.5 px-4 py-2.5 text-left text-xs font-medium uppercase tracking-[0.04em]",
+                      isSel ? "bg-brand-soft/15 text-foreground" : "text-muted-2",
+                      !allowed[k] && "text-muted-2",
+                    )}
+                  >
+                    {isSel && <Check className="size-3.5 shrink-0" strokeWidth={3} />}
+                    {t(`${PREFIX[k]}Title`)}
+                  </button>
+                );
+              })}
             </div>
             {ROWS.map((row, ri) => (
               <div
                 key={row.key}
                 className={cn(
-                  "px-4 py-3",
+                  "px-4 pb-3 pt-3",
                   ri < ROWS.length - 1 && "border-b border-border/70",
+                  GROUP_STARTS.prepare === ri && "pt-4",
+                  GROUP_STARTS.prepare === ri + 1 && "border-border",
                 )}
               >
+                {groupEyebrow(ri)}
                 {rowLabel(row)}
-                <div className="grid grid-cols-2 gap-x-4">
+                <div className="-mx-4 grid grid-cols-2">
                   {ordered.map((k) => (
-                    <div key={k}>{cell(k, row)}</div>
+                    <div
+                      key={k}
+                      className={cn(
+                        // cells reach the row's bottom edge so the chosen
+                        // column reads as one continuous wash
+                        "-mb-3 px-4 pb-3 pt-1",
+                        allowed[k] && selected === k && "bg-brand-soft/15",
+                      )}
+                    >
+                      {cell(k, row)}
+                    </div>
                   ))}
                 </div>
               </div>
@@ -412,14 +475,27 @@ export function ClearanceOptions() {
             </p>
           )}
           <Button
-            aria-describedby={selected ? undefined : "cl-pick-hint"}
+            aria-describedby={selected ? "cl-oneway" : "cl-pick-hint"}
             size="lg"
             className="w-full sm:w-auto sm:min-w-56"
             disabled={!selected}
             onClick={onContinue}
           >
-            {t("order.continue")} <ArrowRight className="size-4" />
+            {selected
+              ? t("order.clUseRoute").replace(
+                  "{route}",
+                  t(`${PREFIX[selected]}Title`),
+                )
+              : t("order.continue")}{" "}
+            <ArrowRight className="size-4" />
           </Button>
+          {/* the honest part of the commit: this gate is one-way */}
+          <p id="cl-oneway" className="text-xs text-muted-2 sm:text-right">
+            {t("order.clOneWay")}
+          </p>
+          <p role="status" aria-live="polite" className="sr-only">
+            {lockedNudge}
+          </p>
         </div>
       </div>
     </TooltipProvider>

@@ -83,6 +83,7 @@ export function ModuleHub() {
   const router = useRouter();
   const modules = useOrderStore((s) => s.modules);
   const answers = useOrderStore((s) => s.answers);
+  const clearance = useOrderStore((s) => s.clearance);
   const bookingNumber = useOrderStore((s) => s.bookingNumber);
   const generatedPackingCode = useOrderStore((s) => s.generatedPackingCode);
   const ensureBookingNumber = useOrderStore((s) => s.ensureBookingNumber);
@@ -181,6 +182,16 @@ export function ModuleHub() {
           {t("order.hubTitle")}
         </h1>
         <p className="mt-1.5 text-sm text-muted">{t("order.hubSubtitle")}</p>
+        {/* the customs route chosen one step ago, kept in view; it is one-way,
+            so it is stated, not offered for editing */}
+        {clearance && context?.service !== "moving-abroad" && (
+          <p className="mt-2 text-sm text-foreground">
+            <span className="text-muted">{t("order.hubRouteLabel")}</span>{" "}
+            <span className="font-medium">
+              {t(clearance === "personal" ? "order.clPersonalTitle" : "order.clPassengerTitle")}
+            </span>
+          </p>
+        )}
         {/* the user's progress, said in numbers and shown as a filling bar */}
         <div className="mt-4">
           <p className="text-sm font-medium text-foreground">
