@@ -99,6 +99,10 @@ export function ClearanceOptions() {
         <h1 className="mt-1 font-display text-2xl font-bold tracking-tight sm:text-3xl">
           {t("order.clTitle")}
         </h1>
+        {/* the reassurance belongs where the anxiety starts, not under the button */}
+        <p className="mx-auto mt-3 max-w-xl text-sm leading-relaxed text-muted">
+          {t("order.clFooter")}
+        </p>
       </header>
 
       {/* mobile: segmented control picks the card in view */}
@@ -229,13 +233,10 @@ export function ClearanceOptions() {
         })}
       </div>
 
-      <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <p className="order-2 max-w-md text-xs leading-relaxed text-muted-2 sm:order-1">
-          {t("order.clFooter")}
-        </p>
+      <div className="mt-8 flex sm:justify-end">
         <Button
           size="lg"
-          className="order-1 w-full sm:order-2 sm:w-auto sm:min-w-56"
+          className="w-full sm:w-auto sm:min-w-56"
           disabled={!selected}
           onClick={onContinue}
         >
