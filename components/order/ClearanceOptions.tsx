@@ -21,12 +21,13 @@ import { cn } from "@/lib/utils/cn";
 
 const KINDS: ClearanceKind[] = ["personal", "passenger"];
 
+/** `mono` marks a monetary lead (Numbers-Are-Mono); `list` splits the value on "|". */
 const ROWS = [
   { key: "Tax", labelKey: "order.clRowTax" },
-  { key: "ValueCap", labelKey: "order.clRowValueCap" },
+  { key: "ValueCap", labelKey: "order.clRowValueCap", mono: true },
   { key: "Skp", labelKey: "order.clRowSkp" },
   { key: "Window", labelKey: "order.clRowWindow" },
-  { key: "Docs", labelKey: "order.clRowDocs" },
+  { key: "Docs", labelKey: "order.clRowDocs", list: true },
 ] as const;
 
 const PREFIX: Record<ClearanceKind, string> = {
@@ -157,10 +158,17 @@ export function ClearanceOptions() {
                     ) : null}
                   </span>
                   <div className="min-w-0">
-                    <h2 className={cn("font-display text-lg font-bold leading-tight", !enabled && "text-muted")}>
+                    <h2
+                      className={cn(
+                        "font-display text-xl font-semibold leading-tight tracking-tight",
+                        !enabled && "text-muted",
+                      )}
+                    >
                       {t(`${PREFIX[k]}Title`)}
                     </h2>
-                    <p className="mt-0.5 text-xs text-muted-2">{t(`${PREFIX[k]}Subtitle`)}</p>
+                    <p className="mt-1 text-xs font-medium uppercase tracking-[0.04em] text-muted-2">
+                      {t(`${PREFIX[k]}Subtitle`)}
+                    </p>
                   </div>
                 </div>
                 {!enabled && (
@@ -192,7 +200,7 @@ export function ClearanceOptions() {
               ri < ROWS.length - 1 && "border-b border-border",
             )}
           >
-            <div className="px-4 pt-3 text-xs font-medium uppercase tracking-wide text-muted-2 sm:px-5 sm:py-4 sm:text-sm sm:normal-case sm:tracking-normal sm:text-foreground">
+            <div className="px-4 pt-3 text-xs font-medium uppercase tracking-[0.04em] text-muted-2 sm:px-5 sm:py-5">
               {t(row.labelKey)}
             </div>
             {KINDS.map((k) => {
@@ -203,13 +211,19 @@ export function ClearanceOptions() {
                   key={k}
                   onClick={() => pick(k)}
                   className={cn(
-                    "px-4 pb-3 pt-1 text-sm leading-relaxed sm:border-l sm:border-l-border sm:p-5 sm:pt-4",
+                    "px-4 pb-3 pt-1 sm:border-l sm:border-l-border sm:p-5",
                     viewed !== k && "hidden sm:block",
                     enabled ? "cursor-pointer text-foreground" : "text-muted",
                     isSelected && "sm:bg-brand/10",
                   )}
                 >
-                  {t(`${PREFIX[k]}${row.key}`)}
+                  <CellValue
+                    lead={t(`${PREFIX[k]}${row.key}`)}
+                    note={"list" in row ? "" : t(`${PREFIX[k]}${row.key}Note`)}
+                    mono={"mono" in row}
+                    list={"list" in row}
+                    muted={!enabled}
+                  />
                 </div>
               );
             })}
@@ -217,13 +231,65 @@ export function ClearanceOptions() {
         ))}
       </div>
 
-      <div className="mt-6">
-        <Button size="lg" className="w-full" disabled={!selected} onClick={onContinue}>
+      <div className="mt-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <p className="order-2 max-w-md text-xs leading-relaxed text-muted-2 sm:order-1">
+          {t("order.clFooter")}
+        </p>
+        <Button
+          size="lg"
+          className="order-1 w-full sm:order-2 sm:w-auto sm:min-w-56"
+          disabled={!selected}
+          onClick={onContinue}
+        >
           {t("order.continue")} <ArrowRight className="size-4" />
         </Button>
       </div>
-
-      <p className="mt-4 text-center text-xs text-muted-2 sm:text-left">{t("order.clFooter")}</p>
     </div>
+  );
+}
+
+/** A comparison cell: a scannable lead, an optional quieter note, or a stacked list. */
+function CellValue({
+  lead,
+  note,
+  mono,
+  list,
+  muted,
+}: {
+  lead: string;
+  note: string;
+  mono: boolean;
+  list: boolean;
+  muted: boolean;
+}) {
+  if (list) {
+    return (
+      <ul className={cn("space-y-1 text-sm leading-snug", muted ? "text-muted" : "text-foreground")}>
+        {lead.split("|").map((item) => (
+          <li key={item} className="flex gap-2">
+            <span className="mt-[0.55em] size-1 shrink-0 rounded-full bg-current opacity-60" />
+            <span>{item}</span>
+          </li>
+        ))}
+      </ul>
+    );
+  }
+  return (
+    <>
+      <p
+        className={cn(
+          "text-sm font-semibold leading-snug",
+          mono && /^(USD|IDR|Rp)\b/.test(lead) && "font-mono tabular-nums",
+          muted ? "text-muted" : "text-foreground",
+        )}
+      >
+        {lead}
+      </p>
+      {note && (
+        <p className={cn("mt-0.5 text-sm leading-snug", muted ? "text-muted-2" : "text-muted")}>
+          {note}
+        </p>
+      )}
+    </>
   );
 }
