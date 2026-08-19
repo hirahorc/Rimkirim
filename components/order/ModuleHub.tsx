@@ -296,8 +296,10 @@ export function ModuleHub() {
               <span
                 className={cn(
                   "grid size-11 shrink-0 place-items-center rounded-md transition-colors",
+                  // "done" is a status, so it speaks in the status hue (same as the
+                  // badge beside it); lime stays with the bar, the next pill and the CTA
                   status === "complete"
-                    ? "bg-brand/15 text-brand-ink"
+                    ? "bg-success/15 text-success"
                     : "bg-surface-3 text-muted",
                 )}
               >
