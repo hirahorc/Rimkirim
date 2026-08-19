@@ -253,7 +253,7 @@ export function ModuleHub() {
             size="sm"
             className="w-full sm:w-auto"
             disabled={!pdfReady || pdfBusy}
-            aria-describedby={pdfReady ? undefined : "hub-pdf-note"}
+            aria-describedby={!pdfReady && packingCode ? "hub-pdf-note" : undefined}
             onClick={() =>
               downloadPdf(
                 orderModulesToCipl({
@@ -273,7 +273,8 @@ export function ModuleHub() {
             )}
             {pdfBusy ? t("pl.downloading") : t("order.generatePdf")}
           </Button>
-          {!pdfReady && (
+          {/* the packing-list cell already explains the gate while no code exists */}
+          {!pdfReady && packingCode && (
             <p id="hub-pdf-note" className="max-w-[12rem] text-xs leading-snug text-muted-2">
               {t("order.generatePdfNote")}
             </p>
