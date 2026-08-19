@@ -15,13 +15,20 @@ import { InfoTip, TooltipProvider } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils/cn";
 
 /**
- * Clearance route picker: two route cards, each a radio (tap = choose). Side
- * by side on sm+ with spec rows on a shared subgrid; stacked on small screens.
+ * Clearance route picker. The radio is the card HEADER only (check + title);
+ * the spec rows are ordinary content beside it, so assistive tech can read the
+ * comparison instead of a bare "radio, not checked" (children of a radio are
+ * presentational). Tapping anywhere on the card still picks it.
+ *
+ * sm+: two cards side by side sharing one subgrid so every spec lines up.
+ * <sm: two compact radio cards, then ONE comparison list (label, A | B) so the
+ * phone never has to scroll-remember a value from the other card.
  */
 
 const KINDS: ClearanceKind[] = ["personal", "passenger"];
+type Scope = "m" | "d";
 
-/** `mono` marks a monetary lead (Numbers-Are-Mono); `list` splits the value on "|". */
+/** `mono` marks a monetary row (Numbers-Are-Mono); `list` splits the value on "|". */
 const ROWS = [
   { key: "Tax", labelKey: "order.clRowTax" },
   {
@@ -34,6 +41,7 @@ const ROWS = [
   { key: "Window", labelKey: "order.clRowWindow", tipKey: "order.clTipWindow" },
   { key: "Docs", labelKey: "order.clRowDocs", list: true },
 ] as const;
+type Row = (typeof ROWS)[number];
 
 const PREFIX: Record<ClearanceKind, string> = {
   personal: "order.clPersonal",
@@ -87,223 +95,319 @@ export function ClearanceOptions() {
   const changeAnswersHref =
     answers.livedLongEnough !== true ? "/pesan#q3" : "/pesan#q4";
 
-  // arrow keys move between the enabled cards (radiogroup convention)
-  const cardRefs = React.useRef<
-    Partial<Record<ClearanceKind, HTMLDivElement | null>>
-  >({});
-  const moveFocus = (from: ClearanceKind, dir: 1 | -1) => {
+  // arrow keys move between the enabled radios (radiogroup convention); the
+  // phone and desktop layouts each own a set, only the visible one is reachable
+  const radioRefs = React.useRef<Record<string, HTMLButtonElement | null>>({});
+  const moveFocus = (from: ClearanceKind, dir: 1 | -1, scope: Scope) => {
     const enabledKinds = ordered.filter((k) => allowed[k]);
     if (enabledKinds.length < 2) return;
     const i = enabledKinds.indexOf(from);
     const next =
       enabledKinds[(i + dir + enabledKinds.length) % enabledKinds.length];
     pick(next);
-    cardRefs.current[next]?.focus();
+    radioRefs.current[`${scope}-${next}`]?.focus();
   };
+
+  const onRadioKeyDown =
+    (k: ClearanceKind, scope: Scope) => (ev: React.KeyboardEvent) => {
+      if (ev.key === "ArrowRight" || ev.key === "ArrowDown") {
+        ev.preventDefault();
+        moveFocus(k, 1, scope);
+      } else if (ev.key === "ArrowLeft" || ev.key === "ArrowUp") {
+        ev.preventDefault();
+        moveFocus(k, -1, scope);
+      } else if (allowed[k] && (ev.key === "Enter" || ev.key === " ")) {
+        ev.preventDefault();
+        pick(k);
+      }
+    };
+
+  // plain render helpers (not components) so the buttons keep their identity,
+  // and their focus, across re-renders
+  const radioHead = (k: ClearanceKind, scope: Scope, compact = false) => {
+    const enabled = allowed[k];
+    const isSelected = enabled && selected === k;
+    const id = `cl-${scope}-${k}`;
+    return (
+      <button
+        type="button"
+        ref={(el) => {
+          radioRefs.current[`${scope}-${k}`] = el;
+        }}
+        role="radio"
+        aria-checked={isSelected}
+        aria-disabled={!enabled}
+        aria-labelledby={`${id}-title`}
+        aria-describedby={enabled ? `${id}-specs` : `${id}-locked ${id}-specs`}
+        // a locked route stays reachable by Tab so its reason (and the way to
+        // change it) is announced, it just can't be checked
+        tabIndex={0}
+        onKeyDown={onRadioKeyDown(k, scope)}
+        // the focus ring is drawn by the card (has-[[role=radio]:focus-visible])
+        className={cn(
+          "flex w-full items-start gap-3 text-left outline-hidden",
+          compact ? "p-4" : "p-5 sm:p-6",
+          !enabled && "cursor-default",
+        )}
+      >
+        <span
+          aria-hidden
+          className={cn(
+            "mt-0.5 grid size-5 shrink-0 place-items-center rounded-full border-2 transition-colors",
+            isSelected
+              ? "border-foreground bg-foreground text-brand"
+              : "border-border-strong bg-surface",
+            !enabled && "border-border",
+          )}
+        >
+          {isSelected ? (
+            <Check className="radio-check-in size-3" strokeWidth={3.5} />
+          ) : !enabled ? (
+            <Lock className="size-2.5 text-muted-2" />
+          ) : null}
+        </span>
+        <span className="min-w-0">
+          <span
+            id={`${id}-title`}
+            className={cn(
+              "block font-display font-semibold leading-tight tracking-tight",
+              compact ? "text-lg" : "text-xl",
+              !enabled && "text-muted",
+            )}
+          >
+            {t(`${PREFIX[k]}Title`)}
+          </span>
+          <span className="mt-1 block text-xs font-medium uppercase tracking-[0.04em] text-muted-2">
+            {t(`${PREFIX[k]}Subtitle`)}
+          </span>
+        </span>
+      </button>
+    );
+  };
+
+  /** Why the route is locked, as real (reachable) content outside the radio. */
+  const lockedReason = (k: ClearanceKind, scope: Scope, className: string) => (
+    <p
+      id={`cl-${scope}-${k}-locked`}
+      className={cn("text-xs leading-relaxed text-muted", className)}
+    >
+      <span className="font-medium text-foreground">
+        {t("order.clLockedTitle")}
+      </span>
+      {lockedReasons.length > 0 && (
+        <>
+          {": "}
+          {lockedReasons.join(t("order.clLockedJoin"))}
+        </>
+      )}
+      {". "}
+      <Link
+        href={changeAnswersHref}
+        onClick={(ev) => ev.stopPropagation()}
+        // 24px minimum target without disturbing the line box
+        className="link-mark -my-1.5 inline-flex min-h-6 items-center whitespace-nowrap py-1.5"
+      >
+        {t("order.clChangeAnswers")}
+      </Link>
+    </p>
+  );
+
+  const rowLabel = (row: Row) => (
+    <p className="mb-1 flex items-center gap-1.5 text-xs font-medium uppercase tracking-[0.04em] text-muted-2">
+      {t(row.labelKey)}
+      {"tipKey" in row && (
+        // the tip's tap must not double as "pick this card"
+        <span
+          onClick={(ev) => ev.stopPropagation()}
+          className="inline-flex normal-case tracking-normal"
+        >
+          <InfoTip content={t(row.tipKey)} label={t(row.labelKey)} />
+        </span>
+      )}
+    </p>
+  );
+
+  const cell = (k: ClearanceKind, row: Row) => (
+    <CellValue
+      lead={t(`${PREFIX[k]}${row.key}`)}
+      note={"list" in row ? "" : t(`${PREFIX[k]}${row.key}Note`)}
+      mono={"mono" in row}
+      list={"list" in row}
+      muted={!allowed[k]}
+    />
+  );
+
+  // card chrome shared by both layouts
+  const cardClass = (k: ClearanceKind) => {
+    const enabled = allowed[k];
+    const isSelected = enabled && selected === k;
+    return cn(
+      "overflow-hidden rounded-lg border bg-background transition-[border-color,background-color]",
+      enabled && "cursor-pointer",
+      enabled && !isSelected && "border-border hover:border-border-strong",
+      // selection = ink outline + a whisper of lime; the lime check does the talking
+      isSelected && "border-foreground bg-brand-soft/15",
+      !enabled && "border-border bg-surface-2/60",
+      // keyboard focus on the radio draws a ring OUTSIDE the whole card, so it
+      // can never be mistaken for the selected card's ink border
+      "has-[[role=radio]:focus-visible]:outline-2 has-[[role=radio]:focus-visible]:outline-offset-4 has-[[role=radio]:focus-visible]:outline-solid has-[[role=radio]:focus-visible]:outline-foreground/60",
+    );
+  };
+
+  const eligibleLine = soleAvailable
+    ? t("order.clEligibleFor").replace(
+        "{route}",
+        t(`${PREFIX[soleAvailable]}Title`),
+      )
+    : t("order.clEligibleNote");
 
   return (
     <TooltipProvider delayDuration={150}>
       <div>
         <header className="mb-8 text-center">
-          {/* the questionnaire's positive outcome, said out loud — the negative
-            outcomes get a full card, so passing deserves at least a sentence */}
-          {/* success is carried by the lime-filled check (Marker Rule), the words stay in
-            ink: #16a34a text on white is only 3.3:1 */}
-          <p className="mb-2 inline-flex items-center gap-2 text-sm font-medium text-foreground">
-            <span
-              aria-hidden
-              className="grid size-5 place-items-center rounded-full bg-brand text-brand-ink"
-            >
-              <Check className="size-3" strokeWidth={3.5} />
+          {/* the questionnaire's positive outcome IS the eyebrow: lime-filled
+            check (Marker Rule), words in ink. The outer flex centres the pair,
+            the inner one keeps the check on the first line when the text wraps */}
+          <p className="flex justify-center">
+            <span className="inline-flex items-start gap-2 text-left text-sm font-medium text-foreground">
+              <span
+                aria-hidden
+                className="mt-px grid size-5 shrink-0 place-items-center rounded-full bg-brand text-brand-ink"
+              >
+                <Check className="size-3" strokeWidth={3.5} />
+              </span>
+              {eligibleLine}
             </span>
-            {soleAvailable
-              ? t("order.clEligibleFor").replace(
-                  "{route}",
-                  t(`${PREFIX[soleAvailable]}Title`),
-                )
-              : t("order.clEligibleNote")}
           </p>
-          <p className="text-sm font-medium uppercase tracking-wide text-muted-2">
-            {t("order.clEyebrow")}
-          </p>
-          <h1 className="mt-1 font-display text-2xl font-bold tracking-tight sm:text-3xl">
+          <h1 className="mt-2 font-display text-2xl font-semibold tracking-tight sm:text-3xl">
             {soleAvailable ? t("order.clTitleSole") : t("order.clTitle")}
           </h1>
-          {/* the reassurance belongs where the anxiety starts, not under the button */}
+          {/* who does what, and a way back, in one line */}
           <p className="mx-auto mt-3 max-w-xl text-sm leading-relaxed text-muted">
-            {t("order.clFooter")}
-          </p>
-          {/* a way back in every state, not only from a locked card */}
-          <p className="mt-2 text-sm">
-            <Link href="/pesan" className="link-mark">
+            {t("order.clFooter")}{" "}
+            <Link href="/pesan" className="link-mark whitespace-nowrap">
               {t("order.clReviewAnswers")}
             </Link>
           </p>
         </header>
 
-        {/* two route cards, stacked on small screens, side by side on sm+ where
-          they share one row grid (subgrid) so every spec lines up */}
+        {/* ---------- sm+: two cards on one subgrid ---------- */}
         <div
           role="radiogroup"
           aria-label={t("order.clTitle")}
-          className="grid gap-4 sm:grid-cols-2 sm:grid-rows-[auto_repeat(5,auto)]"
+          className="hidden gap-4 sm:grid sm:grid-cols-2 sm:grid-rows-[auto_repeat(5,auto)]"
         >
           {ordered.map((k) => {
             const enabled = allowed[k];
-            const isSelected = enabled && selected === k;
             return (
               <div
                 key={k}
-                ref={(el) => {
-                  cardRefs.current[k] = el;
-                }}
-                role="radio"
-                aria-checked={isSelected}
-                aria-disabled={!enabled}
-                aria-labelledby={`cl-${k}-title`}
-                aria-describedby={enabled ? undefined : `cl-${k}-locked`}
-                // a locked route stays reachable by Tab so its reason (and the
-                // way to change it) is announced, it just can't be checked
-                tabIndex={0}
                 onClick={() => pick(k)}
-                onKeyDown={(ev) => {
-                  if (ev.key === "ArrowRight" || ev.key === "ArrowDown") {
-                    ev.preventDefault();
-                    moveFocus(k, 1);
-                  } else if (ev.key === "ArrowLeft" || ev.key === "ArrowUp") {
-                    ev.preventDefault();
-                    moveFocus(k, -1);
-                  } else if (
-                    enabled &&
-                    (ev.key === "Enter" || ev.key === " ")
-                  ) {
-                    ev.preventDefault();
-                    pick(k);
-                  }
-                }}
                 className={cn(
-                  "grid overflow-hidden rounded-lg border bg-background outline-none transition-[border-color,background-color] sm:row-span-full sm:grid-rows-subgrid",
-                  enabled && "cursor-pointer",
-                  enabled &&
-                    !isSelected &&
-                    "border-border hover:border-border-strong",
-                  // selection = ink outline + a whisper of lime; the lime check does the talking
-                  isSelected && "border-foreground bg-brand-soft/15",
-                  !enabled && "border-border bg-surface-2/60",
-                  // keyboard focus sits OUTSIDE the card (offset outline) so it can
-                  // never be mistaken for the selected card's ink border
-                  "focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-foreground/60",
+                  cardClass(k),
+                  "grid sm:row-span-full sm:grid-rows-subgrid",
                 )}
               >
-                {/* card header = the radio */}
-                <div className="border-b border-border p-5 sm:p-6">
-                  <div className="flex items-start gap-3">
-                    <span
-                      aria-hidden
-                      className={cn(
-                        "mt-0.5 grid size-5 shrink-0 place-items-center rounded-full border-2 transition-colors",
-                        isSelected
-                          ? "border-foreground bg-foreground text-brand"
-                          : "border-border-strong bg-surface",
-                        !enabled && "border-border",
-                      )}
-                    >
-                      {isSelected ? (
-                        <Check
-                          className="radio-check-in size-3"
-                          strokeWidth={3.5}
-                        />
-                      ) : !enabled ? (
-                        <Lock className="size-2.5 text-muted-2" />
-                      ) : null}
-                    </span>
-                    <div className="min-w-0">
-                      <h2
-                        id={`cl-${k}-title`}
-                        className={cn(
-                          "font-display text-xl font-semibold leading-tight tracking-tight",
-                          !enabled && "text-muted",
-                        )}
-                      >
-                        {t(`${PREFIX[k]}Title`)}
-                      </h2>
-                      <p className="mt-1 text-xs font-medium uppercase tracking-[0.04em] text-muted-2">
-                        {t(`${PREFIX[k]}Subtitle`)}
-                      </p>
-                    </div>
-                  </div>
-                  {!enabled && (
-                    <p
-                      id={`cl-${k}-locked`}
-                      className="mt-3 text-xs leading-relaxed text-muted"
-                    >
-                      <span className="font-medium text-foreground">
-                        {t("order.clLockedTitle")}
-                      </span>
-                      {lockedReasons.length > 0 && (
-                        <>
-                          {": "}
-                          {lockedReasons.join(t("order.clLockedJoin"))}
-                        </>
-                      )}
-                      {". "}
-                      <Link
-                        href={changeAnswersHref}
-                        onClick={(ev) => ev.stopPropagation()}
-                        // 24px minimum target without disturbing the line box
-                        className="link-mark -my-1.5 inline-flex min-h-6 items-center whitespace-nowrap py-1.5"
-                      >
-                        {t("order.clChangeAnswers")}
-                      </Link>
-                    </p>
-                  )}
+                <div className="border-b border-border">
+                  {radioHead(k, "d")}
+                  {!enabled &&
+                    lockedReason(k, "d", "-mt-2 px-5 pb-5 sm:px-6 sm:pb-6")}
                 </div>
-
-                {/* specs: label over value, one per subgrid row */}
-                {ROWS.map((row, ri) => (
-                  <div
-                    key={row.key}
-                    className={cn(
-                      "px-5 py-4 sm:px-6",
-                      ri < ROWS.length - 1 && "border-b border-border/70",
-                    )}
-                  >
-                    <p className="mb-1 flex items-center gap-1.5 text-xs font-medium uppercase tracking-[0.04em] text-muted-2">
-                      {t(row.labelKey)}
-                      {"tipKey" in row && (
-                        // the tip's tap must not double as "pick this card"
-                        <span
-                          onClick={(ev) => ev.stopPropagation()}
-                          className="inline-flex normal-case tracking-normal"
-                        >
-                          <InfoTip
-                            content={t(row.tipKey)}
-                            label={t(row.labelKey)}
-                          />
-                        </span>
+                {/* specs: label over value, one per subgrid row; the radio
+                  points here with aria-describedby */}
+                <div id={`cl-d-${k}-specs`} className="contents">
+                  {ROWS.map((row, ri) => (
+                    <div
+                      key={row.key}
+                      className={cn(
+                        "px-5 py-4 sm:px-6",
+                        ri < ROWS.length - 1 && "border-b border-border/70",
                       )}
-                    </p>
-                    <CellValue
-                      lead={t(`${PREFIX[k]}${row.key}`)}
-                      note={
-                        "list" in row ? "" : t(`${PREFIX[k]}${row.key}Note`)
-                      }
-                      mono={"mono" in row}
-                      list={"list" in row}
-                      muted={!enabled}
-                    />
-                  </div>
-                ))}
+                    >
+                      {rowLabel(row)}
+                      {cell(k, row)}
+                    </div>
+                  ))}
+                </div>
               </div>
             );
           })}
         </div>
 
-        <div className="mt-8 flex flex-col items-stretch gap-2 sm:items-end">
+        {/* ---------- <sm: compact radios, then one comparison list ---------- */}
+        <div className="sm:hidden">
+          <div
+            role="radiogroup"
+            aria-label={t("order.clTitle")}
+            className="grid gap-3"
+          >
+            {ordered.map((k) => {
+              const enabled = allowed[k];
+              return (
+                <div key={k} onClick={() => pick(k)} className={cardClass(k)}>
+                  {radioHead(k, "m", true)}
+                  {!enabled && lockedReason(k, "m", "-mt-1 px-4 pb-4")}
+                </div>
+              );
+            })}
+          </div>
+
+          {/* the comparison: one list, both routes per row, columns in the same
+            order as the radios above so they read like the cards */}
+          <div
+            id={`cl-m-${ordered[0]}-specs`}
+            className="mt-6 rounded-lg border border-border"
+          >
+            {/* the second radio is described by the same list */}
+            <span id={`cl-m-${ordered[1]}-specs`} className="sr-only">
+              {t("order.clCompareLabel")}
+            </span>
+            <div className="grid grid-cols-2 gap-x-4 border-b border-border px-4 py-2.5 text-xs font-medium uppercase tracking-[0.04em] text-muted-2">
+              {ordered.map((k) => (
+                <span
+                  key={k}
+                  className={cn(!allowed[k] && "text-muted-2/70")}
+                >
+                  {t(`${PREFIX[k]}Title`)}
+                </span>
+              ))}
+            </div>
+            {ROWS.map((row, ri) => (
+              <div
+                key={row.key}
+                className={cn(
+                  "px-4 py-3",
+                  ri < ROWS.length - 1 && "border-b border-border/70",
+                )}
+              >
+                {rowLabel(row)}
+                <div className="grid grid-cols-2 gap-x-4">
+                  {ordered.map((k) => (
+                    <div key={k}>{cell(k, row)}</div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* on phones the button sticks to the bottom once a route is chosen, so
+          the commit is always a thumb away; desktop keeps it in flow */}
+        <div
+          className={cn(
+            "mt-8 flex flex-col items-stretch gap-2 sm:items-end",
+            selected &&
+              "sticky bottom-0 -mx-4 border-t border-border bg-background/95 px-4 py-3 backdrop-blur sm:static sm:mx-0 sm:border-0 sm:bg-transparent sm:px-0 sm:py-0 sm:backdrop-blur-none",
+          )}
+        >
           {/* say why the button is grey; the button itself is disabled, so the
               hint is the only thing a mouse user gets */}
           {!selected && (
-            <p id="cl-pick-hint" role="status" className="text-xs text-muted-2 sm:text-right">
+            <p
+              id="cl-pick-hint"
+              role="status"
+              className="text-xs text-muted-2 sm:text-right"
+            >
               {t("order.clPickHint")}
             </p>
           )}
