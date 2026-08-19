@@ -53,7 +53,7 @@ export function OrderTimeline({ events }: { events: TimelineEvent[] }) {
     // de-boxed to match OrderSummary's Section language — the whole reference
     // zone reads as one document; the dotted timeline itself carries the shape.
     <section>
-      <h2 className="font-display text-base font-semibold tracking-tight text-foreground">
+      <h2 className="font-display text-xl font-semibold tracking-tight text-foreground">
         {t("order.tdTimeline")}
       </h2>
       <ol className="mt-3">

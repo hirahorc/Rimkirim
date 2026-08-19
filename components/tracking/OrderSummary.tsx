@@ -31,7 +31,9 @@ const dash = "–";
 /** The one section-title style, shared so every section head reads identically. */
 function SectionTitle({ children }: { children: React.ReactNode }) {
   return (
-    <h2 className="font-display text-base font-semibold tracking-tight text-foreground">
+    // Title role (20/600, tracking-tight): a full step above the 12px eyebrows
+    // and the 14px values, so the record can be skimmed section by section
+    <h2 className="font-display text-xl font-semibold tracking-tight text-foreground">
       {children}
     </h2>
   );
@@ -423,7 +425,7 @@ function ItemsCard({ order }: { order: Order }) {
                   !open && "-rotate-90",
                 )}
               />
-              <span className="shrink-0 text-xs font-semibold uppercase tracking-wide text-muted">
+              <span className="shrink-0 text-sm font-medium text-foreground">
                 {t("order.itPackageN")} {i + 1}
               </span>
               {!open && (
@@ -461,7 +463,7 @@ function ItemsCard({ order }: { order: Order }) {
                   <div className="mt-1.5 overflow-hidden rounded-md border border-border">
                     <table className="w-full border-collapse text-sm">
                       <thead>
-                        <tr className="bg-surface-2 text-xs uppercase tracking-wide text-muted-2">
+                        <tr className="bg-surface-2 text-xs text-muted-2">
                           <th scope="col" className="px-3 py-1.5 text-left font-medium">
                             {t("order.itColDescription")}
                           </th>
