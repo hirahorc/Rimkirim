@@ -535,7 +535,7 @@ function ItemsCard({ order }: { order: Order }) {
                       <tfoot>
                         <tr className="border-t border-border">
                           <td colSpan={3} className="px-3 py-1.5 text-right text-xs text-muted-2">
-                            {t("order.itColTotal")}
+                            {t("order.itSubtotalPkg")}
                           </td>
                           <td className="whitespace-nowrap py-1.5 pl-3 text-right font-mono text-sm font-medium tabular-nums">
                             {formatCurrency(pkgValue, currency)}
@@ -632,7 +632,11 @@ function ComplianceCard({ order }: { order: Order }) {
           {entries.map(({ key, label, spec }) => (
             <Row key={key} label={t(label!)}>
               {docs[key] ? (
-                <span className="font-mono text-xs text-muted">{docs[key]}</span>
+                // the state in words first; the filename is the evidence, not the state
+                <span className="inline-flex items-baseline gap-2">
+                  <span className="text-xs text-muted-2">{t("order.tdDocUploaded")}</span>
+                  <span className="font-mono text-xs text-foreground">{docs[key]}</span>
+                </span>
               ) : (
                 <span className={cn(spec.required ? "text-warning" : "text-muted-2")}>
                   {emptyWord(spec)}
@@ -646,7 +650,10 @@ function ComplianceCard({ order }: { order: Order }) {
             <SubGroup label={t("order.coOtherDocs")}>
               {(data?.otherDocs ?? []).map((d, i) => (
                 <Row key={i} label={val(d?.name)}>
-                  <span className="font-mono text-xs text-muted">{val(d?.file)}</span>
+                  <span className="inline-flex items-baseline gap-2">
+                    <span className="text-xs text-muted-2">{t("order.tdDocUploaded")}</span>
+                    <span className="font-mono text-xs text-foreground">{val(d?.file)}</span>
+                  </span>
                 </Row>
               ))}
             </SubGroup>
