@@ -162,7 +162,12 @@ export function ClearanceOptions() {
               onClick={() => pick(k)}
               className={cn(
                 "flex items-center justify-center gap-1.5 rounded-full px-3 py-2 text-sm font-medium transition-colors",
-                viewed === k ? "bg-foreground text-background" : "text-muted",
+                // ink = chosen; white = only in view; plain = the other one
+                selected === k && allowed[k]
+                  ? "bg-foreground text-background"
+                  : viewed === k
+                    ? "bg-background text-foreground shadow-float"
+                    : "text-muted",
               )}
             >
               {!allowed[k] && <Lock className="size-3.5" />}
