@@ -60,6 +60,9 @@ export function ClearanceOptions() {
   // route can still be read)
   const [viewed, setViewed] = React.useState<ClearanceKind>(soleAvailable ?? "personal");
 
+  // the route you can actually take reads first; a locked route never leads
+  const ordered: ClearanceKind[] = allowed.personal ? KINDS : [...KINDS].reverse();
+
   const pick = (k: ClearanceKind) => {
     setViewed(k);
     if (allowed[k]) setSelected(k);
@@ -107,7 +110,7 @@ export function ClearanceOptions() {
 
       {/* mobile: segmented control picks the card in view */}
       <div className="mb-3 grid grid-cols-2 gap-1 rounded-full border border-border bg-surface-2 p-1 sm:hidden">
-        {KINDS.map((k) => (
+        {ordered.map((k) => (
           <button
             key={k}
             type="button"
@@ -130,7 +133,7 @@ export function ClearanceOptions() {
         aria-label={t("order.clTitle")}
         className="grid gap-4 sm:grid-cols-2 sm:grid-rows-[auto_repeat(5,auto)]"
       >
-        {KINDS.map((k) => {
+        {ordered.map((k) => {
           const enabled = allowed[k];
           const isSelected = enabled && selected === k;
           return (
@@ -152,7 +155,8 @@ export function ClearanceOptions() {
                 viewed !== k && "hidden sm:grid",
                 enabled && "cursor-pointer",
                 enabled && !isSelected && "border-border hover:border-border-strong",
-                isSelected && "border-foreground bg-brand/10 ring-2 ring-foreground/15",
+                // selection = ink outline + a whisper of lime; the lime check does the talking
+                isSelected && "border-foreground bg-brand-soft/15 ring-2 ring-foreground/10",
                 !enabled && "border-border bg-surface-2/60",
                 "focus-visible:ring-2 focus-visible:ring-foreground/50",
               )}
