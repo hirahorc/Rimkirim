@@ -79,11 +79,19 @@ export function ClearanceOptions() {
 
   return (
     <div>
-      <header className="mb-8">
-        <h1 className="font-display text-2xl font-bold tracking-tight sm:text-3xl">
+      <header className="mb-8 text-center">
+        {/* the questionnaire's positive outcome, said out loud — the negative
+            outcomes get a full card, so passing deserves at least a sentence */}
+        <p className="mb-2 inline-flex items-center gap-1.5 text-sm font-medium text-success">
+          <Check className="size-4" strokeWidth={3} />
+          {t("order.clEligibleNote")}
+        </p>
+        <p className="text-sm font-medium uppercase tracking-wide text-muted-2">
+          {t("order.clEyebrow")}
+        </p>
+        <h1 className="mt-1 font-display text-2xl font-bold tracking-tight sm:text-3xl">
           {t("order.clTitle")}
         </h1>
-        <p className="mt-1.5 max-w-xl text-sm text-muted">{t("order.clSubtitle")}</p>
       </header>
 
       {/* mobile: segmented control picks the card in view */}

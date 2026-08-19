@@ -542,9 +542,9 @@ const id = {
       "Alur Back For Good ditujukan untuk Warga Negara Indonesia. Untuk relokasi WNA ke Indonesia, kami punya layanan khusus.",
     foreignerCta: "Ke halaman relokasi WNA",
     // Phase 2 — clearance
-    clTitle: "Pilih jalur bea cukai",
-    clSubtitle:
-      "Berdasarkan jawabanmu, ini jalur yang bisa dipakai untuk kirimanmu. Bandingkan, lalu pilih satu.",
+    clEligibleNote: "Kamu memenuhi syarat",
+    clEyebrow: "Berdasarkan jawabanmu",
+    clTitle: "Ini pendekatan customs clearance yang paling cocok untukmu",
     clFooter:
       "Rimkirim yang mengurus proses bea cukainya dan menerapkan aturan yang paling sesuai dengan dokumenmu.",
     clPersonalTitle: "Barang Pindahan",
@@ -1738,9 +1738,9 @@ const en: Messages = {
     foreignerBody:
       "The Back For Good flow is for Indonesian citizens. For foreigner relocation to Indonesia, we have a dedicated service.",
     foreignerCta: "Go to foreigner relocation",
-    clTitle: "Choose your customs route",
-    clSubtitle:
-      "Based on your answers, these are the routes available for your shipment. Compare them, then pick one.",
+    clEligibleNote: "You're eligible",
+    clEyebrow: "Based on your answer",
+    clTitle: "Here is the most suitable customs clearance approach for you",
     clFooter:
       "Rimkirim handles the customs process and applies the regulation that best fits your documents.",
     clPersonalTitle: "Personal Belongings",
