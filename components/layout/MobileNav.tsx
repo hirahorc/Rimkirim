@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import { Logo } from "./Logo";
 import { Button } from "@/components/ui/button";
 import { useAuthStore, useCurrentUser } from "@/lib/store/useAuthStore";
+import { useLoginModal } from "@/lib/store/useLoginModal";
 import { useT } from "@/lib/i18n/LanguageProvider";
 import { cn } from "@/lib/utils/cn";
 
@@ -27,6 +28,7 @@ export function MobileNav() {
   const router = useRouter();
   const user = useCurrentUser();
   const logOut = useAuthStore((s) => s.logOut);
+  const openLogin = useLoginModal((s) => s.openModal);
   const [open, setOpen] = React.useState(false);
   const close = () => setOpen(false);
 
@@ -106,10 +108,16 @@ export function MobileNav() {
                 </button>
               </>
             ) : (
-              <Button asChild variant="secondary" className="w-full">
-                <Link href="/masuk" onClick={close}>
-                  {t("nav.masuk")}
-                </Link>
+              <Button
+                type="button"
+                variant="secondary"
+                className="w-full"
+                onClick={() => {
+                  close();
+                  openLogin();
+                }}
+              >
+                {t("nav.masuk")}
               </Button>
             )}
             <Button asChild className="w-full">

@@ -4,6 +4,7 @@ import "./globals.css";
 import { AppHeader } from "@/components/layout/AppHeader";
 import { AppFooter } from "@/components/layout/AppFooter";
 import { Toaster } from "@/components/ui/toaster";
+import { LoginDialog } from "@/components/auth/LoginDialog";
 import { EnvBadge } from "@/components/system/EnvBadge";
 import { LanguageProvider } from "@/lib/i18n/LanguageProvider";
 import { IS_PRODUCTION } from "@/lib/env";
@@ -74,6 +75,7 @@ export default function RootLayout({
           <main className="flex-1">{children}</main>
           <AppFooter />
           <Toaster />
+          <LoginDialog />
           <EnvBadge />
         </LanguageProvider>
       </body>

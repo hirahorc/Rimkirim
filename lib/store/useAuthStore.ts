@@ -4,42 +4,55 @@ import * as React from "react";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
+export type AuthProvider = "email" | "google";
+
 export interface AuthUser {
   email: string;
   name: string;
-  passwordHash: string;
+  provider: AuthProvider;
 }
 
-export interface AuthResult {
-  ok: boolean;
-  /** "exists" → sign-up hit a taken email; "invalid" → login credentials don't match. */
-  error?: "exists" | "invalid";
-  user?: AuthUser;
+/** In-memory one-time-code challenge for the passwordless email flow. */
+interface PendingCode {
+  email: string;
+  code: string;
+  /** set once the code has been verified, so the name step can complete signup */
+  verified: boolean;
 }
 
 /**
- * Mock auth — NOT real security. Accounts and the session live in localStorage
- * with a trivial hash, purely so the demo survives reloads and can be gated.
- * A real backend replaces this store wholesale later.
+ * Mock auth — NOT real security. Passwordless: an email receives a 6-digit
+ * code (here: generated locally and surfaced via toast/console), or the
+ * visitor picks a Google account (here: a fake account chooser). Accounts and
+ * the session live in localStorage purely so the demo survives reloads and
+ * can be gated. A real backend replaces this store wholesale later.
  */
-function hashPassword(password: string): string {
-  // djb2-style scramble for the demo only — never use for real credentials
-  let h = 0x811c9dc5;
-  for (let i = 0; i < password.length; i++) {
-    h = Math.imul(h ^ password.charCodeAt(i), 0x01000193) >>> 0;
-  }
-  return h.toString(16);
-}
-
 function normalizeEmail(email: string): string {
   return email.trim().toLowerCase();
+}
+
+function generateCode(): string {
+  return String(Math.floor(100000 + Math.random() * 900000));
 }
 
 interface AuthState {
   users: Record<string, AuthUser>;
   currentEmail: string | null;
-  signUp: (input: { name: string; email: string; password: string }) => AuthResult;
-  logIn: (input: { email: string; password: string }) => AuthResult;
+  pending: PendingCode | null;
+
+  /** Step 1: issue a code for this email. Returns the code (mock delivery). */
+  requestCode: (email: string) => string;
+  /**
+   * Step 2: check the code. "ok" → signed in (existing account);
+   * "new" → code valid but no account yet, call completeSignup(name);
+   * "invalid" → wrong code.
+   */
+  verifyCode: (code: string) => "ok" | "new" | "invalid";
+  /** Step 3 (new emails only): create the account with a display name. */
+  completeSignup: (name: string) => AuthUser | null;
+  /** Google mock: sign in as the chosen account, creating it if needed. */
+  logInWithGoogle: (account: { email: string; name: string }) => AuthUser;
+  cancelPending: () => void;
   logOut: () => void;
 }
 
@@ -48,33 +61,63 @@ export const useAuthStore = create<AuthState>()(
     (set, get) => ({
       users: {},
       currentEmail: null,
+      pending: null,
 
-      signUp: ({ name, email, password }) => {
-        const normalized = normalizeEmail(email);
-        if (get().users[normalized]) return { ok: false, error: "exists" };
-        const user: AuthUser = {
-          email: normalized,
-          name: name.trim() || normalized,
-          passwordHash: hashPassword(password),
-        };
-        set({ users: { ...get().users, [normalized]: user }, currentEmail: normalized });
-        return { ok: true, user };
+      requestCode: (email) => {
+        const code = generateCode();
+        set({ pending: { email: normalizeEmail(email), code, verified: false } });
+        return code;
       },
 
-      logIn: ({ email, password }) => {
-        const normalized = normalizeEmail(email);
-        const user = get().users[normalized];
-        if (!user || user.passwordHash !== hashPassword(password)) {
-          return { ok: false, error: "invalid" };
+      verifyCode: (code) => {
+        const pending = get().pending;
+        if (!pending || pending.code !== code.trim()) return "invalid";
+        const user = get().users[pending.email];
+        if (user) {
+          set({ currentEmail: pending.email, pending: null });
+          return "ok";
         }
-        set({ currentEmail: normalized });
-        return { ok: true, user };
+        set({ pending: { ...pending, verified: true } });
+        return "new";
       },
 
-      logOut: () => set({ currentEmail: null }),
+      completeSignup: (name) => {
+        const pending = get().pending;
+        if (!pending?.verified) return null;
+        const user: AuthUser = {
+          email: pending.email,
+          name: name.trim() || pending.email,
+          provider: "email",
+        };
+        set({
+          users: { ...get().users, [pending.email]: user },
+          currentEmail: pending.email,
+          pending: null,
+        });
+        return user;
+      },
+
+      logInWithGoogle: ({ email, name }) => {
+        const normalized = normalizeEmail(email);
+        const user: AuthUser = get().users[normalized] ?? {
+          email: normalized,
+          name,
+          provider: "google",
+        };
+        set({
+          users: { ...get().users, [normalized]: user },
+          currentEmail: normalized,
+          pending: null,
+        });
+        return user;
+      },
+
+      cancelPending: () => set({ pending: null }),
+      logOut: () => set({ currentEmail: null, pending: null }),
     }),
     {
-      name: "rimkirim:auth",
+      // v2: passwordless; the old email+password demo accounts are left behind
+      name: "rimkirim:auth:v2",
       partialize: (s) => ({ users: s.users, currentEmail: s.currentEmail }),
     },
   ),

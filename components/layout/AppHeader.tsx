@@ -10,6 +10,7 @@ import { NotificationBell } from "@/components/notifications/NotificationBell";
 import { LiveOrderToasts } from "@/components/notifications/LiveOrderToasts";
 import { Button } from "@/components/ui/button";
 import { useCurrentUser } from "@/lib/store/useAuthStore";
+import { useLoginModal } from "@/lib/store/useLoginModal";
 import { useT } from "@/lib/i18n/LanguageProvider";
 import { isBareRoute } from "@/lib/utils/routes";
 import { cn } from "@/lib/utils/cn";
@@ -26,6 +27,7 @@ export function AppHeader() {
   const t = useT();
   const pathname = usePathname();
   const user = useCurrentUser();
+  const openLogin = useLoginModal((s) => s.openModal);
   // standalone pages (legal docs) render without the app chrome
   if (isBareRoute(pathname)) return null;
   return (
@@ -73,12 +75,13 @@ export function AppHeader() {
             </>
           ) : (
             <Button
-              asChild
+              type="button"
               variant="ghost"
               size="sm"
               className="hidden lg:inline-flex"
+              onClick={() => openLogin()}
             >
-              <Link href="/masuk">{t("nav.masuk")}</Link>
+              {t("nav.masuk")}
             </Button>
           )}
           <Button asChild size="sm" className="hidden lg:inline-flex">
