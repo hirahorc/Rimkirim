@@ -79,7 +79,7 @@ export function ClearanceOptions() {
 
   return (
     <div>
-      <header className="mb-6">
+      <header className="mb-8">
         <h1 className="font-display text-2xl font-bold tracking-tight sm:text-3xl">
           {t("order.clTitle")}
         </h1>
@@ -107,11 +107,11 @@ export function ClearanceOptions() {
       <div
         role="radiogroup"
         aria-label={t("order.clTitle")}
-        className="overflow-hidden rounded-lg border border-border bg-surface"
+        className="overflow-hidden rounded-lg border border-border bg-background"
       >
         {/* header row */}
         <div className="grid grid-cols-1 sm:grid-cols-[minmax(0,10rem)_1fr_1fr] md:grid-cols-[minmax(0,12rem)_1fr_1fr]">
-          <div className="hidden border-b border-border sm:block" />
+          <div className="hidden border-b border-border bg-surface-2 sm:block" />
           {KINDS.map((k, i) => {
             const enabled = allowed[k];
             const isSelected = enabled && selected === k;
@@ -130,7 +130,7 @@ export function ClearanceOptions() {
                   }
                 }}
                 className={cn(
-                  "relative border-b border-border p-4 outline-none transition-colors sm:p-5",
+                  "relative border-b border-border p-4 outline-none transition-colors sm:px-5 sm:py-6",
                   i === 0 && "sm:border-l sm:border-l-border",
                   i === 1 && "sm:border-l sm:border-l-border",
                   viewed !== k && "hidden sm:block",
@@ -200,7 +200,7 @@ export function ClearanceOptions() {
               ri < ROWS.length - 1 && "border-b border-border",
             )}
           >
-            <div className="px-4 pt-3 text-xs font-medium uppercase tracking-[0.04em] text-muted-2 sm:px-5 sm:py-5">
+            <div className="px-4 pt-3 text-xs font-medium uppercase tracking-[0.04em] text-muted-2 sm:bg-surface-2 sm:px-5 sm:py-4">
               {t(row.labelKey)}
             </div>
             {KINDS.map((k) => {
@@ -211,7 +211,7 @@ export function ClearanceOptions() {
                   key={k}
                   onClick={() => pick(k)}
                   className={cn(
-                    "px-4 pb-3 pt-1 sm:border-l sm:border-l-border sm:p-5",
+                    "px-4 pb-3 pt-1 sm:border-l sm:border-l-border sm:px-5 sm:py-4",
                     viewed !== k && "hidden sm:block",
                     enabled ? "cursor-pointer text-foreground" : "text-muted",
                     isSelected && "sm:bg-brand/10",
@@ -231,7 +231,7 @@ export function ClearanceOptions() {
         ))}
       </div>
 
-      <div className="mt-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <p className="order-2 max-w-md text-xs leading-relaxed text-muted-2 sm:order-1">
           {t("order.clFooter")}
         </p>
