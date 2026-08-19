@@ -143,6 +143,12 @@ export function ClearanceOptions() {
           <p className="mx-auto mt-3 max-w-xl text-sm leading-relaxed text-muted">
             {t("order.clFooter")}
           </p>
+          {/* a way back in every state, not only from a locked card */}
+          <p className="mt-2 text-sm">
+            <Link href="/pesan" className="link-mark">
+              {t("order.clReviewAnswers")}
+            </Link>
+          </p>
         </header>
 
         {/* mobile: segmented control picks the card in view */}

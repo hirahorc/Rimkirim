@@ -588,6 +588,7 @@ const id = {
     clLockedJoin: " dan ",
     clChangeAnswers: "Ubah jawaban",
     clPickHint: "Pilih salah satu jalur untuk lanjut",
+    clReviewAnswers: "Ubah jawaban kuesioner",
     // Phase 3 — module hub
     hubTitle: "Formulir order kamu",
     hubSubtitle:
@@ -1793,6 +1794,7 @@ const en: Messages = {
     clLockedJoin: " and ",
     clChangeAnswers: "Change answers",
     clPickHint: "Pick a route to continue",
+    clReviewAnswers: "Change your questionnaire answers",
     hubTitle: "Your order form",
     hubSubtitle:
       "Complete all four sections. You can save as a draft and continue anytime.",
