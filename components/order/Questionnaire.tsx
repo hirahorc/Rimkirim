@@ -69,7 +69,8 @@ function Question({
   children: React.ReactNode;
 }) {
   return (
-    <Card className="animate-fade-up p-5">
+    // id lets the clearance step deep-link back to the exact question
+    <Card id={`q${n}`} className="scroll-mt-28 animate-fade-up p-5">
       <p className="flex gap-2 font-medium">
         <span className="text-foreground">{n}.</span>
         <span>{question}</span>

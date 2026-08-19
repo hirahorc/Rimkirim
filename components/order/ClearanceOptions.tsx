@@ -79,6 +79,19 @@ export function ClearanceOptions() {
     answers.livedLongEnough !== true && t("order.clLockedLived"),
     answers.canApplySKP !== true && t("order.clLockedSkp"),
   ].filter((r): r is string => Boolean(r));
+  // jump straight to the first question that failed, not the top of the form
+  const changeAnswersHref = answers.livedLongEnough !== true ? "/pesan#q3" : "/pesan#q4";
+
+  // arrow keys move between the enabled cards (radiogroup convention)
+  const cardRefs = React.useRef<Partial<Record<ClearanceKind, HTMLDivElement | null>>>({});
+  const moveFocus = (from: ClearanceKind, dir: 1 | -1) => {
+    const enabledKinds = ordered.filter((k) => allowed[k]);
+    if (enabledKinds.length < 2) return;
+    const i = enabledKinds.indexOf(from);
+    const next = enabledKinds[(i + dir + enabledKinds.length) % enabledKinds.length];
+    cardRefs.current[next]?.focus();
+    pick(next);
+  };
 
   return (
     <div>
@@ -114,6 +127,7 @@ export function ClearanceOptions() {
           <button
             key={k}
             type="button"
+            aria-pressed={viewed === k}
             onClick={() => setViewed(k)}
             className={cn(
               "flex items-center justify-center gap-1.5 rounded-full px-3 py-2 text-sm font-medium transition-colors",
@@ -139,13 +153,26 @@ export function ClearanceOptions() {
           return (
             <div
               key={k}
+              ref={(el) => {
+                cardRefs.current[k] = el;
+              }}
               role="radio"
               aria-checked={isSelected}
               aria-disabled={!enabled}
-              tabIndex={enabled ? 0 : -1}
+              aria-labelledby={`cl-${k}-title`}
+              aria-describedby={enabled ? undefined : `cl-${k}-locked`}
+              // a locked route stays reachable by Tab so its reason (and the
+              // way to change it) is announced, it just can't be checked
+              tabIndex={0}
               onClick={() => pick(k)}
               onKeyDown={(ev) => {
-                if (enabled && (ev.key === "Enter" || ev.key === " ")) {
+                if (ev.key === "ArrowRight" || ev.key === "ArrowDown") {
+                  ev.preventDefault();
+                  moveFocus(k, 1);
+                } else if (ev.key === "ArrowLeft" || ev.key === "ArrowUp") {
+                  ev.preventDefault();
+                  moveFocus(k, -1);
+                } else if (enabled && (ev.key === "Enter" || ev.key === " ")) {
                   ev.preventDefault();
                   pick(k);
                 }
@@ -182,6 +209,7 @@ export function ClearanceOptions() {
                   </span>
                   <div className="min-w-0">
                     <h2
+                      id={`cl-${k}-title`}
                       className={cn(
                         "font-display text-xl font-semibold leading-tight tracking-tight",
                         !enabled && "text-muted",
@@ -195,7 +223,7 @@ export function ClearanceOptions() {
                   </div>
                 </div>
                 {!enabled && (
-                  <p className="mt-3 text-xs leading-relaxed text-muted">
+                  <p id={`cl-${k}-locked`} className="mt-3 text-xs leading-relaxed text-muted">
                     <span className="font-medium text-foreground">{t("order.clLockedTitle")}</span>
                     {lockedReasons.length > 0 && (
                       <>
@@ -204,7 +232,12 @@ export function ClearanceOptions() {
                       </>
                     )}
                     {". "}
-                    <Link href="/pesan" className="link-mark whitespace-nowrap">
+                    <Link
+                      href={changeAnswersHref}
+                      onClick={(ev) => ev.stopPropagation()}
+                      // 24px minimum target without disturbing the line box
+                      className="link-mark -my-1.5 inline-flex min-h-6 items-center whitespace-nowrap py-1.5"
+                    >
                       {t("order.clChangeAnswers")}
                     </Link>
                   </p>
