@@ -110,6 +110,21 @@ function Row({
   );
 }
 
+/** A 6px status dot beside a state word. Decorative: the word already says it. */
+function StateDot({ tone }: { tone: "success" | "warning" | "muted" }) {
+  return (
+    <span
+      aria-hidden
+      className={cn(
+        "size-1.5 shrink-0 translate-y-[-1px] rounded-full",
+        tone === "success" && "bg-success",
+        tone === "warning" && "bg-warning",
+        tone === "muted" && "bg-border-strong",
+      )}
+    />
+  );
+}
+
 /** A group/section with nothing filled in yet: one muted line, not a stack of dashes. */
 function EmptyLine() {
   const t = useT();
@@ -571,7 +586,9 @@ function ItemsCard({ order }: { order: Order }) {
                 <span className="shrink-0 text-xs font-medium text-foreground">
                   {t("order.itTotalPrice")}
                 </span>
-                <span className="font-mono text-lg font-semibold tabular-nums text-foreground">
+                {/* the one lime mark in the record (Marker Rule: fill behind ink) —
+                    the figure a customer comes back to check */}
+                <span className="hero-mark font-mono text-lg font-semibold tabular-nums">
                   {formatIDR(totalPrice)}
                 </span>
               </div>
@@ -635,11 +652,18 @@ function ComplianceCard({ order }: { order: Order }) {
               {docs[key] ? (
                 // the state in words first; the filename is the evidence, not the state
                 <span className="inline-flex items-baseline gap-2">
+                  <StateDot tone="success" />
                   <span className="text-xs text-muted-2">{t("order.tdDocUploaded")}</span>
                   <span className="font-mono text-xs text-foreground">{docs[key]}</span>
                 </span>
               ) : (
-                <span className={cn(spec.required ? "text-warning" : "text-muted-2")}>
+                <span
+                  className={cn(
+                    "inline-flex items-baseline gap-2",
+                    spec.required ? "text-warning" : "text-muted-2",
+                  )}
+                >
+                  <StateDot tone={spec.required ? "warning" : "muted"} />
                   {emptyWord(spec)}
                 </span>
               )}
@@ -652,6 +676,7 @@ function ComplianceCard({ order }: { order: Order }) {
               {(data?.otherDocs ?? []).map((d, i) => (
                 <Row key={i} label={val(d?.name)}>
                   <span className="inline-flex items-baseline gap-2">
+                    <StateDot tone="success" />
                     <span className="text-xs text-muted-2">{t("order.tdDocUploaded")}</span>
                     <span className="font-mono text-xs text-foreground">{val(d?.file)}</span>
                   </span>
