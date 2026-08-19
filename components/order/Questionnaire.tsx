@@ -230,6 +230,19 @@ export function Questionnaire() {
   const answeredShown = Math.min(answeredCount, maxQuestions);
   // the lime door only leads forward; a branch that ends in a hand-off gets a
   // quieter, honest button (and says so under the answer that caused it)
+  // the lane the routing answers are forming, said out loud under Q3/Q4 so a
+  // "Tidak" is never a mystery: it's a different lane, not a rejection
+  const laneText =
+    c === false || d === false
+      ? t("order.qLanePassenger")
+      : c === true && d === true
+        ? t("order.qLanePersonal")
+        : t("order.qLaneOpen");
+  const laneReadout = (
+    <p className="mt-2 flex items-center gap-1.5 text-xs text-muted-2">
+      <ArrowRight className="size-3.5 shrink-0" aria-hidden /> {laneText}
+    </p>
+  );
   const offRamp: "ineligible" | "foreigner" | null =
     a === false
       ? "ineligible"
@@ -409,7 +422,9 @@ export function Questionnaire() {
                 {destName}
               </span>
               <span className="text-muted-2">·</span>
-              <span>{isExport ? t("order.serviceMa") : t("order.serviceBfg")}</span>
+              <span>
+                {isExport ? t("order.serviceMa") : t("order.serviceBfg")}
+              </span>
               {selectedRate && (
                 <>
                   <span className="text-muted-2">·</span>
@@ -437,6 +452,10 @@ export function Questionnaire() {
               note={t("order.qGateNote")}
               question={t("order.qA")}
             >
+              {/* the gate term, defined where it's asked (same treatment as SKP) */}
+              <p className="mt-1.5 text-xs text-muted-2">
+                {t("order.qAGloss")}
+              </p>
               <Choice
                 labelledBy={`q1-label`}
                 value={a}
@@ -530,50 +549,58 @@ export function Questionnaire() {
                       { value: false, label: t("order.no") },
                     ]}
                   />
+                  {c !== undefined && laneReadout}
                 </Question>
 
-                <Question
-                  n={4}
-                  note={t("order.qRoutingNote")}
-                  question={t("order.qD")}
-                >
-                  {/* SKP is the one term here a first-timer won't know — explain
+                {/* one question at a time: the next card appears once this one is answered */}
+                {c !== undefined && (
+                  <Question
+                    n={4}
+                    note={t("order.qRoutingNote")}
+                    question={t("order.qD")}
+                  >
+                    {/* SKP is the one term here a first-timer won't know — explain
                   it right where it's asked, not behind a tap */}
-                  <p className="mt-1.5 text-xs text-muted-2">
-                    {t("order.jargSkp")}
-                  </p>
-                  <Choice
-                    labelledBy={`q4-label`}
-                    value={d}
-                    onChange={(v) => setAnswers({ canApplySKP: v })}
-                    options={[
-                      { value: true, label: t("order.yes") },
-                      { value: false, label: t("order.no") },
-                    ]}
-                  />
-                </Question>
+                    <p className="mt-1.5 text-xs text-muted-2">
+                      {t("order.jargSkp")}
+                    </p>
+                    <Choice
+                      labelledBy={`q4-label`}
+                      value={d}
+                      onChange={(v) => setAnswers({ canApplySKP: v })}
+                      options={[
+                        { value: true, label: t("order.yes") },
+                        { value: false, label: t("order.no") },
+                      ]}
+                    />
+                    {d !== undefined && laneReadout}
+                  </Question>
+                )}
 
-                <Question
-                  n={5}
-                  note={t("order.qOptionalNote")}
-                  question={t("order.qE")}
-                >
-                  <Choice
-                    labelledBy={`q5-label`}
-                    value={e}
-                    onChange={(v) => setAnswers({ hasPackingCode: v })}
-                    options={[
-                      { value: true, label: t("order.yes") },
-                      { value: false, label: t("order.no") },
-                    ]}
-                  />
-                  {packingReveal}
-                </Question>
+                {c !== undefined && d !== undefined && (
+                  <Question
+                    n={5}
+                    note={t("order.qOptionalNote")}
+                    question={t("order.qE")}
+                  >
+                    <Choice
+                      labelledBy={`q5-label`}
+                      value={e}
+                      onChange={(v) => setAnswers({ hasPackingCode: v })}
+                      options={[
+                        { value: true, label: t("order.yes") },
+                        { value: false, label: t("order.no") },
+                      ]}
+                    />
+                    {packingReveal}
+                  </Question>
+                )}
               </>
             )}
           </div>
 
-          <div className="mt-6">
+          {/* the action block steps aside when the outcome card has taken over */}
+          <div className={cn("mt-6", outcome && "hidden")}>
             {canSubmit && !offRamp && (
               <p className="mb-2 flex items-center justify-center gap-1.5 text-center text-xs font-medium text-foreground">
                 <CheckCircle2 className="size-3.5 text-success" />{" "}
@@ -667,7 +694,7 @@ function OutcomeScreen({
   }, []);
   return (
     <Card
-      className="reveal-pop mt-6 p-6 sm:p-8"
+      className="reveal-pop mt-3 p-6 sm:p-8"
       role="region"
       aria-live="polite"
     >
