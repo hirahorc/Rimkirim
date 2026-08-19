@@ -1,9 +1,14 @@
 import * as React from "react";
 import { cn } from "@/lib/utils/cn";
 
-export function Card({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
+export function Card({
+  className,
+  ref,
+  ...props
+}: React.HTMLAttributes<HTMLDivElement> & { ref?: React.Ref<HTMLDivElement> }) {
   return (
     <div
+      ref={ref}
       className={cn(
         "rounded-lg border border-border bg-surface text-foreground",
         className,

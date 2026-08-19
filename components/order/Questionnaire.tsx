@@ -12,6 +12,7 @@ import {
   Loader2,
   CheckCircle2,
   XCircle,
+  Check as CheckIcon,
 } from "lucide-react";
 import { useOrderStore } from "@/lib/store/useOrderStore";
 import type { Citizenship } from "@/lib/store/useOrderStore";
@@ -29,32 +30,81 @@ import { cn } from "@/lib/utils/cn";
 
 const WA_URL = "https://wa.me/6281234567890";
 
+/**
+ * A yes/no (or A/B) answer as the system's segmented control: the chosen
+ * segment lifts off the track in white + ink instead of filling with lime, so
+ * five answered questions never out-shout the one lime "Lanjut". Real radio
+ * semantics: the group is labelled by its question, arrows move the choice.
+ */
 function Choice<T extends string | boolean>({
   value,
   onChange,
   options,
+  labelledBy,
 }: {
   value: T | undefined;
   onChange: (v: T) => void;
   options: { value: T; label: string }[];
+  /** id of the question text that names this group */
+  labelledBy: string;
 }) {
+  const refs = React.useRef<(HTMLButtonElement | null)[]>([]);
+  const selectedIdx = options.findIndex((o) => o.value === value);
+  const move = (from: number, dir: 1 | -1) => {
+    const next = (from + dir + options.length) % options.length;
+    onChange(options[next].value);
+    refs.current[next]?.focus();
+  };
   return (
-    <div className="mt-3 grid grid-cols-2 gap-2">
-      {options.map((o) => (
-        <button
-          key={String(o.value)}
-          type="button"
-          onClick={() => onChange(o.value)}
-          className={cn(
-            "rounded-md border px-4 py-2.5 text-sm font-medium transition-colors",
-            value === o.value
-              ? "border-brand bg-brand text-brand-ink"
-              : "border-border bg-surface-2 text-muted hover:border-border-strong hover:text-foreground",
-          )}
-        >
-          {o.label}
-        </button>
-      ))}
+    <div
+      role="radiogroup"
+      aria-labelledby={labelledBy}
+      className="mt-3 inline-flex w-full items-stretch gap-1 rounded-full border border-border bg-surface-2 p-1"
+    >
+      {options.map((o, i) => {
+        const checked = value === o.value;
+        // roving tabindex: the checked item (or the first, before any answer) is the tab stop
+        const tabStop = selectedIdx === -1 ? i === 0 : checked;
+        return (
+          <button
+            key={String(o.value)}
+            ref={(el) => {
+              refs.current[i] = el;
+            }}
+            type="button"
+            role="radio"
+            aria-checked={checked}
+            tabIndex={tabStop ? 0 : -1}
+            onClick={() => onChange(o.value)}
+            onKeyDown={(ev) => {
+              if (ev.key === "ArrowRight" || ev.key === "ArrowDown") {
+                ev.preventDefault();
+                move(i, 1);
+              } else if (ev.key === "ArrowLeft" || ev.key === "ArrowUp") {
+                ev.preventDefault();
+                move(i, -1);
+              } else if (ev.key === " " || ev.key === "Enter") {
+                ev.preventDefault();
+                onChange(o.value);
+              }
+            }}
+            className={cn(
+              "tap-row flex flex-1 items-center justify-center gap-2 rounded-full px-3 py-2 text-sm font-medium transition-all",
+              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/50",
+              checked
+                ? "bg-background font-semibold text-foreground shadow-float"
+                : "text-muted hover:text-foreground",
+            )}
+          >
+            {/* the lift + weight already say "chosen"; the check is a bonus that
+                only fits once the pill has room */}
+            {checked && (
+              <CheckIcon className="hidden size-3.5 sm:block" strokeWidth={3} aria-hidden />
+            )}
+            {o.label}
+          </button>
+        );
+      })}
     </div>
   );
 }
@@ -62,16 +112,33 @@ function Choice<T extends string | boolean>({
 function Question({
   n,
   question,
+  note,
   children,
 }: {
   n: number;
   question: string;
+  /** small eyebrow naming what the answer does (e.g. "decides the clearance route") */
+  note?: string;
   children: React.ReactNode;
 }) {
+  const ref = React.useRef<HTMLDivElement>(null);
+  // a question that appears below the fold on a phone announces itself by
+  // sliding into view; mount-only, and skipped when motion is reduced
+  React.useEffect(() => {
+    if (n === 1) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const el = ref.current;
+    if (!el) return;
+    const r = el.getBoundingClientRect();
+    if (r.bottom > window.innerHeight) el.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  }, [n]);
   return (
     // id lets the clearance step deep-link back to the exact question
-    <Card id={`q${n}`} className="scroll-mt-28 animate-fade-up p-5">
-      <p className="flex gap-2 font-medium">
+    <Card ref={ref} id={`q${n}`} className="scroll-mt-28 animate-fade-up p-5">
+      {note && (
+        <p className="mb-1 text-xs font-medium uppercase tracking-[0.04em] text-muted-2">{note}</p>
+      )}
+      <p id={`q${n}-label`} className="flex gap-2 font-medium">
         <span className="text-foreground">{n}.</span>
         <span>{question}</span>
       </p>
@@ -94,7 +161,12 @@ export function Questionnaire() {
   );
   const [codeStatus, setCodeStatus] = React.useState<
     "idle" | "checking" | "found" | "not-found"
-  >("idle");
+  >(() =>
+    answers.packingCode?.trim() &&
+    answers.packingCodeVerified === answers.packingCode.trim()
+      ? "found"
+      : "idle",
+  );
 
   const checkCode = async () => {
     const code = (answers.packingCode ?? "").trim();
@@ -102,6 +174,8 @@ export function Questionnaire() {
     setCodeStatus("checking");
     const ok = await validatePackingCode(code, user?.email);
     setCodeStatus(ok ? "found" : "not-found");
+    // remember the verified code so a reload doesn't ask to search again
+    setAnswers({ packingCodeVerified: ok ? code : undefined });
   };
 
   const isExport = context?.service === "moving-abroad";
@@ -200,9 +274,14 @@ export function Questionnaire() {
         </p>
       )}
       {codeStatus === "not-found" && (
-        <p className="mt-1.5 flex items-center gap-1.5 text-xs text-danger">
-          <XCircle className="size-3.5" />
-          {t("order.packingCodeNotFound")}
+        <p className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-danger">
+          <span className="inline-flex items-center gap-1.5">
+            <XCircle className="size-3.5" />
+            {t("order.packingCodeNotFound")}
+          </span>
+          <Link href="/packing-list" className="link-mark">
+            {t("order.packingCodeMakeOne")}
+          </Link>
         </p>
       )}
     </div>
@@ -233,7 +312,7 @@ export function Questionnaire() {
         body={t("order.foreignerBody")}
         primary={{
           label: t("order.foreignerCta"),
-          href: "/",
+          href: "/expat-relocation",
           external: false,
           icon: <ArrowRight className="size-4" />,
         }}
@@ -255,6 +334,7 @@ export function Questionnaire() {
       <div className="space-y-3">
         <Question n={1} question={t("order.qA")}>
           <Choice
+              labelledBy={`q1-label`}
             value={a}
             onChange={(v) => setAnswers({ shippingPersonal: v })}
             options={[
@@ -272,6 +352,7 @@ export function Questionnaire() {
               question={`${t("order.qArrivedPre")} ${destName} ${t("order.qArrivedPost")}`}
             >
               <Choice
+              labelledBy={`q2-label`}
                 value={arrived}
                 onChange={(v) => setAnswers({ arrivedAtDestination: v })}
                 options={[
@@ -283,6 +364,7 @@ export function Questionnaire() {
 
             <Question n={3} question={t("order.qE")}>
               <Choice
+              labelledBy={`q3-label`}
                 value={e}
                 onChange={(v) => setAnswers({ hasPackingCode: v })}
                 options={[
@@ -299,6 +381,7 @@ export function Questionnaire() {
         {a === true && !isExport && (
           <Question n={2} question={t("order.qB")}>
             <Choice<Citizenship>
+              labelledBy={`q2-label`}
               value={b}
               onChange={(v) => setAnswers({ citizenship: v })}
               options={[
@@ -313,9 +396,11 @@ export function Questionnaire() {
           <>
             <Question
               n={3}
+              note={t("order.qRoutingNote")}
               question={`${t("order.qCPre")} ${originName} ${t("order.qCPost")}`}
             >
               <Choice
+              labelledBy={`q3-label`}
                 value={c}
                 onChange={(v) => setAnswers({ livedLongEnough: v })}
                 options={[
@@ -325,11 +410,12 @@ export function Questionnaire() {
               />
             </Question>
 
-            <Question n={4} question={t("order.qD")}>
+            <Question n={4} note={t("order.qRoutingNote")} question={t("order.qD")}>
               {/* SKP is the one term here a first-timer won't know — explain
                   it right where it's asked, not behind a tap */}
               <p className="mt-1.5 text-xs text-muted-2">{t("order.jargSkp")}</p>
               <Choice
+              labelledBy={`q4-label`}
                 value={d}
                 onChange={(v) => setAnswers({ canApplySKP: v })}
                 options={[
@@ -341,6 +427,7 @@ export function Questionnaire() {
 
             <Question n={5} question={t("order.qE")}>
               <Choice
+              labelledBy={`q5-label`}
                 value={e}
                 onChange={(v) => setAnswers({ hasPackingCode: v })}
                 options={[
@@ -355,7 +442,18 @@ export function Questionnaire() {
       </div>
 
       <div className="mt-6">
-        <Button size="lg" className="w-full" disabled={!canSubmit} onClick={onSubmit}>
+        {!canSubmit && (
+          <p id="q-submit-hint" role="status" className="mb-2 text-center text-xs text-muted-2">
+            {t("order.qAnswerAllHint")}
+          </p>
+        )}
+        <Button
+          size="lg"
+          className="w-full"
+          disabled={!canSubmit}
+          aria-describedby={canSubmit ? undefined : "q-submit-hint"}
+          onClick={onSubmit}
+        >
           {t("order.seeResult")}
           <ArrowRight className="size-4" />
         </Button>

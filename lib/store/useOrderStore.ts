@@ -320,6 +320,8 @@ export interface QuestionnaireAnswers {
   canApplySKP?: boolean; // (d) BFG only
   hasPackingCode?: boolean; // (e) both services
   packingCode?: string;
+  /** the code that last validated OK, so a reload doesn't ask to search again */
+  packingCodeVerified?: string;
   /** Moving Abroad only — info for the Rimkirim team, no branching. */
   arrivedAtDestination?: boolean;
 }
