@@ -282,11 +282,20 @@ export function ModuleHub() {
               </span>
               <div className="min-w-0 flex-1">
                 <p className="font-medium">{t(m.titleKey)}</p>
-                <p className="truncate text-sm text-muted">{t(m.descKey)}</p>
+                {/* the description is the only explanation of the module: let it
+                    wrap (2 lines) instead of truncating on the primary device */}
+                <p className="line-clamp-2 text-sm leading-snug text-muted sm:truncate">
+                  {t(m.descKey)}
+                </p>
+                {/* phone: status sits under the text so the title keeps its width;
+                    the next-up card's Continue pill already says it */}
+                {!isNext && (
+                  <span className="mt-1.5 inline-flex sm:hidden">
+                    <StatusBadge status={status} locked={locked} justDone={m.id === justDone} />
+                  </span>
+                )}
               </div>
-              {/* on the next-up card the Continue pill already says it all —
-                  at phone width the "Not started" badge just crowds the title */}
-              <span className={cn("contents", isNext && "hidden sm:contents")}>
+              <span className={cn("hidden sm:contents")}>
                 <StatusBadge status={status} locked={locked} justDone={m.id === justDone} />
               </span>
               {!locked &&
