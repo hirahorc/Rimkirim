@@ -26,6 +26,7 @@ import { useT } from "@/lib/i18n/LanguageProvider";
 import { Card } from "@/components/ui/card";
 import { Input, Label } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { InfoTip, TooltipProvider } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils/cn";
 
 const WA_URL = "https://wa.me/6281234567890";
@@ -99,7 +100,11 @@ function Choice<T extends string | boolean>({
             {/* the lift + weight already say "chosen"; the check is a bonus that
                 only fits once the pill has room */}
             {checked && (
-              <CheckIcon className="hidden size-3.5 sm:block" strokeWidth={3} aria-hidden />
+              <CheckIcon
+                className="hidden size-3.5 sm:block"
+                strokeWidth={3}
+                aria-hidden
+              />
             )}
             {o.label}
           </button>
@@ -130,16 +135,19 @@ function Question({
     const el = ref.current;
     if (!el) return;
     const r = el.getBoundingClientRect();
-    if (r.bottom > window.innerHeight) el.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    if (r.bottom > window.innerHeight)
+      el.scrollIntoView({ behavior: "smooth", block: "nearest" });
   }, [n]);
   return (
     // id lets the clearance step deep-link back to the exact question
     <Card ref={ref} id={`q${n}`} className="scroll-mt-28 animate-fade-up p-5">
       {note && (
-        <p className="mb-1 text-xs font-medium uppercase tracking-[0.04em] text-muted-2">{note}</p>
+        <p className="mb-1 text-xs font-medium uppercase tracking-[0.04em] text-muted-2">
+          {note}
+        </p>
       )}
       <p id={`q${n}-label`} className="flex gap-2 font-medium">
-        <span className="text-foreground">{n}.</span>
+        <span className="tabular-nums text-foreground">{n}.</span>
         <span>{question}</span>
       </p>
       {children}
@@ -156,9 +164,9 @@ export function Questionnaire() {
   const prefillFromPackingList = useOrderStore((s) => s.prefillFromPackingList);
   const user = useCurrentUser();
 
-  const [outcome, setOutcome] = React.useState<null | "ineligible" | "foreigner">(
-    null,
-  );
+  const [outcome, setOutcome] = React.useState<
+    null | "ineligible" | "foreigner"
+  >(null);
   const [codeStatus, setCodeStatus] = React.useState<
     "idle" | "checking" | "found" | "not-found"
   >(() =>
@@ -191,6 +199,28 @@ export function Questionnaire() {
   const destName = getCountry(context?.destCountry)?.name ?? "–";
 
   const packingCodeOk = e === false || codeStatus === "found";
+
+  // how far along, out of the longest path this service can take: the count
+  // shrinks the moment a branch closes, so the horizon is always honest
+  const maxQuestions = isExport
+    ? 3
+    : a === false
+      ? 1
+      : b === "foreigner"
+        ? 2
+        : 5;
+  const answeredCount = [a, isExport ? arrived : b, c, d, e].filter(
+    (v) => v !== undefined,
+  ).length;
+  const currentQ = Math.min(answeredCount + 1, maxQuestions);
+  // the lime door only leads forward; a branch that ends in a hand-off gets a
+  // quieter, honest button (and says so under the answer that caused it)
+  const offRamp: "ineligible" | "foreigner" | null =
+    a === false
+      ? "ineligible"
+      : !isExport && b === "foreigner"
+        ? "foreigner"
+        : null;
 
   const canSubmit = isExport
     ? a === false ||
@@ -226,7 +256,13 @@ export function Questionnaire() {
 
   const packingReveal = e === true && (
     <div className="mt-3">
-      <Label>{t("order.packingCodeLabel")}</Label>
+      <Label className="inline-flex items-center gap-1.5">
+        {t("order.packingCodeLabel")}
+        <InfoTip
+          content={t("order.qPackingTip")}
+          label={t("order.packingCodeLabel")}
+        />
+      </Label>
       <div className="flex gap-2">
         <Input
           value={answers.packingCode ?? ""}
@@ -259,7 +295,12 @@ export function Questionnaire() {
         </Button>
       </div>
       {codeStatus === "idle" && (
-        <p className="mt-1.5 text-xs text-muted-2">{t("order.packingCodeHint")}</p>
+        <p className="mt-1.5 text-xs text-muted-2">
+          {t("order.packingCodeHint")}{" "}
+          <Link href="/packing-list" className="link-mark">
+            {t("order.packingCodeIdleMake")}
+          </Link>
+        </p>
       )}
       {codeStatus === "checking" && (
         <p className="mt-1.5 flex items-center gap-1.5 text-xs text-muted">
@@ -287,29 +328,31 @@ export function Questionnaire() {
     </div>
   );
 
-  if (outcome === "ineligible") {
-    return (
+  // the hand-off card: the form stays in view (dimmed) so the answer that
+  // routed them is still on screen, and the card arrives rather than replaces
+  const outcomeCard =
+    outcome === "ineligible" ? (
       <OutcomeScreen
-        icon={<PackageX className="size-10 text-muted-2" />}
+        icon={<PackageX className="size-10 text-foreground" />}
         title={t("order.ineligibleTitle")}
         body={t("order.ineligibleBody")}
+        echo={`${t("order.qYourAnswer")}: ${t("order.qA")} · ${t("order.no")}`}
         primary={{
           label: t("order.ineligibleCta"),
           href: WA_URL,
           external: true,
           icon: <MessageCircle className="size-4" />,
         }}
+        alt={{ label: t("order.ineligibleAlt"), href: "/cek-tarif" }}
         secondaryLabel={t("order.backToRates")}
         onSecondary={() => setOutcome(null)}
       />
-    );
-  }
-  if (outcome === "foreigner") {
-    return (
+    ) : outcome === "foreigner" ? (
       <OutcomeScreen
         icon={<Globe2 className="size-10 text-foreground" />}
         title={t("order.foreignerTitle")}
         body={t("order.foreignerBody")}
+        echo={`${t("order.qYourAnswer")}: ${t("order.qB")} · ${t("order.foreigner")}`}
         primary={{
           label: t("order.foreignerCta"),
           href: "/expat-relocation",
@@ -319,157 +362,216 @@ export function Questionnaire() {
         secondaryLabel={t("order.backToRates")}
         onSecondary={() => setOutcome(null)}
       />
-    );
-  }
+    ) : null;
 
   return (
-    <div>
-      <header className="mb-6">
-        <h1 className="font-display text-2xl font-bold tracking-tight sm:text-3xl">
-          {t("order.qHeading")}
-        </h1>
-        <p className="mt-1.5 text-sm text-muted">{t("order.qSubheading")}</p>
-      </header>
-
-      <div className="space-y-3">
-        <Question n={1} question={t("order.qA")}>
-          <Choice
-              labelledBy={`q1-label`}
-            value={a}
-            onChange={(v) => setAnswers({ shippingPersonal: v })}
-            options={[
-              { value: true, label: t("order.yes") },
-              { value: false, label: t("order.no") },
-            ]}
-          />
-        </Question>
-
-        {/* Moving Abroad (export): lean questionnaire */}
-        {a === true && isExport && (
-          <>
-            <Question
-              n={2}
-              question={`${t("order.qArrivedPre")} ${destName} ${t("order.qArrivedPost")}`}
-            >
-              <Choice
-              labelledBy={`q2-label`}
-                value={arrived}
-                onChange={(v) => setAnswers({ arrivedAtDestination: v })}
-                options={[
-                  { value: true, label: t("order.yes") },
-                  { value: false, label: t("order.no") },
-                ]}
-              />
-            </Question>
-
-            <Question n={3} question={t("order.qE")}>
-              <Choice
-              labelledBy={`q3-label`}
-                value={e}
-                onChange={(v) => setAnswers({ hasPackingCode: v })}
-                options={[
-                  { value: true, label: t("order.yes") },
-                  { value: false, label: t("order.no") },
-                ]}
-              />
-              {packingReveal}
-            </Question>
-          </>
-        )}
-
-        {/* Back For Good (import): full eligibility questionnaire */}
-        {a === true && !isExport && (
-          <Question n={2} question={t("order.qB")}>
-            <Choice<Citizenship>
-              labelledBy={`q2-label`}
-              value={b}
-              onChange={(v) => setAnswers({ citizenship: v })}
-              options={[
-                { value: "indonesian", label: t("order.indonesian") },
-                { value: "foreigner", label: t("order.foreigner") },
-              ]}
-            />
-          </Question>
-        )}
-
-        {a === true && !isExport && b === "indonesian" && (
-          <>
-            <Question
-              n={3}
-              note={t("order.qRoutingNote")}
-              question={`${t("order.qCPre")} ${originName} ${t("order.qCPost")}`}
-            >
-              <Choice
-              labelledBy={`q3-label`}
-                value={c}
-                onChange={(v) => setAnswers({ livedLongEnough: v })}
-                options={[
-                  { value: true, label: t("order.yes") },
-                  { value: false, label: t("order.no") },
-                ]}
-              />
-            </Question>
-
-            <Question n={4} note={t("order.qRoutingNote")} question={t("order.qD")}>
-              {/* SKP is the one term here a first-timer won't know — explain
-                  it right where it's asked, not behind a tap */}
-              <p className="mt-1.5 text-xs text-muted-2">{t("order.jargSkp")}</p>
-              <Choice
-              labelledBy={`q4-label`}
-                value={d}
-                onChange={(v) => setAnswers({ canApplySKP: v })}
-                options={[
-                  { value: true, label: t("order.yes") },
-                  { value: false, label: t("order.no") },
-                ]}
-              />
-            </Question>
-
-            <Question n={5} question={t("order.qE")}>
-              <Choice
-              labelledBy={`q5-label`}
-                value={e}
-                onChange={(v) => setAnswers({ hasPackingCode: v })}
-                options={[
-                  { value: true, label: t("order.yes") },
-                  { value: false, label: t("order.no") },
-                ]}
-              />
-              {packingReveal}
-            </Question>
-          </>
-        )}
-      </div>
-
-      <div className="mt-6">
-        {!canSubmit && (
-          <p id="q-submit-hint" role="status" className="mb-2 text-center text-xs text-muted-2">
-            {t("order.qAnswerAllHint")}
-          </p>
-        )}
-        <Button
-          size="lg"
-          className="w-full"
-          disabled={!canSubmit}
-          aria-describedby={canSubmit ? undefined : "q-submit-hint"}
-          onClick={onSubmit}
+    <TooltipProvider delayDuration={150}>
+      <div>
+        <div
+          className={cn(
+            "transition-opacity",
+            outcome && "pointer-events-none opacity-40",
+          )}
+          aria-hidden={!!outcome}
         >
-          {t("order.seeResult")}
-          <ArrowRight className="size-4" />
-        </Button>
-        <p className="mt-3 text-center text-xs leading-relaxed text-muted-2">
-          {t("order.qAgreePre")}{" "}
-          <Link href="/terms" className="link-mark">
-            {t("footer.legalTerms")}
-          </Link>{" "}
-          {t("order.qAgreeMid")}{" "}
-          <Link href="/privacy" className="link-mark">
-            {t("footer.legalPrivacy")}
-          </Link>
-          {t("order.qAgreePost")}
-        </p>
+          <header className="mb-6">
+            <h1 className="font-display text-2xl font-bold tracking-tight sm:text-3xl">
+              {t("order.qHeading")}
+            </h1>
+            <p className="mt-1.5 max-w-prose text-sm text-muted">
+              {t("order.qSubheading")}
+            </p>
+            <p className="mt-3 text-xs font-medium uppercase tracking-[0.04em] text-muted-2">
+              {t("order.qProgress")
+                .replace("{n}", String(currentQ))
+                .replace("{max}", String(maxQuestions))}
+            </p>
+          </header>
+
+          <div className="space-y-3">
+            <Question
+              n={1}
+              note={t("order.qGateNote")}
+              question={t("order.qA")}
+            >
+              <Choice
+                labelledBy={`q1-label`}
+                value={a}
+                onChange={(v) => setAnswers({ shippingPersonal: v })}
+                options={[
+                  { value: true, label: t("order.yes") },
+                  { value: false, label: t("order.no") },
+                ]}
+              />
+              {offRamp === "ineligible" && (
+                <p className="mt-3 text-xs leading-relaxed text-muted">
+                  {t("order.qIneligibleInline")}
+                </p>
+              )}
+            </Question>
+
+            {/* Moving Abroad (export): lean questionnaire */}
+            {a === true && isExport && (
+              <>
+                <Question
+                  n={2}
+                  question={`${t("order.qArrivedPre")} ${destName} ${t("order.qArrivedPost")}`}
+                >
+                  <Choice
+                    labelledBy={`q2-label`}
+                    value={arrived}
+                    onChange={(v) => setAnswers({ arrivedAtDestination: v })}
+                    options={[
+                      { value: true, label: t("order.yes") },
+                      { value: false, label: t("order.no") },
+                    ]}
+                  />
+                </Question>
+
+                <Question
+                  n={3}
+                  note={t("order.qOptionalNote")}
+                  question={t("order.qE")}
+                >
+                  <Choice
+                    labelledBy={`q3-label`}
+                    value={e}
+                    onChange={(v) => setAnswers({ hasPackingCode: v })}
+                    options={[
+                      { value: true, label: t("order.yes") },
+                      { value: false, label: t("order.no") },
+                    ]}
+                  />
+                  {packingReveal}
+                </Question>
+              </>
+            )}
+
+            {/* Back For Good (import): full eligibility questionnaire */}
+            {a === true && !isExport && (
+              <Question
+                n={2}
+                note={t("order.qGateNote")}
+                question={t("order.qB")}
+              >
+                <Choice<Citizenship>
+                  labelledBy={`q2-label`}
+                  value={b}
+                  onChange={(v) => setAnswers({ citizenship: v })}
+                  options={[
+                    { value: "indonesian", label: t("order.indonesian") },
+                    { value: "foreigner", label: t("order.foreigner") },
+                  ]}
+                />
+                {offRamp === "foreigner" && (
+                  <p className="mt-3 text-xs leading-relaxed text-muted">
+                    {t("order.qForeignerInline")}
+                  </p>
+                )}
+              </Question>
+            )}
+
+            {a === true && !isExport && b === "indonesian" && (
+              <>
+                <Question
+                  n={3}
+                  note={t("order.qRoutingNote")}
+                  question={`${t("order.qCPre")} ${originName} ${t("order.qCPost")}`}
+                >
+                  <Choice
+                    labelledBy={`q3-label`}
+                    value={c}
+                    onChange={(v) => setAnswers({ livedLongEnough: v })}
+                    options={[
+                      { value: true, label: t("order.yes") },
+                      { value: false, label: t("order.no") },
+                    ]}
+                  />
+                </Question>
+
+                <Question
+                  n={4}
+                  note={t("order.qRoutingNote")}
+                  question={t("order.qD")}
+                >
+                  {/* SKP is the one term here a first-timer won't know — explain
+                  it right where it's asked, not behind a tap */}
+                  <p className="mt-1.5 text-xs text-muted-2">
+                    {t("order.jargSkp")}
+                  </p>
+                  <Choice
+                    labelledBy={`q4-label`}
+                    value={d}
+                    onChange={(v) => setAnswers({ canApplySKP: v })}
+                    options={[
+                      { value: true, label: t("order.yes") },
+                      { value: false, label: t("order.no") },
+                    ]}
+                  />
+                </Question>
+
+                <Question
+                  n={5}
+                  note={t("order.qOptionalNote")}
+                  question={t("order.qE")}
+                >
+                  <Choice
+                    labelledBy={`q5-label`}
+                    value={e}
+                    onChange={(v) => setAnswers({ hasPackingCode: v })}
+                    options={[
+                      { value: true, label: t("order.yes") },
+                      { value: false, label: t("order.no") },
+                    ]}
+                  />
+                  {packingReveal}
+                </Question>
+              </>
+            )}
+          </div>
+
+          <div className="mt-6">
+            {!canSubmit && (
+              <p
+                id="q-submit-hint"
+                role="status"
+                className="mb-2 text-center text-xs text-muted-2"
+              >
+                {t("order.qAnswerAllHint")}
+              </p>
+            )}
+            <Button
+              size="lg"
+              // lime means "forward"; an off-ramp and a not-yet both wear the secondary coat
+              variant={canSubmit && !offRamp ? "brand" : "secondary"}
+              className="w-full"
+              disabled={!canSubmit}
+              aria-describedby={canSubmit ? undefined : "q-submit-hint"}
+              onClick={onSubmit}
+            >
+              {offRamp === "ineligible"
+                ? t("order.qSeeOptions")
+                : offRamp === "foreigner"
+                  ? t("order.qToExpat")
+                  : t("order.seeResult")}
+              <ArrowRight className="size-4" />
+            </Button>
+            <p className="mt-3 text-center text-xs leading-relaxed text-muted-2">
+              {t("order.qAgreePre")}{" "}
+              <Link href="/terms" className="link-mark">
+                {t("footer.legalTerms")}
+              </Link>{" "}
+              {t("order.qAgreeMid")}{" "}
+              <Link href="/privacy" className="link-mark">
+                {t("footer.legalPrivacy")}
+              </Link>
+              {t("order.qAgreePost")}
+            </p>
+          </div>
+        </div>
+        {outcomeCard}
       </div>
-    </div>
+    </TooltipProvider>
   );
 }
 
@@ -477,24 +579,53 @@ function OutcomeScreen({
   icon,
   title,
   body,
+  echo,
   primary,
+  alt,
   secondaryLabel,
   onSecondary,
 }: {
   icon: React.ReactNode;
   title: string;
   body: string;
-  primary: { label: string; href: string; external: boolean; icon: React.ReactNode };
+  /** the answer that routed them here, repeated so the hand-off has a reason */
+  echo: string;
+  primary: {
+    label: string;
+    href: string;
+    external: boolean;
+    icon: React.ReactNode;
+  };
+  /** an optional second way forward (never a dead end) */
+  alt?: { label: string; href: string };
   secondaryLabel: string;
   onSecondary: () => void;
 }) {
+  const headingRef = React.useRef<HTMLHeadingElement>(null);
+  // the card arrives below the dimmed form; focus lands on its title so keyboard
+  // and screen-reader users are taken to the outcome, not left on the button
+  React.useEffect(() => {
+    headingRef.current?.focus();
+    headingRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+  }, []);
   return (
-    <Card className="mx-auto max-w-md p-8 text-center">
+    <Card
+      className="reveal-pop mx-auto mt-6 max-w-md p-8 text-center"
+      role="region"
+      aria-live="polite"
+    >
       <div className="mx-auto grid size-16 place-items-center rounded-full bg-surface-2">
         {icon}
       </div>
-      <h1 className="mt-5 font-display text-xl font-bold tracking-tight">{title}</h1>
+      <h2
+        ref={headingRef}
+        tabIndex={-1}
+        className="mt-5 font-display text-xl font-bold tracking-tight outline-none"
+      >
+        {title}
+      </h2>
       <p className="mt-2 text-sm text-muted">{body}</p>
+      <p className="mt-3 text-xs text-muted-2">{echo}</p>
       <div className="mt-6 space-y-2">
         <Button asChild className="w-full">
           {primary.external ? (
@@ -507,6 +638,11 @@ function OutcomeScreen({
             </a>
           )}
         </Button>
+        {alt && (
+          <Button asChild variant="secondary" className="w-full">
+            <Link href={alt.href}>{alt.label}</Link>
+          </Button>
+        )}
         <Button variant="ghost" className="w-full" onClick={onSecondary}>
           {secondaryLabel}
         </Button>
