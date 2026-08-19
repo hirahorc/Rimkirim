@@ -360,8 +360,11 @@ export function ModuleHub() {
 
       {/* final CTA */}
       <div className={canSubmit ? "mt-3" : "mt-6"}>
+        {/* lime is "the answer": until every section is done the answer is the
+            next card, so the submit waits in a quiet secondary coat */}
         <Button
           size="lg"
+          variant={canSubmit ? "brand" : "secondary"}
           className="w-full"
           disabled={!canSubmit}
           aria-describedby={canSubmit ? undefined : "hub-submit-note"}
