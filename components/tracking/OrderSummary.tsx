@@ -775,12 +775,15 @@ function PendingCards({ order }: { order: Order }) {
   return (
     <Section title={t("order.tdNextSection")}>
       {showRate && (
-        <Row label={t("order.tdQuotationSection")}>
-          <span className="font-mono font-medium tabular-nums">
-            {formatIDR(rate!.perKg)}
-          </span>{" "}
-          <span className="text-xs text-muted-2">
-            / {t("order.tdPerKg")} · {t("order.tdQuotationPending")}
+        // the figure on its own line, the status sentence as prose under it —
+        // a paragraph never belongs in a value cell
+        <Row prose label={t("order.tdQuotationSection")}>
+          <span className="block">
+            <span className="font-mono font-medium tabular-nums">{formatIDR(rate!.perKg)}</span>{" "}
+            <span className="text-xs text-muted-2">/ {t("order.tdPerKg")}</span>
+          </span>
+          <span className="mt-1 block max-w-prose text-xs leading-relaxed text-muted-2 sm:ml-auto">
+            {t("order.tdQuotationPending")}
           </span>
         </Row>
       )}
