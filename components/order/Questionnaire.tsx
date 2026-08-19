@@ -804,7 +804,7 @@ function OutcomeScreen({
   // and screen-reader users are taken to the outcome, not left on the button
   React.useEffect(() => {
     headingRef.current?.focus();
-    headingRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+    headingRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   }, []);
   return (
     <Card
@@ -823,7 +823,7 @@ function OutcomeScreen({
           <h2
             ref={headingRef}
             tabIndex={-1}
-            className="font-display text-xl font-semibold tracking-tight outline-none"
+            className="scroll-mt-28 font-display text-xl font-semibold tracking-tight outline-none"
           >
             {title}
           </h2>
