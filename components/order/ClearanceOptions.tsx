@@ -157,16 +157,17 @@ export function ClearanceOptions() {
             <button
               key={k}
               type="button"
-              aria-pressed={viewed === k}
+              aria-pressed={selected === k && allowed[k]}
               // one model on mobile: the pill both shows and (when allowed) chooses the route
               onClick={() => pick(k)}
               className={cn(
                 "flex items-center justify-center gap-1.5 rounded-full px-3 py-2 text-sm font-medium transition-colors",
-                // ink = chosen; white = only in view; plain = the other one
+                // only the CHOSEN route gets the ink pill; a route merely in view
+                // is just darker text, so two pills never both look pressed
                 selected === k && allowed[k]
                   ? "bg-foreground text-background"
                   : viewed === k
-                    ? "bg-background text-foreground shadow-float"
+                    ? "text-foreground"
                     : "text-muted",
               )}
             >
