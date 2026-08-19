@@ -6,6 +6,7 @@ import { useT, useLanguage } from "@/lib/i18n/LanguageProvider";
 import { Card } from "@/components/ui/card";
 import { TooltipProvider, InfoTip } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils/cn";
+import { CopyButton } from "@/components/order/CopyButton";
 import { getCountry } from "@/lib/data/countries";
 import { dialCodeFor } from "@/lib/data/dial-codes";
 import { formatCurrency } from "@/lib/data/currencies";
@@ -23,6 +24,7 @@ import {
 } from "@/lib/store/useOrderStore";
 
 const dash = "–";
+const WA_URL = "https://wa.me/6281234567890";
 
 /**
  * De-boxed section: no card, no icon chip. The section title (display, dark)
@@ -167,6 +169,17 @@ export function OrderSummary({ order }: { order: Order }) {
         {isMa && (
           <p className="text-xs text-muted-2">{t("order.tdMaNote")}</p>
         )}
+        {/* the record is read-only, but a customer who spots a wrong address
+            needs a door: the assistant, not a dead end */}
+        {order.status !== "cancelled" && order.status !== "delivered" && (
+          <p className="text-xs leading-relaxed text-muted-2">
+            {t("order.tdWrongPre")}{" "}
+            <a href={WA_URL} target="_blank" rel="noreferrer" className="link-mark">
+              {t("order.tdWrongLink")}
+            </a>{" "}
+            {t("order.tdWrongPost")}
+          </p>
+        )}
       </div>
     </TooltipProvider>
   );
@@ -220,7 +233,14 @@ function EligibilityCard({ order }: { order: Order }) {
           <TipLabel label={t("order.coPackingCode")} tip={t("order.tdPackingTip")} />
         }
       >
-        {packing ? <span className="font-mono">{packing}</span> : dash}
+        {packing ? (
+          <span className="inline-flex items-center gap-1.5">
+            <span className="font-mono">{packing}</span>
+            <CopyButton value={packing} />
+          </span>
+        ) : (
+          dash
+        )}
       </Row>
     </Section>
   );

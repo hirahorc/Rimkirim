@@ -664,6 +664,9 @@ const id = {
     serviceMa: "Moving Abroad",
     // tracking detail
     tdRecordHeading: "Detail pesanan",
+    tdWrongPre: "Ada yang keliru di data ini?",
+    tdWrongLink: "Hubungi tim kami via WhatsApp",
+    tdWrongPost: "supaya bisa dikoreksi sebelum diproses.",
     tdAttention: "Perlu perhatian",
     tdGoodNews: "Kabar baik",
     contactWa: "Hubungi tim Rimkirim",
@@ -1872,6 +1875,9 @@ const en: Messages = {
     serviceMa: "Moving Abroad",
     // tracking detail
     tdRecordHeading: "Order details",
+    tdWrongPre: "Spotted something wrong here?",
+    tdWrongLink: "Message our team on WhatsApp",
+    tdWrongPost: "so it can be corrected before processing.",
     tdAttention: "Needs attention",
     tdGoodNews: "Good news",
     contactWa: "Chat the Rimkirim team",
