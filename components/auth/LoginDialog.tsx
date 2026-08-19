@@ -33,8 +33,8 @@ import { cn } from "@/lib/utils/cn";
 
 type Step = "email" | "code" | "name" | "google";
 
-/** Slot for the real photo: drop a file at this path and it replaces the placeholder. */
-const LOGIN_IMAGE_SRC: string | null = null;
+/** Login cover (16:9 source; the panel is portrait, so focus sits right of centre where the lettering is). */
+const LOGIN_IMAGE_SRC: string | null = "/auth/login-cover.jpg";
 
 const GOOGLE_ACCOUNTS = [
   { name: "Hira Rimkirim", email: "hira.rimkirim@gmail.com" },
@@ -98,7 +98,8 @@ export function LoginDialog() {
                 alt=""
                 fill
                 sizes="(min-width: 768px) 560px, 0px"
-                className="object-cover"
+                priority={false}
+                className="object-cover object-[90%_center]"
               />
             ) : (
               <CoverPlaceholder slug="login" title="Rimkirim Masuk" />
