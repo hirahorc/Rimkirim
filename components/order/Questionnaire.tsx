@@ -22,7 +22,7 @@ import { findOwnedByCode } from "@/lib/store/usePackingListStore";
 import { mapPackingToModules } from "@/lib/order/packing-prefill";
 import { useCurrentUser } from "@/lib/store/useAuthStore";
 import { toast } from "sonner";
-import { useT } from "@/lib/i18n/LanguageProvider";
+import { useT, useLanguage } from "@/lib/i18n/LanguageProvider";
 import { Card } from "@/components/ui/card";
 import { Input, Label } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -157,6 +157,7 @@ function Question({
 
 export function Questionnaire() {
   const t = useT();
+  const { locale } = useLanguage();
   const router = useRouter();
   const context = useOrderStore((s) => s.context);
   const answers = useOrderStore((s) => s.answers);
@@ -195,8 +196,19 @@ export function Questionnaire() {
   const e = answers.hasPackingCode;
   const arrived = answers.arrivedAtDestination;
 
-  const originName = getCountry(context?.originCountry)?.name ?? "–";
-  const destName = getCountry(context?.destCountry)?.name ?? "–";
+  // country names in the reader's language ("Belanda", not "Netherlands" inside ID copy)
+  const countryName = (code: string | undefined | null) => {
+    if (!code) return "–";
+    try {
+      return (
+        new Intl.DisplayNames([locale], { type: "region" }).of(code) ?? code
+      );
+    } catch {
+      return getCountry(code)?.name ?? code;
+    }
+  };
+  const originName = countryName(context?.originCountry);
+  const destName = countryName(context?.destCountry);
 
   const packingCodeOk = e === false || codeStatus === "found";
 
@@ -333,10 +345,11 @@ export function Questionnaire() {
   const outcomeCard =
     outcome === "ineligible" ? (
       <OutcomeScreen
-        icon={<PackageX className="size-10 text-foreground" />}
+        icon={<PackageX className="size-6 text-foreground" />}
+        eyebrow={t("order.qOutcomeEyebrow")}
         title={t("order.ineligibleTitle")}
         body={t("order.ineligibleBody")}
-        echo={`${t("order.qYourAnswer")}: ${t("order.qA")} · ${t("order.no")}`}
+        echo={`${t("order.qYourAnswer")}: ${t("order.no")} · ${t("order.qA")}`}
         primary={{
           label: t("order.ineligibleCta"),
           href: WA_URL,
@@ -349,10 +362,11 @@ export function Questionnaire() {
       />
     ) : outcome === "foreigner" ? (
       <OutcomeScreen
-        icon={<Globe2 className="size-10 text-foreground" />}
+        icon={<Globe2 className="size-6 text-foreground" />}
+        eyebrow={t("order.qOutcomeEyebrow")}
         title={t("order.foreignerTitle")}
         body={t("order.foreignerBody")}
-        echo={`${t("order.qYourAnswer")}: ${t("order.qB")} · ${t("order.foreigner")}`}
+        echo={`${t("order.qYourAnswer")}: ${t("order.foreigner")} · ${t("order.qB")}`}
         primary={{
           label: t("order.foreignerCta"),
           href: "/expat-relocation",
@@ -372,7 +386,8 @@ export function Questionnaire() {
             "transition-opacity",
             outcome && "pointer-events-none opacity-40",
           )}
-          aria-hidden={!!outcome}
+          // inert: removes the dimmed form from tab order AND the a11y tree
+          inert={!!outcome}
         >
           <header className="mb-6">
             <h1 className="font-display text-2xl font-bold tracking-tight sm:text-3xl">
@@ -381,11 +396,13 @@ export function Questionnaire() {
             <p className="mt-1.5 max-w-prose text-sm text-muted">
               {t("order.qSubheading")}
             </p>
-            <p className="mt-3 text-xs font-medium uppercase tracking-[0.04em] text-muted-2">
-              {t("order.qProgress")
-                .replace("{n}", String(currentQ))
-                .replace("{max}", String(maxQuestions))}
-            </p>
+            {maxQuestions > 1 && (
+              <p className="mt-3 text-xs font-medium uppercase tracking-[0.04em] text-muted-2">
+                {t("order.qProgress")
+                  .replace("{n}", String(currentQ))
+                  .replace("{max}", String(maxQuestions))}
+              </p>
+            )}
           </header>
 
           <div className="space-y-3">
@@ -537,7 +554,13 @@ export function Questionnaire() {
                 role="status"
                 className="mb-2 text-center text-xs text-muted-2"
               >
-                {t("order.qAnswerAllHint")}
+                {e === true && codeStatus === "not-found"
+                  ? t("order.qBadCodeHint")
+                  : e === true &&
+                      !!answers.packingCode?.trim() &&
+                      codeStatus !== "found"
+                    ? t("order.qCheckCodeHint")
+                    : t("order.qAnswerAllHint")}
               </p>
             )}
             <Button
@@ -577,6 +600,7 @@ export function Questionnaire() {
 
 function OutcomeScreen({
   icon,
+  eyebrow,
   title,
   body,
   echo,
@@ -586,6 +610,7 @@ function OutcomeScreen({
   onSecondary,
 }: {
   icon: React.ReactNode;
+  eyebrow: string;
   title: string;
   body: string;
   /** the answer that routed them here, repeated so the hand-off has a reason */
@@ -610,40 +635,51 @@ function OutcomeScreen({
   }, []);
   return (
     <Card
-      className="reveal-pop mx-auto mt-6 max-w-md p-8 text-center"
+      className="reveal-pop mt-6 p-6 sm:p-8"
       role="region"
       aria-live="polite"
     >
-      <div className="mx-auto grid size-16 place-items-center rounded-full bg-surface-2">
-        {icon}
+      <p className="text-xs font-medium uppercase tracking-[0.04em] text-muted-2">
+        {eyebrow}
+      </p>
+      <div className="mt-3 flex items-start gap-4">
+        <div className="grid size-12 shrink-0 place-items-center rounded-full bg-surface-2">
+          {icon}
+        </div>
+        <div className="min-w-0">
+          <h2
+            ref={headingRef}
+            tabIndex={-1}
+            className="font-display text-xl font-semibold tracking-tight outline-none"
+          >
+            {title}
+          </h2>
+          <p className="mt-1.5 text-sm text-muted">{body}</p>
+          <p className="mt-2 text-xs text-muted-2">{echo}</p>
+        </div>
       </div>
-      <h2
-        ref={headingRef}
-        tabIndex={-1}
-        className="mt-5 font-display text-xl font-bold tracking-tight outline-none"
-      >
-        {title}
-      </h2>
-      <p className="mt-2 text-sm text-muted">{body}</p>
-      <p className="mt-3 text-xs text-muted-2">{echo}</p>
-      <div className="mt-6 space-y-2">
-        <Button asChild className="w-full">
+      <div className="mt-6 flex flex-col gap-2 sm:flex-row sm:flex-wrap">
+        <Button asChild className="w-full sm:w-auto">
           {primary.external ? (
             <a href={primary.href} target="_blank" rel="noreferrer">
               {primary.icon} {primary.label}
             </a>
           ) : (
-            <a href={primary.href}>
+            <Link href={primary.href}>
               {primary.icon} {primary.label}
-            </a>
+            </Link>
           )}
         </Button>
         {alt && (
-          <Button asChild variant="secondary" className="w-full">
+          <Button asChild variant="secondary" className="w-full sm:w-auto">
             <Link href={alt.href}>{alt.label}</Link>
           </Button>
         )}
-        <Button variant="ghost" className="w-full" onClick={onSecondary}>
+        <Button
+          variant="ghost"
+          className="w-full sm:ml-auto sm:w-auto"
+          onClick={onSecondary}
+        >
           {secondaryLabel}
         </Button>
       </div>
