@@ -29,7 +29,7 @@ import { orderModulesToCipl } from "@/lib/pdf/cipl";
 import { useDownloadCipl } from "@/components/packing/useDownloadCipl";
 import { CopyButton } from "./CopyButton";
 import { BookingAgreementDialog } from "./BookingAgreementDialog";
-import { useT } from "@/lib/i18n/LanguageProvider";
+import { useT, useLanguage } from "@/lib/i18n/LanguageProvider";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -106,6 +106,11 @@ export function ModuleHub() {
   const packingCode = effectivePackingCode({ answers, generatedPackingCode });
   const canSubmit = allModulesComplete(modules);
   const context = useOrderStore((s) => s.context);
+  const { locale } = useLanguage();
+  // the draft's last write, for the returning user
+  const lastSavedAt = useOrderStore(
+    (s) => s.orders.find((o) => o.id === s.activeDraftId)?.updatedAt ?? null,
+  );
   // the document needs sender/receiver + packages — an in-progress CI (e.g.
   // prefilled from a standalone list, owner still blank) is enough
   const pdfReady =
@@ -184,12 +189,26 @@ export function ModuleHub() {
               .replace("{n}", String(completeCount))
               .replace("{total}", String(MODULE_META.length))}
           </p>
-          <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-surface-3">
+          <div
+            role="progressbar"
+            aria-valuemin={0}
+            aria-valuemax={MODULE_META.length}
+            aria-valuenow={completeCount}
+            aria-label={t("order.hubProgress")
+              .replace("{n}", String(completeCount))
+              .replace("{total}", String(MODULE_META.length))}
+            className="mt-2 h-1.5 overflow-hidden rounded-full bg-surface-3"
+          >
             <div
               className="h-full rounded-full bg-brand transition-[width] duration-500 ease-out"
               style={{ width: `${(barCount / MODULE_META.length) * 100}%` }}
             />
           </div>
+          {lastSavedAt && completeCount > 0 && (
+            <p className="mt-2 text-xs text-muted-2">
+              {t("order.hubLastSaved").replace("{when}", formatRelative(lastSavedAt, locale))}
+            </p>
+          )}
         </div>
       </header>
 
@@ -202,9 +221,13 @@ export function ModuleHub() {
           </p>
           <div className="mt-1 flex items-center gap-2">
             {/* an identifier the customer will read out loud: mono, tabular (Numbers-Are-Mono) */}
-            <span className="font-mono text-base font-semibold tabular-nums text-foreground">
-              {bookingNumber ?? "–"}
-            </span>
+            {bookingNumber ? (
+              <span className="font-mono text-base font-semibold tabular-nums text-foreground">
+                {bookingNumber}
+              </span>
+            ) : (
+              <span className="text-sm text-muted">{t("order.bookingNumberPending")}</span>
+            )}
             {bookingNumber && <CopyButton value={bookingNumber} />}
           </div>
         </div>
@@ -309,7 +332,9 @@ export function ModuleHub() {
             </Card>
           );
           return locked ? (
-            <div key={m.id}>{Inner}</div>
+            <div key={m.id} aria-disabled="true" aria-describedby="hub-pickup-locked">
+              {Inner}
+            </div>
           ) : (
             <Link key={m.id} href={`/pesan/modul/${m.id}`} className="block">
               {Inner}
@@ -320,7 +345,7 @@ export function ModuleHub() {
 
       {/* pickup locked note */}
       {!pickupUnlocked && (
-        <p className="mt-2 flex items-center gap-1.5 text-xs text-muted-2">
+        <p id="hub-pickup-locked" className="mt-2 flex items-center gap-1.5 text-xs text-muted-2">
           <Lock className="size-3.5" /> {t("order.pickupLockedNote")}
         </p>
       )}
@@ -338,12 +363,13 @@ export function ModuleHub() {
           size="lg"
           className="w-full"
           disabled={!canSubmit}
+          aria-describedby={canSubmit ? undefined : "hub-submit-note"}
           onClick={() => setAgreeOpen(true)}
         >
           {t("order.finalCta")}
         </Button>
         {!canSubmit && (
-          <p className="mt-2 text-center text-xs text-muted-2">
+          <p id="hub-submit-note" className="mt-2 text-center text-xs text-muted-2">
             {t("order.finalDisabledNote")}
           </p>
         )}
@@ -360,4 +386,16 @@ export function ModuleHub() {
       />
     </div>
   );
+}
+
+/** "3 hari lalu" / "2 hours ago" from a timestamp, in the active locale. */
+function formatRelative(ts: number, locale: string): string {
+  const diff = Date.now() - ts;
+  const rtf = new Intl.RelativeTimeFormat(locale, { numeric: "auto" });
+  const min = Math.round(diff / 60000);
+  if (min < 1) return rtf.format(0, "minute");
+  if (min < 60) return rtf.format(-min, "minute");
+  const h = Math.round(min / 60);
+  if (h < 24) return rtf.format(-h, "hour");
+  return rtf.format(-Math.round(h / 24), "day");
 }

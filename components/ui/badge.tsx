@@ -11,10 +11,12 @@ const badgeVariants = cva(
         // daylight, and lime can never be the text colour.
         brand: "bg-brand-soft text-brand-ink border border-transparent",
         neutral: "bg-surface-3 text-muted border border-border",
-        success: "bg-success/15 text-success border border-success/25",
-        warning: "bg-warning/15 text-warning border border-warning/25",
-        info: "bg-info/15 text-info border border-info/25",
-        danger: "bg-danger/15 text-danger border border-danger/25",
+        // status tints carry the hue; the words stay ink so 12px text clears AA
+        // (status colour on a 15% tint measured 2.7–3.9:1), the icon keeps the hue
+        success: "bg-success/15 text-foreground border border-success/25 [&_svg]:text-success",
+        warning: "bg-warning/15 text-foreground border border-warning/25 [&_svg]:text-warning",
+        info: "bg-info/15 text-foreground border border-info/25 [&_svg]:text-info",
+        danger: "bg-danger/15 text-foreground border border-danger/25 [&_svg]:text-danger",
       },
     },
     defaultVariants: { variant: "neutral" },
