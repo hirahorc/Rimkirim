@@ -217,17 +217,18 @@ export function ClearanceOptions() {
                   }
                 }}
                 className={cn(
-                  "grid overflow-hidden rounded-lg border bg-background outline-none transition-[border-color,box-shadow,background-color] sm:row-span-full sm:grid-rows-subgrid",
+                  "grid overflow-hidden rounded-lg border bg-background outline-none transition-[border-color,background-color] sm:row-span-full sm:grid-rows-subgrid",
                   viewed !== k && "hidden sm:grid",
                   enabled && "cursor-pointer",
                   enabled &&
                     !isSelected &&
                     "border-border hover:border-border-strong",
                   // selection = ink outline + a whisper of lime; the lime check does the talking
-                  isSelected &&
-                    "border-foreground bg-brand-soft/15 ring-2 ring-foreground/10",
+                  isSelected && "border-foreground bg-brand-soft/15",
                   !enabled && "border-border bg-surface-2/60",
-                  "focus-visible:ring-2 focus-visible:ring-foreground/50",
+                  // keyboard focus sits OUTSIDE the card (offset outline) so it can
+                  // never be mistaken for the selected card's ink border
+                  "focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-foreground/60",
                 )}
               >
                 {/* card header = the radio */}
