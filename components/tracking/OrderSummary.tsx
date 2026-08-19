@@ -72,7 +72,7 @@ function SubGroup({
 }) {
   return (
     <div>
-      <p className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-muted">
+      <p className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-muted-2">
         {label}
       </p>
       <div className="divide-y divide-border">{children}</div>
@@ -116,7 +116,7 @@ function EmptyLine() {
   return <p className="py-2 text-sm text-muted-2">{t("order.tdNotFilled")}</p>;
 }
 
-/** Empty-string/null/undefined → em-dash, otherwise the string form. */
+/** Empty-string/null/undefined → en dash, otherwise the string form. */
 function val(x: unknown): string {
   return x === undefined || x === null || x === "" ? dash : String(x);
 }
@@ -185,7 +185,7 @@ export function OrderSummary({ order }: { order: Order }) {
         {/* the record is read-only, but a customer who spots a wrong address
             needs a door: the assistant, not a dead end */}
         {order.status !== "cancelled" && order.status !== "delivered" && (
-          <p className="text-xs leading-relaxed text-muted-2">
+          <p className="max-w-prose text-xs leading-relaxed text-muted-2">
             {t("order.tdWrongPre")}{" "}
             <a href={WA_URL} target="_blank" rel="noreferrer" className="link-mark">
               {t("order.tdWrongLink")}
@@ -439,7 +439,7 @@ function ItemsCard({ order }: { order: Order }) {
           ? [
               dims.weight > 0 && `${formatNumber(dims.weight)}kg`,
               (dims.length > 0 || dims.width > 0 || dims.height > 0) &&
-                `${dims.length}×${dims.width}×${dims.height}`,
+                `${dims.length} × ${dims.width} × ${dims.height}`,
               itemCount > 0 && `${itemCount} ${t("order.itItemsWord")}`,
               pkgValue > 0 && formatCurrency(pkgValue, currency),
             ]
