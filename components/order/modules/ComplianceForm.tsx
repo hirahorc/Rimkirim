@@ -11,7 +11,7 @@ import { Input, FieldError } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ModuleShell, useSaveModule, readModuleData, Field } from "./shared";
 
-interface DocSpec {
+export interface DocSpec {
   key: string;
   labelKey: string;
   required?: boolean;
@@ -21,7 +21,7 @@ interface DocSpec {
 }
 
 /** Back For Good (import into Indonesia) document set. */
-const BFG_DOCS: DocSpec[] = [
+export const BFG_DOCS: DocSpec[] = [
   { key: "ktp", labelKey: "order.coKtp", required: true },
   { key: "passport", labelKey: "order.coPassport", required: true },
   { key: "flightTicket", labelKey: "order.coFlightTicket", noteKey: "order.coBeforePickup" },
@@ -37,7 +37,7 @@ const BFG_DOCS: DocSpec[] = [
 ];
 
 /** Moving Abroad (export → destination country) document set. */
-const EXPORT_DOCS: DocSpec[] = [
+export const EXPORT_DOCS: DocSpec[] = [
   { key: "passport", labelKey: "order.coPassport", required: true },
   { key: "visa", labelKey: "order.coVisa", helpKey: "order.coVisaHelp", required: true },
   { key: "flightTicket", labelKey: "order.coFlightTicket", noteKey: "order.coBeforePickup" },

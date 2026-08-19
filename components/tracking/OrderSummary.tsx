@@ -16,6 +16,7 @@ import {
   totalChargeableWeight,
 } from "@/lib/utils/chargeable-weight";
 import { PACKAGING_TYPES, BUILDING_TYPES } from "@/components/order/module-options";
+import { BFG_DOCS, EXPORT_DOCS } from "@/components/order/modules/ComplianceForm";
 import {
   effectivePackingCode,
   type Order,
@@ -454,7 +455,7 @@ function ItemsCard({ order }: { order: Order }) {
                 <Row label={t("order.tdPhotos")}>
                   {p?.photos && Object.keys(p.photos).length > 0
                     ? t("order.tdUploaded")
-                    : t("order.tdMissing")}
+                    : t("order.tdMissingOptional")}
                 </Row>
                 {items.length > 0 && (
                   // a real table: columns align natively across header/body/
@@ -555,12 +556,23 @@ function ComplianceCard({ order }: { order: Order }) {
     | undefined;
   const docs = data?.docs ?? {};
   const isMa = order.context?.service === "moving-abroad";
-  const orderKeys = isMa
-    ? ["passport", "visa", "flightTicket", "ktp"]
-    : ["ktp", "passport", "flightTicket", "enpwp", "skp", "proofOfStay"];
-  const entries = orderKeys
-    .map((key) => ({ key, label: docLabelKey(key) }))
+  // the same spec the form uses, so the record shows exactly the docs this
+  // route asks for (Passenger Goods never sees SKP / Proof of Stay)
+  const specs = (isMa ? EXPORT_DOCS : BFG_DOCS).filter(
+    (d) => !d.personalOnly || order.clearance === "personal",
+  );
+  const entries = specs
+    .map((d) => ({ key: d.key, label: docLabelKey(d.key), spec: d }))
     .filter((e) => e.label);
+  // what an empty slot means, in words: required now, due later, or optional
+  const emptyWord = (spec: (typeof specs)[number]) =>
+    spec.required
+      ? t("order.tdMissing")
+      : spec.noteKey === "order.coBeforePickup"
+        ? t("order.tdLaterPickup")
+        : spec.noteKey === "order.coBeforeClearance"
+          ? t("order.tdLaterClearance")
+          : t("order.tdMissingOptional");
 
   // The fixed doc checklist is the section's primary hairline row list; the
   // free-form "other docs" is a real sub-group beneath it — same eyebrow + spaced
@@ -570,12 +582,14 @@ function ComplianceCard({ order }: { order: Order }) {
       <SectionTitle>{t("order.modCompliance")}</SectionTitle>
       <div className="mt-3">
         <div className="divide-y divide-border">
-          {entries.map(({ key, label }) => (
+          {entries.map(({ key, label, spec }) => (
             <Row key={key} label={t(label!)}>
               {docs[key] ? (
                 <span className="font-mono text-xs text-muted">{docs[key]}</span>
               ) : (
-                <span className="text-muted-2">{t("order.tdMissing")}</span>
+                <span className={cn(spec.required ? "text-warning" : "text-muted-2")}>
+                  {emptyWord(spec)}
+                </span>
               )}
             </Row>
           ))}
@@ -670,13 +684,11 @@ function PickupCard({
               {buildingLabel(t, data.buildingType)}
             </Row>
           )}
-          {showAccessQs && (
-            <>
-              <Row label={t("order.puFreightElevator")}>
-                {yesNo(data?.freightElevator)}
-              </Row>
-              <Row label={t("order.puReceptionist")}>{yesNo(data?.receptionist)}</Row>
-            </>
+          {showAccessQs && data?.freightElevator != null && (
+            <Row label={t("order.puFreightElevator")}>{yesNo(data.freightElevator)}</Row>
+          )}
+          {showAccessQs && data?.receptionist != null && (
+            <Row label={t("order.puReceptionist")}>{yesNo(data.receptionist)}</Row>
           )}
           {data?.address && <Row label={t("order.puAddress")}>{data.address}</Row>}
           {data?.date && <Row label={t("order.puDate")}>{date}</Row>}
