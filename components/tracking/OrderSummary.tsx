@@ -460,20 +460,21 @@ function ItemsCard({ order }: { order: Order }) {
                   // a real table: columns align natively across header/body/
                   // footer (the old per-row grids sized independently and drift
                   // as soon as a number gets wider); numeric cells never wrap.
-                  <div className="mt-1.5 overflow-hidden rounded-md border border-border">
+                  // same ledger language as the rows above: hairlines, no box
+                  <div className="mt-1 border-t border-border">
                     <table className="w-full border-collapse text-sm">
                       <thead>
-                        <tr className="bg-surface-2 text-xs text-muted-2">
-                          <th scope="col" className="px-3 py-1.5 text-left font-medium">
+                        <tr className="text-xs text-muted-2">
+                          <th scope="col" className="py-1.5 pr-3 text-left font-medium">
                             {t("order.itColDescription")}
                           </th>
-                          <th scope="col" className="px-3 py-1.5 text-right font-medium">
+                          <th scope="col" className="px-3 py-1.5 text-right font-medium last:pr-0">
                             {t("order.itColQty")}
                           </th>
-                          <th scope="col" className="whitespace-nowrap px-3 py-1.5 text-right font-medium">
+                          <th scope="col" className="whitespace-nowrap px-3 py-1.5 text-right font-medium last:pr-0">
                             {t("order.itColValue")}
                           </th>
-                          <th scope="col" className="px-3 py-1.5 text-right font-medium">
+                          <th scope="col" className="px-3 py-1.5 text-right font-medium last:pr-0">
                             {t("order.itColTotal")}
                           </th>
                         </tr>
@@ -481,14 +482,14 @@ function ItemsCard({ order }: { order: Order }) {
                       <tbody>
                         {items.map((it, j) => (
                           <tr key={j} className="border-t border-border align-top">
-                            <td className="px-3 py-1.5">{val(it?.name)}</td>
+                            <td className="py-1.5 pr-3">{val(it?.name)}</td>
                             <td className="px-3 py-1.5 text-right tabular-nums text-muted">
                               {val(it?.quantity)}
                             </td>
                             <td className="whitespace-nowrap px-3 py-1.5 text-right font-mono tabular-nums text-muted">
                               {formatCurrency(Number(it?.value) || 0, currency)}
                             </td>
-                            <td className="whitespace-nowrap px-3 py-1.5 text-right font-mono font-medium tabular-nums">
+                            <td className="whitespace-nowrap py-1.5 pl-3 text-right font-mono font-medium tabular-nums">
                               {formatCurrency(
                                 (Number(it?.value) || 0) * (Number(it?.quantity) || 0),
                                 currency,
@@ -498,14 +499,11 @@ function ItemsCard({ order }: { order: Order }) {
                         ))}
                       </tbody>
                       <tfoot>
-                        <tr className="border-t border-border bg-surface-2">
-                          <td
-                            colSpan={3}
-                            className="px-3 py-1.5 text-right text-xs uppercase tracking-wide text-muted-2"
-                          >
+                        <tr className="border-t border-border">
+                          <td colSpan={3} className="px-3 py-1.5 text-right text-xs text-muted-2">
                             {t("order.itColTotal")}
                           </td>
-                          <td className="whitespace-nowrap px-3 py-1.5 text-right font-mono text-sm font-medium tabular-nums">
+                          <td className="whitespace-nowrap py-1.5 pl-3 text-right font-mono text-sm font-medium tabular-nums">
                             {formatCurrency(pkgValue, currency)}
                           </td>
                         </tr>
@@ -521,26 +519,17 @@ function ItemsCard({ order }: { order: Order }) {
       {packages.length > 0 && (
         // totals footer: darker labels + heavier values so the shipment summary
         // reads as the closing line of the ledger, not one more package row
-        <div className="space-y-2 py-3">
-          <div className="flex items-center justify-between gap-4">
-            <span className="text-xs text-muted">{t("order.itTotalCw")}</span>
-            <span className="text-sm font-medium tabular-nums">
-              {formatNumber(totalCw, 1)} kg
-            </span>
-          </div>
-          <div className="flex items-center justify-between gap-4">
-            <span className="text-xs text-muted">{t("order.itTotalValue")}</span>
-            <span className="font-mono text-sm font-medium tabular-nums">
-              {formatCurrency(totalValue, currency)}
-            </span>
-          </div>
+        <div className="!border-t-2 !border-t-foreground/80 divide-y divide-border pt-1">
+          <Row label={<span className="text-muted">{t("order.itTotalCw")}</span>}>
+            <span className="font-medium">{formatNumber(totalCw, 1)} kg</span>
+          </Row>
+          <Row label={<span className="text-muted">{t("order.itTotalValue")}</span>}>
+            <span className="font-mono font-medium">{formatCurrency(totalValue, currency)}</span>
+          </Row>
           {totalPrice > 0 && (
-            <div className="flex items-center justify-between gap-4">
-              <span className="text-xs text-muted">{t("order.itTotalPrice")}</span>
-              <span className="font-mono text-sm font-semibold tabular-nums text-foreground">
-                {formatIDR(totalPrice)}
-              </span>
-            </div>
+            <Row label={<span className="text-muted">{t("order.itTotalPrice")}</span>}>
+              <span className="font-mono font-semibold text-foreground">{formatIDR(totalPrice)}</span>
+            </Row>
           )}
         </div>
       )}
