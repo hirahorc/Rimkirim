@@ -543,8 +543,16 @@ const id = {
     foreignerCta: "Ke halaman relokasi WNA",
     // Phase 2 — clearance
     clEligibleNote: "Kamu memenuhi syarat",
+    clEligibleFor: "Kamu memenuhi syarat untuk {route}",
     clEyebrow: "Berdasarkan jawabanmu",
-    clTitle: "Ini pendekatan customs clearance yang paling cocok untukmu",
+    clTitle: "Kamu bisa pilih salah satu dari dua jalur ini",
+    clTitleSole: "Jalur yang tersedia untukmu",
+    clTipSkp:
+      "SKP (Surat Keterangan Pindah) diterbitkan KBRI/KJRI sebagai bukti kamu pindah kembali ke Indonesia.",
+    clTipValueCap:
+      "Total nilai barang bekas pribadi yang bebas pajak. Di atas angka ini, kelebihannya dihitung pajaknya oleh Bea Cukai.",
+    clTipWindow:
+      "Rentang waktu barang boleh tiba di Indonesia dihitung dari tanggal kedatanganmu, sesuai tiket/boarding pass.",
     clFooter:
       "Rimkirim yang mengurus proses bea cukainya dan menerapkan aturan yang paling sesuai dengan dokumenmu.",
     clPersonalTitle: "Barang Pindahan",
@@ -1739,8 +1747,16 @@ const en: Messages = {
       "The Back For Good flow is for Indonesian citizens. For foreigner relocation to Indonesia, we have a dedicated service.",
     foreignerCta: "Go to foreigner relocation",
     clEligibleNote: "You're eligible",
+    clEligibleFor: "You're eligible for {route}",
     clEyebrow: "Based on your answers",
-    clTitle: "Here is the most suitable customs clearance approach for you",
+    clTitle: "You can pick either of these two routes",
+    clTitleSole: "The route available to you",
+    clTipSkp:
+      "The SKP (relocation certificate) is issued by the Indonesian embassy (KBRI/KJRI) as proof you're moving back to Indonesia.",
+    clTipValueCap:
+      "The total value of used personal items that ships tax-free. Above this, Customs taxes the excess.",
+    clTipWindow:
+      "The period your goods may arrive in Indonesia, counted from your own arrival date on the ticket / boarding pass.",
     clFooter:
       "Rimkirim handles the customs process and applies the regulation that best fits your documents.",
     clPersonalTitle: "Personal Belongings",
