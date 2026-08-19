@@ -10,7 +10,6 @@ import {
   ChevronRight,
   FileText,
   Hash,
-  Sparkles,
   PartyPopper,
   Download,
   Loader2,
@@ -234,10 +233,9 @@ export function ModuleHub() {
         <div className="px-4 py-3 sm:px-5">
           <p className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-muted-2">
             <FileText className="size-3.5" /> {t("order.packingListTitle")}
-            {packingCode && (
-              <Badge variant="brand">
-                <Sparkles className="size-3" /> {t("order.packingListReady")}
-              </Badge>
+            {/* "created" only when we made it; a code the user typed is just their code */}
+            {packingCode && !answers.packingCode?.trim() && (
+              <Badge variant="brand">{t("order.packingListReady")}</Badge>
             )}
           </p>
           {packingCode ? (
