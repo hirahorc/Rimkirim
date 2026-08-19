@@ -320,9 +320,12 @@ export function ModuleHub() {
                   </span>
                 )}
               </div>
-              <span className={cn("hidden sm:contents")}>
-                <StatusBadge status={status} locked={locked} justDone={m.id === justDone} />
-              </span>
+              {/* the next-up card's Continue pill already says its status */}
+              {!isNext && (
+                <span className="hidden sm:contents">
+                  <StatusBadge status={status} locked={locked} justDone={m.id === justDone} />
+                </span>
+              )}
               {!locked &&
                 (isNext ? (
                   <span className="inline-flex shrink-0 items-center gap-0.5 rounded-full bg-brand py-1 pl-2.5 pr-1.5 text-xs font-semibold text-brand-ink">
