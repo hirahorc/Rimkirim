@@ -249,13 +249,13 @@ export function ModuleHub() {
             <p className="mt-1 text-sm text-muted">{t("order.packingListPending")}</p>
           )}
         </div>
-        <div className="flex items-center px-4 py-3 sm:px-5">
+        <div className="flex flex-col justify-center gap-1 px-4 py-3 sm:px-5">
           <Button
             variant="secondary"
             size="sm"
             className="w-full sm:w-auto"
             disabled={!pdfReady || pdfBusy}
-            title={pdfReady ? undefined : t("order.generatePdfNote")}
+            aria-describedby={pdfReady ? undefined : "hub-pdf-note"}
             onClick={() =>
               downloadPdf(
                 orderModulesToCipl({
@@ -275,6 +275,11 @@ export function ModuleHub() {
             )}
             {pdfBusy ? t("pl.downloading") : t("order.generatePdf")}
           </Button>
+          {!pdfReady && (
+            <p id="hub-pdf-note" className="max-w-[12rem] text-xs leading-snug text-muted-2">
+              {t("order.generatePdfNote")}
+            </p>
+          )}
         </div>
       </Card>
 
@@ -287,7 +292,8 @@ export function ModuleHub() {
             <Card
               className={cn(
                 "flex items-center gap-4 p-4 transition-colors",
-                locked && "opacity-60",
+                // muted via tokens, not opacity: the badge and note must stay AA
+                locked && "border-border/70 bg-surface-2/60 text-muted",
                 // the next card to fill gets the lime frame (the same "this
                 // one" signal the cheapest rate card uses)
                 !locked && (isNext ? "border-brand/50" : "hover:border-border-strong"),
@@ -306,7 +312,7 @@ export function ModuleHub() {
                 <m.icon className="size-5" />
               </span>
               <div className="min-w-0 flex-1">
-                <p className="font-medium">{t(m.titleKey)}</p>
+                <p className={cn("font-medium", locked && "text-muted")}>{t(m.titleKey)}</p>
                 {/* the description is the only explanation of the module: let it
                     wrap (2 lines) instead of truncating on the primary device */}
                 <p className="line-clamp-2 text-sm leading-snug text-muted sm:truncate">
