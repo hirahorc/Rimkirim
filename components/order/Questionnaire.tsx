@@ -365,7 +365,7 @@ export function Questionnaire() {
         eyebrow={t("order.qOutcomeEyebrow")}
         title={t("order.ineligibleTitle")}
         body={t("order.ineligibleBody")}
-        echo={`${t("order.qYourAnswer")}: ${t("order.no")} · ${t("order.qA")}`}
+        echo={`${t("order.qYourAnswer")}: ${t("order.no")}`}
         primary={{
           label: t("order.ineligibleCta"),
           href: WA_URL,
@@ -382,7 +382,7 @@ export function Questionnaire() {
         eyebrow={t("order.qOutcomeEyebrow")}
         title={t("order.foreignerTitle")}
         body={t("order.foreignerBody")}
-        echo={`${t("order.qYourAnswer")}: ${t("order.foreigner")} · ${t("order.qB")}`}
+        echo={`${t("order.qYourAnswer")}: ${t("order.foreigner")}`}
         primary={{
           label: t("order.foreignerCta"),
           href: "/expat-relocation",
@@ -549,7 +549,7 @@ export function Questionnaire() {
                       { value: false, label: t("order.no") },
                     ]}
                   />
-                  {c !== undefined && laneReadout}
+                  {c !== undefined && d === undefined && laneReadout}
                 </Question>
 
                 {/* one question at a time: the next card appears once this one is answered */}
@@ -602,9 +602,16 @@ export function Questionnaire() {
           {/* the action block steps aside when the outcome card has taken over */}
           <div className={cn("mt-6", outcome && "hidden")}>
             {canSubmit && !offRamp && (
-              <p className="mb-2 flex items-center justify-center gap-1.5 text-center text-xs font-medium text-foreground">
+              <p className="mx-auto mb-3 flex w-full flex-wrap items-center justify-center gap-x-1.5 gap-y-0.5 rounded-lg bg-surface-2 px-4 py-2.5 text-center text-sm font-medium text-foreground">
                 <CheckCircle2 className="size-3.5 text-success" />{" "}
                 {t("order.qEligibleReadout")}
+                <span className="block w-full font-normal text-muted">
+                  {isExport
+                    ? ""
+                    : c === true && d === true
+                      ? t("order.qEligibleLanePersonal")
+                      : t("order.qEligibleLanePassenger")}
+                </span>
               </p>
             )}
             {!canSubmit && (
@@ -638,17 +645,19 @@ export function Questionnaire() {
                   : t("order.seeResult")}
               <ArrowRight className="size-4" />
             </Button>
-            <p className="mt-3 text-center text-xs leading-relaxed text-muted-2">
-              {t("order.qAgreePre")}{" "}
-              <Link href="/terms" className="link-mark">
-                {t("footer.legalTerms")}
-              </Link>{" "}
-              {t("order.qAgreeMid")}{" "}
-              <Link href="/privacy" className="link-mark">
-                {t("footer.legalPrivacy")}
-              </Link>
-              {t("order.qAgreePost")}
-            </p>
+            {canSubmit && !offRamp && (
+              <p className="mt-3 text-center text-xs leading-relaxed text-muted-2">
+                {t("order.qAgreePre")}{" "}
+                <Link href="/terms" className="link-mark">
+                  {t("footer.legalTerms")}
+                </Link>{" "}
+                {t("order.qAgreeMid")}{" "}
+                <Link href="/privacy" className="link-mark">
+                  {t("footer.legalPrivacy")}
+                </Link>
+                {t("order.qAgreePost")}
+              </p>
+            )}
           </div>
         </div>
         {outcomeCard}
