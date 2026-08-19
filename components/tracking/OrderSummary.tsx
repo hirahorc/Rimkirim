@@ -374,10 +374,10 @@ function ItemsCard({ order }: { order: Order }) {
   const totalPrice = (order.selectedRate?.perKg ?? 0) * totalCw;
 
   // Collapse packages so a many-package shipment isn't a long read-only wall.
-  // Auto default: ≤3 open, >3 collapsed to summaries (the totals below never
-  // collapse — they are what the collapsing is for). Read-only, so no
-  // validation/error-expand concern the order form has to handle.
-  const manyPackages = packages.length > 3;
+  // Auto default: one package opens, two or more collapse to their one-line
+  // summaries (the totals below never collapse — they are what the collapsing
+  // is for). Read-only, so no validation/error-expand concern here.
+  const manyPackages = packages.length > 1;
   const [openIdx, setOpenIdx] = React.useState<Set<number>>(() =>
     manyPackages ? new Set() : new Set(packages.map((_, i) => i)),
   );
@@ -441,6 +441,7 @@ function ItemsCard({ order }: { order: Order }) {
               (dims.length > 0 || dims.width > 0 || dims.height > 0) &&
                 `${dims.length}×${dims.width}×${dims.height}`,
               itemCount > 0 && `${itemCount} ${t("order.itItemsWord")}`,
+              pkgValue > 0 && formatCurrency(pkgValue, currency),
             ]
               .filter(Boolean)
               .join(" · ")
@@ -462,9 +463,9 @@ function ItemsCard({ order }: { order: Order }) {
               <span className="shrink-0 text-sm font-medium text-foreground">
                 {t("order.itPackageN")} {i + 1}
               </span>
-              {!open && (
-                <span className="truncate text-xs text-muted-2">{summary}</span>
-              )}
+              {/* the one-line summary stays put when open, so the line you
+                  scanned is the line you expanded */}
+              <span className="truncate text-xs text-muted-2">{summary}</span>
             </button>
             {open && (
               <div className="mt-1">
