@@ -105,8 +105,10 @@ export function ClearanceOptions() {
     const i = enabledKinds.indexOf(from);
     const next =
       enabledKinds[(i + dir + enabledKinds.length) % enabledKinds.length];
-    cardRefs.current[next]?.focus();
     pick(next);
+    // on small screens the target card is display:none until `viewed` re-renders,
+    // so focus it on the next frame rather than synchronously
+    requestAnimationFrame(() => cardRefs.current[next]?.focus());
   };
 
   return (
@@ -150,7 +152,8 @@ export function ClearanceOptions() {
               key={k}
               type="button"
               aria-pressed={viewed === k}
-              onClick={() => setViewed(k)}
+              // one model on mobile: the pill both shows and (when allowed) chooses the route
+              onClick={() => pick(k)}
               className={cn(
                 "flex items-center justify-center gap-1.5 rounded-full px-3 py-2 text-sm font-medium transition-colors",
                 viewed === k ? "bg-foreground text-background" : "text-muted",
