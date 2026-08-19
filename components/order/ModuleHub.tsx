@@ -185,11 +185,14 @@ export function ModuleHub() {
         {/* the customs route chosen one step ago, kept in view; it is one-way,
             so it is stated, not offered for editing */}
         {clearance && context?.service !== "moving-abroad" && (
-          <p className="mt-2 text-sm text-foreground">
-            <span className="text-muted">{t("order.hubRouteLabel")}</span>{" "}
-            <span className="font-medium">
+          <p className="mt-3 text-sm">
+            <span className="text-xs font-medium uppercase tracking-[0.04em] text-muted-2">
+              {t("order.hubRouteLabel")}
+            </span>{" "}
+            <span className="font-medium text-foreground">
               {t(clearance === "personal" ? "order.clPersonalTitle" : "order.clPassengerTitle")}
-            </span>
+            </span>{" "}
+            <span className="text-muted-2">({t("order.hubRouteFixed")})</span>
           </p>
         )}
         {/* the user's progress, said in numbers and shown as a filling bar */}

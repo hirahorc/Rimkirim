@@ -3,7 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Lock, ArrowRight, Check } from "lucide-react";
+import { Lock, Check } from "lucide-react";
 import {
   useOrderStore,
   allowedClearance,
@@ -280,12 +280,15 @@ export function ClearanceOptions() {
       enabled && !isSelected && "border-border hover:border-border-strong",
       // selection = ink outline + a whisper of lime; the lime check does the talking
       isSelected && "border-foreground bg-brand-soft/15",
-      !enabled && "border-border bg-surface-2/60",
+      !enabled && "border-border bg-surface-2",
       // keyboard focus on the radio draws a ring OUTSIDE the whole card, so it
       // can never be mistaken for the selected card's ink border
       "has-[[role=radio]:focus-visible]:outline-2 has-[[role=radio]:focus-visible]:outline-offset-4 has-[[role=radio]:focus-visible]:outline-solid has-[[role=radio]:focus-visible]:outline-foreground/60",
     );
   };
+
+  // which phone column is chosen (-1 = none)
+  const selectedCol = selected ? ordered.indexOf(selected) : -1;
 
   const eligibleLine = soleAvailable
     ? t("order.clEligibleFor").replace(
@@ -318,10 +321,16 @@ export function ClearanceOptions() {
           </h1>
           {/* who does what, and a way back, in one line */}
           <p className="mx-auto mt-3 max-w-xl text-sm leading-relaxed text-muted">
-            {t("order.clFooter")}{" "}
-            <Link href="/pesan" className="link-mark whitespace-nowrap">
-              {t("order.clReviewAnswers")}
-            </Link>
+            {t("order.clFooter")}
+            {/* one way back per state: the locked card carries its own link */}
+            {!soleAvailable && (
+              <>
+                {" "}
+                <Link href="/pesan" className="link-mark whitespace-nowrap">
+                  {t("order.clReviewAnswers")}
+                </Link>
+              </>
+            )}
           </p>
         </header>
 
@@ -329,7 +338,11 @@ export function ClearanceOptions() {
         <div
           role="radiogroup"
           aria-label={t("order.clTitle")}
-          className="hidden gap-4 sm:grid sm:grid-cols-2 sm:grid-rows-[auto_repeat(5,auto)]"
+          className={cn(
+            "hidden gap-4 sm:grid sm:grid-rows-[auto_auto_repeat(5,auto)]",
+            // sole state: the route you can take gets the wider desk
+            soleAvailable ? "sm:grid-cols-[3fr_2fr]" : "sm:grid-cols-2",
+          )}
         >
           {ordered.map((k) => {
             const enabled = allowed[k];
@@ -342,8 +355,10 @@ export function ClearanceOptions() {
                   "grid sm:row-span-full sm:grid-rows-subgrid",
                 )}
               >
+                {radioHead(k, "d")}
+                {/* the locked reason has its own subgrid row, so the live
+                  card's header never stretches to match it */}
                 <div className="border-b border-border">
-                  {radioHead(k, "d")}
                   {!enabled &&
                     lockedReason(k, "d", "-mt-2 px-5 pb-5 sm:px-6 sm:pb-6")}
                 </div>
@@ -417,6 +432,7 @@ export function ClearanceOptions() {
                     )}
                   >
                     {isSel && <Check className="size-3.5 shrink-0" strokeWidth={3} />}
+                    {!allowed[k] && <Lock className="size-3 shrink-0" strokeWidth={2.5} />}
                     {t(`${PREFIX[k]}Title`)}
                   </button>
                 );
@@ -426,28 +442,34 @@ export function ClearanceOptions() {
               <div
                 key={row.key}
                 className={cn(
-                  "px-4 pb-3 pt-3",
+                  "relative px-4 pb-3 pt-3",
                   ri < ROWS.length - 1 && "border-b border-border/70",
                   GROUP_STARTS.prepare === ri && "pt-4",
                   GROUP_STARTS.prepare === ri + 1 && "border-border",
                 )}
               >
-                {groupEyebrow(ri)}
-                {rowLabel(row)}
-                <div className="-mx-4 grid grid-cols-2">
-                  {ordered.map((k) => (
-                    <div
-                      key={k}
-                      className={cn(
-                        // cells reach the row's bottom edge so the chosen
-                        // column reads as one continuous wash
-                        "-mb-3 px-4 pb-3 pt-1",
-                        allowed[k] && selected === k && "bg-brand-soft/15",
-                      )}
-                    >
-                      {cell(k, row)}
-                    </div>
-                  ))}
+                {/* the wash is one half-width layer behind the whole row, so
+                  the chosen column reads as a single continuous column from
+                  the header to the last row, labels included */}
+                {selectedCol !== -1 && (
+                  <div
+                    aria-hidden
+                    className={cn(
+                      "pointer-events-none absolute inset-y-0 w-1/2 bg-brand-soft/15",
+                      selectedCol === 0 ? "left-0" : "right-0",
+                    )}
+                  />
+                )}
+                <div className="relative">
+                  {groupEyebrow(ri)}
+                  {rowLabel(row)}
+                  <div className="-mx-4 grid grid-cols-2">
+                    {ordered.map((k) => (
+                      <div key={k} className="px-4">
+                        {cell(k, row)}
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
             ))}
@@ -463,36 +485,33 @@ export function ClearanceOptions() {
               "sticky bottom-0 -mx-4 border-t border-border bg-background/95 px-4 py-3 backdrop-blur sm:static sm:mx-0 sm:border-0 sm:bg-transparent sm:px-0 sm:py-0 sm:backdrop-blur-none",
           )}
         >
-          {/* say why the button is grey; the button itself is disabled, so the
-              hint is the only thing a mouse user gets */}
-          {!selected && (
-            <p
-              id="cl-pick-hint"
-              role="status"
-              className="text-xs text-muted-2 sm:text-right"
-            >
-              {t("order.clPickHint")}
-            </p>
-          )}
+          {/* the honest part of the commit, read BEFORE the thumb lands: this
+              gate is one-way, said at body size in ink, not whispered */}
+          <p id="cl-oneway" className="text-sm leading-snug text-foreground sm:text-right">
+            <span className="font-semibold">{t("order.clOneWayLead")}</span>{" "}
+            <span className="text-muted">{t("order.clOneWay")}</span>
+          </p>
+          {/* before a pick the button wears the hint itself on a neutral coat,
+              so the loudest thing on the page is never something you can't press */}
           <Button
-            aria-describedby={selected ? "cl-oneway" : "cl-pick-hint"}
+            aria-describedby="cl-oneway"
             size="lg"
-            className="w-full sm:w-auto sm:min-w-56"
+            className="w-full disabled:bg-surface-3 disabled:text-muted disabled:opacity-100 sm:w-auto sm:min-w-56"
             disabled={!selected}
             onClick={onContinue}
           >
-            {selected
-              ? t("order.clUseRoute").replace(
+            {selected ? (
+              <>
+                <Lock className="size-4" strokeWidth={2.5} />
+                {t("order.clUseRoute").replace(
                   "{route}",
                   t(`${PREFIX[selected]}Title`),
-                )
-              : t("order.continue")}{" "}
-            <ArrowRight className="size-4" />
+                )}
+              </>
+            ) : (
+              t("order.clPickHint")
+            )}
           </Button>
-          {/* the honest part of the commit: this gate is one-way */}
-          <p id="cl-oneway" className="text-xs text-muted-2 sm:text-right">
-            {t("order.clOneWay")}
-          </p>
           <p role="status" aria-live="polite" className="sr-only">
             {lockedNudge}
           </p>
