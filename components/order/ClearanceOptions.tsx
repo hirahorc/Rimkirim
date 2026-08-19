@@ -82,8 +82,15 @@ export function ClearanceOptions() {
       <header className="mb-8 text-center">
         {/* the questionnaire's positive outcome, said out loud — the negative
             outcomes get a full card, so passing deserves at least a sentence */}
-        <p className="mb-2 inline-flex items-center gap-1.5 text-sm font-medium text-success">
-          <Check className="size-4" strokeWidth={3} />
+        {/* success is carried by the lime-filled check (Marker Rule), the words stay in
+            ink: #16a34a text on white is only 3.3:1 */}
+        <p className="mb-2 inline-flex items-center gap-2 text-sm font-medium text-foreground">
+          <span
+            aria-hidden
+            className="grid size-5 place-items-center rounded-full bg-brand text-brand-ink"
+          >
+            <Check className="size-3" strokeWidth={3.5} />
+          </span>
           {t("order.clEligibleNote")}
         </p>
         <p className="text-sm font-medium uppercase tracking-wide text-muted-2">
