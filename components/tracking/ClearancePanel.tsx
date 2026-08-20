@@ -191,7 +191,7 @@ export function ClearancePanel({ order }: { order: Order }) {
             <FileCheck2 /> {t("order.clConfirmBarpinCta")}
           </Button>
           <Button
-            variant="outline"
+            variant="secondary"
             className="flex-1"
             onClick={() => {
               requestBarpinRevision(order.id);

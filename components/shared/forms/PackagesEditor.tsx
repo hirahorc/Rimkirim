@@ -23,6 +23,7 @@ import { Input } from "@/components/ui/input";
 import { SelectField } from "@/components/ui/select-field";
 import { InfoTip } from "@/components/ui/tooltip";
 import { Field } from "./Field";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils/cn";
 
 const PHOTO_KEYS = ["weight", "length", "width", "height"] as const;
@@ -213,13 +214,14 @@ export function PackagesEditor<T extends FieldValues & ItemsData>({
         </div>
       ))}
 
-      <button
+      <Button
         type="button"
+        variant="dashed"
         onClick={() => append(structuredClone(emptyPackage))}
-        className="inline-flex items-center gap-2 rounded-sm border border-dashed border-border-strong px-3 py-2 text-sm text-muted transition-colors hover:border-border-strong hover:text-foreground"
+        className="self-start"
       >
-        <Plus className="size-4" /> {t("order.itAddPackage")}
-      </button>
+        <Plus /> {t("order.itAddPackage")}
+      </Button>
 
       {/* currency — demoted below the packages: it is a customs-declaration
           detail, not the reason the user came to this page */}

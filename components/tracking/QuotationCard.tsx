@@ -273,7 +273,7 @@ export function QuotationCard({ order }: { order: Order }) {
             >
               <CheckCircle2 /> {t("order.quApprove")}
             </Button>
-            <Button asChild variant="outline" className="w-full">
+            <Button asChild variant="secondary" className="w-full">
               <a href={WA_URL} target="_blank" rel="noreferrer">
                 <MessageCircle /> {t("order.quContact")}
               </a>

@@ -8,6 +8,7 @@ import { Menu, X, LogOut, Package, ClipboardList } from "lucide-react";
 import { toast } from "sonner";
 import { Logo } from "./Logo";
 import { Button } from "@/components/ui/button";
+import { IconPillButton } from "@/components/ui/icon-pill-button";
 import { useAuthStore, useCurrentUser } from "@/lib/store/useAuthStore";
 import { useLoginModal } from "@/lib/store/useLoginModal";
 import { useT } from "@/lib/i18n/LanguageProvider";
@@ -35,13 +36,9 @@ export function MobileNav() {
   return (
     <Dialog.Root open={open} onOpenChange={setOpen}>
       <Dialog.Trigger asChild>
-        <button
-          type="button"
-          aria-label={t("nav.menu")}
-          className="tap-target relative grid size-9 place-items-center rounded-full border border-border bg-surface-2 text-muted transition-colors hover:text-foreground lg:hidden"
-        >
+        <IconPillButton aria-label={t("nav.menu")} className="lg:hidden">
           <Menu className="size-4" />
-        </button>
+        </IconPillButton>
       </Dialog.Trigger>
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 z-50 bg-foreground/25 backdrop-blur-sm data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0" />

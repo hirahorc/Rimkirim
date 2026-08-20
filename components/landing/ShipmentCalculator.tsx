@@ -332,13 +332,14 @@ export function ShipmentCalculator() {
               <FieldError>{t(errors.packages.message)}</FieldError>
             )}
 
-            <button
+            <Button
               type="button"
+              variant="dashed"
               onClick={() => append({ ...emptyPackage })}
-              className="mt-3 inline-flex items-center gap-2 rounded-sm border border-dashed border-border-strong px-3 py-2 text-sm text-muted transition-colors hover:border-border-strong hover:text-foreground"
+              className="mt-3 self-start"
             >
-              <Plus className="size-4" /> {t("calc.tambahPaket")}
-            </button>
+              <Plus /> {t("calc.tambahPaket")}
+            </Button>
           </div>
         )}
 

@@ -370,16 +370,12 @@ function FormBody({
               size="lg"
               variant="secondary"
               className="sm:flex-1"
-              disabled={busy}
+              loading={busy}
               onClick={() => {
                 wantsPdf.current = true;
               }}
             >
-              {busy ? (
-                <Loader2 className="size-4 animate-spin" />
-              ) : (
-                <Download className="size-4" />
-              )}
+              {!busy && <Download className="size-4" />}
               {busy ? t("pl.downloading") : t("pl.saveAndDownload")}
             </Button>
           </div>

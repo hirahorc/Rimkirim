@@ -160,13 +160,16 @@ export function ComplianceForm() {
                   )}
                 />
               </div>
-              <button
+              <Button
                 type="button"
+                variant="ghost"
+                size="icon"
                 onClick={() => remove(i)}
-                className="grid size-11 shrink-0 place-items-center rounded-md text-muted transition-colors hover:text-danger"
+                aria-label={t("order.itRemove")}
+                className="size-11 shrink-0 hover:text-danger"
               >
-                <Trash2 className="size-4" />
-              </button>
+                <Trash2 />
+              </Button>
             </div>
           ))}
           <button

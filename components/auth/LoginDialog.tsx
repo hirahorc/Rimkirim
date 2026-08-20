@@ -229,7 +229,7 @@ function EmailStep({
       <StepHeading title={t("auth.title")} subtitle={t("auth.subtitle")} />
       <Button
         type="button"
-        variant="outline"
+        variant="secondary"
         size="lg"
         className="w-full"
         onClick={onGoogle}

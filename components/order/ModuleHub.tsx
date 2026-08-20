@@ -12,7 +12,6 @@ import {
   Hash,
   PartyPopper,
   Download,
-  Loader2,
 } from "lucide-react";
 import {
   useOrderStore,
@@ -275,7 +274,8 @@ export function ModuleHub() {
             variant="secondary"
             size="sm"
             className="w-full sm:w-auto"
-            disabled={!pdfReady || pdfBusy}
+            loading={pdfBusy}
+            disabled={!pdfReady}
             aria-describedby={!pdfReady && packingCode ? "hub-pdf-note" : undefined}
             onClick={() =>
               downloadPdf(
@@ -289,11 +289,7 @@ export function ModuleHub() {
               )
             }
           >
-            {pdfBusy ? (
-              <Loader2 className="size-3.5 animate-spin" />
-            ) : (
-              <Download className="size-3.5" />
-            )}
+            {!pdfBusy && <Download className="size-3.5" />}
             {pdfBusy ? t("pl.downloading") : t("order.generatePdf")}
           </Button>
           {/* the packing-list cell already explains the gate while no code exists */}

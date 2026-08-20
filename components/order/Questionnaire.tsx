@@ -368,14 +368,11 @@ export function Questionnaire() {
           type="button"
           variant="secondary"
           onClick={checkCode}
-          disabled={codeStatus === "checking" || !answers.packingCode?.trim()}
+          loading={codeStatus === "checking"}
+          disabled={!answers.packingCode?.trim()}
           className="h-11 shrink-0"
         >
-          {codeStatus === "checking" ? (
-            <Loader2 className="size-4 animate-spin" />
-          ) : (
-            <Search className="size-4" />
-          )}
+          {codeStatus !== "checking" && <Search className="size-4" />}
           {t("order.packingCodeSearch")}
         </Button>
       </div>

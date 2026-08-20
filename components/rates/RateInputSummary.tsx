@@ -50,7 +50,7 @@ export function RateInputSummary({
           </span>
         )}
       </div>
-      <Button asChild variant="outline" size="sm" className="shrink-0">
+      <Button asChild variant="secondary" size="sm" className="shrink-0">
         <Link href="/#kalkulator">
           <Pencil className="size-3.5" /> {t("summary.ubah")}
         </Link>

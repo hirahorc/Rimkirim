@@ -3,6 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { Bell } from "lucide-react";
+import { IconPillButton } from "@/components/ui/icon-pill-button";
 import { useShallow } from "zustand/react/shallow";
 import {
   useOrderStore,
@@ -104,18 +105,14 @@ export function NotificationBell() {
   return (
     <Popover open={open} onOpenChange={onOpenChange}>
       <PopoverTrigger asChild>
-        <button
-          type="button"
-          aria-label={t("notif.title")}
-          className="tap-target relative grid size-9 place-items-center rounded-full border border-border bg-surface-2 text-muted transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/50"
-        >
+        <IconPillButton aria-label={t("notif.title")}>
           <Bell className="size-4" />
           {unread > 0 && (
             <span className="absolute -right-1 -top-1 grid min-w-4 place-items-center rounded-full bg-brand px-1 text-[10px] font-bold leading-4 text-brand-ink">
               {unread > 99 ? "99+" : unread}
             </span>
           )}
-        </button>
+        </IconPillButton>
       </PopoverTrigger>
       <PopoverContent align="end" className="w-80 p-2 sm:w-96">
         <div className="flex items-center justify-between border-b border-border px-2 pb-2 pt-1">

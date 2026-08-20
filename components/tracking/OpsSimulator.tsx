@@ -197,7 +197,7 @@ export function OpsSimulator({ order }: { order: Order }) {
         <div className="mt-2 flex flex-wrap gap-2">
           <Button
             size="sm"
-            variant={order.attention ? "outline" : "secondary"}
+            variant="secondary"
             onClick={() => setOrderAttention(order.id, null)}
           >
             {t("ops.attNone")}
@@ -206,7 +206,7 @@ export function OpsSimulator({ order }: { order: Order }) {
             <Button
               key={p.key}
               size="sm"
-              variant={order.attention === p.key ? "danger" : "outline"}
+              variant={order.attention === p.key ? "danger" : "secondary"}
               onClick={() => setOrderAttention(order.id, p.key)}
               className={cn(order.attention === p.key && "!border-danger/40")}
             >
@@ -241,7 +241,7 @@ export function OpsSimulator({ order }: { order: Order }) {
             />
             <Button
               size="sm"
-              variant="outline"
+              variant="secondary"
               onClick={() => {
                 requestRevision(order.id, revModule, revNote);
                 setRevNote("");
@@ -294,14 +294,14 @@ export function OpsSimulator({ order }: { order: Order }) {
           <div className="mt-2 flex flex-wrap gap-2">
             <Button
               size="sm"
-              variant="outline"
+              variant="secondary"
               onClick={() => recordPickupFail(order.id, "customer" as PickupFailCause)}
             >
               {t("ops.failCtaCustomer")}
             </Button>
             <Button
               size="sm"
-              variant="outline"
+              variant="secondary"
               onClick={() => recordPickupFail(order.id, "carrier" as PickupFailCause)}
             >
               {t("ops.failCtaFedEx")}
@@ -345,7 +345,7 @@ export function OpsSimulator({ order }: { order: Order }) {
               <>
                 <Button
                   size="sm"
-                  variant={order.clearanceBlocked ? "danger" : "outline"}
+                  variant={order.clearanceBlocked ? "danger" : "secondary"}
                   onClick={() =>
                     setClearanceBlocked(order.id, !order.clearanceBlocked)
                   }
@@ -387,7 +387,7 @@ export function OpsSimulator({ order }: { order: Order }) {
                 )}
                 <Button
                   size="sm"
-                  variant="outline"
+                  variant="secondary"
                   disabled={order.npdRound >= MAX_NPD_ROUNDS}
                   onClick={() => raiseNpd(order.id)}
                 >
@@ -397,21 +397,21 @@ export function OpsSimulator({ order }: { order: Order }) {
                 </Button>
                 <Button
                   size="sm"
-                  variant="outline"
+                  variant="secondary"
                   onClick={() => resolveClearance(order.id, "sppb")}
                 >
                   {t("ops.clResolveSppb")}
                 </Button>
                 <Button
                   size="sm"
-                  variant="outline"
+                  variant="secondary"
                   onClick={() => resolveClearance(order.id, "sppbl")}
                 >
                   {t("ops.clResolveSppbl")}
                 </Button>
                 <Button
                   size="sm"
-                  variant="outline"
+                  variant="secondary"
                   onClick={() => resolveClearance(order.id, "sptnp")}
                 >
                   {t("ops.clResolveSptnp")}

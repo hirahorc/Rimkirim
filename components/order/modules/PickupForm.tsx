@@ -392,19 +392,19 @@ function Stepper({
   const v = Number.isFinite(value) ? value : min;
   const atMin = v <= min;
   const atMax = max != null && v >= max;
-  const btn =
-    "grid size-9 shrink-0 place-items-center rounded-md text-muted transition-colors hover:text-foreground disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:text-muted";
   return (
     <div className="flex h-11 w-full items-center justify-between rounded-md border border-border bg-surface-2 px-1.5 sm:max-w-xs">
-      <button
+      <Button
         type="button"
+        variant="ghost"
+        size="icon-sm"
         onClick={() => onChange(Math.max(min, v - 1))}
         disabled={atMin}
         aria-label={t("order.stepDecrease")}
-        className={btn}
+        className="shrink-0 hover:bg-surface-3"
       >
-        <Minus className="size-4" />
-      </button>
+        <Minus />
+      </Button>
       {/* the changing value is announced without moving focus */}
       <span
         aria-live="polite"
@@ -419,15 +419,17 @@ function Stepper({
           </>
         )}
       </span>
-      <button
+      <Button
         type="button"
+        variant="ghost"
+        size="icon-sm"
         onClick={() => onChange(max != null ? Math.min(max, v + 1) : v + 1)}
         disabled={atMax}
         aria-label={t("order.stepIncrease")}
-        className={btn}
+        className="shrink-0 hover:bg-surface-3"
       >
-        <Plus className="size-4" />
-      </button>
+        <Plus />
+      </Button>
     </div>
   );
 }

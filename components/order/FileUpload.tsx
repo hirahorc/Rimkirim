@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { Upload, FileCheck2, X, Eye, FileText } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { useT } from "@/lib/i18n/LanguageProvider";
 import { cn } from "@/lib/utils/cn";
 import {
@@ -137,30 +138,33 @@ export function FileUpload({
               )}
             </DialogContent>
           </Dialog>
-          <button
+          <Button
             type="button"
+            variant="ghost"
+            size="icon-sm"
             onClick={clear}
             aria-label={t("order.itRemove")}
-            className="grid size-9 shrink-0 place-items-center rounded-md text-muted transition-colors hover:bg-surface-3 hover:text-danger"
+            className="shrink-0 hover:text-danger"
           >
-            <X className="size-4" />
-          </button>
+            <X />
+          </Button>
         </div>
       ) : (
-        <button
+        <Button
           type="button"
+          variant="dashed"
           onClick={() => inputRef.current?.click()}
           // six of these can share a screen: the document's name joins the
           // accessible name so they are not six identical "Unggah file"
           aria-label={label ? `${t("order.upload")}: ${label}` : undefined}
-          className="flex h-11 w-full items-center gap-2 rounded-md border border-dashed border-border-strong px-3 text-sm text-muted transition-colors hover:text-foreground"
+          className="h-11 w-full justify-start px-3"
         >
-          <Upload className="size-4 shrink-0" />
+          <Upload />
           <span className="truncate">{t("order.upload")}</span>
           <span className="ml-auto shrink-0 text-xs text-muted-2">
             {t("order.uploadMax")}
           </span>
-        </button>
+        </Button>
       )}
     </div>
   );

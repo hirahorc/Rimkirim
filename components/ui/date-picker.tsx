@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { Calendar, ChevronLeft, ChevronRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useLanguage, useT } from "@/lib/i18n/LanguageProvider";
 import { cn } from "@/lib/utils/cn";
@@ -206,27 +207,29 @@ export function DatePicker({
       >
         {/* month header */}
         <div className="flex items-center justify-between">
-          <button
+          <Button
             type="button"
+            variant="ghost"
+            size="icon-sm"
             aria-label={t("date.prevMonth")}
             disabled={prevDisabled}
             onClick={() => setView(addMonths(view, -1))}
-            className="grid size-9 place-items-center rounded-md text-muted transition-colors hover:bg-surface-3 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/40 disabled:pointer-events-none disabled:opacity-40"
           >
-            <ChevronLeft className="size-4" />
-          </button>
+            <ChevronLeft />
+          </Button>
           <div aria-live="polite" className="font-display text-sm font-semibold tracking-tight">
             {fmtMonth.format(view)}
           </div>
-          <button
+          <Button
             type="button"
+            variant="ghost"
+            size="icon-sm"
             aria-label={t("date.nextMonth")}
             disabled={nextDisabled}
             onClick={() => setView(addMonths(view, 1))}
-            className="grid size-9 place-items-center rounded-md text-muted transition-colors hover:bg-surface-3 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/40 disabled:pointer-events-none disabled:opacity-40"
           >
-            <ChevronRight className="size-4" />
-          </button>
+            <ChevronRight />
+          </Button>
         </div>
 
         {/* weekday rule */}

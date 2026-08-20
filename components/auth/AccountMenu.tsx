@@ -9,6 +9,7 @@ import {
   PopoverTrigger,
   PopoverContent,
 } from "@/components/ui/popover";
+import { IconPillButton } from "@/components/ui/icon-pill-button";
 import { useAuthStore, useCurrentUser } from "@/lib/store/useAuthStore";
 import { useT } from "@/lib/i18n/LanguageProvider";
 import { toast } from "sonner";
@@ -26,13 +27,9 @@ export function AccountMenu() {
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <button
-          type="button"
-          aria-label={t("auth.account")}
-          className="tap-target relative grid size-9 place-items-center rounded-full border border-border bg-surface-2 text-muted transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/50"
-        >
+        <IconPillButton aria-label={t("auth.account")}>
           <User className="size-4" />
-        </button>
+        </IconPillButton>
       </PopoverTrigger>
       <PopoverContent align="end" className="w-60 p-2">
         <div className="border-b border-border px-2 pb-2 pt-1">

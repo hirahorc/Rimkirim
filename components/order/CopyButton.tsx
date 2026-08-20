@@ -3,6 +3,7 @@
 import * as React from "react";
 import { Copy, Check } from "lucide-react";
 import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
 import { useT } from "@/lib/i18n/LanguageProvider";
 import { cn } from "@/lib/utils/cn";
 
@@ -37,20 +38,19 @@ export function CopyButton({
   };
 
   return (
-    <button
+    <Button
       type="button"
+      variant="ghost"
+      size="icon-xs"
       onClick={copy}
       aria-label={t("order.copy")}
-      className={cn(
-        "tap-target relative inline-grid size-7 shrink-0 place-items-center rounded-sm text-muted transition-colors hover:bg-surface-3 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/50",
-        className,
-      )}
+      className={cn("tap-target relative shrink-0 rounded-sm", className)}
     >
       {copied ? (
-        <Check className="size-4 text-success" strokeWidth={3} />
+        <Check className="text-success" strokeWidth={3} />
       ) : (
-        <Copy className="size-4" />
+        <Copy />
       )}
-    </button>
+    </Button>
   );
 }
