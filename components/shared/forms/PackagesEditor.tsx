@@ -23,6 +23,7 @@ import { Input } from "@/components/ui/input";
 import { SelectField } from "@/components/ui/select-field";
 import { InfoTip } from "@/components/ui/tooltip";
 import { Field } from "./Field";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils/cn";
 
 const PHOTO_KEYS = ["weight", "length", "width", "height"] as const;
@@ -64,6 +65,7 @@ export function PackagesEditor<T extends FieldValues & ItemsData>({
   showPhotos,
   currencyNote,
   extraTotals = [],
+  totalsNote,
   editorRef,
 }: {
   control: Control<T>;
@@ -76,6 +78,8 @@ export function PackagesEditor<T extends FieldValues & ItemsData>({
   currencyNote?: React.ReactNode;
   /** totals shown before the standard value + chargeable-weight cells */
   extraTotals?: TotalCell[];
+  /** one quiet line under the totals (e.g. how the estimate is computed) */
+  totalsNote?: React.ReactNode;
   editorRef?: React.RefObject<PackagesEditorHandle | null>;
 }) {
   const t = useT();
@@ -150,33 +154,6 @@ export function PackagesEditor<T extends FieldValues & ItemsData>({
 
   return (
     <>
-      {/* currency — titled like every other lead card; the h2 is the field's
-          label, so the SelectField carries only an ariaLabel below */}
-      <Card className="space-y-4 p-5">
-        <h2 className="font-display font-semibold">{t("order.itCurrency")}</h2>
-        <Field hint={t("order.itCurrencyHelp")}>
-          <Controller
-            control={control}
-            name="currency"
-            render={({ field }) => (
-              <SelectField
-                value={field.value}
-                onChange={field.onChange}
-                ariaLabel={t("order.itCurrency")}
-                wrapperClassName="sm:max-w-xs"
-                searchable
-                searchPlaceholder={t("order.itCurrencySearch")}
-                emptyText={t("order.itCurrencyEmpty")}
-                options={CURRENCIES.map((c) => ({
-                  value: c.code,
-                  label: `${c.code} – ${c.name}`,
-                }))}
-              />
-            )}
-          />
-        </Field>
-        {currencyNote}
-      </Card>
 
       {/* packages section header: title + count, collapse control, jump chips */}
       <div className="space-y-2">
@@ -237,13 +214,42 @@ export function PackagesEditor<T extends FieldValues & ItemsData>({
         </div>
       ))}
 
-      <button
+      <Button
         type="button"
+        variant="dashed"
         onClick={() => append(structuredClone(emptyPackage))}
-        className="inline-flex items-center gap-2 rounded-sm border border-dashed border-border-strong px-3 py-2 text-sm text-muted transition-colors hover:border-border-strong hover:text-foreground"
+        className="self-start"
       >
-        <Plus className="size-4" /> {t("order.itAddPackage")}
-      </button>
+        <Plus /> {t("order.itAddPackage")}
+      </Button>
+
+      {/* currency — demoted below the packages: it is a customs-declaration
+          detail, not the reason the user came to this page */}
+      <Card className="space-y-4 p-5">
+        <h2 className="font-display font-semibold">{t("order.itCurrency")}</h2>
+        <Field hint={t("order.itCurrencyHelp")}>
+          <Controller
+            control={control}
+            name="currency"
+            render={({ field }) => (
+              <SelectField
+                value={field.value}
+                onChange={field.onChange}
+                ariaLabel={t("order.itCurrency")}
+                wrapperClassName="sm:max-w-xs"
+                searchable
+                searchPlaceholder={t("order.itCurrencySearch")}
+                emptyText={t("order.itCurrencyEmpty")}
+                options={CURRENCIES.map((c) => ({
+                  value: c.code,
+                  label: `${c.code} – ${c.name}`,
+                }))}
+              />
+            )}
+          />
+        </Field>
+        {currencyNote}
+      </Card>
 
       {/* totals */}
       <Card
@@ -255,6 +261,11 @@ export function PackagesEditor<T extends FieldValues & ItemsData>({
         {totals.map((c) => (
           <Total key={c.label} {...c} />
         ))}
+        {totalsNote && (
+          <p className="text-xs leading-snug text-muted-2 sm:col-span-full">
+            {totalsNote}
+          </p>
+        )}
       </Card>
     </>
   );
@@ -346,7 +357,8 @@ function PackageBlock({
         <button
           type="button"
           onClick={onToggle}
-          className="flex min-w-0 flex-1 items-center gap-2 text-left"
+          // the whole header line is the toggle; padding gives it a 36px hit
+          className="-my-2 flex min-w-0 flex-1 items-center gap-2 py-2 text-left"
           aria-expanded={open}
         >
           <ChevronDown
@@ -368,7 +380,7 @@ function PackageBlock({
           <button
             type="button"
             onClick={onRemove}
-            className="inline-flex shrink-0 items-center gap-1 text-xs text-muted transition-colors hover:text-danger"
+            className="-my-2 inline-flex min-h-9 shrink-0 items-center gap-1 py-2 text-xs text-muted transition-colors hover:text-danger"
           >
             <Trash2 className="size-3.5" /> {t("order.itRemove")}
           </button>
@@ -429,7 +441,7 @@ function PackageBlock({
                     <button
                       type="button"
                       onClick={() => remove(j)}
-                      className="inline-flex items-center gap-1 text-xs text-muted transition-colors hover:text-danger"
+                      className="-my-2 inline-flex min-h-9 items-center gap-1 py-2 text-xs text-muted transition-colors hover:text-danger"
                     >
                       <Trash2 className="size-3.5" /> {t("order.itRemove")}
                     </button>
@@ -446,12 +458,13 @@ function PackageBlock({
                     <Input type="number" min="1" placeholder="0" {...register(`packages.${index}.items.${j}.quantity`, { valueAsNumber: true })} />
                   </Field>
                   <Field label={t("order.itColValue")}>
-                    <div className="relative">
-                      <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-xs text-muted-2">
-                        {currency}
-                      </span>
-                      <Input type="number" min="0" placeholder="0" className="pl-12" {...register(`packages.${index}.items.${j}.value`, { valueAsNumber: true })} />
-                    </div>
+                    <PrefixedInput
+                      prefix={currency}
+                      type="number"
+                      min="0"
+                      placeholder="0"
+                      {...register(`packages.${index}.items.${j}.value`, { valueAsNumber: true })}
+                    />
                   </Field>
                 </div>
 
@@ -468,7 +481,7 @@ function PackageBlock({
         <button
           type="button"
           onClick={() => append({ name: "", value: undefined as unknown as number, quantity: 1 })}
-          className="mt-3 inline-flex items-center gap-1.5 text-xs link-mark"
+          className="mt-3 inline-flex min-h-9 items-center gap-1.5 py-2 text-xs link-mark"
         >
           <Plus className="size-3.5" /> {t("order.itAdd")}
         </button>
@@ -504,6 +517,7 @@ function PackageBlock({
                   render={({ field }) => (
                     <FileUpload
                       accept="image/*"
+                      label={`${t("order.itPhotos")}: ${t(labelKey)}`}
                       value={field.value as string | undefined}
                       onChange={field.onChange}
                     />
@@ -519,3 +533,17 @@ function PackageBlock({
     </Card>
   );
 }
+
+/** An Input with a quiet currency prefix; forwards `Field`'s wiring to the input. */
+const PrefixedInput = React.forwardRef<
+  HTMLInputElement,
+  React.InputHTMLAttributes<HTMLInputElement> & { prefix: string }
+>(({ prefix, className, ...props }, ref) => (
+  <div className="relative">
+    <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-xs text-muted-2">
+      {prefix}
+    </span>
+    <Input ref={ref} className={cn("pl-12", className)} {...props} />
+  </div>
+));
+PrefixedInput.displayName = "PrefixedInput";

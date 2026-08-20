@@ -1,5 +1,7 @@
 "use client";
 
+import type * as React from "react";
+
 import {
   Controller,
   type Control,
@@ -30,6 +32,7 @@ export function PartyFields<T extends FieldValues & PartyForm>({
   countryLocked = false,
   countryRequired = true,
   phoneLabelKey,
+  hints,
 }: {
   control: Control<T>;
   register: UseFormRegister<T>;
@@ -39,6 +42,8 @@ export function PartyFields<T extends FieldValues & PartyForm>({
   countryLocked?: boolean;
   countryRequired?: boolean;
   phoneLabelKey: string;
+  /** contextual notes shown under specific fields (e.g. what the packing list changes) */
+  hints?: Partial<Record<"fullName" | "email" | "address", React.ReactNode>>;
 }) {
   const t = useT();
   const req = { required: t("err.required") };
@@ -47,10 +52,18 @@ export function PartyFields<T extends FieldValues & PartyForm>({
 
   return (
     <>
-      <Field label={t("order.ciFullName")} error={e?.fullName?.message}>
+      <Field
+        label={t("order.ciFullName")}
+        hint={hints?.fullName}
+        error={e?.fullName?.message}
+      >
         <Input placeholder={t("order.ciPhName")} {...register(p("fullName"), req)} />
       </Field>
-      <Field label={t("order.ciCountry")} error={e?.country?.message}>
+      <Field
+        label={t("order.ciCountry")}
+        hint={countryLocked ? t("order.ciCountryLockedNote") : undefined}
+        error={e?.country?.message}
+      >
         <Controller
           control={control}
           name={p("country")}
@@ -65,12 +78,23 @@ export function PartyFields<T extends FieldValues & PartyForm>({
           )}
         />
       </Field>
-      <Field label={t("order.ciFullAddress")} error={e?.address?.message}>
+      <Field
+        label={t("order.ciFullAddress")}
+        hint={hints?.address}
+        error={e?.address?.message}
+      >
         <Input placeholder={t("order.ciPhAddress")} {...register(p("address"), req)} />
       </Field>
       <div className="grid gap-4 sm:grid-cols-2">
-        <Field label={t("order.ciEmail")} error={e?.email?.message}>
-          <Input type="email" placeholder={t("order.ciPhEmail")} {...register(p("email"), req)} />
+        <Field label={t("order.ciEmail")} hint={hints?.email} error={e?.email?.message}>
+          <Input
+            type="email"
+            placeholder={t("order.ciPhEmail")}
+            {...register(p("email"), {
+              ...req,
+              pattern: { value: /^\S+@\S+\.\S+$/, message: t("err.emailInvalid") },
+            })}
+          />
         </Field>
         <Field label={t(phoneLabelKey)} error={e?.phone?.message}>
           <PhoneInput

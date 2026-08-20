@@ -82,14 +82,16 @@ export function Faq() {
             className="h-11 w-full rounded-md border border-border bg-surface-2 pl-10 pr-10 text-sm text-foreground transition-colors placeholder:text-muted-2 focus-visible:border-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/40 [&::-webkit-search-cancel-button]:hidden"
           />
           {query && (
-            <button
+            <Button
               type="button"
+              variant="ghost"
+              size="icon-xs"
               onClick={() => setQuery("")}
               aria-label={t("faq.searchClear")}
-              className="absolute right-2 top-1/2 grid size-7 -translate-y-1/2 place-items-center rounded-md text-muted-2 transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/50"
+              className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-2"
             >
-              <X className="size-4" />
-            </button>
+              <X />
+            </Button>
           )}
         </div>
 

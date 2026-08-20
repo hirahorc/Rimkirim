@@ -41,7 +41,7 @@ export function RevisionDialog({
           {MODULE_META.map((m) => (
             <Button
               key={m.id}
-              variant="outline"
+              variant="secondary"
               className="flex w-full items-center justify-start gap-3"
               onClick={() => {
                 requestRevision(orderId, m.id as ModuleId);

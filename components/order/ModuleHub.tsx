@@ -12,7 +12,6 @@ import {
   Hash,
   PartyPopper,
   Download,
-  Loader2,
 } from "lucide-react";
 import {
   useOrderStore,
@@ -83,6 +82,7 @@ export function ModuleHub() {
   const router = useRouter();
   const modules = useOrderStore((s) => s.modules);
   const answers = useOrderStore((s) => s.answers);
+  const clearance = useOrderStore((s) => s.clearance);
   const bookingNumber = useOrderStore((s) => s.bookingNumber);
   const generatedPackingCode = useOrderStore((s) => s.generatedPackingCode);
   const ensureBookingNumber = useOrderStore((s) => s.ensureBookingNumber);
@@ -120,6 +120,15 @@ export function ModuleHub() {
   // the module completed on the way here — its check draws once, and the
   // progress bar fills from the previous count instead of rendering done
   const [justDone] = React.useState(() => consumeJustSaved());
+  // the save that crossed the line: three chores done, pickup just came alive.
+  // One earned animation, once, plus a spoken announcement for SR users.
+  const justUnlocked =
+    justDone !== null &&
+    justDone !== "pickup" &&
+    isPickupUnlocked(modules) &&
+    modules.pickup.status !== "complete" &&
+    MODULE_META.filter((m) => modules[m.id as ModuleId].status === "complete")
+      .length === 3;
   const completeCount = MODULE_META.filter(
     (m) => modules[m.id as ModuleId].status === "complete",
   ).length;
@@ -181,6 +190,19 @@ export function ModuleHub() {
           {t("order.hubTitle")}
         </h1>
         <p className="mt-1.5 text-sm text-muted">{t("order.hubSubtitle")}</p>
+        {/* the customs route chosen one step ago, kept in view; it is one-way,
+            so it is stated, not offered for editing */}
+        {clearance && context?.service !== "moving-abroad" && (
+          <p className="mt-3 text-sm">
+            <span className="text-xs font-medium uppercase tracking-[0.04em] text-muted-2">
+              {t("order.hubRouteLabel")}
+            </span>{" "}
+            <span className="font-medium text-foreground">
+              {t(clearance === "personal" ? "order.clPersonalTitle" : "order.clPassengerTitle")}
+            </span>{" "}
+            <span className="text-muted-2">({t("order.hubRouteFixed")})</span>
+          </p>
+        )}
         {/* the user's progress, said in numbers and shown as a filling bar */}
         <div className="mt-4">
           <p className="text-sm font-medium text-foreground">
@@ -252,7 +274,8 @@ export function ModuleHub() {
             variant="secondary"
             size="sm"
             className="w-full sm:w-auto"
-            disabled={!pdfReady || pdfBusy}
+            loading={pdfBusy}
+            disabled={!pdfReady}
             aria-describedby={!pdfReady && packingCode ? "hub-pdf-note" : undefined}
             onClick={() =>
               downloadPdf(
@@ -266,11 +289,7 @@ export function ModuleHub() {
               )
             }
           >
-            {pdfBusy ? (
-              <Loader2 className="size-3.5 animate-spin" />
-            ) : (
-              <Download className="size-3.5" />
-            )}
+            {!pdfBusy && <Download className="size-3.5" />}
             {pdfBusy ? t("pl.downloading") : t("order.generatePdf")}
           </Button>
           {/* the packing-list cell already explains the gate while no code exists */}
@@ -296,6 +315,7 @@ export function ModuleHub() {
                 // the next card to fill gets the lime frame (the same "this
                 // one" signal the cheapest rate card uses)
                 !locked && (isNext ? "border-brand/50" : "hover:border-border-strong"),
+                m.id === "pickup" && justUnlocked && "unlock-pop",
               )}
             >
               <span
@@ -342,7 +362,15 @@ export function ModuleHub() {
             </Card>
           );
           return locked ? (
-            <div key={m.id} aria-disabled="true" aria-describedby="hub-pickup-locked">
+            // focusable so keyboard/SR users land on it and hear WHY it's locked
+            <div
+              key={m.id}
+              tabIndex={0}
+              role="link"
+              aria-disabled="true"
+              aria-describedby="hub-pickup-locked"
+              className="rounded-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground/60"
+            >
               {Inner}
             </div>
           ) : (
@@ -352,6 +380,12 @@ export function ModuleHub() {
           );
         })}
       </div>
+
+      {justUnlocked && (
+        <p role="status" className="sr-only">
+          {t("order.hubPickupUnlocked")}
+        </p>
+      )}
 
       {/* pickup locked note */}
       {!pickupUnlocked && (

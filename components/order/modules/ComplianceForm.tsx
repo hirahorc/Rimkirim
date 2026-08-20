@@ -9,7 +9,7 @@ import { useT } from "@/lib/i18n/LanguageProvider";
 import { Card } from "@/components/ui/card";
 import { Input, FieldError } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { ModuleShell, useSaveModule, readModuleData, Field } from "./shared";
+import { ModuleShell, useSaveModule, readModuleData } from "./shared";
 
 export interface DocSpec {
   key: string;
@@ -77,17 +77,22 @@ export function ComplianceForm() {
   const onSubmit = (data: ComplianceData) => {
     const missing = docs.filter((d) => d.required && !data.docs?.[d.key]);
     if (missing.length) {
-      setError("root", { message: t("order.coMandatoryNote") });
+      // the error lands on each missing document, not in a summary far below
+      missing.forEach((d) =>
+        setError(`docs.${d.key}` as const, {
+          type: "required",
+          message: t("err.required"),
+        }),
+      );
       toast.error(t("order.coMandatoryNote"));
       return;
     }
-    clearErrors("root");
     save(data as unknown as Record<string, unknown>);
   };
 
   return (
     <ModuleShell moduleId="compliance">
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      <form noValidate onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <Card className="space-y-4 p-5">
           <h2 className="font-display font-semibold">{t("order.coHeading")}</h2>
           {/* each doc is one unit (label + timing pill → control → help); the
@@ -110,9 +115,17 @@ export function ComplianceForm() {
                   control={control}
                   name={`docs.${d.key}` as const}
                   render={({ field }) => (
-                    <FileUpload value={field.value} onChange={field.onChange} />
+                    <FileUpload
+                      label={t(d.labelKey)}
+                      value={field.value}
+                      onChange={(v) => {
+                        field.onChange(v);
+                        if (v) clearErrors(`docs.${d.key}` as const);
+                      }}
+                    />
                   )}
                 />
+                <FieldError>{errors.docs?.[d.key]?.message}</FieldError>
                 {d.helpKey && (
                   <p className="mt-1.5 flex items-start gap-1.5 text-xs text-muted-2">
                     <Info className="mt-0.5 size-3.5 shrink-0" />
@@ -139,29 +152,34 @@ export function ComplianceForm() {
                   control={control}
                   name={`otherDocs.${i}.file` as const}
                   render={({ field }) => (
-                    <FileUpload value={field.value} onChange={field.onChange} />
+                    <FileUpload
+                      label={t("order.coOtherDocs")}
+                      value={field.value}
+                      onChange={field.onChange}
+                    />
                   )}
                 />
               </div>
-              <button
+              <Button
                 type="button"
+                variant="ghost"
+                size="icon"
                 onClick={() => remove(i)}
-                className="grid size-11 shrink-0 place-items-center rounded-md text-muted transition-colors hover:text-danger"
+                aria-label={t("order.itRemove")}
+                className="size-11 shrink-0 hover:text-danger"
               >
-                <Trash2 className="size-4" />
-              </button>
+                <Trash2 />
+              </Button>
             </div>
           ))}
           <button
             type="button"
             onClick={() => append({ name: "", file: "" })}
-            className="inline-flex items-center gap-1.5 text-sm link-mark"
+            className="-my-1.5 inline-flex min-h-9 items-center gap-1.5 py-1.5 text-sm link-mark"
           >
             <Plus className="size-4" /> {t("order.coAddOtherDoc")}
           </button>
         </Card>
-
-        {errors.root && <FieldError>{errors.root.message as string}</FieldError>}
 
         <Button type="submit" size="lg" className="w-full">
           {t("order.saveModule")}

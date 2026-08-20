@@ -1,7 +1,8 @@
 "use client";
 
+import * as React from "react";
+
 import { useForm, Controller } from "react-hook-form";
-import { toast } from "sonner";
 import { Copy, Check, Minus, Plus } from "lucide-react";
 import { useOrderStore } from "@/lib/store/useOrderStore";
 import { INDONESIA } from "@/lib/data/countries";
@@ -12,8 +13,15 @@ import { Input, Textarea } from "@/components/ui/input";
 import { DatePicker, todayIso } from "@/components/ui/date-picker";
 import { Button } from "@/components/ui/button";
 import { SelectField } from "@/components/ui/select-field";
-import { DialCodeSelect } from "@/components/order/DialCodeSelect";
-import { ModuleShell, useSaveModule, readModuleData, Field } from "./shared";
+import {
+  ModuleShell,
+  useSaveModule,
+  useInvalidHandler,
+  useDraftAutosave,
+  readModuleData,
+  Field,
+} from "./shared";
+import { PhoneInput } from "@/components/shared/forms/PhoneInput";
 import { cn } from "@/lib/utils/cn";
 
 interface PickupData {
@@ -55,8 +63,11 @@ export function PickupForm() {
     handleSubmit,
     setValue,
     watch,
-    formState: { errors },
+    getValues,
+    formState: { errors, isDirty },
   } = useForm<PickupData>({
+    // focus is handled by useInvalidHandler, in document order
+    shouldFocusError: false,
     defaultValues: {
       picName: "",
       buildingType: "",
@@ -73,6 +84,12 @@ export function PickupForm() {
     },
   });
   const req = { required: t("err.required") };
+  const onInvalid = useInvalidHandler();
+  useDraftAutosave(
+    "pickup",
+    getValues as unknown as () => Record<string, unknown>,
+    isDirty,
+  );
   // shared buildings (anything but a house) have access logistics the courier
   // needs; a house — and the unselected placeholder — asks neither
   const needsAccessQs =
@@ -88,9 +105,10 @@ export function PickupForm() {
   return (
     <ModuleShell moduleId="pickup">
       <form
+        noValidate
         onSubmit={handleSubmit(
           (d) => save(d as unknown as Record<string, unknown>),
-          () => toast.error(t("calc.invalidTitle")),
+          onInvalid,
         )}
         className="space-y-4"
       >
@@ -103,7 +121,7 @@ export function PickupForm() {
               {t("order.puSecDetails")}
             </h2>
             {sender && (
-              <Button type="button" variant="ghost" size="sm" onClick={fillFromSender}>
+              <Button type="button" variant="ghost" size="sm" className="min-h-9" onClick={fillFromSender}>
                 <Copy className="size-3.5" /> {t("order.puSameAsSender")}
               </Button>
             )}
@@ -114,18 +132,14 @@ export function PickupForm() {
               <Input placeholder={t("order.puPhName")} {...register("picName", req)} />
             </Field>
             <Field label={t("order.puPicPhone")} error={errors.picPhone?.message}>
-              <div className="flex gap-2">
-                <div className="w-28 shrink-0">
-                  <Controller
-                    control={control}
-                    name="picPhoneCountry"
-                    render={({ field }) => (
-                      <DialCodeSelect value={field.value || ""} onChange={field.onChange} />
-                    )}
-                  />
-                </div>
-                <Input className="flex-1" placeholder={t("order.puPhPhone")} {...register("picPhone", req)} />
-              </div>
+              {/* PhoneInput forwards Field's id/aria wiring to the number input */}
+              <PhoneInput
+                control={control}
+                register={register}
+                codeName="picPhoneCountry"
+                numberName="picPhone"
+                placeholder={t("order.puPhPhone")}
+              />
             </Field>
           </div>
 
@@ -169,6 +183,7 @@ export function PickupForm() {
                   rules={{ required: needsAccessQs ? t("err.required") : false }}
                   render={({ field }) => (
                     <ChipGroup
+                      label={t("order.puFreightElevator")}
                       value={field.value}
                       onChange={field.onChange}
                       options={[
@@ -189,6 +204,7 @@ export function PickupForm() {
                   rules={{ required: needsAccessQs ? t("err.required") : false }}
                   render={({ field }) => (
                     <ChipGroup
+                      label={t("order.puReceptionist")}
                       value={field.value}
                       onChange={field.onChange}
                       options={[
@@ -245,6 +261,7 @@ export function PickupForm() {
               rules={req}
               render={({ field }) => (
                 <ChipGroup
+                  label={t("order.puTime")}
                   value={field.value}
                   onChange={field.onChange}
                   options={PICKUP_WINDOWS.map((w) => ({ value: w, label: w }))}
@@ -284,14 +301,41 @@ function ChipGroup({
   value,
   onChange,
   options,
+  label,
+  id,
+  "aria-describedby": describedBy,
 }: {
   value: string;
   onChange: (v: string) => void;
   options: { value: string; label: string }[];
+  /** accessible name for the group (the field's visible label text) */
+  label?: string;
+  id?: string;
+  "aria-describedby"?: string;
 }) {
+  const groupRef = React.useRef<HTMLDivElement | null>(null);
+  // radiogroup convention: arrows move AND select within the group
+  const move = (from: number, dir: 1 | -1) => {
+    const next = options[(from + dir + options.length) % options.length];
+    onChange(next.value);
+    groupRef.current
+      ?.querySelector<HTMLButtonElement>(`[data-value="${next.value}"]`)
+      ?.focus();
+  };
+  const activeIndex = Math.max(
+    0,
+    options.findIndex((o) => o.value === value),
+  );
   return (
-    <div className="grid grid-cols-2 gap-2 sm:grid-cols-3" role="radiogroup">
-      {options.map((o) => {
+    <div
+      ref={groupRef}
+      id={id}
+      className="grid grid-cols-2 gap-2 sm:grid-cols-3"
+      role="radiogroup"
+      aria-label={label}
+      aria-describedby={describedBy}
+    >
+      {options.map((o, i) => {
         const selected = value === o.value;
         return (
           <button
@@ -299,6 +343,17 @@ function ChipGroup({
             type="button"
             role="radio"
             aria-checked={selected}
+            data-value={o.value}
+            tabIndex={i === activeIndex ? 0 : -1}
+            onKeyDown={(ev) => {
+              if (ev.key === "ArrowRight" || ev.key === "ArrowDown") {
+                ev.preventDefault();
+                move(i, 1);
+              } else if (ev.key === "ArrowLeft" || ev.key === "ArrowUp") {
+                ev.preventDefault();
+                move(i, -1);
+              }
+            }}
             onClick={() => onChange(o.value)}
             className={cn(
               "flex min-h-11 items-center justify-center gap-1.5 rounded-sm border px-3 py-2.5 text-center text-sm transition-colors",
@@ -333,23 +388,28 @@ function Stepper({
   unit?: string;
   zeroLabel?: string;
 }) {
+  const t = useT();
   const v = Number.isFinite(value) ? value : min;
   const atMin = v <= min;
   const atMax = max != null && v >= max;
-  const btn =
-    "grid size-9 shrink-0 place-items-center rounded-md text-muted transition-colors hover:text-foreground disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:text-muted";
   return (
     <div className="flex h-11 w-full items-center justify-between rounded-md border border-border bg-surface-2 px-1.5 sm:max-w-xs">
-      <button
+      <Button
         type="button"
+        variant="ghost"
+        size="icon-sm"
         onClick={() => onChange(Math.max(min, v - 1))}
         disabled={atMin}
-        aria-label="−"
-        className={btn}
+        aria-label={t("order.stepDecrease")}
+        className="shrink-0 hover:bg-surface-3"
       >
-        <Minus className="size-4" />
-      </button>
-      <span className="text-sm font-medium tabular-nums text-foreground">
+        <Minus />
+      </Button>
+      {/* the changing value is announced without moving focus */}
+      <span
+        aria-live="polite"
+        className="text-sm font-medium tabular-nums text-foreground"
+      >
         {v === 0 && zeroLabel ? (
           <span className="text-muted">{zeroLabel}</span>
         ) : (
@@ -359,15 +419,17 @@ function Stepper({
           </>
         )}
       </span>
-      <button
+      <Button
         type="button"
+        variant="ghost"
+        size="icon-sm"
         onClick={() => onChange(max != null ? Math.min(max, v + 1) : v + 1)}
         disabled={atMax}
-        aria-label="+"
-        className={btn}
+        aria-label={t("order.stepIncrease")}
+        className="shrink-0 hover:bg-surface-3"
       >
-        <Plus className="size-4" />
-      </button>
+        <Plus />
+      </Button>
     </div>
   );
 }
