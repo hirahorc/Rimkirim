@@ -356,7 +356,15 @@ export function ModuleHub() {
             </Card>
           );
           return locked ? (
-            <div key={m.id} aria-disabled="true" aria-describedby="hub-pickup-locked">
+            // focusable so keyboard/SR users land on it and hear WHY it's locked
+            <div
+              key={m.id}
+              tabIndex={0}
+              role="link"
+              aria-disabled="true"
+              aria-describedby="hub-pickup-locked"
+              className="rounded-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground/60"
+            >
               {Inner}
             </div>
           ) : (

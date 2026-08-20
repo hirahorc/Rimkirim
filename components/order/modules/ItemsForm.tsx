@@ -94,7 +94,7 @@ export function ItemsForm() {
       <form
         onSubmit={handleSubmit(onValid, () => {
           editorRef.current?.expandAll(); // surface errors hidden inside collapsed packages
-          toast.error(t("calc.invalidTitle"));
+          toast.error(t("order.formInvalidToast"));
         })}
         className="space-y-4"
       >
@@ -126,6 +126,7 @@ export function ItemsForm() {
               mono: true,
             },
           ]}
+          totalsNote={t("order.itEstimateNote")}
         />
 
         <Button type="submit" size="lg" className="w-full">

@@ -64,6 +64,7 @@ export function PackagesEditor<T extends FieldValues & ItemsData>({
   showPhotos,
   currencyNote,
   extraTotals = [],
+  totalsNote,
   editorRef,
 }: {
   control: Control<T>;
@@ -76,6 +77,8 @@ export function PackagesEditor<T extends FieldValues & ItemsData>({
   currencyNote?: React.ReactNode;
   /** totals shown before the standard value + chargeable-weight cells */
   extraTotals?: TotalCell[];
+  /** one quiet line under the totals (e.g. how the estimate is computed) */
+  totalsNote?: React.ReactNode;
   editorRef?: React.RefObject<PackagesEditorHandle | null>;
 }) {
   const t = useT();
@@ -255,6 +258,11 @@ export function PackagesEditor<T extends FieldValues & ItemsData>({
         {totals.map((c) => (
           <Total key={c.label} {...c} />
         ))}
+        {totalsNote && (
+          <p className="text-xs leading-snug text-muted-2 sm:col-span-full">
+            {totalsNote}
+          </p>
+        )}
       </Card>
     </>
   );
@@ -346,7 +354,8 @@ function PackageBlock({
         <button
           type="button"
           onClick={onToggle}
-          className="flex min-w-0 flex-1 items-center gap-2 text-left"
+          // the whole header line is the toggle; padding gives it a 36px hit
+          className="-my-2 flex min-w-0 flex-1 items-center gap-2 py-2 text-left"
           aria-expanded={open}
         >
           <ChevronDown
@@ -468,7 +477,7 @@ function PackageBlock({
         <button
           type="button"
           onClick={() => append({ name: "", value: undefined as unknown as number, quantity: 1 })}
-          className="mt-3 inline-flex items-center gap-1.5 text-xs link-mark"
+          className="mt-3 inline-flex min-h-9 items-center gap-1.5 py-2 text-xs link-mark"
         >
           <Plus className="size-3.5" /> {t("order.itAdd")}
         </button>
@@ -504,6 +513,7 @@ function PackageBlock({
                   render={({ field }) => (
                     <FileUpload
                       accept="image/*"
+                      label={`${t("order.itPhotos")}: ${t(labelKey)}`}
                       value={field.value as string | undefined}
                       onChange={field.onChange}
                     />

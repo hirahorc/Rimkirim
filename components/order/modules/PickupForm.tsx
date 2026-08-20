@@ -1,5 +1,7 @@
 "use client";
 
+import * as React from "react";
+
 import { useForm, Controller } from "react-hook-form";
 import { toast } from "sonner";
 import { Copy, Check, Minus, Plus } from "lucide-react";
@@ -90,7 +92,7 @@ export function PickupForm() {
       <form
         onSubmit={handleSubmit(
           (d) => save(d as unknown as Record<string, unknown>),
-          () => toast.error(t("calc.invalidTitle")),
+          () => toast.error(t("order.formInvalidToast")),
         )}
         className="space-y-4"
       >
@@ -169,6 +171,7 @@ export function PickupForm() {
                   rules={{ required: needsAccessQs ? t("err.required") : false }}
                   render={({ field }) => (
                     <ChipGroup
+                      label={t("order.puFreightElevator")}
                       value={field.value}
                       onChange={field.onChange}
                       options={[
@@ -189,6 +192,7 @@ export function PickupForm() {
                   rules={{ required: needsAccessQs ? t("err.required") : false }}
                   render={({ field }) => (
                     <ChipGroup
+                      label={t("order.puReceptionist")}
                       value={field.value}
                       onChange={field.onChange}
                       options={[
@@ -245,6 +249,7 @@ export function PickupForm() {
               rules={req}
               render={({ field }) => (
                 <ChipGroup
+                  label={t("order.puTime")}
                   value={field.value}
                   onChange={field.onChange}
                   options={PICKUP_WINDOWS.map((w) => ({ value: w, label: w }))}
@@ -284,14 +289,41 @@ function ChipGroup({
   value,
   onChange,
   options,
+  label,
+  id,
+  "aria-describedby": describedBy,
 }: {
   value: string;
   onChange: (v: string) => void;
   options: { value: string; label: string }[];
+  /** accessible name for the group (the field's visible label text) */
+  label?: string;
+  id?: string;
+  "aria-describedby"?: string;
 }) {
+  const groupRef = React.useRef<HTMLDivElement | null>(null);
+  // radiogroup convention: arrows move AND select within the group
+  const move = (from: number, dir: 1 | -1) => {
+    const next = options[(from + dir + options.length) % options.length];
+    onChange(next.value);
+    groupRef.current
+      ?.querySelector<HTMLButtonElement>(`[data-value="${next.value}"]`)
+      ?.focus();
+  };
+  const activeIndex = Math.max(
+    0,
+    options.findIndex((o) => o.value === value),
+  );
   return (
-    <div className="grid grid-cols-2 gap-2 sm:grid-cols-3" role="radiogroup">
-      {options.map((o) => {
+    <div
+      ref={groupRef}
+      id={id}
+      className="grid grid-cols-2 gap-2 sm:grid-cols-3"
+      role="radiogroup"
+      aria-label={label}
+      aria-describedby={describedBy}
+    >
+      {options.map((o, i) => {
         const selected = value === o.value;
         return (
           <button
@@ -299,6 +331,17 @@ function ChipGroup({
             type="button"
             role="radio"
             aria-checked={selected}
+            data-value={o.value}
+            tabIndex={i === activeIndex ? 0 : -1}
+            onKeyDown={(ev) => {
+              if (ev.key === "ArrowRight" || ev.key === "ArrowDown") {
+                ev.preventDefault();
+                move(i, 1);
+              } else if (ev.key === "ArrowLeft" || ev.key === "ArrowUp") {
+                ev.preventDefault();
+                move(i, -1);
+              }
+            }}
             onClick={() => onChange(o.value)}
             className={cn(
               "flex min-h-11 items-center justify-center gap-1.5 rounded-sm border px-3 py-2.5 text-center text-sm transition-colors",
@@ -333,6 +376,7 @@ function Stepper({
   unit?: string;
   zeroLabel?: string;
 }) {
+  const t = useT();
   const v = Number.isFinite(value) ? value : min;
   const atMin = v <= min;
   const atMax = max != null && v >= max;
@@ -344,12 +388,16 @@ function Stepper({
         type="button"
         onClick={() => onChange(Math.max(min, v - 1))}
         disabled={atMin}
-        aria-label="−"
+        aria-label={t("order.stepDecrease")}
         className={btn}
       >
         <Minus className="size-4" />
       </button>
-      <span className="text-sm font-medium tabular-nums text-foreground">
+      {/* the changing value is announced without moving focus */}
+      <span
+        aria-live="polite"
+        className="text-sm font-medium tabular-nums text-foreground"
+      >
         {v === 0 && zeroLabel ? (
           <span className="text-muted">{zeroLabel}</span>
         ) : (
@@ -363,7 +411,7 @@ function Stepper({
         type="button"
         onClick={() => onChange(max != null ? Math.min(max, v + 1) : v + 1)}
         disabled={atMax}
-        aria-label="+"
+        aria-label={t("order.stepIncrease")}
         className={btn}
       >
         <Plus className="size-4" />

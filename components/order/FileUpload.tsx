@@ -22,11 +22,14 @@ import {
  */
 export function FileUpload({
   value,
+  label,
   onChange,
   accept = "image/*,application/pdf",
   className,
 }: {
   value?: string;
+  /** the document this upload belongs to, for the accessible name */
+  label?: string;
   onChange: (name: string) => void;
   accept?: string;
   className?: string;
@@ -147,6 +150,9 @@ export function FileUpload({
         <button
           type="button"
           onClick={() => inputRef.current?.click()}
+          // six of these can share a screen: the document's name joins the
+          // accessible name so they are not six identical "Unggah file"
+          aria-label={label ? `${t("order.upload")}: ${label}` : undefined}
           className="flex h-11 w-full items-center gap-2 rounded-md border border-dashed border-border-strong px-3 text-sm text-muted transition-colors hover:text-foreground"
         >
           <Upload className="size-4 shrink-0" />

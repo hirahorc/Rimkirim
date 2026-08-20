@@ -2,7 +2,7 @@
 
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { Info, Copy } from "lucide-react";
+import { Copy } from "lucide-react";
 import { useOrderStore } from "@/lib/store/useOrderStore";
 import { INDONESIA } from "@/lib/data/countries";
 import { emptyParty, type Party } from "@/lib/types/packing";
@@ -94,32 +94,10 @@ export function CustomerInfoForm() {
 
   return (
     <ModuleShell moduleId="customerInfo">
-      {/* packing-list difference note */}
-      <Card className="mb-4 flex gap-2.5 border-warning/25 bg-warning/10 p-4 text-sm text-muted">
-        <Info className="mt-0.5 size-4 shrink-0 text-warning" />
-        <div>
-          <p className="font-medium text-foreground">{t("order.ciNoteTitle")}</p>
-          <ul className="mt-1.5 space-y-1">
-            {[
-              t("order.ciNoteName"),
-              t("order.ciNoteEmail"),
-              isExport ? t("order.ciNoteAddressExport") : t("order.ciNoteAddress"),
-            ].map(
-              (n) => (
-                <li key={n} className="flex gap-2">
-                  <span className="mt-2 size-1 shrink-0 rounded-full bg-muted-2" />
-                  <span>{n}</span>
-                </li>
-              ),
-            )}
-          </ul>
-        </div>
-      </Card>
-
       <form
         onSubmit={handleSubmit(
           (d) => save(d as unknown as Record<string, unknown>),
-          () => toast.error(t("calc.invalidTitle")),
+          () => toast.error(t("order.formInvalidToast")),
         )}
         className="space-y-4"
       >
@@ -152,6 +130,14 @@ export function CustomerInfoForm() {
             countryLocked={!isExport}
             countryRequired={false}
             phoneLabelKey="order.ciPhoneDestination"
+            // what the packing list will change, said where it applies
+            hints={{
+              fullName: t("order.ciNoteName"),
+              email: t("order.ciNoteEmail"),
+              address: isExport
+                ? t("order.ciNoteAddressExport")
+                : t("order.ciNoteAddress"),
+            }}
           />
         </Card>
 
@@ -159,7 +145,7 @@ export function CustomerInfoForm() {
         <Card className="space-y-4 p-5">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <h2 className="font-display font-semibold">{t("order.ciSectionOwner")}</h2>
-            <div className="flex gap-1">
+            <div className="flex flex-wrap justify-end gap-1">
               <Button type="button" variant="ghost" size="sm" onClick={() => ownerFrom("sender")}>
                 <Copy className="size-3.5" /> {t("order.ciSameAsSender")}
               </Button>
