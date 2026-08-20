@@ -108,6 +108,12 @@ components:
     rounded: "{rounded.md}"
     height: "2.5rem"
     padding: "0 1rem"
+  button-dashed:
+    backgroundColor: "transparent"
+    textColor: "{colors.muted}"
+    rounded: "{rounded.md}"
+    height: "2.5rem"
+    padding: "0 1rem"
   card:
     backgroundColor: "{colors.surface}"
     textColor: "{colors.foreground}"
@@ -383,14 +389,28 @@ like an accident.
 
 ### Buttons
 - **Shape:** `rounded-md` (16px); sizes `sm` (h-2rem), `md` (h-2.5rem, default), `lg` (h-3rem);
-  icon-only is a 2.5rem square. Icons auto-sized to 16px, `gap-2` from the label.
+  icon-only squares at `icon` (2.5rem), `icon-sm` (2.25rem) and `icon-xs` (1.75rem, icon steps
+  down to 14px). Icons auto-sized to 16px, `gap-2` from the label.
 - **Primary:** Live Lime fill + Ink-on-Lime text, `font-semibold`, flat (no keyline, no glow).
 - **Hover / Focus:** Primary shifts to Live Lime Dim; all buttons show a `ring-2
   ring-foreground/60` on `:focus-visible` — the focus ring is **ink, not lime**, because a lime
   ring on white fails the 3:1 non-text contrast requirement.
-- **Secondary / Outline / Ghost / Danger:** Secondary = Panel 2 fill + Hairline-Strong border;
-  Outline = transparent + Hairline-Strong border; Ghost = Dim/Readout text, hover fills Panel 2;
-  Danger = `danger/15` tint + `danger/30` border + Stop Red text.
+- **Secondary / Ghost / Dashed / Danger:** Secondary = Panel 2 fill + Hairline-Strong border
+  (the former Outline variant was merged into it); Ghost = Dim/Readout text, hover fills Panel 2 —
+  it also skins every icon-only button (copy, remove, stepper, calendar nav); Dashed = transparent
+  with a dashed Hairline-Strong border and regular-weight Dim text, reserved for the "add something
+  that isn't here yet" affordance (add package, add document, upload dropzone); Danger =
+  `danger/15` tint + `danger/30` border + Stop Red text.
+- **Loading:** the `loading` prop is the one official busy state — a spinning indicator in front
+  of the label, `aria-busy`, and the button disables itself so it can't be double-fired. No
+  hand-rolled spinners inside buttons.
+- **Header icon pills:** the round header trio (menu / account / notifications) is its own
+  `IconPillButton` primitive — a 2.25rem `rounded-full` Panel-2 pill with a hairline border,
+  echoing the capsule geometry (see Navigation).
+
+**The One-Role-One-Variant Rule.** Five variants, no overlap: one lime voice per screen (brand),
+one bordered alternative (secondary), one quiet tertiary (ghost), one dashed "add" affordance,
+one destructive tint (danger). A new button style must replace one of these, not join them.
 
 ### Chips / Badges
 - **Style:** full pill, `px-3 py-1`, `text-xs font-medium`. Status variants follow the Tint-15/25
