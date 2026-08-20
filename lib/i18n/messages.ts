@@ -163,6 +163,12 @@ const id = {
   carrier: {
     eyebrow: "Dikirim bersama partner kurir tepercaya",
   },
+  guides: {
+    heading: "Baca ini sebelum kirim",
+    subtitle:
+      "Cara bea cukai memperlakukan barang pribadimu, dan cara kami menghitung quotation. Dua panduan ini menjawab hampir semua pertanyaan.",
+    cta: "Lihat semua artikel",
+  },
   testimonial: {
     eyebrow: "Dipercaya pelanggan",
     heading: "Sudah pindah, tanpa drama.",
@@ -1426,6 +1432,12 @@ const en: Messages = {
   },
   carrier: {
     eyebrow: "Shipped with trusted carrier partners",
+  },
+  guides: {
+    heading: "Read this before you ship",
+    subtitle:
+      "How customs treats your personal belongings, and how we build your quotation. These two guides answer almost everything.",
+    cta: "Browse all articles",
   },
   testimonial: {
     eyebrow: "Trusted by customers",

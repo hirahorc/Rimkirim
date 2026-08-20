@@ -6,12 +6,24 @@ import { TestimonialSection } from "@/components/landing/TestimonialSection";
 import { CarrierSection } from "@/components/landing/CarrierSection";
 import { FaqTeaser } from "@/components/landing/FaqTeaser";
 import { CookieConsent } from "@/components/landing/CookieConsent";
+import { GuideSpotlight } from "@/components/landing/GuideSpotlight";
+import { getAllArticles } from "@/lib/articles";
+
+/** The two flagship guides, both language pairs, customs guide first. */
+const GUIDE_SLUGS = [
+  "panduan-kepabeanan-barang-pindahan-ke-indonesia",
+  "indonesia-customs-guide-personal-belongings",
+  "cara-rimkirim-menghitung-biaya-kirim",
+  "how-rimkirim-prices-your-shipment",
+];
 
 export const metadata: Metadata = {
   alternates: { canonical: "/" },
 };
 
 export default function Home() {
+  const all = getAllArticles();
+  const guides = GUIDE_SLUGS.flatMap((s) => all.find((a) => a.slug === s) ?? []);
   return (
     <>
       <Hero />
@@ -26,6 +38,7 @@ export default function Home() {
       <WhySection />
       <TestimonialSection />
       <CarrierSection />
+      <GuideSpotlight articles={guides} />
       <FaqTeaser />
       <CookieConsent />
     </>
