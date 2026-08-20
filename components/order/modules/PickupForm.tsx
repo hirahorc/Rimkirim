@@ -3,7 +3,6 @@
 import * as React from "react";
 
 import { useForm, Controller } from "react-hook-form";
-import { toast } from "sonner";
 import { Copy, Check, Minus, Plus } from "lucide-react";
 import { useOrderStore } from "@/lib/store/useOrderStore";
 import { INDONESIA } from "@/lib/data/countries";
@@ -14,8 +13,15 @@ import { Input, Textarea } from "@/components/ui/input";
 import { DatePicker, todayIso } from "@/components/ui/date-picker";
 import { Button } from "@/components/ui/button";
 import { SelectField } from "@/components/ui/select-field";
-import { DialCodeSelect } from "@/components/order/DialCodeSelect";
-import { ModuleShell, useSaveModule, readModuleData, Field } from "./shared";
+import {
+  ModuleShell,
+  useSaveModule,
+  useInvalidHandler,
+  useDraftAutosave,
+  readModuleData,
+  Field,
+} from "./shared";
+import { PhoneInput } from "@/components/shared/forms/PhoneInput";
 import { cn } from "@/lib/utils/cn";
 
 interface PickupData {
@@ -57,8 +63,11 @@ export function PickupForm() {
     handleSubmit,
     setValue,
     watch,
-    formState: { errors },
+    getValues,
+    formState: { errors, isDirty },
   } = useForm<PickupData>({
+    // focus is handled by useInvalidHandler, in document order
+    shouldFocusError: false,
     defaultValues: {
       picName: "",
       buildingType: "",
@@ -75,6 +84,12 @@ export function PickupForm() {
     },
   });
   const req = { required: t("err.required") };
+  const onInvalid = useInvalidHandler();
+  useDraftAutosave(
+    "pickup",
+    getValues as unknown as () => Record<string, unknown>,
+    isDirty,
+  );
   // shared buildings (anything but a house) have access logistics the courier
   // needs; a house — and the unselected placeholder — asks neither
   const needsAccessQs =
@@ -90,9 +105,10 @@ export function PickupForm() {
   return (
     <ModuleShell moduleId="pickup">
       <form
+        noValidate
         onSubmit={handleSubmit(
           (d) => save(d as unknown as Record<string, unknown>),
-          () => toast.error(t("order.formInvalidToast")),
+          onInvalid,
         )}
         className="space-y-4"
       >
@@ -105,7 +121,7 @@ export function PickupForm() {
               {t("order.puSecDetails")}
             </h2>
             {sender && (
-              <Button type="button" variant="ghost" size="sm" onClick={fillFromSender}>
+              <Button type="button" variant="ghost" size="sm" className="min-h-9" onClick={fillFromSender}>
                 <Copy className="size-3.5" /> {t("order.puSameAsSender")}
               </Button>
             )}
@@ -116,18 +132,14 @@ export function PickupForm() {
               <Input placeholder={t("order.puPhName")} {...register("picName", req)} />
             </Field>
             <Field label={t("order.puPicPhone")} error={errors.picPhone?.message}>
-              <div className="flex gap-2">
-                <div className="w-28 shrink-0">
-                  <Controller
-                    control={control}
-                    name="picPhoneCountry"
-                    render={({ field }) => (
-                      <DialCodeSelect value={field.value || ""} onChange={field.onChange} />
-                    )}
-                  />
-                </div>
-                <Input className="flex-1" placeholder={t("order.puPhPhone")} {...register("picPhone", req)} />
-              </div>
+              {/* PhoneInput forwards Field's id/aria wiring to the number input */}
+              <PhoneInput
+                control={control}
+                register={register}
+                codeName="picPhoneCountry"
+                numberName="picPhone"
+                placeholder={t("order.puPhPhone")}
+              />
             </Field>
           </div>
 

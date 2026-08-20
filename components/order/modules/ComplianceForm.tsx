@@ -92,7 +92,7 @@ export function ComplianceForm() {
 
   return (
     <ModuleShell moduleId="compliance">
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      <form noValidate onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <Card className="space-y-4 p-5">
           <h2 className="font-display font-semibold">{t("order.coHeading")}</h2>
           {/* each doc is one unit (label + timing pill → control → help); the

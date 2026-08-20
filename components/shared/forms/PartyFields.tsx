@@ -59,7 +59,11 @@ export function PartyFields<T extends FieldValues & PartyForm>({
       >
         <Input placeholder={t("order.ciPhName")} {...register(p("fullName"), req)} />
       </Field>
-      <Field label={t("order.ciCountry")} error={e?.country?.message}>
+      <Field
+        label={t("order.ciCountry")}
+        hint={countryLocked ? t("order.ciCountryLockedNote") : undefined}
+        error={e?.country?.message}
+      >
         <Controller
           control={control}
           name={p("country")}
@@ -83,7 +87,14 @@ export function PartyFields<T extends FieldValues & PartyForm>({
       </Field>
       <div className="grid gap-4 sm:grid-cols-2">
         <Field label={t("order.ciEmail")} hint={hints?.email} error={e?.email?.message}>
-          <Input type="email" placeholder={t("order.ciPhEmail")} {...register(p("email"), req)} />
+          <Input
+            type="email"
+            placeholder={t("order.ciPhEmail")}
+            {...register(p("email"), {
+              ...req,
+              pattern: { value: /^\S+@\S+\.\S+$/, message: t("err.emailInvalid") },
+            })}
+          />
         </Field>
         <Field label={t(phoneLabelKey)} error={e?.phone?.message}>
           <PhoneInput

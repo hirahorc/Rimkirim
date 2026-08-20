@@ -153,33 +153,6 @@ export function PackagesEditor<T extends FieldValues & ItemsData>({
 
   return (
     <>
-      {/* currency — titled like every other lead card; the h2 is the field's
-          label, so the SelectField carries only an ariaLabel below */}
-      <Card className="space-y-4 p-5">
-        <h2 className="font-display font-semibold">{t("order.itCurrency")}</h2>
-        <Field hint={t("order.itCurrencyHelp")}>
-          <Controller
-            control={control}
-            name="currency"
-            render={({ field }) => (
-              <SelectField
-                value={field.value}
-                onChange={field.onChange}
-                ariaLabel={t("order.itCurrency")}
-                wrapperClassName="sm:max-w-xs"
-                searchable
-                searchPlaceholder={t("order.itCurrencySearch")}
-                emptyText={t("order.itCurrencyEmpty")}
-                options={CURRENCIES.map((c) => ({
-                  value: c.code,
-                  label: `${c.code} – ${c.name}`,
-                }))}
-              />
-            )}
-          />
-        </Field>
-        {currencyNote}
-      </Card>
 
       {/* packages section header: title + count, collapse control, jump chips */}
       <div className="space-y-2">
@@ -247,6 +220,34 @@ export function PackagesEditor<T extends FieldValues & ItemsData>({
       >
         <Plus className="size-4" /> {t("order.itAddPackage")}
       </button>
+
+      {/* currency — demoted below the packages: it is a customs-declaration
+          detail, not the reason the user came to this page */}
+      <Card className="space-y-4 p-5">
+        <h2 className="font-display font-semibold">{t("order.itCurrency")}</h2>
+        <Field hint={t("order.itCurrencyHelp")}>
+          <Controller
+            control={control}
+            name="currency"
+            render={({ field }) => (
+              <SelectField
+                value={field.value}
+                onChange={field.onChange}
+                ariaLabel={t("order.itCurrency")}
+                wrapperClassName="sm:max-w-xs"
+                searchable
+                searchPlaceholder={t("order.itCurrencySearch")}
+                emptyText={t("order.itCurrencyEmpty")}
+                options={CURRENCIES.map((c) => ({
+                  value: c.code,
+                  label: `${c.code} – ${c.name}`,
+                }))}
+              />
+            )}
+          />
+        </Field>
+        {currencyNote}
+      </Card>
 
       {/* totals */}
       <Card
@@ -377,7 +378,7 @@ function PackageBlock({
           <button
             type="button"
             onClick={onRemove}
-            className="inline-flex shrink-0 items-center gap-1 text-xs text-muted transition-colors hover:text-danger"
+            className="-my-2 inline-flex min-h-9 shrink-0 items-center gap-1 py-2 text-xs text-muted transition-colors hover:text-danger"
           >
             <Trash2 className="size-3.5" /> {t("order.itRemove")}
           </button>
@@ -438,7 +439,7 @@ function PackageBlock({
                     <button
                       type="button"
                       onClick={() => remove(j)}
-                      className="inline-flex items-center gap-1 text-xs text-muted transition-colors hover:text-danger"
+                      className="-my-2 inline-flex min-h-9 items-center gap-1 py-2 text-xs text-muted transition-colors hover:text-danger"
                     >
                       <Trash2 className="size-3.5" /> {t("order.itRemove")}
                     </button>
@@ -455,12 +456,13 @@ function PackageBlock({
                     <Input type="number" min="1" placeholder="0" {...register(`packages.${index}.items.${j}.quantity`, { valueAsNumber: true })} />
                   </Field>
                   <Field label={t("order.itColValue")}>
-                    <div className="relative">
-                      <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-xs text-muted-2">
-                        {currency}
-                      </span>
-                      <Input type="number" min="0" placeholder="0" className="pl-12" {...register(`packages.${index}.items.${j}.value`, { valueAsNumber: true })} />
-                    </div>
+                    <PrefixedInput
+                      prefix={currency}
+                      type="number"
+                      min="0"
+                      placeholder="0"
+                      {...register(`packages.${index}.items.${j}.value`, { valueAsNumber: true })}
+                    />
                   </Field>
                 </div>
 
@@ -529,3 +531,17 @@ function PackageBlock({
     </Card>
   );
 }
+
+/** An Input with a quiet currency prefix; forwards `Field`'s wiring to the input. */
+const PrefixedInput = React.forwardRef<
+  HTMLInputElement,
+  React.InputHTMLAttributes<HTMLInputElement> & { prefix: string }
+>(({ prefix, className, ...props }, ref) => (
+  <div className="relative">
+    <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-xs text-muted-2">
+      {prefix}
+    </span>
+    <Input ref={ref} className={cn("pl-12", className)} {...props} />
+  </div>
+));
+PrefixedInput.displayName = "PrefixedInput";

@@ -488,6 +488,19 @@ body {
 
 /* Route-card radio: the lime check pops in (scale from the dot) in 100ms,
    same clock as the tooltip, so choosing a route feels like a stamp landing. */
+/* One-time pop when the pickup card unlocks: the flow's biggest milestone
+   gets its single earned animation (springy scale, then settle). */
+@keyframes unlock-pop {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.02); }
+  100% { transform: none; }
+}
+.unlock-pop {
+  /* the overshoot lives in the keyframes (1 -> 1.02 -> 1); the easing itself
+     stays exponential per the system's motion grammar */
+  animation: unlock-pop 450ms cubic-bezier(0.22, 1, 0.36, 1) 200ms both;
+}
+
 @keyframes radio-check-in {
   from { transform: scale(0.4); opacity: 0; }
   to { transform: none; opacity: 1; }
@@ -498,7 +511,8 @@ body {
 
 /* Respect users who prefer reduced motion: show everything, no movement. */
 @media (prefers-reduced-motion: reduce) {
-  .radio-check-in {
+  .radio-check-in,
+  .unlock-pop {
     animation: none !important;
   }
   /* the panel's translate is its centring, so only the animation goes */

@@ -20,12 +20,14 @@ export function PhoneInput<T extends FieldValues>({
   register,
   codeName,
   numberName,
+  placeholder,
   ...wiring
 }: {
   control: Control<T>;
   register: UseFormRegister<T>;
   codeName: FieldPath<T>;
   numberName: FieldPath<T>;
+  placeholder?: string;
 } & Pick<
   React.InputHTMLAttributes<HTMLInputElement>,
   "id" | "aria-invalid" | "aria-describedby"
@@ -47,7 +49,7 @@ export function PhoneInput<T extends FieldValues>({
       </div>
       <Input
         className="flex-1"
-        placeholder={t("order.ciPhPhone")}
+        placeholder={placeholder ?? t("order.ciPhPhone")}
         {...wiring}
         {...register(numberName, { required: t("err.required") })}
       />

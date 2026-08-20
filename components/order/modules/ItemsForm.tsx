@@ -2,7 +2,6 @@
 
 import * as React from "react";
 import { useForm } from "react-hook-form";
-import { toast } from "sonner";
 import { Package } from "lucide-react";
 import { useOrderStore } from "@/lib/store/useOrderStore";
 import { useCalculatorStore } from "@/lib/store/useCalculatorStore";
@@ -26,7 +25,13 @@ import {
   firstMissingPhotos,
   type PackagesEditorHandle,
 } from "@/components/shared/forms/PackagesEditor";
-import { ModuleShell, useSaveModule, readModuleData } from "./shared";
+import {
+  ModuleShell,
+  useSaveModule,
+  useInvalidHandler,
+  useDraftAutosave,
+  readModuleData,
+} from "./shared";
 
 export function ItemsForm() {
   const t = useT();
@@ -42,8 +47,11 @@ export function ItemsForm() {
     control,
     handleSubmit,
     watch,
-    formState: { errors },
+    getValues,
+    formState: { errors, isDirty },
   } = useForm<ItemsData>({
+    // focus is handled by useInvalidHandler, in document order
+    shouldFocusError: false,
     defaultValues: {
       currency:
         prev.currency ??
@@ -53,6 +61,13 @@ export function ItemsForm() {
       packages: prev.packages?.length ? prev.packages : [structuredClone(emptyPackage)],
     },
   });
+
+  const onInvalid = useInvalidHandler();
+  useDraftAutosave(
+    "items",
+    getValues as unknown as () => Record<string, unknown>,
+    isDirty,
+  );
 
   const packages = watch("packages") ?? [];
   const totalCw = totalChargeableWeight(
@@ -92,9 +107,10 @@ export function ItemsForm() {
     <TooltipProvider delayDuration={150}>
     <ModuleShell moduleId="items">
       <form
-        onSubmit={handleSubmit(onValid, () => {
+        noValidate
+        onSubmit={handleSubmit(onValid, (errs) => {
           editorRef.current?.expandAll(); // surface errors hidden inside collapsed packages
-          toast.error(t("order.formInvalidToast"));
+          onInvalid(errs);
         })}
         className="space-y-4"
       >
@@ -126,7 +142,12 @@ export function ItemsForm() {
               mono: true,
             },
           ]}
-          totalsNote={t("order.itEstimateNote")}
+          // a bare dash on the money line reads as a bug; say why it is empty
+          totalsNote={
+            totalPrice === null
+              ? t("order.itNoRateNote")
+              : t("order.itEstimateNote")
+          }
         />
 
         <Button type="submit" size="lg" className="w-full">

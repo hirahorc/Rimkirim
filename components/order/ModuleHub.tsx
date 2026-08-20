@@ -121,6 +121,15 @@ export function ModuleHub() {
   // the module completed on the way here — its check draws once, and the
   // progress bar fills from the previous count instead of rendering done
   const [justDone] = React.useState(() => consumeJustSaved());
+  // the save that crossed the line: three chores done, pickup just came alive.
+  // One earned animation, once, plus a spoken announcement for SR users.
+  const justUnlocked =
+    justDone !== null &&
+    justDone !== "pickup" &&
+    isPickupUnlocked(modules) &&
+    modules.pickup.status !== "complete" &&
+    MODULE_META.filter((m) => modules[m.id as ModuleId].status === "complete")
+      .length === 3;
   const completeCount = MODULE_META.filter(
     (m) => modules[m.id as ModuleId].status === "complete",
   ).length;
@@ -310,6 +319,7 @@ export function ModuleHub() {
                 // the next card to fill gets the lime frame (the same "this
                 // one" signal the cheapest rate card uses)
                 !locked && (isNext ? "border-brand/50" : "hover:border-border-strong"),
+                m.id === "pickup" && justUnlocked && "unlock-pop",
               )}
             >
               <span
@@ -374,6 +384,12 @@ export function ModuleHub() {
           );
         })}
       </div>
+
+      {justUnlocked && (
+        <p role="status" className="sr-only">
+          {t("order.hubPickupUnlocked")}
+        </p>
+      )}
 
       {/* pickup locked note */}
       {!pickupUnlocked && (
