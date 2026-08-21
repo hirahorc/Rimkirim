@@ -20,13 +20,12 @@ import { cn } from "@/lib/utils/cn";
  * comparison instead of a bare "radio, not checked" (children of a radio are
  * presentational). Tapping anywhere on the card still picks it.
  *
- * sm+: two cards side by side sharing one subgrid so every spec lines up.
- * <sm: two compact radio cards, then ONE comparison list (label, A | B) so the
- * phone never has to scroll-remember a value from the other card.
+ * ONE tree for every size: each card carries its own spec rows. sm+ puts the
+ * two cards side by side on a shared subgrid so every spec lines up; below sm
+ * the same cards simply stack full-width, denser but structurally identical.
  */
 
 const KINDS: ClearanceKind[] = ["personal", "passenger"];
-type Scope = "m" | "d";
 
 /**
  * Spec rows in two groups: the ones that DECIDE the choice (tax, cap, window)
@@ -113,27 +112,26 @@ export function ClearanceOptions() {
   const changeAnswersHref =
     answers.livedLongEnough !== true ? "/pesan#q3" : "/pesan#q4";
 
-  // arrow keys move between the enabled radios (radiogroup convention); the
-  // phone and desktop layouts each own a set, only the visible one is reachable
+  // arrow keys move between the enabled radios (radiogroup convention)
   const radioRefs = React.useRef<Record<string, HTMLButtonElement | null>>({});
-  const moveFocus = (from: ClearanceKind, dir: 1 | -1, scope: Scope) => {
+  const moveFocus = (from: ClearanceKind, dir: 1 | -1) => {
     const enabledKinds = ordered.filter((k) => allowed[k]);
     if (enabledKinds.length < 2) return;
     const i = enabledKinds.indexOf(from);
     const next =
       enabledKinds[(i + dir + enabledKinds.length) % enabledKinds.length];
     pick(next);
-    radioRefs.current[`${scope}-${next}`]?.focus();
+    radioRefs.current[next]?.focus();
   };
 
   const onRadioKeyDown =
-    (k: ClearanceKind, scope: Scope) => (ev: React.KeyboardEvent) => {
+    (k: ClearanceKind) => (ev: React.KeyboardEvent) => {
       if (ev.key === "ArrowRight" || ev.key === "ArrowDown") {
         ev.preventDefault();
-        moveFocus(k, 1, scope);
+        moveFocus(k, 1);
       } else if (ev.key === "ArrowLeft" || ev.key === "ArrowUp") {
         ev.preventDefault();
-        moveFocus(k, -1, scope);
+        moveFocus(k, -1);
       } else if (ev.key === "Enter" || ev.key === " ") {
         ev.preventDefault();
         if (allowed[k]) pick(k);
@@ -143,33 +141,30 @@ export function ClearanceOptions() {
 
   // plain render helpers (not components) so the buttons keep their identity,
   // and their focus, across re-renders
-  const radioHead = (k: ClearanceKind, scope: Scope, compact = false) => {
+  const radioHead = (k: ClearanceKind) => {
     const enabled = allowed[k];
     const isSelected = enabled && selected === k;
-    const id = `cl-${scope}-${k}`;
+    const id = `cl-${k}`;
     return (
       <button
         type="button"
         ref={(el) => {
-          radioRefs.current[`${scope}-${k}`] = el;
+          radioRefs.current[k] = el;
         }}
         role="radio"
         aria-checked={isSelected}
         aria-disabled={!enabled}
         aria-labelledby={`${id}-title`}
         aria-describedby={
-          enabled
-            ? scope === "d" ? `${id}-specs` : "cl-m-specs"
-            : `${id}-locked ${scope === "d" ? `${id}-specs` : "cl-m-specs"}`
+          enabled ? `${id}-specs` : `${id}-locked ${id}-specs`
         }
         // a locked route stays reachable by Tab so its reason (and the way to
         // change it) is announced, it just can't be checked
         tabIndex={0}
-        onKeyDown={onRadioKeyDown(k, scope)}
+        onKeyDown={onRadioKeyDown(k)}
         // the focus ring is drawn by the card (has-[[role=radio]:focus-visible])
         className={cn(
-          "flex w-full items-start gap-3 text-left outline-hidden",
-          compact ? "p-4" : "p-5 sm:p-6",
+          "flex w-full items-start gap-3 p-4 text-left outline-hidden sm:p-6",
           !enabled && "cursor-default",
         )}
       >
@@ -193,8 +188,7 @@ export function ClearanceOptions() {
           <span
             id={`${id}-title`}
             className={cn(
-              "block font-display font-semibold leading-tight tracking-tight",
-              compact ? "text-lg" : "text-xl",
+              "block font-display text-lg font-semibold leading-tight tracking-tight sm:text-xl",
               !enabled && "text-muted",
             )}
           >
@@ -209,10 +203,10 @@ export function ClearanceOptions() {
   };
 
   /** Why the route is locked, as real (reachable) content outside the radio. */
-  const lockedReason = (k: ClearanceKind, scope: Scope, className: string) => (
+  const lockedReason = (k: ClearanceKind) => (
     <p
-      id={`cl-${scope}-${k}-locked`}
-      className={cn("text-xs leading-relaxed text-muted", className)}
+      id={`cl-${k}-locked`}
+      className="-mt-1 px-4 pb-4 text-xs leading-relaxed text-muted sm:-mt-2 sm:px-6 sm:pb-6"
     >
       <span className="font-medium text-foreground">
         {t("order.clLockedTitle")}
@@ -270,7 +264,7 @@ export function ClearanceOptions() {
     />
   );
 
-  // card chrome shared by both layouts
+  // card chrome
   const cardClass = (k: ClearanceKind) => {
     const enabled = allowed[k];
     const isSelected = enabled && selected === k;
@@ -286,9 +280,6 @@ export function ClearanceOptions() {
       "has-[[role=radio]:focus-visible]:outline-2 has-[[role=radio]:focus-visible]:outline-offset-4 has-[[role=radio]:focus-visible]:outline-solid has-[[role=radio]:focus-visible]:outline-foreground/60",
     );
   };
-
-  // which phone column is chosen (-1 = none)
-  const selectedCol = selected ? ordered.indexOf(selected) : -1;
 
   const eligibleLine = soleAvailable
     ? t("order.clEligibleFor").replace(
@@ -334,12 +325,13 @@ export function ClearanceOptions() {
           </p>
         </header>
 
-        {/* ---------- sm+: two cards on one subgrid ---------- */}
+        {/* one tree: stacked full cards below sm, two cards on one shared
+          subgrid from sm up so every spec row lines up across the pair */}
         <div
           role="radiogroup"
           aria-label={t("order.clTitle")}
           className={cn(
-            "hidden gap-4 sm:grid sm:grid-rows-[auto_auto_repeat(5,auto)]",
+            "grid grid-cols-1 gap-4 sm:grid-rows-[auto_auto_repeat(5,auto)]",
             // sole state: the route you can take gets the wider desk
             soleAvailable ? "sm:grid-cols-[3fr_2fr]" : "sm:grid-cols-2",
           )}
@@ -352,27 +344,26 @@ export function ClearanceOptions() {
                 onClick={() => pick(k)}
                 className={cn(
                   cardClass(k),
-                  "grid sm:row-span-full sm:grid-rows-subgrid",
+                  "sm:row-span-full sm:grid sm:grid-rows-subgrid",
                 )}
               >
-                {radioHead(k, "d")}
+                {radioHead(k)}
                 {/* the locked reason has its own subgrid row, so the live
                   card's header never stretches to match it */}
                 <div className="border-b border-border">
-                  {!enabled &&
-                    lockedReason(k, "d", "-mt-2 px-5 pb-5 sm:px-6 sm:pb-6")}
+                  {!enabled && lockedReason(k)}
                 </div>
                 {/* specs: label over value, one per subgrid row; the radio
                   points here with aria-describedby */}
-                <div id={`cl-d-${k}-specs`} className="contents">
+                <div id={`cl-${k}-specs`} className="contents">
                   {ROWS.map((row, ri) => (
                     <div
                       key={row.key}
                       className={cn(
-                        "px-5 py-4 sm:px-6",
+                        "px-4 py-3.5 sm:px-6 sm:py-4",
                         ri < ROWS.length - 1 && "border-b border-border/70",
                         // the group break is a full-strength hairline, not a band
-                        GROUP_STARTS.prepare === ri && "pt-5",
+                        GROUP_STARTS.prepare === ri && "pt-4 sm:pt-5",
                         GROUP_STARTS.prepare === ri + 1 && "border-border",
                       )}
                     >
@@ -385,95 +376,6 @@ export function ClearanceOptions() {
               </div>
             );
           })}
-        </div>
-
-        {/* ---------- <sm: compact radios, then one comparison list ---------- */}
-        <div className="sm:hidden">
-          <div
-            role="radiogroup"
-            aria-label={t("order.clTitle")}
-            className="grid gap-3"
-          >
-            {ordered.map((k) => {
-              const enabled = allowed[k];
-              return (
-                <div key={k} onClick={() => pick(k)} className={cardClass(k)}>
-                  {radioHead(k, "m", true)}
-                  {!enabled && lockedReason(k, "m", "-mt-1 px-4 pb-4")}
-                </div>
-              );
-            })}
-          </div>
-
-          {/* the comparison: one list, both routes per row, columns in the same
-            order as the radios above. The column headers pick too, and the
-            chosen column wears the same lime wash as its card, so what you
-            read and what you tapped are visibly the same thing. Both radios
-            are described by this one list. */}
-          <div
-            id="cl-m-specs"
-            className="mt-6 overflow-hidden rounded-lg border border-border"
-          >
-            <div className="grid grid-cols-2 border-b border-border">
-              {ordered.map((k) => {
-                const isSel = allowed[k] && selected === k;
-                return (
-                  <button
-                    key={k}
-                    type="button"
-                    tabIndex={-1}
-                    aria-hidden
-                    disabled={!allowed[k]}
-                    onClick={() => pick(k)}
-                    className={cn(
-                      "flex items-center gap-1.5 px-4 py-2.5 text-left text-xs font-medium uppercase tracking-[0.04em]",
-                      isSel ? "bg-brand-soft/15 text-foreground" : "text-muted-2",
-                      !allowed[k] && "text-muted-2",
-                    )}
-                  >
-                    {isSel && <Check className="size-3.5 shrink-0" strokeWidth={3} />}
-                    {!allowed[k] && <Lock className="size-3 shrink-0" strokeWidth={2.5} />}
-                    {t(`${PREFIX[k]}Title`)}
-                  </button>
-                );
-              })}
-            </div>
-            {ROWS.map((row, ri) => (
-              <div
-                key={row.key}
-                className={cn(
-                  "relative px-4 pb-3 pt-3",
-                  ri < ROWS.length - 1 && "border-b border-border/70",
-                  GROUP_STARTS.prepare === ri && "pt-4",
-                  GROUP_STARTS.prepare === ri + 1 && "border-border",
-                )}
-              >
-                {/* the wash is one half-width layer behind the whole row, so
-                  the chosen column reads as a single continuous column from
-                  the header to the last row, labels included */}
-                {selectedCol !== -1 && (
-                  <div
-                    aria-hidden
-                    className={cn(
-                      "pointer-events-none absolute inset-y-0 w-1/2 bg-brand-soft/15",
-                      selectedCol === 0 ? "left-0" : "right-0",
-                    )}
-                  />
-                )}
-                <div className="relative">
-                  {groupEyebrow(ri)}
-                  {rowLabel(row)}
-                  <div className="-mx-4 grid grid-cols-2">
-                    {ordered.map((k) => (
-                      <div key={k} className="px-4">
-                        {cell(k, row)}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
         </div>
 
         {/* on phones the button sticks to the bottom once a route is chosen, so
