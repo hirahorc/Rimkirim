@@ -1,18 +1,18 @@
 import type { Metadata } from "next";
 import { Faq } from "@/components/faq/Faq";
-import { FAQ_TABS, type FaqItem } from "@/lib/data/faq";
+import { faqTabs, type FaqItem } from "@/lib/data/faq";
 
 // FAQPage structured data, generated from the same source as the page so it
-// can never drift. The two service tabs share most questions; dedupe by
-// question text so Google sees each once.
+// can never drift. Emitted in Indonesian (the page's default render); the
+// two service tabs share most questions, so dedupe by slug.
 function faqJsonLd() {
   const seen = new Set<string>();
   const items: FaqItem[] = [];
-  for (const tab of FAQ_TABS)
+  for (const tab of faqTabs("id"))
     for (const cat of tab.categories)
       for (const f of cat.faqs)
-        if (!seen.has(f.q)) {
-          seen.add(f.q);
+        if (!seen.has(f.slug)) {
+          seen.add(f.slug);
           items.push(f);
         }
   return {

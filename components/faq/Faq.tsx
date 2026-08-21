@@ -1,10 +1,9 @@
 "use client";
 
 import * as React from "react";
-import { Check, ChevronDown, Info, Search, X, MessageCircle } from "lucide-react";
+import { Check, ChevronDown, Search, X, MessageCircle } from "lucide-react";
 import {
-  FAQ_TABS,
-  faqSlug,
+  faqTabs,
   type FaqTab,
   type FaqCategory,
   type FaqItem,
@@ -44,7 +43,8 @@ export function Faq() {
   const { locale } = useLanguage();
   const [tabId, setTabId] = React.useState<TabId>("bfg");
   const [query, setQuery] = React.useState("");
-  const tab = FAQ_TABS.find((x) => x.id === tabId) ?? FAQ_TABS[0];
+  const tabs = faqTabs(locale);
+  const tab = tabs.find((x) => x.id === tabId) ?? tabs[0];
 
   // A #slug in the URL that still needs opening; kept across the tab switch
   // its owner may require, cleared once the element exists.
@@ -68,8 +68,9 @@ export function Faq() {
     const adoptHash = () => {
       const slug = decodeURIComponent(window.location.hash.slice(1));
       if (!slug) return;
-      const owner = FAQ_TABS.find((x) =>
-        x.categories.some((c) => c.faqs.some((f) => faqSlug(f.q) === slug)),
+      // slugs are locale-independent, so any locale's tree can answer this
+      const owner = faqTabs("id").find((x) =>
+        x.categories.some((c) => c.faqs.some((f) => f.slug === slug)),
       );
       if (!owner) return;
       pendingSlug.current = slug;
@@ -117,18 +118,18 @@ export function Faq() {
   const searching = q.length > 0;
 
   // Filter to categories with matching questions (match on question + answer,
-  // so content is findable too), dropping empty categories.
-  const filtered: FaqCategory[] = React.useMemo(() => {
-    if (!searching) return tab.categories;
-    return tab.categories
-      .map((cat) => ({
-        ...cat,
-        faqs: cat.faqs.filter((f) =>
-          `${f.q} ${f.a}`.toLowerCase().includes(q),
-        ),
-      }))
-      .filter((cat) => cat.faqs.length > 0);
-  }, [tab, q, searching]);
+  // so content is findable too), dropping empty categories. Cheap enough to
+  // run per render; the React Compiler memoizes it.
+  const filtered: FaqCategory[] = !searching
+    ? tab.categories
+    : tab.categories
+        .map((cat) => ({
+          ...cat,
+          faqs: cat.faqs.filter((f) =>
+            `${f.q} ${f.a}`.toLowerCase().includes(q),
+          ),
+        }))
+        .filter((cat) => cat.faqs.length > 0);
 
   const resultCount = searching
     ? filtered.reduce((n, c) => n + c.faqs.length, 0)
@@ -149,15 +150,6 @@ export function Faq() {
           </p>
         </header>
 
-        {/* the Q&A corpus is Indonesian-only for now; say so in EN mode
-            instead of looking broken to an English reader */}
-        {locale === "en" && (
-          <div className="mx-auto mt-6 flex max-w-md items-start gap-2.5 rounded-md border border-border bg-surface-2/60 p-3.5 text-sm text-muted">
-            <Info className="mt-0.5 size-4 shrink-0 text-muted-2" aria-hidden="true" />
-            <p>{t("faq.enNotice")}</p>
-          </div>
-        )}
-
         {/* service tabs — centered on the page. SegmentedRoot is inline-flex,
             so mx-auto can't center it; a flex-justify-center wrapper does. */}
         <div className="mt-8 flex justify-center">
@@ -167,7 +159,7 @@ export function Faq() {
             onValueChange={(v) => v && setTabId(v as TabId)}
             className="max-w-md"
           >
-            {FAQ_TABS.map((x) => (
+            {tabs.map((x) => (
               <SegmentedItem key={x.id} value={x.id}>
                 {x.label}
               </SegmentedItem>
@@ -225,15 +217,15 @@ export function Faq() {
               </div>
             ) : (
               // search results show the answer directly — no extra click to read
-              <div lang="id" className="mt-8 space-y-12">
+              <div className="mt-8 space-y-12">
                 {filtered.map((cat) => (
-                  <div key={cat.name}>
+                  <div key={cat.slug}>
                     <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-2">
                       {cat.name}
                     </h2>
                     <div className="mt-1 divide-y divide-border">
                       {cat.faqs.map((f) => (
-                        <div key={f.q} className="py-4">
+                        <div key={f.slug} className="py-4">
                           <p className="text-sm font-medium text-foreground">
                             {f.q}
                           </p>
@@ -250,27 +242,19 @@ export function Faq() {
           </>
         ) : (
           <>
-            {/* direction note (Moving Abroad) */}
-            {tab.note && (
-              <div className="mt-6 flex items-start gap-2.5 rounded-md border border-border bg-surface-2/60 p-3.5 text-sm text-muted">
-                <Info className="mt-0.5 size-4 shrink-0 text-muted-2" />
-                <p>{tab.note}</p>
-              </div>
-            )}
-
             {/* categories → Q/A accordions. No card container: the wide gap between
                 categories vs the hairline between questions carries the hierarchy. */}
-            <div lang="id" className="mt-10 space-y-12">
+            <div className="mt-10 space-y-12">
               {tab.categories.map((cat) => (
-                <div key={cat.name}>
+                <div key={cat.slug}>
                   <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-2">
                     {cat.name}
                   </h2>
                   <div className="mt-1 divide-y divide-border">
                     {cat.faqs.map((f) => (
                       <details
-                        key={f.q}
-                        id={faqSlug(f.q)}
+                        key={f.slug}
+                        id={f.slug}
                         className="group scroll-mt-24"
                       >
                         <summary className="flex cursor-pointer list-none items-center justify-between gap-3 py-4 text-sm font-medium text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/50 [&::-webkit-details-marker]:hidden">
