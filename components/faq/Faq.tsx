@@ -1,21 +1,117 @@
 "use client";
 
 import * as React from "react";
-import { ChevronDown, Info, Search, X, MessageCircle } from "lucide-react";
-import { FAQ_TABS, type FaqTab, type FaqCategory } from "@/lib/data/faq";
+import { Check, ChevronDown, Info, Search, X, MessageCircle } from "lucide-react";
+import {
+  FAQ_TABS,
+  faqSlug,
+  type FaqTab,
+  type FaqCategory,
+  type FaqItem,
+} from "@/lib/data/faq";
 import { SegmentedRoot, SegmentedItem } from "@/components/ui/toggle-group";
 import { Button } from "@/components/ui/button";
-import { useT } from "@/lib/i18n/LanguageProvider";
+import { useT, useLanguage } from "@/lib/i18n/LanguageProvider";
 
 type TabId = FaqTab["id"];
 
 const WA_URL = "https://wa.me/6281234567890";
 
+const isTabId = (v: string | null): v is TabId =>
+  v === "bfg" || v === "moving-abroad";
+
+/** answer text plus the optional document checklist, shared by both views */
+function AnswerBody({ f }: { f: FaqItem }) {
+  return (
+    <div className="max-w-[65ch] text-sm leading-relaxed text-muted">
+      <p>{f.a}</p>
+      {f.list && (
+        <ul className="mt-2.5 space-y-1.5">
+          {f.list.map((item) => (
+            <li key={item} className="flex items-start gap-2">
+              <Check className="mt-0.5 size-3.5 shrink-0 text-muted-2" aria-hidden="true" />
+              <span>{item}</span>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
+
 export function Faq() {
   const t = useT();
+  const { locale } = useLanguage();
   const [tabId, setTabId] = React.useState<TabId>("bfg");
   const [query, setQuery] = React.useState("");
   const tab = FAQ_TABS.find((x) => x.id === tabId) ?? FAQ_TABS[0];
+
+  // A #slug in the URL that still needs opening; kept across the tab switch
+  // its owner may require, cleared once the element exists.
+  const pendingSlug = React.useRef<string | null>(null);
+
+  // Open + scroll to the pending deep-linked question if it is rendered.
+  const openPendingSlug = React.useCallback(() => {
+    const slug = pendingSlug.current;
+    if (!slug) return;
+    const el = document.getElementById(slug);
+    if (!(el instanceof HTMLDetailsElement)) return; // other tab not painted yet
+    pendingSlug.current = null;
+    el.open = true;
+    el.scrollIntoView({ block: "start" });
+  }, []);
+
+  // Adopt shared state from the URL: ?tab= and ?q= restore the view on
+  // arrival, #slug deep-links one question (switching tabs if it lives on
+  // the other one). Also follows in-page hash changes, e.g. a footer link.
+  React.useEffect(() => {
+    const adoptHash = () => {
+      const slug = decodeURIComponent(window.location.hash.slice(1));
+      if (!slug) return;
+      const owner = FAQ_TABS.find((x) =>
+        x.categories.some((c) => c.faqs.some((f) => faqSlug(f.q) === slug)),
+      );
+      if (!owner) return;
+      pendingSlug.current = slug;
+      setTabId(owner.id);
+      openPendingSlug(); // already on the right tab: open now
+    };
+
+    const sp = new URLSearchParams(window.location.search);
+    const urlTab = sp.get("tab");
+    const urlQ = sp.get("q");
+    // One-shot adoption of URL state after hydration (same pattern as
+    // LanguageProvider's stored-locale read): a single extra render on
+    // arrival, no cascade.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    if (urlQ) setQuery(urlQ);
+    if (isTabId(urlTab)) setTabId(urlTab);
+    adoptHash();
+
+    window.addEventListener("hashchange", adoptHash);
+    return () => window.removeEventListener("hashchange", adoptHash);
+  }, [openPendingSlug]);
+
+  // The deep link's tab may only render after the switch above; retry then.
+  React.useEffect(() => {
+    openPendingSlug();
+  }, [tabId, openPendingSlug]);
+
+  // Keep tab + search shareable: reflect them into the URL without adding
+  // history entries. The hash is preserved so a followed deep link survives.
+  React.useEffect(() => {
+    const sp = new URLSearchParams(window.location.search);
+    if (tabId === "bfg") sp.delete("tab");
+    else sp.set("tab", tabId);
+    if (query.trim()) sp.set("q", query.trim());
+    else sp.delete("q");
+    const qs = sp.toString();
+    window.history.replaceState(
+      null,
+      "",
+      `${window.location.pathname}${qs ? `?${qs}` : ""}${window.location.hash}`,
+    );
+  }, [tabId, query]);
 
   const q = query.trim().toLowerCase();
   const searching = q.length > 0;
@@ -52,6 +148,15 @@ export function Faq() {
             {t("faq.subtitle")}
           </p>
         </header>
+
+        {/* the Q&A corpus is Indonesian-only for now; say so in EN mode
+            instead of looking broken to an English reader */}
+        {locale === "en" && (
+          <div className="mx-auto mt-6 flex max-w-md items-start gap-2.5 rounded-md border border-border bg-surface-2/60 p-3.5 text-sm text-muted">
+            <Info className="mt-0.5 size-4 shrink-0 text-muted-2" aria-hidden="true" />
+            <p>{t("faq.enNotice")}</p>
+          </div>
+        )}
 
         {/* service tabs — centered on the page. SegmentedRoot is inline-flex,
             so mx-auto can't center it; a flex-justify-center wrapper does. */}
@@ -120,7 +225,7 @@ export function Faq() {
               </div>
             ) : (
               // search results show the answer directly — no extra click to read
-              <div className="mt-8 space-y-12">
+              <div lang="id" className="mt-8 space-y-12">
                 {filtered.map((cat) => (
                   <div key={cat.name}>
                     <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-2">
@@ -132,9 +237,9 @@ export function Faq() {
                           <p className="text-sm font-medium text-foreground">
                             {f.q}
                           </p>
-                          <p className="mt-1.5 max-w-[65ch] text-sm leading-relaxed text-muted">
-                            {f.a}
-                          </p>
+                          <div className="mt-1.5">
+                            <AnswerBody f={f} />
+                          </div>
                         </div>
                       ))}
                     </div>
@@ -155,7 +260,7 @@ export function Faq() {
 
             {/* categories → Q/A accordions. No card container: the wide gap between
                 categories vs the hairline between questions carries the hierarchy. */}
-            <div className="mt-10 space-y-12">
+            <div lang="id" className="mt-10 space-y-12">
               {tab.categories.map((cat) => (
                 <div key={cat.name}>
                   <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-2">
@@ -163,14 +268,18 @@ export function Faq() {
                   </h2>
                   <div className="mt-1 divide-y divide-border">
                     {cat.faqs.map((f) => (
-                      <details key={f.q} className="group">
+                      <details
+                        key={f.q}
+                        id={faqSlug(f.q)}
+                        className="group scroll-mt-24"
+                      >
                         <summary className="flex cursor-pointer list-none items-center justify-between gap-3 py-4 text-sm font-medium text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/50 [&::-webkit-details-marker]:hidden">
                           <span>{f.q}</span>
                           <ChevronDown className="size-4 shrink-0 text-muted-2 transition-transform duration-200 group-open:rotate-180" />
                         </summary>
-                        <p className="max-w-[65ch] pb-4 text-sm leading-relaxed text-muted">
-                          {f.a}
-                        </p>
+                        <div className="pb-4">
+                          <AnswerBody f={f} />
+                        </div>
                       </details>
                     ))}
                   </div>

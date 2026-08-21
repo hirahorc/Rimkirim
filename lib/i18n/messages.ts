@@ -40,6 +40,7 @@ const id = {
     resultsWord: "hasil",
     noResultsTitle: "Belum ada hasil",
     noResultsBody: "Coba kata kunci lain, atau tanya langsung ke tim kami.",
+    enNotice: "Jawaban FAQ saat ini tersedia dalam Bahasa Indonesia.",
     stillStuck: "Belum ketemu jawabannya?",
     chatCta: "Chat tim Rimkirim",
   },
@@ -1310,6 +1311,8 @@ const en: Messages = {
     resultsWord: "results",
     noResultsTitle: "No results",
     noResultsBody: "Try another keyword, or ask our team directly.",
+    enNotice:
+      "Answers are in Bahasa Indonesia for now. Chat us on WhatsApp and our team will help you in English.",
     stillStuck: "Didn't find your answer?",
     chatCta: "Chat the Rimkirim team",
   },

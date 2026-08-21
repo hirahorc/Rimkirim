@@ -8,6 +8,24 @@
 export interface FaqItem {
   q: string;
   a: string;
+  /** optional checklist rendered under the answer (e.g. document requirements) */
+  list?: string[];
+}
+
+/**
+ * Stable anchor id for one question, shared by the page (element ids),
+ * deep links sent over WhatsApp, and the FAQPage JSON-LD. Derived from the
+ * question text so the data file stays plain copy.
+ */
+export function faqSlug(q: string): string {
+  return q
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 64)
+    .replace(/-+$/, "");
 }
 export interface FaqCategory {
   name: string;
@@ -156,15 +174,15 @@ export const FAQ_TABS: FaqTab[] = [
         faqs: [
           {
             q: "Apakah paket akan dibuka petugas?",
-            a: "Ya, bisa diperiksa fisik untuk mencocokkan isi dengan packing list.",
+            a: "Bisa, petugas berhak memeriksa fisik untuk mencocokkan isi dengan packing list. Kamu tidak perlu hadir atau berhadapan dengan petugas; tim Rimkirim yang mendampingi seluruh proses pemeriksaannya.",
           },
           {
             q: "Apakah barang saya akan dikenakan pajak?",
-            a: "Barang pribadi bekas bisa bebas pajak jika memenuhi syarat; barang baru tetap kena pajak.",
+            a: "Barang pribadi bekas bisa bebas pajak jika memenuhi syarat; barang baru tetap kena pajak. Tim Rimkirim yang menilai kelayakanmu, memilihkan jalur clearance yang tepat, dan mengurus pengajuannya.",
           },
           {
             q: "Syarat bebas pajak status 'Barang Pindahan'?",
-            a: "Minimal tinggal/kuliah di luar negeri selama 1 tahun, dengan surat keterangan pindah dari KBRI dan bukti studi/tugas.",
+            a: "Minimal tinggal/kuliah di luar negeri selama 1 tahun, dengan surat keterangan pindah dari KBRI dan bukti studi/tugas. Pengajuan status ini diurus tim Rimkirim; kamu cukup menyiapkan dokumennya.",
           },
           {
             q: "Syarat status 'Barang Penumpang'?",
@@ -172,11 +190,31 @@ export const FAQ_TABS: FaqTab[] = [
           },
           {
             q: "Dokumen identitas untuk Barang Pindahan?",
-            a: "Surat keterangan pindah KBRI, paspor, packing list, boarding pass, tiket, kartu kedatangan, bukti studi/kerja, NPWP/KTP, dan bukti dimensi.",
+            a: "Siapkan dokumen berikut, lalu serahkan ke tim Rimkirim; pengajuan ke bea cukai kami yang jalankan:",
+            list: [
+              "Surat keterangan pindah dari KBRI",
+              "Paspor",
+              "Packing list",
+              "Boarding pass",
+              "Tiket",
+              "Kartu kedatangan",
+              "Bukti studi/kerja",
+              "NPWP/KTP",
+              "Bukti dimensi paket",
+            ],
           },
           {
             q: "Dokumen identitas untuk Barang Penumpang?",
-            a: "Paspor, packing list, boarding pass, tiket, kartu kedatangan, NPWP/KTP, dan bukti dimensi.",
+            a: "Siapkan dokumen berikut, lalu serahkan ke tim Rimkirim; pengajuan ke bea cukai kami yang jalankan:",
+            list: [
+              "Paspor",
+              "Packing list",
+              "Boarding pass",
+              "Tiket",
+              "Kartu kedatangan",
+              "NPWP/KTP",
+              "Bukti dimensi paket",
+            ],
           },
           {
             q: "Kenapa perlu E-NPWP?",
@@ -184,7 +222,7 @@ export const FAQ_TABS: FaqTab[] = [
           },
           {
             q: "Apa fungsi kartu kedatangan/boarding pass?",
-            a: "Jadi syarat utama untuk pengajuan bebas pajak.",
+            a: "Jadi syarat utama pengajuan bebas pajak yang diajukan tim Rimkirim atas namamu.",
           },
           {
             q: "Apa itu Commercial Invoice/Packing List?",
@@ -192,7 +230,7 @@ export const FAQ_TABS: FaqTab[] = [
           },
           {
             q: "Apakah kiriman diperiksa bea cukai?",
-            a: "Ya, ada verifikasi dokumen dan pemeriksaan fisik.",
+            a: "Ya, ada verifikasi dokumen dan pemeriksaan fisik. Seluruh komunikasi dengan petugas bea cukai dijalankan tim Rimkirim, bukan kamu.",
           },
           {
             q: "Kapan harus tiba di Indonesia?",
@@ -410,11 +448,28 @@ export const FAQ_TABS: FaqTab[] = [
           },
           {
             q: "Dokumen identitas untuk Barang Pindahan?",
-            a: "Packing list, paspor, visa negara tujuan, tiket, bukti sewa tempat tinggal sementara, izin tinggal, NPWP/KTP, dokumen tujuan tinggal (studi/kerja/menikah), dan dokumen pengiriman.",
+            a: "Siapkan dokumen berikut, lalu serahkan ke tim Rimkirim; pengajuannya kami yang jalankan:",
+            list: [
+              "Packing list",
+              "Paspor",
+              "Visa negara tujuan",
+              "Tiket",
+              "Bukti sewa tempat tinggal sementara",
+              "Izin tinggal",
+              "NPWP/KTP",
+              "Dokumen tujuan tinggal (studi/kerja/menikah)",
+              "Dokumen pengiriman",
+            ],
           },
           {
             q: "Dokumen untuk Barang Kiriman (bukan pindahan)?",
-            a: "Packing list, AWB (diterbitkan Rimkirim setelah biaya kirim disetujui), NPWP/KTP, dan dokumen pengiriman.",
+            a: "Siapkan dokumen berikut, lalu serahkan ke tim Rimkirim:",
+            list: [
+              "Packing list",
+              "AWB (diterbitkan Rimkirim setelah biaya kirim disetujui)",
+              "NPWP/KTP",
+              "Dokumen pengiriman",
+            ],
           },
           {
             q: "Apa itu Commercial Invoice/Packing List?",
@@ -422,7 +477,7 @@ export const FAQ_TABS: FaqTab[] = [
           },
           {
             q: "Apakah kiriman diperiksa bea cukai?",
-            a: "Ya, ada verifikasi dokumen dan pemeriksaan fisik.",
+            a: "Ya, ada verifikasi dokumen dan pemeriksaan fisik. Seluruh komunikasi dengan petugas bea cukai dijalankan tim Rimkirim, bukan kamu.",
           },
           {
             q: "Perlu dokumen PEB (Pemberitahuan Ekspor Barang)?",
