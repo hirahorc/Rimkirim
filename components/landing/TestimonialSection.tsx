@@ -230,22 +230,25 @@ export function TestimonialSection() {
             {t("testimonial.heading")}
           </h2>
           {/* the aggregate has to be checkable: an unlinked, uncounted score is
-              the visual signature of an invented one */}
+              the visual signature of an invented one.
+              Hover is the arrow's nudge and nothing else. That is a deliberate
+              exception to DESIGN.md's Motion rule ("everything else is a 0.2s
+              colour/border transition") — the same kind of one-off as .nav-expat,
+              and guarded the same way: motion-safe carries the travel, and
+              motion-reduce falls back to colour so the hover still answers. */}
           <a
             href={GOOGLE_REVIEWS_URL}
             target="_blank"
             rel="noopener noreferrer"
             aria-label={`${t("testimonial.ratingScore")} ${t("testimonial.ratingLabel")} — ${t("testimonial.ratingLinkLabel")}`}
-            className="group mt-5 inline-flex items-center gap-2.5 rounded-md px-2 py-1 transition-colors hover:bg-surface-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/40"
+            className="group mt-5 inline-flex items-center gap-2.5 rounded-md px-2 py-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/40"
           >
             <Stars value={RATING_SCORE} starClass="size-5" />
             <span className="font-display text-2xl font-semibold leading-none text-foreground">
               {t("testimonial.ratingScore")}
             </span>
-            <span className="text-sm text-muted underline-offset-4 group-hover:underline">
-              {t("testimonial.ratingLabel")}
-            </span>
-            <ArrowUpRight className="size-4 text-muted-2 transition-transform group-hover:-translate-y-px group-hover:translate-x-px" />
+            <span className="text-sm text-muted">{t("testimonial.ratingLabel")}</span>
+            <ArrowUpRight className="size-4 text-muted-2 motion-safe:transition-transform motion-safe:group-hover:-translate-y-px motion-safe:group-hover:translate-x-px motion-reduce:transition-colors motion-reduce:group-hover:text-foreground" />
           </a>
         </div>
 
