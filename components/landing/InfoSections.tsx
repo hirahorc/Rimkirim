@@ -10,7 +10,11 @@ import {
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { RouteArrow } from "@/components/ui/route-arrow";
-import { StackingCards, STACK_SKINS } from "@/components/landing/StackingCards";
+import {
+  StackingCards,
+  STACK_SKINS,
+  STACK_MARK_INDEX,
+} from "@/components/landing/StackingCards";
 import { useT } from "@/lib/i18n/LanguageProvider";
 
 export function ServiceSection() {
@@ -93,7 +97,9 @@ export function WhySection() {
               }`}
             >
               <h3 className="font-display text-xl font-semibold leading-tight tracking-tight">
-                {title}
+                <span className={i === STACK_MARK_INDEX ? "card-mark" : undefined}>
+                  {title}
+                </span>
               </h3>
               <p className="mt-2.5 text-sm leading-relaxed opacity-80">{body}</p>
               <span

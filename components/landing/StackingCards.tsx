@@ -23,9 +23,17 @@ export interface StackingCard {
 export const STACK_SKINS = [
   "bg-surface-3 text-foreground",
   "bg-foreground text-background",
-  "bg-brand text-brand-ink",
+  "bg-surface-3 text-foreground",
   "bg-brand-ink text-background",
 ];
+
+/**
+ * The one card whose title wears the lime highlighter. Lime is the section's
+ * single beat, and it lands as a mark behind ink — never as the card's surface,
+ * which on a phone meant a full 100vh of Live Lime (DESIGN.md, One-Voice Rule:
+ * "Don't fill a large area … the accent is a mark, not a surface").
+ */
+export const STACK_MARK_INDEX = 2;
 
 export function StackingCards({ items }: { items: StackingCard[] }) {
   return (
@@ -41,7 +49,9 @@ export function StackingCards({ items }: { items: StackingCard[] }) {
         >
           <div className="mx-auto w-full max-w-md">
             <h3 className="font-display text-3xl font-semibold leading-tight tracking-tight">
-              {title}
+              <span className={i === STACK_MARK_INDEX ? "card-mark" : undefined}>
+                {title}
+              </span>
             </h3>
             <p className="mt-3 text-base leading-relaxed opacity-80">{body}</p>
           </div>

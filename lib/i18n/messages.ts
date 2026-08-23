@@ -194,7 +194,8 @@ const id = {
   },
   why: {
     heading: "Kenapa Rimkirim",
-    subtitle: "Ribuan orang mempercayakan kepindahan mereka ke kami.",
+    subtitle:
+      "Empat hal yang bikin kamu nggak perlu ngurus kepindahan ini sendirian.",
     r1Title: "Aman & terpercaya",
     r1Body: "Barangmu ditangani dengan standar internasional dan asuransi opsional.",
     r2Title: "Clearance beres",
@@ -1476,7 +1477,7 @@ const en: Messages = {
   },
   why: {
     heading: "Why Rimkirim",
-    subtitle: "Thousands trust us with their relocation.",
+    subtitle: "Four reasons you won't be handling this move on your own.",
     r1Title: "Safe & trusted",
     r1Body: "Your goods are handled to international standards, with optional insurance.",
     r2Title: "Clearance sorted",
