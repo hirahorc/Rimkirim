@@ -10,6 +10,7 @@ import {
   Clock3,
   RefreshCcw,
   Store,
+  CalendarClock,
 } from "lucide-react";
 import {
   useOrderStore,
@@ -20,6 +21,7 @@ import { useLanguage, useT } from "@/lib/i18n/LanguageProvider";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { NewAwbDialog } from "./NewAwbDialog";
+import { ReschedulePickupDialog } from "./ReschedulePickupDialog";
 
 /**
  * Customer-facing pickup status: after a failed pickup the customer chooses
@@ -28,10 +30,10 @@ import { NewAwbDialog } from "./NewAwbDialog";
 export function PickupPanel({ order }: { order: Order }) {
   const t = useT();
   const { locale } = useLanguage();
-  const reschedulePickup = useOrderStore((s) => s.reschedulePickup);
   const chooseDropOff = useOrderStore((s) => s.chooseDropOff);
   const confirmDropOff = useOrderStore((s) => s.confirmDropOff);
   const [awbOpen, setAwbOpen] = React.useState(false);
+  const [reschedOpen, setReschedOpen] = React.useState(false);
 
   if (order.status !== "pickup") return null;
 
@@ -48,6 +50,21 @@ export function PickupPanel({ order }: { order: Order }) {
     month: "long",
     year: "numeric",
   });
+
+  // the quiet states: nothing is being asked of the customer. without these the
+  // card would render as a lone heading — right after the booking, and again
+  // once a rescheduled pickup is back on the calendar.
+  const schedule = order.modules.pickup.data as
+    | { date?: string; time?: string }
+    | undefined;
+  const scheduledDate = schedule?.date
+    ? deadlineFmt.format(new Date(`${schedule.date}T00:00:00`))
+    : null;
+  const awaiting =
+    !needsAwb &&
+    !order.pickupChoicePending &&
+    (!dropOff || dropOff.expired) &&
+    !dropOff?.fulfilledAt;
 
   return (
     <Card className="p-5 sm:p-6">
@@ -81,6 +98,30 @@ export function PickupPanel({ order }: { order: Order }) {
         </p>
       )}
 
+      {awaiting && (
+        <div className="mt-3 text-sm">
+          {/* after an expired drop-off the AWB is replaced and ops re-books, so
+              the module's old slot is stale — fall through to "being scheduled" */}
+          {scheduledDate && !dropOff?.expired ? (
+            <>
+              <p className="flex flex-wrap items-center gap-x-1.5 text-muted">
+                <CalendarClock className="size-4 text-muted-2" />
+                {t("order.pickAwaitingLabel")}:{" "}
+                <span className="font-medium text-foreground">
+                  {scheduledDate}
+                  {schedule?.time ? `, ${schedule.time}` : ""}
+                </span>
+              </p>
+              <p className="mt-1 text-xs text-muted-2">
+                {t("order.pickAwaitingHint")}
+              </p>
+            </>
+          ) : (
+            <p className="text-muted">{t("order.pickAwaitingNone")}</p>
+          )}
+        </div>
+      )}
+
       {!needsAwb && order.pickupChoicePending && (
         <div className="mt-3 rounded-md border border-warning/40 bg-warning/10 p-4">
           <p className="text-sm font-semibold text-warning">
@@ -88,18 +129,7 @@ export function PickupPanel({ order }: { order: Order }) {
           </p>
           <p className="mt-0.5 text-sm text-muted">{t("order.pickChoiceBody")}</p>
           <div className="mt-3 flex flex-col gap-2 sm:flex-row">
-            <Button
-              className="flex-1"
-              onClick={() => {
-                reschedulePickup(order.id);
-                // guarded no-op outside a pending choice — toast only on effect
-                const now = useOrderStore
-                  .getState()
-                  .orders.find((o) => o.id === order.id);
-                if (now && !now.pickupChoicePending)
-                  toast.success(t("order.pickChoiceRepickupToast"));
-              }}
-            >
+            <Button className="flex-1" onClick={() => setReschedOpen(true)}>
               <RefreshCcw /> {t("order.pickChoiceRepickup")}
             </Button>
             <Button
@@ -137,6 +167,12 @@ export function PickupPanel({ order }: { order: Order }) {
         orderId={order.id}
         open={awbOpen}
         onOpenChange={setAwbOpen}
+      />
+
+      <ReschedulePickupDialog
+        orderId={order.id}
+        open={reschedOpen}
+        onOpenChange={setReschedOpen}
       />
 
       {dropOff && !dropOff.expired && !dropOff.fulfilledAt && (
