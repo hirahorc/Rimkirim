@@ -175,6 +175,9 @@ const id = {
     ratingScore: "4,9",
     ratingLabel: "dari 5 · Ulasan Google",
     routeTo: "ke Indonesia",
+    ratingLinkLabel: "lihat semua ulasan di Google",
+    stripLabel: "ulasan pelanggan, geser untuk lihat lainnya",
+    slideLabel: "Ulasan",
     origins: {
       bristol: "Bristol",
       adelaide: "Adelaide",
@@ -1458,6 +1461,9 @@ const en: Messages = {
     ratingScore: "4.9",
     ratingLabel: "out of 5 · Google reviews",
     routeTo: "to Indonesia",
+    ratingLinkLabel: "see all reviews on Google",
+    stripLabel: "customer reviews, swipe for more",
+    slideLabel: "Review",
     origins: {
       bristol: "Bristol",
       adelaide: "Adelaide",
