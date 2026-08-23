@@ -391,8 +391,8 @@ body {
   @media (prefers-reduced-motion: no-preference) {
     @keyframes hero-settle {
       to {
-        transform: translateY(-40px);
-        opacity: 0.4;
+        transform: translateY(-56px);
+        opacity: 0.12;
       }
     }
     @keyframes hero-drift {
@@ -403,7 +403,7 @@ body {
     }
     @keyframes calc-rise {
       from {
-        transform: translateY(28px);
+        transform: translateY(52px);
       }
       to {
         transform: translateY(0);
@@ -413,7 +413,10 @@ body {
     .hero-settle {
       animation: hero-settle linear both;
       animation-timeline: scroll(root block);
-      animation-range: 0 45vh;
+      /* 35vh, not 45: the headline mark is a saturated lime block, and the
+         header capsule is translucent by design. A slower settle handed the
+         capsule a half-lit lime wash behind the nav links. */
+      animation-range: 0 35vh;
     }
     .hero-drift {
       animation: hero-drift linear both;
@@ -423,7 +426,7 @@ body {
     .calc-rise {
       animation: calc-rise linear both;
       animation-timeline: scroll(root block);
-      animation-range: 0 45vh;
+      animation-range: 0 35vh;
     }
   }
 }
