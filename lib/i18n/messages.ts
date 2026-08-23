@@ -961,6 +961,18 @@ const id = {
       "Konfirmasi dikirim. Tim ops akan memproses kirimanmu.",
     pickDropOffAwaitOps:
       "Drop-off dikonfirmasi, menunggu konfirmasi tim ops. Biasanya terkonfirmasi dalam 1 hari kerja.",
+    pickAwaitingLabel: "Jadwal pickup berikutnya",
+    pickAwaitingHint:
+      "Pastikan ada orang di lokasi pada jam tersebut agar kurir tidak gagal ambil.",
+    pickAwaitingNone:
+      "Kurir sedang dijadwalkan. Kami kabari begitu jadwalnya pasti.",
+    // re-pickup scheduling dialog
+    pickReschedTitle: "Jadwalkan pickup ulang",
+    pickReschedBody:
+      "Pilih tanggal dan jam kurir datang. Jadwal ini menggantikan jadwal pickup sebelumnya.",
+    pickReschedTimePlaceholder: "Pilih jam",
+    pickReschedSubmit: "Konfirmasi jadwal",
+    pickReschedDateRequired: "Pilih tanggal dan jam dulu.",
     // AWB section
     tdAwbNumber: "Nomor AWB",
     tdAwbStable:
@@ -2218,6 +2230,18 @@ const en: Messages = {
       "Confirmation sent. The ops team will process your shipment.",
     pickDropOffAwaitOps:
       "Drop-off confirmed, waiting for the ops team to confirm. Usually confirmed within 1 business day.",
+    pickAwaitingLabel: "Next pickup",
+    pickAwaitingHint:
+      "Make sure someone is at the address during that window so the courier doesn't miss you.",
+    pickAwaitingNone:
+      "The courier is being scheduled. We'll let you know once the slot is set.",
+    // re-pickup scheduling dialog
+    pickReschedTitle: "Reschedule pickup",
+    pickReschedBody:
+      "Pick the date and window for the courier. This replaces the previous pickup schedule.",
+    pickReschedTimePlaceholder: "Choose a window",
+    pickReschedSubmit: "Confirm schedule",
+    pickReschedDateRequired: "Choose a date and a window first.",
     // AWB section
     tdAwbNumber: "AWB number",
     tdAwbStable:

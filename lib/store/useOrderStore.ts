@@ -132,6 +132,14 @@ export interface AwbRequest {
   date: string;
 }
 
+/** The new pickup slot the customer picks when rescheduling a failed pickup. */
+export interface PickupSchedule {
+  /** ISO date string (yyyy-mm-dd) for the new attempt. */
+  date: string;
+  /** One of the fixed pickup windows, e.g. "10:00-14:00". */
+  time: string;
+}
+
 /** Customer-fault failures allowed before the customer must request a new AWB. */
 export const MAX_CUSTOMER_PICKUP_FAILS = 3;
 
@@ -528,8 +536,10 @@ interface OrderStoreState {
   bookPickup: (id: string) => void;
   /** ops control plane: record a failed pickup attempt (customer/carrier fault) */
   recordPickupFail: (id: string, cause: PickupFailCause) => void;
-  /** customer: after a failed pickup, choose to reschedule the pickup */
-  reschedulePickup: (id: string) => void;
+  /** customer: after a failed pickup, reschedule it for a new date + window.
+   *  The new slot overwrites the pickup module's schedule so the order record
+   *  and the live panel never disagree about when the courier is coming. */
+  reschedulePickup: (id: string, next: PickupSchedule) => void;
   /** customer: after a failed pickup, choose a drop-off at a FedEx location */
   chooseDropOff: (id: string) => void;
   /** ops control plane: simulate the 2-day drop-off deadline passing → AWB change */
@@ -1154,18 +1164,28 @@ export const useOrderStore = create<OrderStoreState>()(
             orders: s.orders.map((o) => (o.id === id ? next : o)),
           };
         }),
-      reschedulePickup: (id) =>
+      reschedulePickup: (id, slot) =>
         set((s) => {
           const order = s.orders.find((o) => o.id === id);
           if (
             !order ||
             order.status !== "pickup" ||
-            !order.pickupChoicePending
+            !order.pickupChoicePending ||
+            !slot.date ||
+            !slot.time
           ) {
             return {};
           }
+          const pickup = order.modules.pickup;
           const next: Order = {
             ...order,
+            modules: {
+              ...order.modules,
+              pickup: {
+                ...pickup,
+                data: { ...pickup.data, date: slot.date, time: slot.time },
+              },
+            },
             pickupChoicePending: false,
             attention: "order.attPickupRescheduled",
             updatedAt: Date.now(),
