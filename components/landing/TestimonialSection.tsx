@@ -1,12 +1,18 @@
 "use client";
 
+import * as React from "react";
 import Image from "next/image";
-import { Star } from "lucide-react";
+import { Star, ArrowUpRight } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { PortraitPlaceholder } from "@/components/ui/portrait-placeholder";
 import { cn } from "@/lib/utils/cn";
 import { useT } from "@/lib/i18n/LanguageProvider";
-import { TESTIMONIALS, RATING_SCORE, type Testimonial } from "@/lib/data/testimonials";
+import {
+  TESTIMONIALS,
+  RATING_SCORE,
+  GOOGLE_REVIEWS_URL,
+  type Testimonial,
+} from "@/lib/data/testimonials";
 
 /**
  * Google Reviews social proof. Quotes render verbatim (see lib/data/testimonials).
@@ -25,39 +31,53 @@ function Stars({
   /** `light` for stars sitting on the ink hook card */
   tone?: "ink" | "light";
 }) {
-  const filled = Math.round(value);
+  const filledClass =
+    tone === "light"
+      ? "fill-background text-background"
+      : "fill-foreground text-foreground";
+  const emptyClass =
+    tone === "light" ? "fill-none text-background/30" : "fill-none text-border-strong";
   return (
     <span
       className="inline-flex items-center gap-0.5"
-      role="img"
-      aria-label={label ?? `${value}/5`}
+      // inside a labelled link the stars are redundant to a screen reader
+      {...(label ? { role: "img", "aria-label": label } : { "aria-hidden": true })}
     >
-      {Array.from({ length: 5 }).map((_, i) => (
-        <Star
-          key={i}
-          strokeWidth={1.5}
-          aria-hidden
-          className={cn(
-            starClass,
-            i < filled
-              ? tone === "light"
-                ? "fill-background text-background"
-                : "fill-foreground text-foreground"
-              : tone === "light"
-                ? "fill-none text-background/30"
-                : "fill-none text-border-strong",
-          )}
-        />
-      ))}
+      {Array.from({ length: 5 }).map((_, i) => {
+        // a 4.9 must not draw as five solid marks — the fifth star carries the
+        // remainder as a real partial fill, clipped from the left
+        const fill = Math.min(Math.max(value - i, 0), 1);
+        if (fill === 0 || fill === 1) {
+          return (
+            <Star
+              key={i}
+              strokeWidth={1.5}
+              aria-hidden
+              className={cn(starClass, fill === 1 ? filledClass : emptyClass)}
+            />
+          );
+        }
+        return (
+          <span key={i} className="relative inline-flex" aria-hidden>
+            <Star strokeWidth={1.5} className={cn(starClass, emptyClass)} />
+            <span
+              className="absolute bottom-0 left-0 top-0 overflow-hidden"
+              style={{ width: `${fill * 100}%` }}
+            >
+              <Star strokeWidth={1.5} className={cn(starClass, filledClass)} />
+            </span>
+          </span>
+        );
+      })}
     </span>
   );
 }
 
 /**
- * Emphasise each `highlights` phrase found in the quote with a heavier font
- * weight. Phrases are exact substrings (longest first, so a longer phrase wins
- * over a shorter overlap), so the visible text is byte-for-byte the verbatim
- * quote — only presentation changes.
+ * Emphasise the quote's single strongest phrase with a heavier font weight.
+ * Phrases are exact substrings (longest first, so a longer phrase wins over a
+ * shorter overlap), so the visible text is byte-for-byte the verbatim quote —
+ * only presentation changes.
  */
 function highlightQuote(quote: string, highlights?: string[]) {
   if (!highlights?.length) return quote;
@@ -80,8 +100,10 @@ function highlightQuote(quote: string, highlights?: string[]) {
 /**
  * The hook: one pinned review on an ink card with the customer's photo. On
  * sm+ it spans the full column above the masonry, photo left (~45%) bleeding to
- * the card edge; on mobile it is the first, wider slide of the carousel with the
- * photo on top. Until a consented photo exists, PortraitPlaceholder holds the slot.
+ * the card edge; on mobile it is the first slide of the carousel with the photo
+ * on top. The quote carries display type — "featured" has to mean a louder
+ * voice, not just a bigger box. Until a consented photo exists,
+ * PortraitPlaceholder holds the slot.
  */
 function FeaturedTestimonial({
   item,
@@ -95,29 +117,36 @@ function FeaturedTestimonial({
   return (
     <article
       className={cn(
-        "testi-card grid overflow-hidden rounded-lg bg-foreground text-background sm:grid-cols-[minmax(0,45%)_1fr]",
+        // grid-cols-1 below sm: an implicit auto track sizes to its content and
+        // overflowed the card's own 78% width by ~15px, so the truncate ellipsis
+        // was computed outside the visible box
+        "testi-card grid grid-cols-1 overflow-hidden rounded-lg bg-foreground text-background sm:grid-cols-[minmax(0,45%)_1fr]",
         className,
       )}
     >
-      <div className="relative aspect-[16/10] sm:aspect-auto sm:min-h-[18rem]">
+      <div className="relative aspect-[16/10] sm:aspect-auto sm:min-h-[20rem]">
         {photo ? (
           <Image
             src={photo}
             alt={name}
             fill
-            sizes="(min-width: 640px) 45vw, 85vw"
-            // keep the person centred with headroom; the wall/sign may crop
-            className="object-cover object-[68%_38%]"
+            sizes="(min-width: 640px) 45vw, 78vw"
+            // keep the person centred with headroom; the wall/sign may crop.
+            // the container is always wider-per-height than the 2:3 source, so
+            // `cover` scales by width and only the vertical term does any work
+            className="object-cover object-[50%_38%]"
           />
         ) : (
           <PortraitPlaceholder initial={name.trim().charAt(0).toUpperCase()} />
         )}
         {/* attribution lives on the photo, over a dark→transparent scrim
-            (requested — the one gradient in the system, functional, on imagery only) */}
-        <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-foreground/85 via-foreground/45 to-transparent px-4 pb-4 pt-16 sm:px-5 sm:pb-5">
+            (requested — the one gradient in the system, functional, on imagery
+            only). The ramp is deep enough to hold 4.5:1 against the brightest
+            patch of the photo, not just its average. */}
+        <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-foreground/95 via-foreground/70 to-transparent px-4 pb-4 pt-16 sm:px-5 sm:pb-5">
           <cite className="block truncate text-sm font-medium not-italic">{name}</cite>
           {affiliation && (
-            <p className="truncate text-xs text-background/70">
+            <p className="truncate text-xs text-background/80">
               {t(`testimonial.affiliations.${affiliation}`)}
             </p>
           )}
@@ -125,9 +154,9 @@ function FeaturedTestimonial({
       </div>
 
       <div className="flex flex-col p-6 sm:p-8">
-        {/* short quote in a tall panel: centre it optically on sm+; the route
-            caption keeps the foot so the two columns share a baseline */}
-        <blockquote className="whitespace-pre-line text-sm leading-relaxed sm:my-auto sm:max-w-[46ch]">
+        {/* the quote is the loudest voice in the section: display type, tight
+            leading, optically centred in the tall panel on sm+ */}
+        <blockquote className="whitespace-pre-line font-display text-lg leading-snug sm:my-auto sm:max-w-[46ch] sm:text-2xl">
           {highlightQuote(quote, highlights)}
         </blockquote>
         {origin && (
@@ -143,7 +172,46 @@ function FeaturedTestimonial({
 export function TestimonialSection() {
   const t = useT();
   const featured = TESTIMONIALS.find((x) => x.featured) ?? TESTIMONIALS[0];
-  const rest = TESTIMONIALS.filter((x) => x !== featured);
+  // longest quote first: source order was arbitrary, and the substantial
+  // reviews (the one carrying a dated customs timeline) were landing last —
+  // on mobile that meant behind ~1300px of horizontal scroll
+  const rest = React.useMemo(
+    () =>
+      TESTIMONIALS.filter((x) => x !== featured).sort(
+        (a, b) => b.quote.length - a.quote.length,
+      ),
+    [featured],
+  );
+
+  const stripRef = React.useRef<HTMLDivElement>(null);
+  const [active, setActive] = React.useState(0);
+  const slideCount = rest.length + 1;
+
+  // the strip scrolls ~5 viewports on a phone; without a position signal the
+  // last slides are content most visitors never learn exists
+  React.useEffect(() => {
+    const strip = stripRef.current;
+    if (!strip) return;
+    const slides = Array.from(strip.children) as HTMLElement[];
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            setActive(slides.indexOf(entry.target as HTMLElement));
+          }
+        }
+      },
+      { root: strip, threshold: 0.6 },
+    );
+    slides.forEach((slide) => io.observe(slide));
+    return () => io.disconnect();
+  }, []);
+
+  const goToSlide = (i: number) => {
+    const slide = stripRef.current?.children[i] as HTMLElement | undefined;
+    slide?.scrollIntoView({ behavior: "smooth", inline: "start", block: "nearest" });
+  };
+
   return (
     <section
       id="ulasan"
@@ -161,17 +229,24 @@ export function TestimonialSection() {
           >
             {t("testimonial.heading")}
           </h2>
-          <div className="mt-5 inline-flex items-center gap-2.5">
-            <Stars
-              value={RATING_SCORE}
-              starClass="size-5"
-              label={`${t("testimonial.ratingScore")} ${t("testimonial.ratingLabel")}`}
-            />
+          {/* the aggregate has to be checkable: an unlinked, uncounted score is
+              the visual signature of an invented one */}
+          <a
+            href={GOOGLE_REVIEWS_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={`${t("testimonial.ratingScore")} ${t("testimonial.ratingLabel")} — ${t("testimonial.ratingLinkLabel")}`}
+            className="group mt-5 inline-flex items-center gap-2.5 rounded-md px-2 py-1 transition-colors hover:bg-surface-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/40"
+          >
+            <Stars value={RATING_SCORE} starClass="size-5" />
             <span className="font-display text-2xl font-semibold leading-none text-foreground">
               {t("testimonial.ratingScore")}
             </span>
-            <span className="text-sm text-muted">{t("testimonial.ratingLabel")}</span>
-          </div>
+            <span className="text-sm text-muted underline-offset-4 group-hover:underline">
+              {t("testimonial.ratingLabel")}
+            </span>
+            <ArrowUpRight className="size-4 text-muted-2 transition-transform group-hover:-translate-y-px group-hover:translate-x-px" />
+          </a>
         </div>
 
         {/* sm+: the hook sits full-width above the masonry */}
@@ -181,26 +256,34 @@ export function TestimonialSection() {
         />
 
         {/* mobile: a full-bleed swipe carousel — the hook is the first slide;
-            every card is the same width and stretches to the tallest one
-            (items-stretch), attribution pinned to the foot; the next card peeks
-            to signal the swipe. sm and up: variable-length quotes pack cleanly
-            in CSS columns (masonry) */}
+            every card shares one width and stretches to the tallest so the deck
+            reads as one object while swiping, attribution pinned to the foot
+            (mt-auto); the next card peeks to signal the swipe. sm and up:
+            variable-length quotes pack cleanly in CSS columns (masonry) */}
         <div
-          className="scroll-strip -mx-4 mt-12 flex snap-x snap-mandatory items-stretch scroll-px-4 gap-4 overflow-x-auto px-4 pb-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-foreground/40 sm:mx-auto sm:mt-6 sm:block sm:max-w-5xl sm:columns-2 sm:snap-none sm:overflow-visible sm:px-0 sm:pb-0 lg:columns-3"
+          ref={stripRef}
+          className="scroll-strip -mx-4 mt-12 flex snap-x snap-mandatory items-stretch scroll-px-4 gap-4 overflow-x-auto px-4 pb-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-foreground/40 sm:mx-auto sm:mt-6 sm:block sm:max-w-5xl sm:columns-2 sm:snap-none sm:overflow-visible sm:px-0 sm:pb-0"
           tabIndex={0}
           role="group"
-          aria-label={t("testimonial.heading")}
+          aria-label={`${slideCount} ${t("testimonial.stripLabel")}`}
         >
           <FeaturedTestimonial
             item={featured}
-            className="w-[85%] shrink-0 snap-start sm:hidden"
+            className="w-[78%] shrink-0 snap-start sm:hidden"
           />
-          {rest.map(({ name, quote, origin, affiliation, highlights }) => (
+          {rest.map(({ name, rating, quote, origin, affiliation, highlights }) => (
             <Card
               key={name}
-              className="testi-card flex w-[85%] shrink-0 snap-start break-inside-avoid flex-col p-5 transition-colors hover:border-border-strong sm:mb-4 sm:w-auto sm:shrink"
+              className="testi-card flex w-[78%] shrink-0 snap-start break-inside-avoid flex-col p-5 transition-colors hover:border-border-strong sm:mb-4 sm:w-auto sm:shrink"
             >
-              <blockquote className="whitespace-pre-line text-sm leading-relaxed text-foreground">
+              {/* every card opens on the same line: stars, then quote, then the
+                  route. The slides are stretched to the tallest card, and the
+                  slack is spent at the foot (mt-auto on the attribution) rather
+                  than by re-centring each review — centring made the first line
+                  land at a different height on every swipe. */}
+              <Stars value={rating} starClass="size-3.5" label={`${rating}/5`} />
+
+              <blockquote className="mt-3 whitespace-pre-line text-sm leading-relaxed text-foreground">
                 {highlightQuote(quote, highlights)}
               </blockquote>
 
@@ -230,6 +313,30 @@ export function TestimonialSection() {
                 </div>
               </div>
             </Card>
+          ))}
+        </div>
+
+        {/* position signal for the strip. The dots read as one row, so the hit
+            target is narrowed to 24px and kept 44px tall — 6px dots spaced 44px
+            apart looked like six unrelated marks. 24×44 still clears the WCAG
+            2.2 target-size minimum, and the targets sit flush with no dead gap. */}
+        <div className="mt-2 flex justify-center sm:hidden">
+          {Array.from({ length: slideCount }).map((_, i) => (
+            <button
+              key={i}
+              type="button"
+              onClick={() => goToSlide(i)}
+              aria-label={`${t("testimonial.slideLabel")} ${i + 1}`}
+              aria-current={i === active}
+              className="grid h-11 w-6 place-items-center rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/40"
+            >
+              <span
+                className={cn(
+                  "size-1.5 rounded-full transition-colors",
+                  i === active ? "bg-foreground" : "bg-border-strong",
+                )}
+              />
+            </button>
           ))}
         </div>
       </div>

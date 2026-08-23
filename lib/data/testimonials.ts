@@ -25,9 +25,11 @@ export interface Testimonial {
    */
   affiliation?: string;
   /**
-   * Praise phrases to highlight inside the quote. Each MUST be an exact,
-   * verbatim substring of `quote` — the renderer only wraps matches in a
-   * highlighter mark, never rewrites the text, so the review stays verbatim.
+   * The quote's single strongest phrase, emphasised inside the rendered quote.
+   * It MUST be an exact, verbatim substring of `quote` — the renderer only
+   * wraps matches in a heavier weight, never rewrites the text, so the review
+   * stays verbatim. Keep this to **one** phrase: weight is a rare mark in this
+   * system, and a paragraph that is a third semibold emphasises nothing.
    */
   highlights?: string[];
   /** The one review that becomes the section's hook card (photo + big quote). */
@@ -49,7 +51,7 @@ export const TESTIMONIALS: Testimonial[] = [
       "great service! i received all of my belongings from bristol to jakarta much faster than i expected. everything arrived safely and was intact. i'm very satisfied with the service.",
     origin: "bristol",
     affiliation: "bristol",
-    highlights: ["faster than i expected", "everything arrived safely and was intact", "very satisfied"],
+    highlights: ["everything arrived safely and was intact"],
     featured: true,
     // NOTE: supplied by marketing as an illustrative graduation image (Bristol),
     // not a verified photo of this reviewer — swap for a consented photo before
@@ -63,7 +65,7 @@ export const TESTIMONIALS: Testimonial[] = [
       "Amazing service! My parcel arrived safely (and quickly!) from Adelaide to Jakarta without hassle. Moving between countries can be a challenging and stressful time, and Rimkirim team is very professional, attentive, and helpful throughout the process. I am grateful for their quick response and attention to details. Highly recommended!",
     origin: "adelaide",
     affiliation: "adelaide",
-    highlights: ["arrived safely (and quickly!)", "very professional, attentive, and helpful", "Highly recommended!"],
+    highlights: ["very professional, attentive, and helpful"],
   },
   {
     name: "Nurul",
@@ -72,7 +74,7 @@ export const TESTIMONIALS: Testimonial[] = [
       "The delivery is smooth and really from door to door (Germany-Indonesia). I don't expect all my belongings are safely landed. Thanks, Rimkirim Team!",
     origin: "germany",
     affiliation: "munich",
-    highlights: ["smooth and really from door to door", "safely landed"],
+    highlights: ["smooth and really from door to door"],
   },
   {
     name: "Ratna sari",
@@ -81,7 +83,7 @@ export const TESTIMONIALS: Testimonial[] = [
       "Everything was great! Our package arrived in good condition and ontime from CZ to Bali. The team was assisting from the beginning to the end amazingly.",
     origin: "czechia",
     affiliation: "charles",
-    highlights: ["Everything was great!", "good condition and ontime", "assisting from the beginning to the end amazingly"],
+    highlights: ["good condition and ontime"],
   },
   {
     name: "Irma Rahmawati",
@@ -90,7 +92,7 @@ export const TESTIMONIALS: Testimonial[] = [
       "Pakai rimkirim untuk pengiriman dari Inggris ke Indonesia. Customer service responnya cepat dan baik. Memberikan informasi yang cukup sehingga membantu kami menghindari masalah yang mungkin timbul terkait aturan bea cukai.",
     origin: "england",
     affiliation: "manchester",
-    highlights: ["responnya cepat dan baik", "membantu kami menghindari masalah"],
+    highlights: ["membantu kami menghindari masalah"],
   },
   {
     name: "Blandina Pella",
@@ -99,9 +101,17 @@ export const TESTIMONIALS: Testimonial[] = [
       "Rate harganya bersaing. Customer Service responsif. Penanganan cepat dan bertanggung jawab. No Fussy, No drama.\n\n1 Agustus barang dikirim dari NY, 8 Agustus sudah keluar dari Bea Cukai Indonesia. Sampai di rumah JKT 20 Agustus. Semoga ke depannya lebih cepat dalam proses di Indonesia.\n\nAll in all a very recommended logistic provider.",
     origin: "newYork",
     affiliation: "kbri",
-    highlights: ["harganya bersaing", "Penanganan cepat dan bertanggung jawab", "No Fussy, No drama", "very recommended logistic provider"],
+    highlights: ["No Fussy, No drama"],
   },
 ];
 
 /** Aggregate rating shown as the section's credibility anchor. */
 export const RATING_SCORE = 4.9;
+
+/**
+ * Public Google review link for this business. The aggregate above is only
+ * credible if a visitor can go check it — an unlinked score is indistinguishable
+ * from an invented one, so this must stay live and must never point anywhere
+ * that isn't Rimkirim's own Google profile.
+ */
+export const GOOGLE_REVIEWS_URL = "https://g.page/r/CeTBT1N9hOtPEAI/review";
