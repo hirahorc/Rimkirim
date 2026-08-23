@@ -328,6 +328,18 @@ body {
   box-decoration-break: clone;
 }
 
+/* Section-level sibling of .hero-mark: the same highlighter stroke for the one
+   marked title inside a card rhythm. Kept as its own class so .hero-mark stays
+   reserved for the single hero phrase (DESIGN.md, Marked text). */
+.card-mark {
+  background: var(--brand-soft);
+  color: var(--brand-ink);
+  padding: 0 0.14em;
+  border-radius: 0.12em;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+
 /* Stagger direct children of a container (Hero content cascade). */
 .reveal-stagger > * {
   animation: enter-up 0.5s var(--ease-out-soft) both;
@@ -391,8 +403,8 @@ body {
   @media (prefers-reduced-motion: no-preference) {
     @keyframes hero-settle {
       to {
-        transform: translateY(-40px);
-        opacity: 0.4;
+        transform: translateY(-56px);
+        opacity: 0.12;
       }
     }
     @keyframes hero-drift {
@@ -403,7 +415,7 @@ body {
     }
     @keyframes calc-rise {
       from {
-        transform: translateY(28px);
+        transform: translateY(52px);
       }
       to {
         transform: translateY(0);
@@ -413,7 +425,10 @@ body {
     .hero-settle {
       animation: hero-settle linear both;
       animation-timeline: scroll(root block);
-      animation-range: 0 45vh;
+      /* 35vh, not 45: the headline mark is a saturated lime block, and the
+         header capsule is translucent by design. A slower settle handed the
+         capsule a half-lit lime wash behind the nav links. */
+      animation-range: 0 35vh;
     }
     .hero-drift {
       animation: hero-drift linear both;
@@ -423,7 +438,7 @@ body {
     .calc-rise {
       animation: calc-rise linear both;
       animation-timeline: scroll(root block);
-      animation-range: 0 45vh;
+      animation-range: 0 35vh;
     }
   }
 }

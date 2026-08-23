@@ -41,7 +41,10 @@ export function Hero() {
       </div>
       <div className="hero-settle relative">
         <div className="reveal-stagger mx-auto max-w-4xl px-4 pt-20 text-center sm:px-6 sm:pt-28">
-        <Badge variant="brand" className="mx-auto mb-5 sm:mb-6">
+        {/* neutral, not brand: the fold's lime budget belongs to the header CTA
+            and the headline mark — a third lime pill (and an inert one, at that)
+            makes the marker read as wallpaper. See DESIGN.md, The One-Voice Rule */}
+        <Badge variant="neutral" className="mx-auto mb-5 sm:mb-6">
           {t("hero.badge")}
         </Badge>
         {/* display type runs 32px -> 76px; the 7.5vw slope keeps it fluid across
@@ -58,7 +61,10 @@ export function Hero() {
         <p className="mx-auto mt-5 max-w-2xl text-base leading-relaxed text-muted sm:mt-7 sm:text-xl">
           {t("hero.subtitle")}
         </p>
-        <div className="mt-7 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-muted-2 sm:mt-8">
+        {/* phones stack the three claims as a left-aligned block centred on the
+            page: wrapping a 3-item row at 390px orphaned the last chip on its
+            own centred line, which read as a rendering fault */}
+        <div className="mx-auto mt-7 flex w-fit flex-col items-start gap-2 text-sm text-muted-2 sm:mt-8 sm:w-auto sm:flex-row sm:flex-wrap sm:items-center sm:justify-center sm:gap-x-6 sm:gap-y-2">
           <span className="flex items-center gap-1.5">
             <ShieldCheck className="size-4 text-foreground" /> {t("hero.trustClearance")}
           </span>

@@ -29,7 +29,7 @@ export default function Home() {
       <Hero />
       {/* calc-rise is scroll-driven, reveal-pop is the load-in — they both
           animate transform, so they get an element each */}
-      <section className="calc-rise relative mx-auto -mt-2 max-w-2xl px-4 pb-8 pt-10 sm:px-6">
+      <section className="calc-rise relative mx-auto max-w-2xl px-4 pb-8 pt-10 sm:px-6">
         <div className="reveal-pop" style={{ animationDelay: "0.5s" }}>
           <ShipmentCalculator />
         </div>
