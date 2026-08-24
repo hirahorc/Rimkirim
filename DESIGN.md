@@ -382,11 +382,12 @@ one as drift.
   `prefers-reduced-motion: no-preference`.
 - **The floating verdicts** (the one idle loop, `.hero-verdict-float`): three one-word customer
   verdicts sit in the page gutters beside the hero headline (`xl` and up — below that the gutter is
-  too narrow to hold a word) and drift ±5px on a 7s/8.5s/10s cycle. Three different durations, so
+  too narrow to hold a word) and drift ±9px on a 7s/8.5s/10s cycle, phase-shifted by negative
+  delays so no two words are ever at the same point of their arc. Three different durations, so
   they never pulse in unison; a synchronised set would read as one blinking block rather than three
   separate marks. **This is the system's only looping animation and the only decoration of idle UI.**
   It is granted because the float *is* the idea — static, the three words are just more labels — and
-  it is kept survivable by how small it is: 5px over eight seconds is slower than the eye tracks.
+  it is kept survivable by how small it is: 9px over eight seconds is slower than the eye tracks.
   A second loop anywhere is drift, not precedent.
   The words themselves are hollow display type (see Typography), and each carries its own
   scroll-linked travel: `.hero-verdict-drift` reads `--verdict-travel` (14/30/46px, set inline per

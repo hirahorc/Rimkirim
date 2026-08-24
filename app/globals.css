@@ -480,7 +480,8 @@ body {
    idle loop on any surface, and the loop is the thing that makes them read as
    floating rather than as three more static labels.
 
-   Kept survivable: 5px of travel, 7-10s per cycle, and three different
+   Kept survivable: 9px of travel (bumped from 5 — at 40px hollow type the
+   smaller travel read as jitter, not floating), 7-10s per cycle, and three different
    durations so the words never pulse in unison (in sync they would read as
    one blinking block). The travel lives on `translate` while the scroll
    parallax above lives on `transform`, so the two compose instead of one
@@ -488,18 +489,25 @@ body {
 @media (prefers-reduced-motion: no-preference) {
   @keyframes hero-verdict-float {
     50% {
-      translate: 0 -5px;
+      translate: 0 -9px;
     }
   }
   .hero-verdict-float {
     animation: hero-verdict-float 8.5s ease-in-out infinite;
   }
-  /* the float div is each li's only child, so the variance keys off the li */
-  li:nth-child(2) > .hero-verdict-float {
+  /* descendant, not child: the float div sits inside the verdict's <a>, so
+     the variance keys off the li (a `>` here silently uniformed all three
+     to 8.5s when the anchor was introduced). Negative delays start each
+     word mid-cycle: different durations alone desynchronize them
+     eventually, but all three still left the gate together — for the first
+     few seconds they rose as one block. */
+  li:nth-child(2) .hero-verdict-float {
     animation-duration: 10s;
+    animation-delay: -3.5s;
   }
-  li:nth-child(3) > .hero-verdict-float {
+  li:nth-child(3) .hero-verdict-float {
     animation-duration: 7s;
+    animation-delay: -5.2s;
   }
 }
 
