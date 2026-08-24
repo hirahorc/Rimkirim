@@ -11,6 +11,7 @@ import {
   TESTIMONIALS,
   RATING_SCORE,
   GOOGLE_REVIEWS_URL,
+  testimonialAnchor,
   type Testimonial,
 } from "@/lib/data/testimonials";
 
@@ -108,19 +109,23 @@ function highlightQuote(quote: string, highlights?: string[]) {
 function FeaturedTestimonial({
   item,
   className,
+  id,
 }: {
   item: Testimonial;
   className?: string;
+  /** deep-link anchor — set on ONE instance only (the card renders twice) */
+  id?: string;
 }) {
   const t = useT();
   const { name, quote, origin, affiliation, highlights, photo } = item;
   return (
     <article
+      id={id}
       className={cn(
         // grid-cols-1 below sm: an implicit auto track sizes to its content and
         // overflowed the card's own 78% width by ~15px, so the truncate ellipsis
         // was computed outside the visible box
-        "testi-card grid grid-cols-1 overflow-hidden rounded-lg bg-foreground text-background sm:grid-cols-[minmax(0,45%)_1fr]",
+        "testi-card grid scroll-mt-24 grid-cols-1 overflow-hidden rounded-lg bg-foreground text-background sm:grid-cols-[minmax(0,45%)_1fr]",
         className,
       )}
     >
@@ -255,6 +260,7 @@ export function TestimonialSection() {
         {/* sm+: the hook sits full-width above the masonry */}
         <FeaturedTestimonial
           item={featured}
+          id={testimonialAnchor(featured.name)}
           className="mx-auto mt-12 hidden max-w-5xl sm:grid"
         />
 
@@ -277,7 +283,8 @@ export function TestimonialSection() {
           {rest.map(({ name, rating, quote, origin, affiliation, highlights }) => (
             <Card
               key={name}
-              className="testi-card flex w-[78%] shrink-0 snap-start break-inside-avoid flex-col p-5 transition-colors hover:border-border-strong sm:mb-4 sm:w-auto sm:shrink"
+              id={testimonialAnchor(name)}
+              className="testi-card flex w-[78%] shrink-0 snap-start scroll-mt-24 break-inside-avoid flex-col p-5 transition-colors hover:border-border-strong sm:mb-4 sm:w-auto sm:shrink"
             >
               {/* every card opens on the same line: stars, then quote, then the
                   route. The slides are stretched to the tallest card, and the

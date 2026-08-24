@@ -145,6 +145,14 @@ const id = {
     trustClearance: "Clearance ditangani penuh",
     trustDoorToDoor: "Door to door",
     trustPickup: "Pickup gratis",
+    /* Putusan pelanggan yang mengambang di sisi headline. Ini destilasi kami
+       atas review nyata, BUKAN kutipan — makanya diterjemahkan, dan makanya
+       dirender tanpa tanda kutip. Lihat VERDICTS di Hero.tsx untuk sumbernya. */
+    verdictsLabel: "Putusan pelanggan",
+    verdictCta: "baca ulasannya",
+    verdictIntact: "Utuh",
+    verdictOnTime: "Tepat waktu",
+    verdictLookedAfter: "Didampingi",
   },
   service: {
     heading: "Dua arah, satu tim yang sama",
@@ -1431,6 +1439,11 @@ const en: Messages = {
     trustClearance: "Full clearance handling",
     trustDoorToDoor: "Door to door",
     trustPickup: "Free pickup",
+    verdictsLabel: "What customers said",
+    verdictCta: "read their review",
+    verdictIntact: "Intact",
+    verdictOnTime: "On time",
+    verdictLookedAfter: "Looked after",
   },
   service: {
     heading: "Two directions, one and the same team",

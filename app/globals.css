@@ -401,16 +401,31 @@ body {
    on no-preference so reduced-motion users get a plain static hero. */
 @supports (animation-timeline: scroll()) {
   @media (prefers-reduced-motion: no-preference) {
+    /* Fade belongs to the verdicts alone: the hero text and the grid keep
+       their full ink while they parallax — only the floating verdicts dim
+       out as they travel (hero-verdict-drift below). */
     @keyframes hero-settle {
       to {
         transform: translateY(-56px);
-        opacity: 0.12;
       }
     }
     @keyframes hero-drift {
       to {
         transform: translateY(32px);
-        opacity: 0.35;
+      }
+    }
+    /* One keyframe, three depths: the translateY reads --verdict-travel from
+       the element it runs on (14/30/46px, set inline per word), so each word
+       drifts at its own speed without three copies of the animation. */
+    /* visibility rides along so the faded-out link stops being clickable:
+       it interpolates discretely, staying visible for the whole travel and
+       flipping to hidden only at the end — no ghost anchors under the
+       calculator's whitespace. */
+    @keyframes hero-verdict-drift {
+      to {
+        transform: translateY(calc(-1 * var(--verdict-travel, 24px)));
+        opacity: 0;
+        visibility: hidden;
       }
     }
     @keyframes calc-rise {
@@ -426,8 +441,11 @@ body {
       animation: hero-settle linear both;
       animation-timeline: scroll(root block);
       /* 35vh, not 45: the headline mark is a saturated lime block, and the
-         header capsule is translucent by design. A slower settle handed the
-         capsule a half-lit lime wash behind the nav links. */
+         header capsule is translucent by design. With no dim on the settle
+         (fade belongs to the verdicts alone) the mark now passes behind the
+         capsule fully lit — the same moment the lime "Cek Harga" bar already
+         produces on every scroll-past — so the short range matters more, not
+         less: it clears the mark out of the capsule's band quickly. */
       animation-range: 0 35vh;
     }
     .hero-drift {
@@ -440,6 +458,94 @@ body {
       animation-timeline: scroll(root block);
       animation-range: 0 35vh;
     }
+    /* Every verdict travels less than the hero text's 56px. Lagging behind
+       the headline is the whole point: a layer that moves less reads as a
+       layer further away, and three different travels read as three depths.
+       Opacity clears them well before the header capsule would ever overlap
+       them. */
+    .hero-verdict-drift {
+      animation: hero-verdict-drift linear both;
+      animation-timeline: scroll(root block);
+      animation-range: 0 35vh;
+    }
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/*  Hero verdicts: the one looping animation in the system             */
+/* ------------------------------------------------------------------ */
+
+/* A deliberate, bounded exception to Motion's "never loops, never decorates
+   idle UI" (DESIGN.md, Earned motion) — these floating verdicts are the only
+   idle loop on any surface, and the loop is the thing that makes them read as
+   floating rather than as three more static labels.
+
+   Kept survivable: 5px of travel, 7-10s per cycle, and three different
+   durations so the words never pulse in unison (in sync they would read as
+   one blinking block). The travel lives on `translate` while the scroll
+   parallax above lives on `transform`, so the two compose instead of one
+   overwriting the other. */
+@media (prefers-reduced-motion: no-preference) {
+  @keyframes hero-verdict-float {
+    50% {
+      translate: 0 -5px;
+    }
+  }
+  .hero-verdict-float {
+    animation: hero-verdict-float 8.5s ease-in-out infinite;
+  }
+  /* the float div is each li's only child, so the variance keys off the li */
+  li:nth-child(2) > .hero-verdict-float {
+    animation-duration: 10s;
+  }
+  li:nth-child(3) > .hero-verdict-float {
+    animation-duration: 7s;
+  }
+}
+
+/* Arrival flash: earned motion — the user just clicked a hero verdict, and
+   the review card they landed on answers once, then goes quiet. Colour
+   channel only: a box-shadow ring against the white canvas, so it reads on
+   the ink featured card and the light masonry cards alike. :target only
+   fires on a hash change, so re-clicking the same verdict does not re-flash —
+   normal deep-link behaviour, not a bug. */
+@media (prefers-reduced-motion: no-preference) {
+  @keyframes target-flash {
+    0%,
+    25% {
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--foreground) 35%, transparent);
+    }
+    100% {
+      box-shadow: 0 0 0 3px transparent;
+    }
+  }
+  .testi-card:target {
+    animation: target-flash 1.2s var(--ease-out-soft) both;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  /* the accessible equivalent of the flash: a still ring while targeted */
+  .testi-card:target {
+    box-shadow: 0 0 0 2px var(--border-strong);
+  }
+}
+
+/* Hollow display type for the verdicts: a 1px ink stroke and no fill, so the
+   hero's grid backdrop shows through the letterforms. Guarded by @supports —
+   a browser without text-stroke keeps the markup's muted fill instead of
+   rendering invisible text. */
+@supports (-webkit-text-stroke: 1px black) {
+  .hero-verdict-word {
+    -webkit-text-stroke: 1px var(--foreground);
+    color: transparent;
+  }
+  /* Hover/press fills the outline with ink — colour channel only. This lives
+     here, not in a group-hover utility: this rule is unlayered while Tailwind
+     utilities sit in @layer utilities, so the transparent fill above would
+     beat any utility regardless of specificity. */
+  .hero-verdict-drift a:hover .hero-verdict-word,
+  .hero-verdict-drift a:active .hero-verdict-word {
+    color: var(--foreground);
   }
 }
 
@@ -543,6 +649,7 @@ body {
   .reveal-bg,
   .reveal-stagger > *,
   .hero-word,
+  .hero-verdict-float,
   .testi-card,
   .check-draw,
   .banner-enter,
