@@ -208,7 +208,8 @@ white carries far more visual weight than the same fill on near-black.
 
 **The Marker Rule.** Lime is a **fill behind dark ink**, never ink itself. Emphasis in text is
 carried by weight and Ink; when a phrase must be singled out it gets the highlighter treatment
-(`.hero-mark`). Inline links are the one exception to Ink-only text: they are conventional
+(`.hero-mark` in the hero, `.card-mark` in a card rhythm — one mark per budget, never both in the
+same eyeful). Inline links are the one exception to Ink-only text: they are conventional
 link blue (`.link-mark`) so they read as links at a glance. This is the load-bearing rule of the
 light system.
 
@@ -217,6 +218,18 @@ glass blur used as *decoration*. Depth comes from panels, hairlines, and the two
 The one sanctioned translucency is functional: sticky chrome (the header capsule) is
 `bg-background/70` + `backdrop-blur-xl` so the page reads legibly as it scrolls underneath — an
 effect doing a specific job, not a texture.
+
+There are exactly **two standing exceptions**, both narrow, both doing a job no solid fill can do.
+Neither licenses a third: a new gradient has to earn its place the same way, in writing, at the
+point of use.
+- **Scrim over photography.** Where text sits on an image — the testimonial hook card's name and
+  attribution — a `from-foreground/95 via-foreground/70 to-transparent` ramp buys legibility
+  against a backdrop the design does not control. It is a contrast device on imagery, never a
+  surface treatment on a panel.
+- **`.nav-expat`.** The "Expat Relocation" nav link is gradient *text* (82° `#21b1ec → #d41ce6`),
+  lifted from the Figma header, with the gradient painted 3× wider than the label and slid across
+  on hover. It is the one place gradient carries identity rather than decoration, and it reserves
+  its hover width up front so neighbours never nudge.
 
 **The Tint-15/25 Rule.** *Status* chips use the colour at 15% opacity for the fill, 25% for the
 border, and full strength for the text/icon. **Brand chips are the exception** — a 15% lime wash is
@@ -322,6 +335,14 @@ sense that the page is still there underneath.
 `cubic-bezier(0.4, 0, 0.2, 1)` colour/border transition on hover and focus — with one
 sanctioned exception:
 
+**Hover moves colour, not geometry.** Hover has exactly three idioms across the app — text
+colour, panel fill, hairline darkening — and combinations stay inside the colour channel
+(fill *and* text, border *and* text). One element may answer with a single effect only; three
+at once reads as a different product. Geometry on hover is not part of the vocabulary: the one
+element that moves (the Google-rating link's arrow, a 1px diagonal nudge) is a deliberate
+exception written down at the point of use, carried by `motion-safe` and falling back to a
+colour shift under `motion-reduce` so the affordance survives with animation off.
+
 **Earned motion.** A milestone the user just reached may play one animation, once: the check
 that draws itself on a just-completed module (`check-draw`), the hub progress bar filling to
 its new count, a status banner easing in when its state changes (`banner-enter`), the
@@ -332,9 +353,15 @@ unchanged state. 0.3–0.5s, `--ease-out-soft`, always guarded by `prefers-reduc
 - **Entrance** (time-based, on load): the header drops in, hero children cascade up on a
   0.05s-per-item stagger, the headline arrives word by word, and the calculator pops in last.
   Under ~0.7s total.
-- **The hero settle** (scroll-linked): across the first 45vh the hero text drifts up 40px and
-  dims to 0.4, the grid backdrop trails 32px behind it, and the calculator closes a 28px gap —
+- **The hero settle** (scroll-linked): across the first 35vh the hero text drifts up 56px and
+  dims to 0.12, the grid backdrop trails 32px behind it, and the calculator closes a 52px gap —
   a short parallax that reads as depth without costing the page a single pixel of extra scroll.
+  The range is deliberately shorter than the travel: the hero clears out faster than the thumb
+  scrolls, so the calculator owns the screen instead of sharing it.
+- **The card rise** (scroll-linked, `view()` timeline, `.testi-card`): a card fades from 0 and lifts
+  10px across `entry 0% → entry 45%`, so cards arrive as they enter rather than all at once on
+  load. Same guards as the settle — `@supports (animation-timeline: view())` plus
+  `prefers-reduced-motion: no-preference`.
 
 **The Never-Delay-The-Calculator Rule.** The landing exists to get someone into the rate
 calculator, which sits immediately below the fold. Motion may decorate that journey but must
@@ -434,6 +461,18 @@ back gesture). At `sm` it becomes a plain grid — `sm:grid sm:snap-none sm:over
 The container takes `tabIndex={0}` with `role="group"` and a label, since the cards hold no
 focusable children and the overflow would otherwise be unreachable without a pointer.
 
+**Past ~4 cards the peek is not enough.** A strip that runs several viewports long hides its tail
+from anyone who does not guess to swipe, so it earns a **position row** below it: one 6px dot per
+slide, active in Ink and the rest in Hairline Strong, each dot inside a 24×44 hit target sitting
+flush with its neighbours (24px pitch — a 44px pitch reads as six unrelated marks rather than one
+row). The dots are real buttons that scroll their slide into view, and the active index is driven
+by an `IntersectionObserver` rooted on the strip.
+
+**Cards in a strip share one height.** Unlike the `sm+` masonry, where a card sizes to its own
+content, slides stretch to the tallest so the deck reads as one object under the thumb. The slack
+is spent at the foot — attribution pinned with `mt-auto` — never by re-centring each card, which
+lands the first line at a different height on every swipe.
+
 **Use it only when the cards are supporting content.** Four "why us" reasons are a good strip: they
 reward compactness and nobody has to read all of them. A two-card row offering a *choice* — Back For
 Good vs Moving Abroad — stays stacked, because hiding half a decision behind a swipe costs more than
@@ -487,6 +526,11 @@ the active link is a Panel-2 pill instead. Same principle, inverted fill.
 - **`.hero-mark`** — the highlighter: Soft Lime fill behind Ink-on-Lime, `0.12em` radius, with
   `box-decoration-break: clone` so the mark survives a line wrap. Reserved for the single hero
   phrase.
+- **`.card-mark`** — the same highlighter stroke, for the one marked title inside a card rhythm.
+  Identical treatment, kept as its own class precisely so `.hero-mark` stays reserved: the hero
+  gets one marked phrase per page, a card section gets one marked title per section, and the two
+  budgets never borrow from each other. This is how lime reaches a card without becoming its
+  surface.
 - **`.link-mark`** — inline links: conventional link blue (`--info`) with a soft underline that
   darkens on hover. Lime is never used to mark a link.
 - **Tooltip (`InfoTip`)** — an 18px help-circle trigger (muted, 55% → 100% on hover/focus,
