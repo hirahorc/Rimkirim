@@ -109,6 +109,15 @@ export const TESTIMONIALS: Testimonial[] = [
 export const RATING_SCORE = 4.9;
 
 /**
+ * DOM id of a testimonial's card in the #ulasan section. The hero's floating
+ * verdicts deep-link here — one helper on both sides, so the link and the
+ * card can never drift apart.
+ */
+export function testimonialAnchor(name: string): string {
+  return "ulasan-" + name.trim().toLowerCase().replace(/\s+/g, "-");
+}
+
+/**
  * Public Google review link for this business. The aggregate above is only
  * credible if a visitor can go check it — an unlinked score is indistinguishable
  * from an invented one, so this must stay live and must never point anywhere

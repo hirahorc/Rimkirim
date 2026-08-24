@@ -272,6 +272,14 @@ unchanged from the previous visual world — the palette moved, the voice did no
 - **Mono** (JetBrains Mono 500, `tabular-nums`, size follows context from 0.75rem chips to the
   3xl quotation total): Booking numbers, packing codes (`RK-PL-XXXXXX`), airway bills, and all
   IDR/currency amounts.
+- **Hollow display** (Space Grotesk 700, `clamp(2rem, 5vw − 2rem, 2.75rem)`,
+  `-webkit-text-stroke: 1px` Ink with a transparent fill, guarded by `@supports` so unsupporting
+  browsers fall back to the markup's filled muted text): the single decorative role — today only
+  the hero's floating verdicts wear it. Outline-only keeps a 44px word visually lighter than the
+  12px filled label under it, which is what lets display-size type sit in a gutter without
+  competing with the headline. Its hover state is part of the role: the outline fills with ink
+  (0.2s colour transition), which doubles as the affordance that the word is a link. Not a step on
+  the text ramp: never body copy, never a heading.
 
 ### Named Rules
 **The Numbers-Are-Mono Rule.** Identifiers (`RK-…`, `RK-PL-…`, AWB) and monetary amounts render in
@@ -348,20 +356,50 @@ that draws itself on a just-completed module (`check-draw`), the hub progress ba
 its new count, a status banner easing in when its state changes (`banner-enter`), the
 Delivered node drawing its check. Earned motion marks an achievement at the moment it
 happens — it never loops, never decorates idle UI, and never plays on mere page load of an
-unchanged state. 0.3–0.5s, `--ease-out-soft`, always guarded by `prefers-reduced-motion`.
+unchanged state. The arrival flash is the same family: clicking a hero verdict deep-links to its
+review card, and the card answers with one box-shadow ring flash (`:target`, 1.2s, colour channel
+only) then goes quiet; under reduced motion the flash becomes a still ring while targeted.
+0.3–0.5s (the flash, at 1.2s, is the slow end of earned), `--ease-out-soft`, always guarded by
+`prefers-reduced-motion`.
+The system holds **exactly one** looping animation, named and bounded below; treat any second
+one as drift.
 
 - **Entrance** (time-based, on load): the header drops in, hero children cascade up on a
   0.05s-per-item stagger, the headline arrives word by word, and the calculator pops in last.
   Under ~0.7s total.
-- **The hero settle** (scroll-linked): across the first 35vh the hero text drifts up 56px and
-  dims to 0.12, the grid backdrop trails 32px behind it, and the calculator closes a 52px gap —
+- **The hero settle** (scroll-linked): across the first 35vh the hero text drifts up 56px at
+  full ink, the grid backdrop trails 32px behind it, and the calculator closes a 52px gap —
   a short parallax that reads as depth without costing the page a single pixel of extra scroll.
+  Nothing in the settle fades: on this surface the scroll-fade belongs to the floating verdicts
+  alone, so the layers separate by *speed*, and the one thing that dims is the one thing that is
+  decoration. The headline mark therefore passes behind the translucent capsule fully lit — the
+  same moment the lime "Cek Harga" bar produces on every scroll-past, accepted as consistent.
   The range is deliberately shorter than the travel: the hero clears out faster than the thumb
   scrolls, so the calculator owns the screen instead of sharing it.
 - **The card rise** (scroll-linked, `view()` timeline, `.testi-card`): a card fades from 0 and lifts
   10px across `entry 0% → entry 45%`, so cards arrive as they enter rather than all at once on
   load. Same guards as the settle — `@supports (animation-timeline: view())` plus
   `prefers-reduced-motion: no-preference`.
+- **The floating verdicts** (the one idle loop, `.hero-verdict-float`): three one-word customer
+  verdicts sit in the page gutters beside the hero headline (`xl` and up — below that the gutter is
+  too narrow to hold a word) and drift ±5px on a 7s/8.5s/10s cycle. Three different durations, so
+  they never pulse in unison; a synchronised set would read as one blinking block rather than three
+  separate marks. **This is the system's only looping animation and the only decoration of idle UI.**
+  It is granted because the float *is* the idea — static, the three words are just more labels — and
+  it is kept survivable by how small it is: 5px over eight seconds is slower than the eye tracks.
+  A second loop anywhere is drift, not precedent.
+  The words themselves are hollow display type (see Typography), and each carries its own
+  scroll-linked travel: `.hero-verdict-drift` reads `--verdict-travel` (14/30/46px, set inline per
+  word) against the hero text's 56px, so the three words read as three sheets of glass at different
+  depths — the layer that moves less is the layer further away. Float and parallax compose on
+  separate elements and separate properties: the loop animates `translate` on an inner div while
+  the parallax animates `transform` on the `li` — in Tailwind v4 those are distinct properties,
+  which is what lets both run without either winning.
+  Each verdict is a link to its source review's card in `#ulasan` (`testimonialAnchor()` builds
+  the id on both ends): hover fills the hollow word with ink and steps the caption one grey darker
+  — colour channel only — active pushes the caption to ink, and keyboard focus wears the same ring
+  as the rating link. The drift keyframe ends in `visibility: hidden` so the faded-out word stops
+  being a clickable ghost under the calculator's whitespace.
 
 **The Never-Delay-The-Calculator Rule.** The landing exists to get someone into the rate
 calculator, which sits immediately below the fold. Motion may decorate that journey but must
