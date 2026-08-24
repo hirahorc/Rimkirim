@@ -380,6 +380,14 @@ one as drift.
   10px across `entry 0% → entry 45%`, so cards arrive as they enter rather than all at once on
   load. Same guards as the settle — `@supports (animation-timeline: view())` plus
   `prefers-reduced-motion: no-preference`.
+- **The disclosure open** (FAQ accordion, `FaqDisclosure`): the answer's height is the only
+  animated property — no fade, no slide — on the system easing, and the *duration is computed
+  from the content height* (Material's `getAutoHeightDuration`: a short panel snaps at ~200ms, a
+  long one glides at ~330ms, so perceived speed stays constant where a fixed 300ms cannot).
+  Height lands on `auto` after opening so growing content never clips. The chevron is swapped
+  down↔up, never rotated, and it swaps on the click, not after the motion; the open header
+  carries no colour change — the icon alone marks the state. Instant under reduced motion.
+  Rows keep the panel-fill hover idiom, one step harder on focus-visible.
 - **The floating verdicts** (the one idle loop, `.hero-verdict-float`): three one-word customer
   verdicts sit in the page gutters beside the hero headline (`xl` and up — below that the gutter is
   too narrow to hold a word) and drift ±9px on a 7s/8.5s/10s cycle, phase-shifted by negative
