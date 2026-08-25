@@ -168,7 +168,9 @@ export function ModuleHub() {
 
   return (
     <div>
-      <header className="mb-6">
+      {/* left on phones, centred from sm up — the flow's shared header
+          alignment (same on /pesan and /pesan/clearance) */}
+      <header className="mb-6 sm:text-center">
         <h1 className="font-display text-2xl font-bold tracking-tight sm:text-3xl">
           {t("order.hubTitle")}
         </h1>
@@ -204,7 +206,7 @@ export function ModuleHub() {
 
       {/* the receipt: what the order already HAS (booking number, packing list,
           document) in one quiet strip, so the body below is only the work */}
-      <Card className="mb-6 grid divide-y divide-border p-0 sm:grid-cols-2 sm:divide-x sm:divide-y-0">
+      <Card className="mb-6 grid divide-y divide-border overflow-hidden p-0 sm:grid-cols-2 sm:divide-x sm:divide-y-0">
         <div className="px-4 py-3 sm:px-5">
           <p className="font-display text-xs font-medium uppercase tracking-wide text-muted-2">
             {t("order.bookingNumberLabel")}
@@ -330,7 +332,7 @@ export function ModuleHub() {
               role="link"
               aria-disabled="true"
               aria-describedby="hub-pickup-locked"
-              className="rounded-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground/60"
+              className="rounded-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground/60"
             >
               {Inner}
             </div>

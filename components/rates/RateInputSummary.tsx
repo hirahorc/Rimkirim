@@ -26,8 +26,10 @@ export function RateInputSummary({
     input.service === "bfg" ? t("calc.serviceBfg") : t("calc.serviceMa");
   const pkgCount = input.packages.reduce((n, p) => n + (Number(p.quantity) || 1), 0);
 
+  // md, not lg: the corner curve must stay inside the p-4 padding (The
+  // Clearance Rule) — a 28px sweep past 16px padding crowds the content
   return (
-    <div className="flex flex-col gap-4 rounded-lg border border-border bg-surface/70 p-4 sm:flex-row sm:items-center sm:justify-between">
+    <div className="flex flex-col gap-4 rounded-md border border-border bg-surface/70 p-4 sm:flex-row sm:items-center sm:justify-between">
       <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm">
         <span className="flex items-center gap-2 font-medium">
           <ServiceIcon className="size-4 text-foreground" />

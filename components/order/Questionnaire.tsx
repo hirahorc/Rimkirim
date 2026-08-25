@@ -12,7 +12,6 @@ import {
   Loader2,
   CheckCircle2,
   XCircle,
-  Check as CheckIcon,
 } from "lucide-react";
 import { useOrderStore } from "@/lib/store/useOrderStore";
 import type { Citizenship } from "@/lib/store/useOrderStore";
@@ -26,6 +25,12 @@ import { useT, useLanguage } from "@/lib/i18n/LanguageProvider";
 import { Card } from "@/components/ui/card";
 import { Input, Label } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 import { InfoTip, TooltipProvider } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils/cn";
 import { formatIDR } from "@/lib/utils/currency";
@@ -34,10 +39,10 @@ import { RouteArrow } from "@/components/ui/route-arrow";
 const WA_URL = "https://wa.me/6281234567890";
 
 /**
- * A yes/no (or A/B) answer as the system's segmented control: the chosen
- * segment lifts off the track in white + ink instead of filling with lime, so
- * five answered questions never out-shout the one lime "Lanjut". Real radio
- * semantics: the group is labelled by its question, arrows move the choice.
+ * A yes/no (or A/B) answer as two standalone buttons side by side — not a
+ * segmented toggle: each answer is its own pressable card, and the chosen one
+ * fills with lime. Real radio semantics stay: the group is labelled by its
+ * question, arrows move the choice, roving tabindex.
  */
 function Choice<T extends string | boolean>({
   value,
@@ -62,7 +67,7 @@ function Choice<T extends string | boolean>({
     <div
       role="radiogroup"
       aria-labelledby={labelledBy}
-      className="mt-3 inline-flex w-full items-stretch gap-1 rounded-full border border-border bg-surface-2 p-1"
+      className="mt-3 grid grid-cols-2 gap-2"
     >
       {options.map((o, i) => {
         const checked = value === o.value;
@@ -92,22 +97,13 @@ function Choice<T extends string | boolean>({
               }
             }}
             className={cn(
-              "tap-row flex flex-1 items-center justify-center gap-2 rounded-full px-3 py-2 text-sm font-medium transition-all",
+              "rounded-md border px-4 py-2.5 text-sm font-medium transition-colors",
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/50",
               checked
-                ? "bg-background font-semibold text-foreground shadow-float"
-                : "text-muted hover:text-foreground",
+                ? "border-brand bg-brand text-brand-ink"
+                : "border-border bg-surface-2 text-muted hover:border-border-strong hover:text-foreground",
             )}
           >
-            {/* the lift + weight already say "chosen"; the check is a bonus that
-                only fits once the pill has room */}
-            {checked && (
-              <CheckIcon
-                className="hidden size-3.5 sm:block"
-                strokeWidth={3}
-                aria-hidden
-              />
-            )}
             {o.label}
           </button>
         );
@@ -410,67 +406,72 @@ export function Questionnaire() {
     </div>
   );
 
-  // the hand-off card: the form stays in view (dimmed) so the answer that
-  // routed them is still on screen, and the card arrives rather than replaces
-  const outcomeCard =
-    outcome === "ineligible" ? (
-      <OutcomeScreen
-        icon={<PackageX className="size-6 text-foreground" />}
-        eyebrow={t("order.qOutcomeEyebrow")}
-        title={t("order.ineligibleTitle")}
-        body={t("order.ineligibleBody")}
-        echo={`${t("order.qYourAnswer")}: ${t("order.no")}`}
-        primary={{
-          label: t("order.ineligibleCta"),
-          href: WA_URL,
-          external: true,
-          tone: "secondary",
-          icon: <MessageCircle className="size-4" />,
-        }}
-        alt={{ label: t("order.ineligibleAlt"), href: "/cek-tarif" }}
-        secondaryLabel={t("order.backToRates")}
-        onSecondary={() => setAnswers({ shippingPersonal: undefined })}
-      />
-    ) : outcome === "foreigner" ? (
-      <OutcomeScreen
-        icon={<Globe2 className="size-6 text-foreground" />}
-        eyebrow={t("order.qOutcomeEyebrow")}
-        title={t("order.foreignerTitle")}
-        body={t("order.foreignerBody")}
-        echo={`${t("order.qYourAnswer")}: ${t("order.foreigner")}`}
-        primary={{
-          label: t("order.foreignerCta"),
-          href: "/expat-relocation",
-          external: false,
-          icon: <ArrowRight className="size-4" />,
-        }}
-        alt={{ label: t("order.ineligibleAlt"), href: "/cek-tarif" }}
-        secondaryLabel={t("order.backToRates")}
-        onSecondary={() => setAnswers({ citizenship: undefined })}
-      />
-    ) : null;
+  // the hand-off dialog: a vaul sheet on phones, centred modal on desktop.
+  // Dismissing it any way (drag, X, esc, overlay) = "Ubah jawaban": the
+  // routing answer is cleared so the form comes back live.
+  const outcomeProps =
+    outcome === "ineligible"
+      ? {
+          icon: <PackageX className="size-6 text-foreground" />,
+          eyebrow: t("order.qOutcomeEyebrow"),
+          title: t("order.ineligibleTitle"),
+          body: t("order.ineligibleBody"),
+          echo: `${t("order.qYourAnswer")}: ${t("order.no")}`,
+          primary: {
+            label: t("order.ineligibleCta"),
+            href: WA_URL,
+            external: true,
+            tone: "secondary" as const,
+            icon: <MessageCircle className="size-4" />,
+          },
+          alt: { label: t("order.ineligibleAlt"), href: "/cek-tarif" },
+          secondaryLabel: t("order.backToRates"),
+          onSecondary: () => setAnswers({ shippingPersonal: undefined }),
+        }
+      : outcome === "foreigner"
+        ? {
+            icon: <Globe2 className="size-6 text-foreground" />,
+            eyebrow: t("order.qOutcomeEyebrow"),
+            title: t("order.foreignerTitle"),
+            body: t("order.foreignerBody"),
+            echo: `${t("order.qYourAnswer")}: ${t("order.foreigner")}`,
+            primary: {
+              label: t("order.foreignerCta"),
+              href: "/expat-relocation",
+              external: false,
+              icon: <ArrowRight className="size-4" />,
+            },
+            alt: { label: t("order.ineligibleAlt"), href: "/cek-tarif" },
+            secondaryLabel: t("order.backToRates"),
+            onSecondary: () => setAnswers({ citizenship: undefined }),
+          }
+        : null;
+  // retain the last outcome's content while the dialog animates closed
+  const lastOutcome = React.useRef(outcomeProps);
+  if (outcomeProps) lastOutcome.current = outcomeProps;
+  const shownOutcome = outcomeProps ?? lastOutcome.current;
+  const outcomeCard = shownOutcome ? (
+    <OutcomeScreen {...shownOutcome} open={!!outcome} />
+  ) : null;
 
   return (
     <TooltipProvider delayDuration={150}>
       <div>
-        <div
-          className={cn(
-            "transition-opacity",
-            outcome && "pointer-events-none opacity-40",
-          )}
-          // inert: removes the dimmed form from tab order AND the a11y tree
-          inert={!!outcome}
-        >
-          <header className="mb-6">
+        {/* no manual dim/inert here: the outcome dialog's overlay covers the
+            form, and radix/vaul make the page behind it inert themselves */}
+        <div>
+          {/* left on phones, centred from sm up — the flow's shared header
+              alignment (same on /pesan/clearance and /pesan/modul) */}
+          <header className="mb-6 sm:text-center">
             <h1 className="font-display text-2xl font-bold tracking-tight sm:text-3xl">
               {t("order.qHeading")}
             </h1>
-            <p className="mt-1.5 max-w-prose text-sm text-muted">
+            <p className="mt-1.5 max-w-prose text-sm text-muted sm:mx-auto">
               {t("order.qSubheading")}
             </p>
             {/* the shipment this check is about: the Open Desk readout the page
                 was missing (route · service · quoted rate) */}
-            <p className="mt-3 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-foreground">
+            <p className="mt-3 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-foreground sm:justify-center">
               <Link
                 href="/cek-tarif"
                 className="inline-flex items-center gap-1.5 underline-offset-4 hover:underline"
@@ -706,7 +707,7 @@ export function Questionnaire() {
           {/* the action block steps aside when the outcome card has taken over */}
           <div className={cn("mt-6", outcome && "hidden")}>
             {canSubmit && !offRamp && (
-              <p className="mx-auto mb-3 flex w-full flex-wrap items-center justify-center gap-x-1.5 gap-y-0.5 rounded-lg bg-surface-2 px-4 py-2.5 text-center text-sm font-medium text-foreground">
+              <p className="mx-auto mb-3 flex w-full flex-wrap items-center justify-center gap-x-1.5 gap-y-0.5 rounded-md bg-surface-2 px-4 py-2.5 text-center text-sm font-medium text-foreground">
                 <CheckCircle2 className="size-3.5 text-success" />{" "}
                 {t("order.qEligibleReadout")}
                 <span className="block w-full font-normal text-muted">
@@ -776,6 +777,7 @@ function OutcomeScreen({
   alt,
   secondaryLabel,
   onSecondary,
+  open,
 }: {
   icon: React.ReactNode;
   eyebrow: string;
@@ -794,69 +796,65 @@ function OutcomeScreen({
   /** an optional second way forward (never a dead end) */
   alt?: { label: string; href: string };
   secondaryLabel: string;
+  /** clears the routing answer — also what any dismissal maps to */
   onSecondary: () => void;
+  open: boolean;
 }) {
-  const headingRef = React.useRef<HTMLHeadingElement>(null);
-  // the card arrives below the dimmed form; focus lands on its title so keyboard
-  // and screen-reader users are taken to the outcome, not left on the button
-  React.useEffect(() => {
-    headingRef.current?.focus();
-    headingRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-  }, []);
   return (
-    <Card
-      className="reveal-pop mt-3 scroll-mt-28 p-6 sm:p-8"
-      role="region"
-      aria-live="polite"
+    <Dialog
+      open={open}
+      onOpenChange={(v) => {
+        if (!v) onSecondary();
+      }}
     >
-      <p className="font-display text-xs font-medium uppercase tracking-[0.04em] text-muted-2">
-        {eyebrow}
-      </p>
-      <div className="mt-3 flex items-start gap-4">
-        <div className="grid size-12 shrink-0 place-items-center rounded-full bg-surface-2">
-          {icon}
+      <DialogContent>
+        <div className="min-h-0 overflow-y-auto p-6 sm:p-8">
+          <p className="font-display text-xs font-medium uppercase tracking-[0.04em] text-muted-2">
+            {eyebrow}
+          </p>
+          <div className="mt-3 flex items-start gap-4">
+            <div className="grid size-12 shrink-0 place-items-center rounded-full bg-surface-2">
+              {icon}
+            </div>
+            <div className="min-w-0">
+              <DialogTitle className="font-semibold sm:text-xl">
+                {title}
+              </DialogTitle>
+              <DialogDescription className="mt-1.5">{body}</DialogDescription>
+              <p className="mt-2 text-xs text-muted-2">{echo}</p>
+            </div>
+          </div>
+          <div className="mt-6 flex flex-col gap-2 sm:flex-row sm:flex-wrap">
+            <Button
+              asChild
+              variant={primary.tone ?? "brand"}
+              className="w-full sm:w-auto"
+            >
+              {primary.external ? (
+                <a href={primary.href} target="_blank" rel="noreferrer">
+                  {primary.icon} {primary.label}
+                </a>
+              ) : (
+                <Link href={primary.href}>
+                  {primary.icon} {primary.label}
+                </Link>
+              )}
+            </Button>
+            {alt && (
+              <Button asChild variant="secondary" className="w-full sm:w-auto">
+                <Link href={alt.href}>{alt.label}</Link>
+              </Button>
+            )}
+            <Button
+              variant="ghost"
+              className="w-full sm:ml-auto sm:w-auto"
+              onClick={onSecondary}
+            >
+              {secondaryLabel}
+            </Button>
+          </div>
         </div>
-        <div className="min-w-0">
-          <h2
-            ref={headingRef}
-            tabIndex={-1}
-            className="scroll-mt-28 font-display text-xl font-semibold tracking-tight outline-none"
-          >
-            {title}
-          </h2>
-          <p className="mt-1.5 text-sm text-muted">{body}</p>
-          <p className="mt-2 text-xs text-muted-2">{echo}</p>
-        </div>
-      </div>
-      <div className="mt-6 flex flex-col gap-2 sm:flex-row sm:flex-wrap">
-        <Button
-          asChild
-          variant={primary.tone ?? "brand"}
-          className="w-full sm:w-auto"
-        >
-          {primary.external ? (
-            <a href={primary.href} target="_blank" rel="noreferrer">
-              {primary.icon} {primary.label}
-            </a>
-          ) : (
-            <Link href={primary.href}>
-              {primary.icon} {primary.label}
-            </Link>
-          )}
-        </Button>
-        {alt && (
-          <Button asChild variant="secondary" className="w-full sm:w-auto">
-            <Link href={alt.href}>{alt.label}</Link>
-          </Button>
-        )}
-        <Button
-          variant="ghost"
-          className="w-full sm:ml-auto sm:w-auto"
-          onClick={onSecondary}
-        >
-          {secondaryLabel}
-        </Button>
-      </div>
-    </Card>
+      </DialogContent>
+    </Dialog>
   );
 }

@@ -272,7 +272,7 @@ export function TestimonialSection() {
             <Card
               key={name}
               id={testimonialAnchor(name)}
-              className="testi-card flex w-[78%] shrink-0 snap-start scroll-mt-24 break-inside-avoid flex-col p-5 transition-colors hover:border-border-strong sm:mb-4 sm:w-auto sm:shrink"
+              className="testi-card flex w-[78%] shrink-0 snap-start scroll-mt-24 break-inside-avoid flex-col rounded-lg p-6 transition-colors hover:border-border-strong sm:mb-4 sm:w-auto sm:shrink"
             >
               {/* every card opens on the same line: quote first, then the
                   route. The slides are stretched to the tallest card, and the

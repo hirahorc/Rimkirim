@@ -40,7 +40,7 @@ export function DialCodeSelect({
         setOpen(false);
       }}
       className={cn(
-        "flex cursor-pointer items-center gap-2.5 rounded-md px-2.5 py-2 text-sm text-foreground",
+        "flex cursor-pointer items-center gap-2.5 rounded-sm px-2.5 py-2 text-sm text-foreground",
         "data-[selected=true]:bg-surface-3 aria-selected:bg-surface-3",
       )}
     >

@@ -481,21 +481,41 @@ on suspicion.
 
 ## Shapes
 
-Generously rounded on a 16px base (`--radius: 1rem`). The scale is
-**xs 8px · sm 12px · md 16px · lg 28px · xl 40px · full**: 24px icon chips at `rounded-xs`, small
-nested boxes at `rounded-sm`, inputs / buttons / 40px icon tiles at `rounded-md`, cards and dialogs
-at `rounded-lg`. `xl` is reserved for a future full-bleed container and is currently unused.
-Badges, count chips, segmented controls, and numbered markers are full **pills** (`rounded-full`).
-The highlighter mark uses a font-relative `0.12em` so its corners scale with the text it marks.
+Rounded on a 16px base (`--radius: 1rem`). The scale is
+**2xs 4px · xs 8px · sm 12px · md 16px · lg 28px · full**, one role per tier:
+
+- **2xs** — the data fence: near-square corners for containers whose content is all right angles
+  (the article table; see Line-item table). Just enough that the hairline doesn't crack.
+- **xs** — micro icon chips (24px section chips, mini carrier marks) and micro thumbnails.
+- **sm** — nested boxes, dense data strips (`p-3` spec rows, notes), popover item rows, small
+  buttons (h-8 and below), calendar cells.
+- **md** — the workhorse: inputs, buttons, 40px icon tiles, **functional cards** (the `Card`
+  default), popover panels.
+- **lg** — the panel tier only: dialogs, sheets, the mobile nav, media frames (article covers),
+  and **marketing cards** on landing/articles that opt up explicitly (padding `p-6`+).
+- **full** — pills: badges, count chips, segmented controls, numbered markers, the navbar capsule.
+
+Below `xs`, micro radii are bespoke and stated inline where the element's own size dictates them:
+the 12–16px flag at `rounded-[2px]`, the highlighter mark at a font-relative `0.12em`, the 20px
+checkbox and the tooltip bubble at `6px`, the scrollbar thumb pill. These are component-local fits,
+not scale members — do not promote them.
 Everything is fenced by **1px hairline borders** (`#e5e5e5`, stepping to `#d4d4d4` for inputs and
 emphasis) — borders, not fills or shadows, define the geometry. No sharp 0px corners, no heavy 2px+
 strokes.
 
 ### Named Rules
-**The Step-Down Rule.** A box nested inside another drops one notch: a 28px card holds 16px panels,
-which hold 12px boxes. Matching the parent's radius on a child reads as a mistake, because the
-concentric curves no longer share a centre — the inner radius should roughly equal the outer radius
-minus the padding between them.
+**The Step-Down Rule.** A box nested inside another drops one notch: a 28px panel holds 16px
+cards, which hold 12px boxes. Matching the parent's radius on a child reads as a mistake, because
+the concentric curves no longer share a centre — the inner radius should roughly equal the outer
+radius minus the padding between them. The popover is the worked example: an `md` (16px) panel with
+`p-1` (4px) wants 12px rows, which is exactly `sm` — so list popovers are always `md` panel +
+`sm` item rows.
+
+**The Clearance Rule.** A corner's curve sweeps its radius deep into the box, so **padding must be
+at least the radius** or the content crowds the corners — a 28px `lg` card needs ~28px of padding
+before anything sits level with its corners. When a compact box can't afford that much padding, the
+radius steps down to meet the padding instead (a `p-4` utility card is `rounded-md`, not
+`rounded-lg`); never leave a big curve sweeping into a tight box.
 
 **The Clamp Rule.** A border-radius silently collapses to half the shorter side, so any radius at or
 above half an element's height turns it into a pill or a circle whether you meant it or not. Check
@@ -509,7 +529,9 @@ like an accident.
 ### Buttons
 - **Shape:** `rounded-md` (16px); sizes `sm` (h-2rem), `md` (h-2.5rem, default), `lg` (h-3rem);
   icon-only squares at `icon` (2.5rem), `icon-sm` (2.25rem) and `icon-xs` (1.75rem, icon steps
-  down to 14px). Icons auto-sized to 16px, `gap-2` from the label.
+  down to 14px). Icons auto-sized to 16px, `gap-2` from the label. The small sizes (`sm`,
+  `icon-sm`, `icon-xs`) step the corner down to `rounded-sm` (12px) — at h-8 and below, 16px is
+  half the height and clamps into an unintended pill (The Clamp Rule).
 - **Type:** Space Grotesk (`font-display`) `text-sm font-medium` on every variant — a button names
   an action, so it sits on the brand plane (The Brand-Label Rule).
 - **Primary:** Live Lime fill + Ink-on-Lime text, `font-semibold`, flat (no keyline, no glow).
@@ -541,10 +563,20 @@ one destructive tint (danger). A new button style must replace one of these, not
   number, shown beside group/section headings to declare "how many".
 
 ### Cards / Containers
-- **Corner Style:** `rounded-lg` (28px).
+- **Corner Style:** `rounded-md` (16px) — the `Card` default, for every functional card (forms,
+  order flow, tracking, lists, empty states). `rounded-lg` (28px) is opted into explicitly by
+  marketing cards on landing/articles (testimonials, service cards, the FAQ band, article
+  cards/CTA — always with `p-6`+ padding) and otherwise belongs to overlays (dialogs, sheets,
+  the mobile nav) and media frames.
 - **Background:** Panel 1 (`#fafafa`) on the white canvas; nested strips step to Panel 2/3.
 - **Shadow Strategy:** none — separated by a 1px Hairline border.
-- **Internal Padding:** `p-5 → sm:p-6` (20–24px).
+- **Internal Padding:** `p-5 → sm:p-6` (20–24px). Data-dense comparison cards (the rate list:
+  RateCard, SpecialRateCard, their PriceBreakdown rows; the clearance route picker) run one step
+  tighter, `p-4 → sm:p-5` (16–20px), so on phones their rhythm stays close to the de-boxed
+  record's 16px page inset — and per the Clearance Rule their corner steps down with the padding,
+  to `rounded-md` (16px); at `lg` the 28px sweep crowded the carrier logo in the top corner.
+  Inside such a card everything shares **one left rail**: a selection control never indents the
+  title (the clearance picker's radio sits right of its title for exactly this reason).
 
 ### Card grid → scroll strip (signature)
 A multi-card row collapses into a horizontal, snapping strip below `sm` instead of stacking into a
@@ -651,8 +683,11 @@ choice). Reach for a de-boxed record when content is a *long read you scan* — 
 walls the eye has to climb. Never nest a card inside the record.
 
 ### Line-item table
-Tabular data (the items inside a package) is a real semantic **`<table>`** inside a `rounded-md`
-hairline-fenced container — never a set of per-row `grid` divs. The header sits on Panel 2 with 12px
+Tabular data (the items inside a package) is a real semantic **`<table>`** inside a **4px**
+(`rounded-[4px]`) hairline-fenced container — never a set of per-row `grid` divs. The fence stays
+near-square: a data grid is made of sharp rows and right angles, and any card-scale radius around it
+reads as a soft box fighting its own contents; 4px only keeps the hairline from cracking at the
+corner. The header sits on Panel 2 with 12px
 uppercase Dim-Grey labels; body rows are hairline-separated; the description column flexes and wraps
 while every **numeric column is right-aligned, Mono `tabular-nums`, and `whitespace-nowrap`** so a
 currency figure never breaks mid-number; a Panel-2 `tfoot` carries the total, aligned under its

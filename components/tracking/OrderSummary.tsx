@@ -911,7 +911,7 @@ function ComplianceCard({ order }: { order: Order }) {
     <section
       id="compliance-docs"
       tabIndex={-1}
-      className="target-flash -m-2 scroll-mt-24 rounded-md p-2 outline-none"
+      className="target-flash -m-2 scroll-mt-24 rounded-xs p-2 outline-none"
     >
       <SectionTitle>{t("order.modCompliance")}</SectionTitle>
       <div className="mt-3 grid grid-cols-2 gap-x-4 gap-y-5 sm:grid-cols-3">

@@ -111,8 +111,8 @@ export function StatusStepper({ status }: { status: OrderPhase }) {
                 // legibility floor (DESIGN.md removed 11px as drift)
                 "mt-1.5 px-0.5 text-center font-display text-xs leading-tight",
                 // below sm seven labels have no room to breathe: only the live
-                // step names itself (with its n/7 place); the rest stay for
-                // screen readers and return visually from sm up
+                // step names itself; the rest stay for screen readers and
+                // return visually from sm up
                 !current && "max-sm:sr-only",
                 current && "font-semibold text-foreground",
                 done && "font-medium text-foreground",
@@ -121,19 +121,15 @@ export function StatusStepper({ status }: { status: OrderPhase }) {
               )}
             >
               {t(STEP_LABEL_KEYS[phase])}
+              {/* no visible counter: the rail already shows the position; the
+                  place in the journey is still announced to screen readers */}
               {current && (
-                <>
-                  <span aria-hidden className="font-normal text-muted-2 sm:hidden">
-                    {" "}
-                    · {i + 1}/{PHASE_STEPS.length}
-                  </span>
-                  <span className="sr-only">
-                    {" — "}
-                    {t("order.stepOf")
-                      .replace("{n}", String(i + 1))
-                      .replace("{total}", String(PHASE_STEPS.length))}
-                  </span>
-                </>
+                <span className="sr-only">
+                  {", "}
+                  {t("order.stepOf")
+                    .replace("{n}", String(i + 1))
+                    .replace("{total}", String(PHASE_STEPS.length))}
+                </span>
               )}
             </p>
           </div>

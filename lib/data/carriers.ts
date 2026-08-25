@@ -21,6 +21,30 @@ const BRANDS: Record<string, CarrierBrand> = {
   Aramex: { mark: "AX", bg: "#e10600", fg: "#ffffff", dot: "#e10600" },
 };
 
+/** Official carrier logo files (public/carriers) with their intrinsic aspect
+ *  ratio (viewBox width ÷ height) — the input to optical-balance sizing: wide
+ *  wordmarks render shorter, compact badges taller, so every mark lands at
+ *  roughly equal presence. `capScale` lifts Rayspeed's cap-height back to the
+ *  group's (its mixed-case ascenders/descenders inflate the box). */
+export interface CarrierLogoInfo {
+  src: string;
+  aspect: number;
+  capScale?: number;
+}
+
+export const CARRIER_LOGOS: Record<string, CarrierLogoInfo> = {
+  DHL: { src: "/carriers/dhl.svg", aspect: 6.92 },
+  FedEx: { src: "/carriers/fedex.svg", aspect: 3.36 },
+  UPS: { src: "/carriers/ups.svg", aspect: 0.843 },
+  Aramex: { src: "/carriers/aramex.svg", aspect: 6.15 },
+  "SF Express": { src: "/carriers/sf-express.svg", aspect: 1 },
+  "Rayspeed Asia": { src: "/carriers/rayspeed.svg", aspect: 6.92, capScale: 1.27 },
+};
+
+export function carrierLogo(carrier: string): CarrierLogoInfo | undefined {
+  return CARRIER_LOGOS[carrier];
+}
+
 export function carrierBrand(carrier: string): CarrierBrand {
   return (
     BRANDS[carrier] ?? {

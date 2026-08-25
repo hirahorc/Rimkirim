@@ -149,7 +149,7 @@ export function FileUpload({
                   src={previewSrc}
                   alt=""
                   aria-hidden="true"
-                  className="size-7 shrink-0 rounded-sm object-cover"
+                  className="size-7 shrink-0 rounded-xs object-cover"
                 />
               ) : (
                 <FileCheck2 className="size-4 shrink-0 text-foreground" />

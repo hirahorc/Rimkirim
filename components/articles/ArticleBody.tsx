@@ -58,7 +58,7 @@ const components: Components = {
   ),
   code: ({ children }) => <code className="font-mono text-[0.9em]">{children}</code>,
   table: ({ children }) => (
-    <div className="mt-6 overflow-x-auto rounded-md border border-border">
+    <div className="mt-6 overflow-x-auto rounded-2xs border border-border">
       <table className="w-full min-w-[32rem] border-collapse text-left text-sm">{children}</table>
     </div>
   ),

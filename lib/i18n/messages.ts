@@ -340,6 +340,8 @@ const id = {
     paketUnit: "paket",
   },
   rateCard: {
+    termurah: "Termurah",
+    tercepat: "Tercepat",
     totalEstimasi: "Total estimasi",
     perKg: "Per kg",
     hari: "hari",
@@ -599,7 +601,6 @@ const id = {
       "Kamu yang pilih jalurnya, Rimkirim yang mengurus pengajuannya ke Bea Cukai.",
     clGroupDecide: "Yang menentukan",
     clGroupPrepare: "Yang perlu disiapkan",
-    clUseRoute: "Pakai jalur {route}",
     clOneWayLead: "Jalur ini tidak bisa diubah lagi.",
     clOneWay: "Pastikan dulu sebelum kamu lanjut.",
     // the route names are protected product terms (PRODUCT.md): the English
@@ -735,7 +736,7 @@ const id = {
     contactWa: "Hubungi tim Rimkirim",
     // customs jargon, explained in place (AttentionBanner EXPLAIN map)
     jargAwb:
-      "AWB (Air Waybill) adalah nomor resi dari kurir untuk melacak paketmu — beda dari Nomor Booking Rimkirim.",
+      "AWB (Air Waybill) adalah nomor resi dari kurir untuk melacak paketmu. Beda dari Nomor Booking Rimkirim.",
     jargBarpin: "Barpin adalah portal Bea Cukai tempat data kirimanmu didaftarkan.",
     jargNpd: "NPD adalah surat permintaan dokumen tambahan dari Bea Cukai.",
     jargSptnp:
@@ -761,13 +762,13 @@ const id = {
     tdLaterClearance: "Menyusul sebelum clearance",
     tdNotFilled: "Belum diisi",
     tdPackingTip:
-      "Kode packing list Rimkirim (RK-PL-XXXXXX) — daftar resmi isi kirimanmu yang dipakai untuk verifikasi bea cukai.",
+      "Kode packing list Rimkirim (RK-PL-XXXXXX): daftar resmi isi kirimanmu yang dipakai untuk verifikasi bea cukai.",
     tdAwbTip:
       "Air Waybill: nomor resi dari kurir 3PL untuk melacak paket di jaringan mereka. Beda dari Nomor Booking Rimkirim yang tetap sama.",
     tdNextSection: "Proses berikutnya",
     tdQuotationSection: "Quotation",
     tdQuotationPending:
-      "Menunggu quotation resmi dari tim Rimkirim. Biasanya terbit dalam 1–2 hari kerja — kami kabari begitu siap.",
+      "Menunggu quotation resmi dari tim Rimkirim. Biasanya terbit dalam 1–2 hari kerja. Kami kabari begitu siap.",
     tdBaseRate: "Tarif dasar",
     tdPerKg: "per kg chargeable",
     tdAwbSection: "AWB & Pengiriman",
@@ -788,18 +789,18 @@ const id = {
     attPickupFailed:
       "Pickup pertama gagal. Tim kami akan mengatur ulang penjemputan.",
     attPickupFailCustomer:
-      "Pickup gagal — kurir belum berhasil mengambil barang di alamatmu. Pilih langkah berikutnya: pickup ulang atau drop-off.",
+      "Pickup gagal: kurir belum berhasil mengambil barang di alamatmu. Pilih langkah berikutnya: pickup ulang atau drop-off.",
     attPickupFailFedEx:
       "Pickup gagal karena FedEx. Bukan salahmu: dispute internal, tanpa biaya. Pilih opsi untuk melanjutkan.",
     attNeedsNewAwb:
-      "Pickup gagal 3× karena kendala di sisi kamu. Untuk melanjutkan, minta AWB baru — pilih jadwal & metode baru, tim kami yang mengurus sisanya.",
+      "Pickup gagal 3× karena kendala di sisi kamu. Untuk melanjutkan, minta AWB baru: pilih jadwal & metode baru, tim kami yang mengurus sisanya.",
     attAwbIssued: "AWB baru diterbitkan. Pickup dijadwalkan ulang.",
     attPickupRescheduled:
       "Pickup dijadwalkan ulang. Tim kami akan menjemput sesuai jadwal baru.",
     attDropOffRequested:
       "Drop-off diminta: antar paketmu ke lokasi FedEx dalam 2 hari.",
     attAwbChanged:
-      "AWB diganti karena drop-off melewati batas 2 hari. Tim kami menjadwalkan ulang pickup — kami kabari jadwal barunya.",
+      "AWB diganti karena drop-off melewati batas 2 hari. Tim kami menjadwalkan ulang pickup. Kami kabari jadwal barunya.",
     attClearanceReleased:
       "Clearance selesai. Barang disetujui untuk dikeluarkan dari Bea Cukai.",
     attClearanceReleasedExtra:
@@ -815,7 +816,7 @@ const id = {
     attClearanceTax:
       "Bea Cukai menerbitkan SPTNP. Bayar pajak agar barang bisa dikeluarkan.",
     attClearanceReject:
-      "Pengajuan ditolak Bea Cukai. Tim kami menyiapkan permohonan baru dan mengulang clearance dari awal — tidak ada yang perlu kamu lakukan sekarang. Perlu diketahui: biaya warehouse tetap berjalan selama proses ini.",
+      "Pengajuan ditolak Bea Cukai. Tim kami menyiapkan permohonan baru dan mengulang clearance dari awal. Tidak ada yang perlu kamu lakukan sekarang. Perlu diketahui: biaya warehouse tetap berjalan selama proses ini.",
     attDelivered:
       "Kirimanmu sudah sampai di tujuan. Terima kasih sudah pindah bersama Rimkirim!",
     // clearance sub-flow — spine labels (components/tracking/ClearancePanel)
@@ -834,7 +835,7 @@ const id = {
     clDescSubmitted:
       "Diajukan ke Bea Cukai (link Barpin) dan ke FedEx (link Barpin + dokumen) untuk diproses.",
     clDescBcReview:
-      "Bea Cukai sedang memproses pengajuan kirimanmu. Biasanya 3–7 hari kerja — kami kabari setiap perkembangan.",
+      "Bea Cukai sedang memproses pengajuan kirimanmu. Biasanya 3–7 hari kerja. Kami kabari setiap perkembangan.",
     clDescNpd:
       "Bea Cukai meminta dokumen tambahan (NPD). Tim kami melengkapi lalu mengajukan ulang.",
     clDescSppb: "SPPB terbit. Barang disetujui untuk dikeluarkan dari Bea Cukai.",
@@ -932,7 +933,7 @@ const id = {
       "Customer sudah drop off. Konfirmasi untuk lanjut ke transit.",
     attPickupScheduled:
       "Pickup telah dijadwalkan. Tim kami akan menjemput di alamatmu.",
-    evPickupFailCustomer: "Pickup gagal — barang belum bisa diambil di alamat.",
+    evPickupFailCustomer: "Pickup gagal: barang belum bisa diambil di alamat.",
     evPickupFailFedEx:
       "Pickup gagal: kesalahan FedEx (dispute internal, tanpa biaya).",
     evAwbRequested: "Kamu meminta AWB baru.",
@@ -1124,8 +1125,8 @@ const id = {
     itTotalPrice: "Total estimasi ongkir",
     itEstimateNote: "Estimasi dari tarif yang dipilih × chargeable weight. Angka final ada di quotation resmi.",
     tdEstimateSuperseded: "Digantikan oleh quotation resmi di atas.",
-    tdDocsTodoOne: "1 dokumen perlu diunggah — lihat daftarnya",
-    tdDocsTodoMany: "{n} dokumen perlu diunggah — lihat daftarnya",
+    tdDocsTodoOne: "1 dokumen perlu diunggah. Lihat daftarnya",
+    tdDocsTodoMany: "{n} dokumen perlu diunggah. Lihat daftarnya",
     itTotalValue: "Total nilai barang",
     itTotalCw: "Total chargeable weight",
     pkgBox: "Kardus corrugated",
@@ -1653,6 +1654,8 @@ const en: Messages = {
     paketUnit: "packages",
   },
   rateCard: {
+    termurah: "Cheapest",
+    tercepat: "Fastest",
     totalEstimasi: "Total estimate",
     perKg: "Per kg",
     hari: "days",
@@ -1901,7 +1904,6 @@ const en: Messages = {
     clFooter: "You pick the route, Rimkirim handles the filing with Indonesian Customs.",
     clGroupDecide: "What decides it",
     clGroupPrepare: "What you prepare",
-    clUseRoute: "Use the {route} route",
     clOneWayLead: "This route can't be changed later.",
     clOneWay: "Make sure before you continue.",
     clPersonalTitle: "Personal Belongings",
@@ -2032,7 +2034,7 @@ const en: Messages = {
     contactWa: "Chat the Rimkirim team",
     // customs jargon, explained in place (AttentionBanner EXPLAIN map)
     jargAwb:
-      "The AWB (Air Waybill) is the courier's tracking number for your package — separate from your Rimkirim booking number.",
+      "The AWB (Air Waybill) is the courier's tracking number for your package. Separate from your Rimkirim booking number.",
     jargBarpin: "Barpin is the customs portal where your shipment data is registered.",
     jargNpd: "An NPD is a letter from Customs requesting additional documents.",
     jargSptnp:
@@ -2064,7 +2066,7 @@ const en: Messages = {
     tdNextSection: "What's next",
     tdQuotationSection: "Quotation",
     tdQuotationPending:
-      "Waiting for the official quotation from the Rimkirim team. Usually issued within 1–2 business days — we'll let you know the moment it's ready.",
+      "Waiting for the official quotation from the Rimkirim team. Usually issued within 1–2 business days. We'll let you know the moment it's ready.",
     tdBaseRate: "Base rate",
     tdPerKg: "per chargeable kg",
     tdAwbSection: "AWB & Shipment",
@@ -2085,18 +2087,18 @@ const en: Messages = {
     attPickupFailed:
       "The first pickup failed. Our team will reschedule the pickup.",
     attPickupFailCustomer:
-      "Pickup failed — the courier couldn't collect at your address. Choose the next step: re-pickup or drop-off.",
+      "Pickup failed: the courier couldn't collect at your address. Choose the next step: re-pickup or drop-off.",
     attPickupFailFedEx:
       "Pickup failed due to FedEx. Not your fault: internal dispute, no cost. Choose how to continue.",
     attNeedsNewAwb:
-      "Pickup failed 3× due to issues on your side. To continue, request a new AWB — pick a new date & method and our team handles the rest.",
+      "Pickup failed 3× due to issues on your side. To continue, request a new AWB: pick a new date & method and our team handles the rest.",
     attAwbIssued: "New AWB issued. Pickup rescheduled.",
     attPickupRescheduled:
       "Pickup rescheduled. Our team will collect on the new schedule.",
     attDropOffRequested:
       "Drop-off requested: bring your package to a FedEx location within 2 days.",
     attAwbChanged:
-      "The AWB was changed because the drop-off missed the 2-day deadline. Our team is rescheduling the pickup — we'll share the new schedule.",
+      "The AWB was changed because the drop-off missed the 2-day deadline. Our team is rescheduling the pickup. We'll share the new schedule.",
     attClearanceReleased:
       "Clearance complete. The goods were approved for release by Customs.",
     attClearanceReleasedExtra:
@@ -2112,7 +2114,7 @@ const en: Messages = {
     attClearanceTax:
       "Customs issued an SPTNP. Pay the tax so the goods can be released.",
     attClearanceReject:
-      "Customs rejected the submission. Our team is preparing a new application and restarting clearance from the beginning — nothing for you to do right now. Heads up: warehouse costs keep running during this process.",
+      "Customs rejected the submission. Our team is preparing a new application and restarting clearance from the beginning. Nothing for you to do right now. Heads up: warehouse costs keep running during this process.",
     attDelivered:
       "Your shipment has arrived at its destination. Thank you for moving with Rimkirim!",
     // clearance sub-flow — spine labels (components/tracking/ClearancePanel)
@@ -2131,7 +2133,7 @@ const en: Messages = {
     clDescSubmitted:
       "Submitted to Customs (Barpin link) and to FedEx (Barpin link + documents) for processing.",
     clDescBcReview:
-      "Customs is processing your submission. Usually 3–7 business days — we'll update you at every step.",
+      "Customs is processing your submission. Usually 3–7 business days. We'll update you at every step.",
     clDescNpd:
       "Customs requested additional documents (NPD). Our team completes them and resubmits.",
     clDescSppb: "SPPB issued. The goods are approved for release by Customs.",
@@ -2231,7 +2233,7 @@ const en: Messages = {
     attPickupScheduled:
       "Pickup scheduled. Our team will collect at your address.",
     evPickupFailCustomer:
-      "Pickup failed — the package couldn't be collected at the address.",
+      "Pickup failed: the package couldn't be collected at the address.",
     evPickupFailFedEx:
       "Pickup failed: FedEx fault (internal dispute, no cost).",
     evAwbRequested: "You requested a new AWB.",
@@ -2416,8 +2418,8 @@ const en: Messages = {
     itTotalPrice: "Total estimated shipping",
     itEstimateNote: "Estimate from the selected rate × chargeable weight. The final figure is in the official quotation.",
     tdEstimateSuperseded: "Superseded by the official quotation above.",
-    tdDocsTodoOne: "1 document still needs uploading — see the list",
-    tdDocsTodoMany: "{n} documents still need uploading — see the list",
+    tdDocsTodoOne: "1 document still needs uploading. See the list",
+    tdDocsTodoMany: "{n} documents still need uploading. See the list",
     itTotalValue: "Total declared value",
     itTotalCw: "Total chargeable weight",
     pkgBox: "Corrugated box",

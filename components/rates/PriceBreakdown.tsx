@@ -24,7 +24,7 @@ export function PriceBreakdown({
         type="button"
         onClick={() => setOpen((o) => !o)}
         aria-expanded={open}
-        className="flex w-full items-center justify-between px-5 py-3 text-sm text-muted transition-colors hover:text-foreground"
+        className="flex w-full items-center justify-between px-4 py-3 text-sm text-muted transition-colors hover:text-foreground sm:px-5"
       >
         <span className="flex items-center gap-2">
           <Receipt className="size-4" /> {t("breakdown.rincianHarga")}
@@ -35,7 +35,7 @@ export function PriceBreakdown({
           <ChevronDown className="size-4" aria-hidden />
         )}
       </button>
-      <CollapseHeight open={open} className="space-y-2 px-5 pb-4 text-sm">
+      <CollapseHeight open={open} className="space-y-2 px-4 pb-4 text-sm sm:px-5">
           <Row
             label={`${t("breakdown.baseRate")} (${formatIDR(quote.baseRatePerKg)}/kg × ${formatNumber(chargeableWeight)} kg)`}
             value={formatIDR(quote.baseRate)}

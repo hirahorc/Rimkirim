@@ -41,7 +41,7 @@ export function RevisionCard({
           </span>
         </p>
         {note && (
-          <p className="mt-2 rounded-md bg-surface-2 px-3 py-2 text-sm text-muted">
+          <p className="mt-2 rounded-sm bg-surface-2 px-3 py-2 text-sm text-muted">
             <span className="font-medium text-foreground">
               {t("order.revNote")}:
             </span>{" "}

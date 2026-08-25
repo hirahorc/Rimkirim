@@ -117,7 +117,9 @@ export function OrderDetail({ id }: { id: string }) {
         <ArrowLeft className="size-4" /> {t("order.ordersTitle")}
       </Link>
 
-      <Card className="p-5 sm:p-6">
+      {/* de-boxed identity header (De-Box Rule): this is the record naming the
+          page, not a liftable unit — no card frame around the headline */}
+      <div>
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
             <p className="font-display text-xs font-medium uppercase tracking-wide text-muted-2">
@@ -183,12 +185,11 @@ export function OrderDetail({ id }: { id: string }) {
             </div>
           )}
         </div>
-      </Card>
+      </div>
 
-      {/* status tier — reads as one concern with the identity card above,
-          so it sits tight (mt-3) rather than at the between-tier interval */}
+      {/* status tier: the first boxed unit under the de-boxed header */}
       {!isDraft && (
-        <Card className="mt-3 p-4 sm:p-5">
+        <Card className="mt-6 p-4 sm:p-5">
           <StatusStepper status={order.status as OrderPhase} />
           {docsTodo > 0 && (
             <a

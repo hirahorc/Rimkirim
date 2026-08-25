@@ -140,6 +140,10 @@ surcharge, packing list.
   (Rupiah) di kedua bahasa.
 - **Voice:** kasual dan langsung, menyapa "kamu", anti-jargon, meredakan kecemasan tanpa
   menjual berlebihan. Contoh yang sudah disetujui: *"Pulang atau pindah, tanpa drama."*
+- **Tanpa em-dash:** simbol "—" dilarang di semua copy produk (UI, notifikasi, status,
+  banner). Pecah jadi dua kalimat (titik), atau pakai koma / titik dua sesuai hubungan
+  klausanya. En-dash "–" untuk rentang angka (1–2 hari, 3–7 hari) tetap boleh; "–" sebagai
+  penanda nilai kosong juga tetap. Berlaku untuk copy, bukan komentar kode.
 
 ## Evidence on Hand
 

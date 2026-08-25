@@ -99,7 +99,7 @@ export function MobileNav() {
                     toast.success(t("auth.loggedOut"));
                     router.push("/");
                   }}
-                  className="flex w-full items-center justify-center gap-2 rounded-md px-3 py-2 text-sm text-muted transition-colors hover:bg-surface-2 hover:text-foreground"
+                  className="flex w-full items-center justify-center gap-2 rounded-sm px-3 py-2 text-sm text-muted transition-colors hover:bg-surface-2 hover:text-foreground"
                 >
                   <LogOut className="size-4" /> {t("auth.logout")}
                 </button>

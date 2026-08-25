@@ -474,7 +474,7 @@ function GoogleChooser({
           <p className="text-sm text-muted">{t("auth.googleChooserSubtitle")}</p>
         </div>
       </div>
-      <ul className="divide-y divide-border rounded-md border border-border">
+      <ul className="divide-y divide-border overflow-hidden rounded-md border border-border">
         {GOOGLE_ACCOUNTS.map((acc) => (
           <li key={acc.email}>
             <button

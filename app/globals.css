@@ -75,12 +75,14 @@
     monospace;
 
   /* xs exists because radius clamps to half the shorter side: on a 24px chip
-     even `sm` (12px) collapses into a circle. */
+     even `sm` (12px) collapses into a circle. 2xs is the data fence: a
+     near-square corner for containers whose content is all right angles
+     (tables), just enough that the hairline doesn't crack at the corner. */
+  --radius-2xs: 0.25rem;
   --radius-xs: 0.5rem;
   --radius-sm: 0.75rem;
   --radius-md: var(--radius);
   --radius-lg: 1.75rem;
-  --radius-xl: 2.5rem;
 
   --shadow-float: var(--elevation-float);
   --shadow-overlay: var(--elevation-overlay);

@@ -146,7 +146,7 @@ export function PickupPanel({ order }: { order: Order }) {
             <button
               type="button"
               onClick={() => setReschedOpen(true)}
-              className="flex w-full items-center gap-2.5 rounded-md border border-border bg-surface px-3.5 py-3 text-left text-sm font-medium text-foreground transition-colors hover:border-border-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/50"
+              className="flex w-full items-center gap-2.5 rounded-sm border border-border bg-surface px-3.5 py-3 text-left text-sm font-medium text-foreground transition-colors hover:border-border-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/50"
             >
               <RefreshCcw className="size-4 shrink-0 text-muted-2" />
               {t("order.pickChoiceRepickup")}
@@ -158,7 +158,7 @@ export function PickupPanel({ order }: { order: Order }) {
             <button
               type="button"
               onClick={() => setDropConfirmOpen(true)}
-              className="flex w-full items-center gap-2.5 rounded-md border border-border bg-surface px-3.5 py-3 text-left text-sm font-medium text-foreground transition-colors hover:border-border-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/50"
+              className="flex w-full items-center gap-2.5 rounded-sm border border-border bg-surface px-3.5 py-3 text-left text-sm font-medium text-foreground transition-colors hover:border-border-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/50"
             >
               <Store className="size-4 shrink-0 text-muted-2" />
               {t("order.pickChoiceDropOff")}

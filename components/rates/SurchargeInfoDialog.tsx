@@ -269,7 +269,7 @@ function CostSection({
 function FooterNote() {
   const t = useT();
   return (
-    <div className="mt-4 flex items-start gap-2.5 rounded-md border border-border bg-surface-2/60 p-3 text-xs leading-relaxed text-muted">
+    <div className="mt-4 flex items-start gap-2.5 rounded-sm border border-border bg-surface-2/60 p-3 text-xs leading-relaxed text-muted">
       <Info className="mt-0.5 size-4 shrink-0 text-muted-2" />
       <p>{t("surcharge.footerNote")}</p>
     </div>
