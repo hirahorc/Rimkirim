@@ -1,8 +1,18 @@
 "use client";
 
 import * as React from "react";
-import { ChevronDown, ChevronUp } from "lucide-react";
+import { ChevronDown, ChevronUp, Download, Eye, FileCheck2, FileText } from "lucide-react";
 import { CollapseHeight } from "@/components/ui/disclosure";
+import {
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { useDownloadCipl, usePreviewCipl } from "@/components/packing/useDownloadCipl";
+import { orderModulesToCipl } from "@/lib/pdf/cipl";
 import { useT, useLanguage } from "@/lib/i18n/LanguageProvider";
 import { Card } from "@/components/ui/card";
 import { TooltipProvider, InfoTip } from "@/components/ui/tooltip";
@@ -111,19 +121,14 @@ function Row({
   );
 }
 
-/** A 6px status dot beside a state word. Decorative: the word already says it. */
-function StateDot({ tone }: { tone: "success" | "warning" | "muted" }) {
-  return (
-    <span
-      aria-hidden
-      className={cn(
-        "size-1.5 shrink-0 translate-y-[-1px] rounded-full",
-        tone === "success" && "bg-success",
-        tone === "warning" && "bg-warning",
-        tone === "muted" && "bg-border-strong",
-      )}
-    />
-  );
+/**
+ * The mobile grouped-list break (iOS-settings style): a soft band running
+ * edge to edge (the page container is px-4 below sm) between the record's
+ * sections, so a long one-column read stays scannable. From sm up the band
+ * disappears and the de-boxed whitespace rhythm carries the grouping again.
+ */
+export function SectionBand() {
+  return <div aria-hidden className="-mx-4 my-7 h-2 bg-surface-2 sm:mx-0 sm:my-5 sm:h-0" />;
 }
 
 /** A group/section with nothing filled in yet: one muted line, not a stack of dashes. */
@@ -178,37 +183,51 @@ export function OrderSummary({ order }: { order: Order }) {
   const { locale } = useLanguage();
   const isMa = order.context?.service === "moving-abroad";
 
+  // PendingCards decides its own visibility; mirror it here so a band is
+  // never drawn above a section that then renders nothing
+  const showPending =
+    order.status !== "draft" && ((!order.quotation && !!order.selectedRate) || !!order.awb);
+  const sections: React.ReactNode[] = [
+    <CustomerCard key="customer" order={order} />,
+    <ItemsCard key="items" order={order} />,
+    <PickupCard key="pickup" order={order} locale={locale} />,
+    <ComplianceCard key="compliance" order={order} />,
+  ];
+  if (showPending) sections.push(<PendingCards key="pending" order={order} />);
+
   return (
     // lead with the substance a customer actually verifies (who/where → what →
-    // when → docs); the eligibility questionnaire replay is demoted near the
-    // end. wide gap between de-boxed sections carries the grouping.
+    // when → docs). Between sections: whitespace from sm up, a full-bleed band
+    // (SectionBand) on phones, where whitespace alone stops reading as a break.
     <TooltipProvider delayDuration={150}>
-      <div className="space-y-10">
-        <CustomerCard order={order} />
-        <ItemsCard order={order} />
-        <PickupCard order={order} locale={locale} />
-        <ComplianceCard order={order} />
-        <EligibilityCard order={order} />
-        {order.status !== "draft" && <PendingCards order={order} />}
-        {order.status === "cancelled" && (
-          <Card className="border-danger/40 bg-danger/10 p-4 text-sm text-danger">
-            {t("order.tdCancelledNotice")}
-          </Card>
-        )}
-        {isMa && (
-          <p className="text-xs text-muted-2">{t("order.tdMaNote")}</p>
-        )}
-        {/* the record is read-only, but a customer who spots a wrong address
-            needs a door: the assistant, not a dead end */}
-        {order.status !== "cancelled" && order.status !== "delivered" && (
-          <p className="max-w-prose text-xs leading-relaxed text-muted-2">
-            {t("order.tdWrongPre")}{" "}
-            <a href={WA_URL} target="_blank" rel="noreferrer" className="link-mark">
-              {t("order.tdWrongLink")}
-            </a>{" "}
-            {t("order.tdWrongPost")}
-          </p>
-        )}
+      <div>
+        {sections.map((s, i) => (
+          <React.Fragment key={i}>
+            {i > 0 && <SectionBand />}
+            {s}
+          </React.Fragment>
+        ))}
+        <div className="mt-8 space-y-4 sm:mt-10">
+          {order.status === "cancelled" && (
+            <Card className="border-danger/40 bg-danger/10 p-4 text-sm text-danger">
+              {t("order.tdCancelledNotice")}
+            </Card>
+          )}
+          {isMa && (
+            <p className="text-xs text-muted-2">{t("order.tdMaNote")}</p>
+          )}
+          {/* the record is read-only, but a customer who spots a wrong address
+              needs a door: the assistant, not a dead end */}
+          {order.status !== "cancelled" && order.status !== "delivered" && (
+            <p className="max-w-prose text-xs leading-relaxed text-muted-2">
+              {t("order.tdWrongPre")}{" "}
+              <a href={WA_URL} target="_blank" rel="noreferrer" className="link-mark">
+                {t("order.tdWrongLink")}
+              </a>{" "}
+              {t("order.tdWrongPost")}
+            </p>
+          )}
+        </div>
       </div>
     </TooltipProvider>
   );
@@ -224,59 +243,10 @@ function TipLabel({ label, tip }: { label: string; tip: string }) {
   );
 }
 
-function EligibilityCard({ order }: { order: Order }) {
-  const t = useT();
-  const a = order.answers;
-  const isMa = order.context?.service === "moving-abroad";
-  const packing = effectivePackingCode({
-    answers: a,
-    generatedPackingCode: order.generatedPackingCode,
-  });
-
-  // Condensed to the outcomes that matter as a record — the clearance path and the
-  // packing code. The gating yes/no answers (personal goods, lived-long, SKP,
-  // arrived) are resolved the moment the order has a path, so they'd only be noise.
-  const citizenship =
-    a.citizenship === "indonesian"
-      ? t("order.indonesian")
-      : a.citizenship === "foreigner"
-        ? t("order.foreigner")
-        : null;
-  const clearancePath =
-    order.clearance === "personal"
-      ? t("order.clPersonalTitle")
-      : order.clearance === "passenger"
-        ? t("order.clPassengerTitle")
-        : null;
-
-  return (
-    <Section title={t("order.tdEligibility")}>
-      {!isMa && citizenship && (
-        <Row label={t("order.tdCitizenship")}>{citizenship}</Row>
-      )}
-      {!isMa && clearancePath && (
-        <Row label={t("order.stepClearance")}>{clearancePath}</Row>
-      )}
-      <Row
-        label={
-          <TipLabel label={t("order.coPackingCode")} tip={t("order.tdPackingTip")} />
-        }
-      >
-        {packing ? (
-          <span className="inline-flex items-center gap-1.5">
-            <span className="font-mono">{packing}</span>
-            <CopyButton value={packing} />
-          </span>
-        ) : (
-          dash
-        )}
-      </Row>
-    </Section>
-  );
-}
-
-function PartyRows({ party }: { party: Party | undefined }) {
-  const t = useT();
+/* A party reads as an address block, not a ledger: the shapes of a name, an
+   address, an email and a dialled number identify themselves, so labels would
+   only repeat what the eye already knows. Only filled lines render. */
+function PartyBlock({ party }: { party: Party | undefined }) {
   const phone =
     party?.phoneCountry && party?.phone
       ? `${dialCodeFor(party.phoneCountry)} ${party.phone}`
@@ -284,23 +254,22 @@ function PartyRows({ party }: { party: Party | undefined }) {
   const country = party?.country
     ? (getCountry(party.country)?.name ?? party.country)
     : null;
-  // only rows with a real value — a half-empty party shouldn't stack dashes
-  const rows: [string, React.ReactNode, boolean?][] = [];
-  if (party?.fullName) rows.push([t("order.ciFullName"), party.fullName]);
-  if (country) rows.push([t("order.ciCountry"), country]);
-  if (party?.address) rows.push([t("order.ciFullAddress"), party.address, true]);
-  if (party?.email) rows.push([t("order.ciEmail"), party.email]);
-  if (phone) rows.push([t("order.ciPhone"), phone]);
 
-  if (rows.length === 0) return <EmptyLine />;
+  if (!party?.fullName && !country && !party?.address && !party?.email && !phone)
+    return <EmptyLine />;
   return (
-    <>
-      {rows.map(([label, value, prose]) => (
-        <Row key={label} label={label} prose={prose}>
-          {value}
-        </Row>
-      ))}
-    </>
+    <div className="space-y-0.5 py-1 text-sm">
+      {party?.fullName && <p className="font-medium text-foreground">{party.fullName}</p>}
+      {party?.address && <p className="text-muted">{party.address}</p>}
+      {country && <p className="text-muted">{country}</p>}
+      {(party?.email || phone) && (
+        <p className="break-words pt-1 text-muted">
+          {party?.email}
+          {party?.email && phone && " · "}
+          {phone && <span className="tabular-nums">{phone}</span>}
+        </p>
+      )}
+    </div>
   );
 }
 
@@ -319,37 +288,38 @@ function CustomerCard({ order }: { order: Order }) {
       ? `${dialCodeFor(owner.phoneDestinationCountry)} ${owner.phoneDestination}`
       : null;
 
-  // Three peer parties, each a real sub-group: eyebrow + a hairline row list,
-  // separated by space rather than a single divider, so the groups stay distinct
-  // while every row keeps the same ledger rhythm as the rest of the record.
+  // Three peer parties reading as a waybill: sender → receiver → owner, side
+  // by side from sm up, each an unlabelled address block under its eyebrow —
+  // identity blocks against the labelled ledger the rest of the record keeps.
   return (
     <section>
       <SectionTitle>{t("order.modCustomer")}</SectionTitle>
-      <div className="mt-3 space-y-6">
+      <div className="mt-3 grid gap-x-8 gap-y-6 sm:grid-cols-3">
         <SubGroup label={t("order.ciSectionSender")}>
-          <PartyRows party={data?.sender} />
+          <PartyBlock party={data?.sender} />
         </SubGroup>
         <SubGroup label={t("order.ciSectionReceiver")}>
-          <PartyRows party={data?.receiver} />
+          <PartyBlock party={data?.receiver} />
         </SubGroup>
         <SubGroup label={t("order.ciSectionOwner")}>
           {/* every owner field is optional — show only what's filled, and a single
-              muted line when the whole group is empty, never a stack of dashes */}
+              muted line when the whole group is empty, never a stack of dashes.
+              The two phones need no labels either: +60 / +62 says which is which */}
           {!owner?.fullName && !ownerPhoneOrigin && !ownerPhoneDest && !owner?.email ? (
             <EmptyLine />
           ) : (
-            <>
+            <div className="space-y-0.5 py-1 text-sm">
               {owner?.fullName && (
-                <Row label={t("order.ciFullName")}>{owner.fullName}</Row>
+                <p className="font-medium text-foreground">{owner.fullName}</p>
               )}
               {ownerPhoneOrigin && (
-                <Row label={t("order.ciPhoneOrigin")}>{ownerPhoneOrigin}</Row>
+                <p className="tabular-nums text-muted">{ownerPhoneOrigin}</p>
               )}
               {ownerPhoneDest && (
-                <Row label={t("order.ciPhoneDestination")}>{ownerPhoneDest}</Row>
+                <p className="tabular-nums text-muted">{ownerPhoneDest}</p>
               )}
-              {owner?.email && <Row label={t("order.ciEmail")}>{owner.email}</Row>}
-            </>
+              {owner?.email && <p className="break-words pt-1 text-muted">{owner.email}</p>}
+            </div>
           )}
         </SubGroup>
       </div>
@@ -408,9 +378,66 @@ function ItemsCard({ order }: { order: Order }) {
   const expandAll = () => setOpenIdx(new Set(packages.map((_, i) => i)));
   const collapseAll = () => setOpenIdx(new Set());
 
+  // the packing list is an artifact OF the goods, so its code and its PDF
+  // live here (the old Eligibility section is gone)
+  const packing = effectivePackingCode({
+    answers: order.answers,
+    generatedPackingCode: order.generatedPackingCode,
+  });
+  const pdfReady =
+    order.modules.items.status === "complete" &&
+    Boolean((order.modules.customerInfo.data as { sender?: unknown } | undefined)?.sender);
+  const { busy: pdfBusy, download: downloadPdf } = useDownloadCipl();
+  const { busy: previewBusy, preview: previewPdf } = usePreviewCipl();
+  const ciplInput = () =>
+    orderModulesToCipl({
+      code: packing,
+      customerInfo: order.modules.customerInfo.data,
+      items: order.modules.items.data,
+      pickup: order.modules.pickup.data,
+      context: order.context,
+    });
+
   return (
     <Section title={t("order.modItems")}>
       <Row label={t("order.itCurrency")}>{currency}</Row>
+      <Row
+        prose
+        label={<TipLabel label={t("order.coPackingCode")} tip={t("order.tdPackingTip")} />}
+      >
+        {packing ? (
+          <span className="flex flex-col items-start gap-2 sm:items-end">
+            <span className="inline-flex items-center gap-1.5">
+              <span className="font-mono">{packing}</span>
+              <CopyButton value={packing} />
+            </span>
+            {pdfReady && (
+              <span className="flex gap-2">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  loading={previewBusy}
+                  onClick={() => previewPdf(ciplInput())}
+                >
+                  {!previewBusy && <Eye className="size-3.5" />}
+                  {t("order.previewPdf")}
+                </Button>
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  loading={pdfBusy}
+                  onClick={() => downloadPdf(ciplInput())}
+                >
+                  {!pdfBusy && <Download className="size-3.5" />}
+                  {pdfBusy ? t("pl.downloading") : t("order.generatePdf")}
+                </Button>
+              </span>
+            )}
+          </span>
+        ) : (
+          dash
+        )}
+      </Row>
       {packages.length === 0 && (
         <Row label={t("order.itPackagesHeading")}>{dash}</Row>
       )}
@@ -490,11 +517,28 @@ function ItemsCard({ order }: { order: Order }) {
                 motion (DESIGN.md, "The disclosure open") */}
             <CollapseHeight open={open}>
               <div className="mt-1">
-                <Row label={t("order.itPackaging")}>{pkgTypeLabel(t, p?.packaging)}</Row>
-                <Row label={t("order.tdDimensions")}>
-                  {val(p?.length)} × {val(p?.width)} × {val(p?.height)} cm
-                </Row>
-                <Row label={t("order.tdWeight")}>{val(p?.weight)} kg</Row>
+                {/* the package's physique reads itself — a packaging name, an
+                    L×W×H in cm, a kg figure — so it goes label-less in one spec
+                    line (the same move as Customer Info). What stays in the
+                    ledger genuinely needs its label: a second kg figure is
+                    mute without "chargeable", and a photo status without its
+                    subject */}
+                {(p?.packaging ||
+                  p?.length ||
+                  p?.width ||
+                  p?.height ||
+                  p?.weight) && (
+                  <p className="py-2 text-sm text-muted">
+                    {[
+                      p?.packaging && pkgTypeLabel(t, p.packaging),
+                      (p?.length || p?.width || p?.height) &&
+                        `${val(p?.length)} × ${val(p?.width)} × ${val(p?.height)} cm`,
+                      p?.weight && `${val(p.weight)} kg`,
+                    ]
+                      .filter(Boolean)
+                      .join(" · ")}
+                  </p>
+                )}
                 <Row
                   label={
                     <TipLabel label={t("order.tdChargeable")} tip={t("pkg.chgTooltip")} />
@@ -620,12 +664,155 @@ const docLabelKey = (key: string) =>
     visa: "order.coVisa",
   })[key] ?? null;
 
+/* Opens a stored data URL in a new tab. `data:` is blocked as a top-level
+   navigation, so the bytes are re-wrapped in a blob URL; the tab itself is
+   opened synchronously inside the click so popup blockers stay quiet. */
+async function openDataUrlInTab(dataUrl: string) {
+  const tab = window.open("", "_blank");
+  try {
+    const blob = await (await fetch(dataUrl)).blob();
+    if (tab) tab.location.href = URL.createObjectURL(blob);
+  } catch {
+    tab?.close();
+  }
+}
+
+/* One document as a tile: thumbnail (or icon) above the doc's name and its
+   filename/state. Interactions by what the record holds — a stored image opens
+   the big preview dialog, a stored PDF opens in a new tab, an upload from
+   before previews existed explains itself, an empty slot is inert. */
+function DocTile({
+  label,
+  fileName,
+  dataUrl,
+  emptyWord,
+  dueWord,
+}: {
+  label: string;
+  fileName?: string | null;
+  dataUrl?: string | null;
+  /** the empty state, always "not uploaded" in some form */
+  emptyWord?: string;
+  /** optional second line: when the missing doc is actually due */
+  dueWord?: string;
+}) {
+  const t = useT();
+  const isImage = !!dataUrl && dataUrl.startsWith("data:image/");
+  const frame =
+    "grid aspect-[4/3] w-full place-items-center overflow-hidden rounded-md border";
+  const interactive =
+    "border-border bg-surface-2 transition-colors hover:border-border-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/50";
+
+  const caption = (
+    <span className="mt-1.5 block">
+      <span className="block text-xs font-medium text-foreground">{label}</span>
+      {fileName ? (
+        <span className="block truncate font-mono text-xs text-muted-2">{fileName}</span>
+      ) : (
+        <>
+          {/* one state, one colour: not-uploaded is a to-do, so every empty
+              slot speaks warning — the due note stays a muted afterthought */}
+          <span className="block text-xs text-warning">{emptyWord}</span>
+          {dueWord && <span className="block text-xs text-muted-2">{dueWord}</span>}
+        </>
+      )}
+    </span>
+  );
+
+  if (!fileName)
+    return (
+      <div>
+        <span className={cn(frame, "border-dashed border-warning/50 bg-warning/5 text-warning")}>
+          <FileText className="size-6" aria-hidden />
+        </span>
+        {caption}
+      </div>
+    );
+
+  if (isImage)
+    return (
+      <div className="min-w-0">
+        <Dialog>
+          <DialogTrigger
+            aria-label={`${t("order.viewFile")}: ${label}`}
+            className={cn(frame, interactive)}
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={dataUrl!} alt="" aria-hidden className="size-full object-cover" />
+          </DialogTrigger>
+          <DialogContent className="max-w-3xl p-0">
+            <DialogHeader className="pb-4">
+              <DialogTitle className="truncate pr-8 text-base font-medium sm:text-base">
+                {fileName}
+              </DialogTitle>
+            </DialogHeader>
+            <div className="min-h-0 flex-1 overflow-auto bg-surface-2 p-4">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={dataUrl!}
+                alt={fileName}
+                className="mx-auto max-h-[72dvh] w-auto rounded-sm object-contain"
+              />
+            </div>
+          </DialogContent>
+        </Dialog>
+        {caption}
+      </div>
+    );
+
+  if (dataUrl)
+    return (
+      <div className="min-w-0">
+        <button
+          type="button"
+          onClick={() => void openDataUrlInTab(dataUrl)}
+          aria-label={`${t("order.viewFile")}: ${label}`}
+          className={cn(frame, interactive, "text-muted")}
+        >
+          <FileText className="size-6" aria-hidden />
+        </button>
+        {caption}
+      </div>
+    );
+
+  // uploaded before stored previews existed: the filename is all the record has
+  return (
+    <div className="min-w-0">
+      <Dialog>
+        <DialogTrigger
+          aria-label={`${t("order.viewFile")}: ${label}`}
+          className={cn(frame, interactive, "text-muted")}
+        >
+          <FileCheck2 className="size-6" aria-hidden />
+        </DialogTrigger>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="truncate pr-8 text-base font-medium sm:text-base">
+              {fileName}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="flex flex-col items-center gap-3 p-6 text-center">
+            <FileText className="size-8 text-muted-2" aria-hidden />
+            <p className="text-sm text-muted">{t("order.previewUnavailable")}</p>
+          </div>
+        </DialogContent>
+      </Dialog>
+      {caption}
+    </div>
+  );
+}
+
 function ComplianceCard({ order }: { order: Order }) {
   const t = useT();
   const data = order.modules.compliance.data as
-    | { docs?: Record<string, string>; otherDocs?: { name?: string; file?: string }[] }
+    | {
+        docs?: Record<string, string>;
+        docFiles?: Record<string, string>;
+        otherDocs?: { name?: string; file?: string; fileData?: string }[];
+      }
     | undefined;
   const docs = data?.docs ?? {};
+  const docFiles = data?.docFiles ?? {};
   const isMa = order.context?.service === "moving-abroad";
   // the same spec the form uses, so the record shows exactly the docs this
   // route asks for (Passenger Goods never sees SKP / Proof of Stay)
@@ -635,62 +822,42 @@ function ComplianceCard({ order }: { order: Order }) {
   const entries = specs
     .map((d) => ({ key: d.key, label: docLabelKey(d.key), spec: d }))
     .filter((e) => e.label);
-  // what an empty slot means, in words: required now, due later, or optional
+  // every empty slot states "not uploaded"; the due timing (before pickup /
+  // before clearance) is a supplementary second line, never the state itself
   const emptyWord = (spec: (typeof specs)[number]) =>
-    spec.required
-      ? t("order.tdMissing")
-      : spec.noteKey === "order.coBeforePickup"
-        ? t("order.tdLaterPickup")
-        : spec.noteKey === "order.coBeforeClearance"
-          ? t("order.tdLaterClearance")
-          : t("order.tdMissingOptional");
+    spec.required || spec.noteKey ? t("order.tdMissing") : t("order.tdMissingOptional");
+  const dueWord = (spec: (typeof specs)[number]) =>
+    spec.noteKey === "order.coBeforePickup"
+      ? t("order.tdLaterPickup")
+      : spec.noteKey === "order.coBeforeClearance"
+        ? t("order.tdLaterClearance")
+        : undefined;
 
-  // The fixed doc checklist is the section's primary hairline row list; the
-  // free-form "other docs" is a real sub-group beneath it — same eyebrow + spaced
-  // treatment as Customer Info, so no section mixes two grouping models.
   return (
     <section>
       <SectionTitle>{t("order.modCompliance")}</SectionTitle>
-      <div className="mt-3">
-        <div className="divide-y divide-border">
-          {entries.map(({ key, label, spec }) => (
-            <Row key={key} label={t(label!)}>
-              {docs[key] ? (
-                // the state in words first; the filename is the evidence, not the state
-                <span className="inline-flex items-baseline gap-2">
-                  <StateDot tone="success" />
-                  <span className="text-xs text-muted-2">{t("order.tdDocUploaded")}</span>
-                  <span className="font-mono text-xs text-foreground">{docs[key]}</span>
-                </span>
-              ) : (
-                <span
-                  className={cn(
-                    "inline-flex items-baseline gap-2",
-                    spec.required ? "text-warning" : "text-muted-2",
-                  )}
-                >
-                  <StateDot tone={spec.required ? "warning" : "muted"} />
-                  {emptyWord(spec)}
-                </span>
-              )}
-            </Row>
+      <div className="mt-3 grid grid-cols-2 gap-x-4 gap-y-5 sm:grid-cols-3">
+        {entries.map(({ key, label, spec }) => (
+          <DocTile
+            key={key}
+            label={t(label!)}
+            fileName={docs[key] || null}
+            dataUrl={docFiles[key] || null}
+            emptyWord={emptyWord(spec)}
+            dueWord={dueWord(spec)}
+          />
+        ))}
+        {(data?.otherDocs ?? [])
+          .filter((d) => d?.name || d?.file)
+          .map((d, i) => (
+            <DocTile
+              key={`other-${i}`}
+              label={d?.name || t("order.coOtherDocs")}
+              fileName={d?.file || null}
+              dataUrl={d?.fileData || null}
+              emptyWord={t("order.tdMissingOptional")}
+            />
           ))}
-        </div>
-        {(data?.otherDocs ?? []).length > 0 && (
-          <div className="mt-6">
-            <SubGroup label={t("order.coOtherDocs")}>
-              {(data?.otherDocs ?? []).map((d, i) => (
-                <Row key={i} label={val(d?.name)}>
-                  <span className="inline-flex items-baseline gap-2">
-                    <StateDot tone="success" />
-                    <span className="text-xs text-muted-2">{t("order.tdDocUploaded")}</span>
-                    <span className="font-mono text-xs text-foreground">{val(d?.file)}</span>
-                  </span>
-                </Row>
-              ))}
-            </SubGroup>
-          </div>
-        )}
       </div>
     </section>
   );
@@ -737,7 +904,7 @@ function PickupCard({
   const phone =
     data?.picPhoneCountry && data?.picPhone
       ? `${dialCodeFor(data.picPhoneCountry)} ${data.picPhone}`
-      : dash;
+      : null;
   const standby =
     data?.standbyDuration === "0"
       ? t("order.puStandbyNone")
@@ -757,43 +924,72 @@ function PickupCard({
     data?.notesCourier
   );
 
+  // what identifies itself goes label-less (a contact card, an address, a
+  // dated time window); what would be mute without its question keeps the
+  // labelled ledger row (yes/no access answers, standby days, courier notes)
+  const hasContact = !!(data?.picName || phone || data?.buildingType || data?.address);
+  const hasSchedule = !!(data?.date || data?.time);
+  const hasStandby = data?.standbyDuration != null && data.standbyDuration !== "";
+  const hasLedger =
+    (showAccessQs && (data?.freightElevator != null || data?.receptionist != null)) ||
+    hasStandby ||
+    !!data?.notesCourier;
+
   return (
-    <Section title={t("order.modPickup")}>
+    <section>
+      <SectionTitle>{t("order.modPickup")}</SectionTitle>
       {!hasAny ? (
-        <EmptyLine />
+        <div className="mt-3">
+          <EmptyLine />
+        </div>
       ) : (
         <>
-          {data?.picName && <Row label={t("order.puPicName")}>{data.picName}</Row>}
-          {phone !== dash && <Row label={t("order.puPicPhone")}>{phone}</Row>}
-          {data?.buildingType && (
-            <Row label={t("order.puBuildingType")}>
-              {buildingLabel(t, data.buildingType)}
-            </Row>
+          {(hasContact || hasSchedule) && (
+            <div className="mt-3 grid gap-x-8 gap-y-6 sm:grid-cols-2">
+              {hasContact && (
+                <SubGroup label={t("order.puGroupContact")}>
+                  <div className="space-y-0.5 py-1 text-sm">
+                    {data?.picName && (
+                      <p className="font-medium text-foreground">{data.picName}</p>
+                    )}
+                    {phone && <p className="tabular-nums text-muted">{phone}</p>}
+                    {data?.buildingType && (
+                      <p className="text-muted">{buildingLabel(t, data.buildingType)}</p>
+                    )}
+                    {data?.address && <p className="text-muted">{data.address}</p>}
+                  </div>
+                </SubGroup>
+              )}
+              {hasSchedule && (
+                <SubGroup label={t("order.puGroupSchedule")}>
+                  <p className="py-1 text-sm font-medium tabular-nums text-foreground">
+                    {data?.date && date}
+                    {data?.date && data?.time && " · "}
+                    {data?.time}
+                  </p>
+                </SubGroup>
+              )}
+            </div>
           )}
-          {showAccessQs && data?.freightElevator != null && (
-            <Row label={t("order.puFreightElevator")}>{yesNo(data.freightElevator)}</Row>
-          )}
-          {showAccessQs && data?.receptionist != null && (
-            <Row label={t("order.puReceptionist")}>{yesNo(data.receptionist)}</Row>
-          )}
-          {data?.address && (
-            <Row prose label={t("order.puAddress")}>
-              {data.address}
-            </Row>
-          )}
-          {data?.date && <Row label={t("order.puDate")}>{date}</Row>}
-          {data?.time && <Row label={t("order.puTime")}>{data.time}</Row>}
-          {data?.standbyDuration != null && data.standbyDuration !== "" && (
-            <Row label={t("order.puStandbyLabel")}>{standby}</Row>
-          )}
-          {data?.notesCourier && (
-            <Row prose label={t("order.puNotesCourier")}>
-              {data.notesCourier}
-            </Row>
+          {hasLedger && (
+            <div className="mt-6 divide-y divide-border">
+              {showAccessQs && data?.freightElevator != null && (
+                <Row label={t("order.puFreightElevator")}>{yesNo(data.freightElevator)}</Row>
+              )}
+              {showAccessQs && data?.receptionist != null && (
+                <Row label={t("order.puReceptionist")}>{yesNo(data.receptionist)}</Row>
+              )}
+              {hasStandby && <Row label={t("order.puStandbyLabel")}>{standby}</Row>}
+              {data?.notesCourier && (
+                <Row prose label={t("order.puNotesCourier")}>
+                  {data.notesCourier}
+                </Row>
+              )}
+            </div>
           )}
         </>
       )}
-    </Section>
+    </section>
   );
 }
 

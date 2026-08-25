@@ -10,6 +10,7 @@ import {
   Plane,
   Route as RouteIcon,
   PenLine,
+  ShieldCheck,
 } from "lucide-react";
 import {
   useOrderStore,
@@ -27,7 +28,7 @@ import { CopyButton } from "./CopyButton";
 import { OrderStatusBadge } from "./OrderStatusBadge";
 import { StatusStepper } from "@/components/tracking/StatusStepper";
 import { AttentionBanner } from "@/components/tracking/AttentionBanner";
-import { OrderSummary } from "@/components/tracking/OrderSummary";
+import { OrderSummary, SectionBand } from "@/components/tracking/OrderSummary";
 import { OrderTimeline } from "@/components/tracking/OrderTimeline";
 import { QuotationCard } from "@/components/tracking/QuotationCard";
 import { RevisionCard } from "@/components/tracking/RevisionCard";
@@ -148,6 +149,23 @@ export function OrderDetail({ id }: { id: string }) {
               {dest?.name ?? "–"}
             </span>
           </div>
+          {/* the customs route is an identity fact of the order (chosen once,
+              one-way), so it lives with created/service/route — the old
+              Eligibility section this replaces sat far below the fold */}
+          {order.clearance && order.context?.service !== "moving-abroad" && (
+            <div className="flex items-center justify-between gap-3">
+              <span className="flex items-center gap-1.5 text-muted-2">
+                <ShieldCheck className="size-4" /> {t("order.hubRouteLabel")}
+              </span>
+              <span className="text-muted">
+                {t(
+                  order.clearance === "personal"
+                    ? "order.clPersonalTitle"
+                    : "order.clPassengerTitle",
+                )}
+              </span>
+            </div>
+          )}
         </div>
       </Card>
 
@@ -187,8 +205,11 @@ export function OrderDetail({ id }: { id: string }) {
         </h2>
         <span className="h-px flex-1 bg-border" />
       </div>
-      <div className="mt-5 space-y-10">
+      <div className="mt-5">
         <OrderTimeline events={order.timeline} />
+        {/* same mobile band the record sections use, so the Activity ↔ record
+            boundary reads like every other section break */}
+        {order.timeline?.length > 0 && <SectionBand />}
         <OrderSummary order={order} />
       </div>
 
