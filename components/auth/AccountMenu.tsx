@@ -39,21 +39,21 @@ export function AccountMenu() {
         <Link
           href="/pesanan"
           onClick={() => setOpen(false)}
-          className="mt-1 flex items-center gap-2 rounded-md px-2 py-2 text-sm transition-colors hover:bg-surface-2"
+          className="mt-1 flex items-center gap-2 rounded-sm px-2 py-2 text-sm transition-colors hover:bg-surface-2"
         >
           <Package className="size-4 text-muted" /> {t("auth.myOrders")}
         </Link>
         <Link
           href="/packing-list"
           onClick={() => setOpen(false)}
-          className="flex items-center gap-2 rounded-md px-2 py-2 text-sm transition-colors hover:bg-surface-2"
+          className="flex items-center gap-2 rounded-sm px-2 py-2 text-sm transition-colors hover:bg-surface-2"
         >
           <ClipboardList className="size-4 text-muted" /> {t("auth.myPackingLists")}
         </Link>
         <Link
           href="/simulator"
           onClick={() => setOpen(false)}
-          className="flex items-center gap-2 rounded-md px-2 py-2 text-sm transition-colors hover:bg-surface-2"
+          className="flex items-center gap-2 rounded-sm px-2 py-2 text-sm transition-colors hover:bg-surface-2"
         >
           <Wrench className="size-4 text-muted" /> {t("ops.menu")}
         </Link>
@@ -65,7 +65,7 @@ export function AccountMenu() {
             toast.success(t("auth.loggedOut"));
             router.push("/");
           }}
-          className="flex w-full items-center gap-2 rounded-md px-2 py-2 text-left text-sm transition-colors hover:bg-surface-2"
+          className="flex w-full items-center gap-2 rounded-sm px-2 py-2 text-left text-sm transition-colors hover:bg-surface-2"
         >
           <LogOut className="size-4 text-muted" /> {t("auth.logout")}
         </button>

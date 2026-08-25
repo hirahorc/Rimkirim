@@ -50,7 +50,7 @@ export function CookieConsent() {
   return (
     <div className="pointer-events-none fixed inset-x-0 bottom-0 z-40 flex justify-end p-4">
       {/* a corner card, not a full-width bar: the page stays usable beside it */}
-      <div className="animate-fade-up pointer-events-auto flex w-full max-w-sm flex-col gap-3 rounded-lg border border-border bg-surface/95 p-4 shadow-overlay backdrop-blur">
+      <div className="animate-fade-up pointer-events-auto flex w-full max-w-sm flex-col gap-3 rounded-md border border-border bg-surface/95 p-4 shadow-overlay backdrop-blur">
         <div className="flex items-start gap-2.5 text-sm text-muted">
           <Cookie className="mt-0.5 size-5 shrink-0 text-foreground" />
           <p>{t("cookie.text")}</p>

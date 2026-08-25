@@ -10,7 +10,9 @@ export function Card({
     <div
       ref={ref}
       className={cn(
-        "rounded-lg border border-border bg-surface text-foreground",
+        // md, not lg: the functional-card corner (DESIGN.md, Shapes) — 28px is
+        // reserved for overlays, media frames, and marketing cards that opt up
+        "rounded-md border border-border bg-surface text-foreground",
         className,
       )}
       {...props}

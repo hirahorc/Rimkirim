@@ -3,7 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Lock, Check } from "lucide-react";
+import { Lock, Check, ArrowRight } from "lucide-react";
 import {
   useOrderStore,
   allowedClearance,
@@ -162,12 +162,28 @@ export function ClearanceOptions() {
         // change it) is announced, it just can't be checked
         tabIndex={0}
         onKeyDown={onRadioKeyDown(k)}
-        // the focus ring is drawn by the card (has-[[role=radio]:focus-visible])
+        // the focus ring is drawn by the card (has-[[role=radio]:focus-visible]).
+        // radio sits RIGHT of the title so the title shares one left rail with
+        // every spec row below — a leading radio gave the card two left edges
         className={cn(
-          "flex w-full items-start gap-3 p-4 text-left outline-hidden sm:p-6",
+          "flex w-full items-start gap-3 p-4 text-left outline-hidden sm:p-5",
           !enabled && "cursor-default",
         )}
       >
+        <span className="min-w-0 flex-1">
+          <span
+            id={`${id}-title`}
+            className={cn(
+              "block font-display text-lg font-semibold leading-tight tracking-tight sm:text-xl",
+              !enabled && "text-muted",
+            )}
+          >
+            {t(`${PREFIX[k]}Title`)}
+          </span>
+          <span className="mt-1 block font-display text-xs font-medium uppercase tracking-[0.04em] text-muted-2">
+            {t(`${PREFIX[k]}Subtitle`)}
+          </span>
+        </span>
         <span
           aria-hidden
           className={cn(
@@ -184,20 +200,6 @@ export function ClearanceOptions() {
             <Lock className="size-3 text-muted" strokeWidth={2.5} />
           ) : null}
         </span>
-        <span className="min-w-0">
-          <span
-            id={`${id}-title`}
-            className={cn(
-              "block font-display text-lg font-semibold leading-tight tracking-tight sm:text-xl",
-              !enabled && "text-muted",
-            )}
-          >
-            {t(`${PREFIX[k]}Title`)}
-          </span>
-          <span className="mt-1 block font-display text-xs font-medium uppercase tracking-[0.04em] text-muted-2">
-            {t(`${PREFIX[k]}Subtitle`)}
-          </span>
-        </span>
       </button>
     );
   };
@@ -206,7 +208,7 @@ export function ClearanceOptions() {
   const lockedReason = (k: ClearanceKind) => (
     <p
       id={`cl-${k}-locked`}
-      className="-mt-1 px-4 pb-4 text-xs leading-relaxed text-muted sm:-mt-2 sm:px-6 sm:pb-6"
+      className="-mt-1 px-4 pb-4 text-xs leading-relaxed text-muted sm:-mt-2 sm:px-5 sm:pb-5"
     >
       <span className="font-medium text-foreground">
         {t("order.clLockedTitle")}
@@ -269,7 +271,9 @@ export function ClearanceOptions() {
     const enabled = allowed[k];
     const isSelected = enabled && selected === k;
     return cn(
-      "overflow-hidden rounded-lg border bg-background transition-[border-color,background-color]",
+      // rounded-md: data-dense comparison card (DESIGN.md, Cards/Containers) —
+      // the corner curve stays inside the p-4/p-5 padding (Clearance Rule)
+      "overflow-hidden rounded-md border bg-background transition-[border-color,background-color]",
       enabled && "cursor-pointer",
       enabled && !isSelected && "border-border hover:border-border-strong",
       // selection = ink outline + a whisper of lime; the lime check does the talking
@@ -291,12 +295,14 @@ export function ClearanceOptions() {
   return (
     <TooltipProvider delayDuration={150}>
       <div>
-        <header className="mb-8 text-center">
+        {/* left on phones, centred from sm up — the flow's shared header
+            alignment (same on /pesan and /pesan/modul) */}
+        <header className="mb-8 text-left sm:text-center">
           {/* the questionnaire's positive outcome IS the eyebrow. Ink check on a
             quiet disc: lime is reserved for the chosen route and the button
             (One-Voice). The outer flex centres the pair, the inner one keeps
             the check on the first line when the text wraps */}
-          <p className="flex justify-center">
+          <p className="flex justify-start sm:justify-center">
             <span className="inline-flex items-start gap-2 text-left text-sm font-medium text-foreground">
               <span
                 aria-hidden
@@ -311,7 +317,7 @@ export function ClearanceOptions() {
             {soleAvailable ? t("order.clTitleSole") : t("order.clTitle")}
           </h1>
           {/* who does what, and a way back, in one line */}
-          <p className="mx-auto mt-3 max-w-xl text-sm leading-relaxed text-muted">
+          <p className="mt-3 max-w-xl text-sm leading-relaxed text-muted sm:mx-auto">
             {t("order.clFooter")}
             {/* one way back per state: the locked card carries its own link */}
             {!soleAvailable && (
@@ -331,7 +337,10 @@ export function ClearanceOptions() {
           role="radiogroup"
           aria-label={t("order.clTitle")}
           className={cn(
-            "grid grid-cols-1 gap-4 sm:grid-rows-[auto_auto_repeat(5,auto)]",
+            // sm:gap-y-0: the subgrid rows inherit the parent's row gap, which
+            // floated every hairline 16px off its row — contiguous rows let the
+            // row padding alone set the rhythm
+            "grid grid-cols-1 gap-4 sm:gap-y-0 sm:grid-rows-[auto_auto_repeat(5,auto)]",
             // sole state: the route you can take gets the wider desk
             soleAvailable ? "sm:grid-cols-[3fr_2fr]" : "sm:grid-cols-2",
           )}
@@ -360,7 +369,7 @@ export function ClearanceOptions() {
                     <div
                       key={row.key}
                       className={cn(
-                        "px-4 py-3.5 sm:px-6 sm:py-4",
+                        "px-4 py-3.5 sm:px-5 sm:py-4",
                         ri < ROWS.length - 1 && "border-b border-border/70",
                         // the group break is a full-strength hairline, not a band
                         GROUP_STARTS.prepare === ri && "pt-4 sm:pt-5",
@@ -382,38 +391,42 @@ export function ClearanceOptions() {
           the commit is always a thumb away; desktop keeps it in flow */}
         <div
           className={cn(
-            "mt-8 flex flex-col items-stretch gap-2 sm:items-end",
+            // desktop: note + button on the page's centre axis, same as the
+            // header — a right-hung button was the page's third alignment
+            "mt-8 flex flex-col items-stretch gap-2 sm:items-center",
             selected &&
               "sticky bottom-0 -mx-4 border-t border-border bg-background/95 px-4 py-3 backdrop-blur sm:static sm:mx-0 sm:border-0 sm:bg-transparent sm:px-0 sm:py-0 sm:backdrop-blur-none",
           )}
         >
           {/* the honest part of the commit, read BEFORE the thumb lands: this
               gate is one-way, said at body size in ink, not whispered */}
-          <p id="cl-oneway" className="text-sm leading-snug text-foreground sm:text-right">
+          <p id="cl-oneway" className="text-sm leading-snug text-foreground sm:text-center">
             <span className="font-semibold">{t("order.clOneWayLead")}</span>{" "}
             <span className="text-muted">{t("order.clOneWay")}</span>
           </p>
-          {/* before a pick the button wears the hint itself on a neutral coat,
-              so the loudest thing on the page is never something you can't press */}
+          {/* same button idiom as the eligibility page: full-width, constant
+              "Lanjut →" label, lime only when it can actually be pressed; the
+              "pick one first" hint is the quiet line below */}
           <Button
-            aria-describedby="cl-oneway"
+            aria-describedby={selected ? "cl-oneway" : "cl-oneway cl-pick-hint"}
             size="lg"
-            className="w-full disabled:bg-surface-3 disabled:text-muted disabled:opacity-100 sm:w-auto sm:min-w-56"
+            variant={selected ? "brand" : "secondary"}
+            className="w-full"
             disabled={!selected}
             onClick={onContinue}
           >
-            {selected ? (
-              <>
-                <Lock className="size-4" strokeWidth={2.5} />
-                {t("order.clUseRoute").replace(
-                  "{route}",
-                  t(`${PREFIX[selected]}Title`),
-                )}
-              </>
-            ) : (
-              t("order.clPickHint")
-            )}
+            {t("order.seeResult")}
+            <ArrowRight className="size-4" />
           </Button>
+          {!selected && (
+            <p
+              id="cl-pick-hint"
+              role="status"
+              className="text-center text-xs text-muted-2"
+            >
+              {t("order.clPickHint")}
+            </p>
+          )}
           <p role="status" aria-live="polite" className="sr-only">
             {lockedNudge}
           </p>

@@ -74,6 +74,12 @@ export function CheckRatesClient() {
   const quote = calculateQuotes(toQuoteInput(submitted));
   const gap = domesticCoverageGap(submitted);
   const isAdvance = submitted.mode === "advance" && quote.options.length > 0;
+  // options arrive sorted by price, so the first is the cheapest; fastest
+  // yields to cheapest when one option holds both titles (one badge per card)
+  const cheapestId = quote.options[0]?.vendor.id;
+  const fastestId = [...quote.options].sort(
+    (a, b) => a.etaMax - b.etaMax || a.etaMin - b.etaMin,
+  )[0]?.vendor.id;
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-10 sm:px-6">
@@ -119,6 +125,8 @@ export function CheckRatesClient() {
                 key={opt.vendor.id}
                 quote={opt}
                 chargeableWeight={quote.chargeableWeight}
+                cheapest={opt.vendor.id === cheapestId}
+                fastest={opt.vendor.id === fastestId && opt.vendor.id !== cheapestId}
                 orderBlocked={!!gap}
               />
             ))}

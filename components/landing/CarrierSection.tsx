@@ -1,6 +1,7 @@
 "use client";
 
 import { useT } from "@/lib/i18n/LanguageProvider";
+import { CARRIER_LOGOS } from "@/lib/data/carriers";
 
 /**
  * Carrier partners logo cloud.
@@ -41,16 +42,9 @@ import { useT } from "@/lib/i18n/LanguageProvider";
 const RAMP = { k: 40, p: 0.3 } as const;
 const heightFor = (aspect: number) => Math.round(RAMP.k / aspect ** RAMP.p);
 
-type Carrier = { name: string; src: string; aspect: number; capScale?: number };
-
-const CARRIERS: Carrier[] = [
-  { name: "DHL", src: "/carriers/dhl.svg", aspect: 6.92 },
-  { name: "FedEx", src: "/carriers/fedex.svg", aspect: 3.36 },
-  { name: "UPS", src: "/carriers/ups.svg", aspect: 0.843 },
-  { name: "Aramex", src: "/carriers/aramex.svg", aspect: 6.15 },
-  { name: "SF Express", src: "/carriers/sf-express.svg", aspect: 1 },
-  { name: "Rayspeed Asia", src: "/carriers/rayspeed.svg", aspect: 6.92, capScale: 1.27 },
-];
+// logo files + aspects live once in lib/data/carriers (shared with the rate
+// cards); insertion order there is this strip's display order
+const CARRIERS = Object.entries(CARRIER_LOGOS).map(([name, l]) => ({ name, ...l }));
 
 export function CarrierSection() {
   const t = useT();

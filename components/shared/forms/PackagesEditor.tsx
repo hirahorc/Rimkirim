@@ -190,7 +190,7 @@ export function PackagesEditor<T extends FieldValues & ItemsData>({
                   key={f.id}
                   type="button"
                   onClick={() => jumpTo(f.id)}
-                  className="grid size-7 place-items-center rounded-sm border border-border text-xs font-medium text-muted transition-colors hover:border-border-strong hover:text-foreground"
+                  className="grid size-7 place-items-center rounded-xs border border-border text-xs font-medium text-muted transition-colors hover:border-border-strong hover:text-foreground"
                 >
                   {i + 1}
                 </button>

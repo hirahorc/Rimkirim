@@ -274,7 +274,7 @@ export function DatePicker({
                   onClick={() => pick(d)}
                   onFocus={() => setFocusDay(d)}
                   className={cn(
-                    "relative grid size-10 place-items-center rounded-md text-sm tabular-nums transition-colors",
+                    "relative grid size-10 place-items-center rounded-sm text-sm tabular-nums transition-colors",
                     "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/40",
                     isSel
                       ? "bg-brand font-semibold text-brand-ink hover:bg-brand-dim"
@@ -306,7 +306,7 @@ export function DatePicker({
           <button
             type="button"
             onClick={() => (outOfRange(now) ? openTo(now) : pick(now))}
-            className="rounded-md px-2 py-1.5 text-xs font-medium text-muted transition-colors hover:bg-surface-3 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/40"
+            className="rounded-sm px-2 py-1.5 text-xs font-medium text-muted transition-colors hover:bg-surface-3 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/40"
           >
             {t("date.today")}
           </button>
@@ -317,7 +317,7 @@ export function DatePicker({
                 onChange("");
                 setOpen(false);
               }}
-              className="rounded-md px-2 py-1.5 text-xs font-medium text-muted transition-colors hover:bg-surface-3 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/40"
+              className="rounded-sm px-2 py-1.5 text-xs font-medium text-muted transition-colors hover:bg-surface-3 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/40"
             >
               {t("date.clear")}
             </button>

@@ -22,12 +22,15 @@ const buttonVariants = cva(
         danger: "bg-danger/15 text-danger border border-danger/30 hover:bg-danger/25",
       },
       size: {
-        sm: "h-8 px-3 text-xs",
+        // the small sizes step the radius down to `sm` (12px): at h-8 and
+        // below, the base `md` (16px) is ≥ half the height and silently
+        // clamps into a pill (The Clamp Rule)
+        sm: "h-8 rounded-sm px-3 text-xs",
         md: "h-10 px-4",
         lg: "h-12 px-6 text-base",
         icon: "size-10",
-        "icon-sm": "size-9",
-        "icon-xs": "size-7 [&_svg]:size-3.5",
+        "icon-sm": "size-9 rounded-sm",
+        "icon-xs": "size-7 rounded-sm [&_svg]:size-3.5",
       },
     },
     defaultVariants: { variant: "brand", size: "md" },

@@ -148,7 +148,7 @@ export function QuotationCard({ order }: { order: Order }) {
             {/* per-package surcharges: every triggered line shown; the charged one
                 carries a check, the rest are struck through (only the highest counts) */}
             {surchargePkgs.map((pkg) => (
-              <div key={pkg.index} className="rounded-md bg-surface-2 p-3">
+              <div key={pkg.index} className="rounded-sm bg-surface-2 p-3">
                 <div className="flex items-center justify-between gap-3">
                   <p className="text-xs font-semibold text-foreground">
                     {t("order.quPackage")} {pkg.index}
@@ -308,7 +308,7 @@ export function QuotationCard({ order }: { order: Order }) {
           <p className="text-sm leading-relaxed text-muted">
             {t("order.quApproveConfirmBody")}
           </p>
-          <div className="mt-3 rounded-md bg-surface-2 p-3.5">
+          <div className="mt-3 rounded-sm bg-surface-2 p-3.5">
             <p className="text-xs text-muted-2">{t("order.quTotal")}</p>
             <p className="mt-0.5 font-mono text-2xl font-bold tracking-tight tabular-nums text-foreground">
               {formatIDR(qu.total)}

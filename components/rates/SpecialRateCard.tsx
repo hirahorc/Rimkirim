@@ -15,7 +15,8 @@ import type {
   RouteInfo,
 } from "@/lib/pricing/quote";
 import { Flag } from "@/components/shared/Flag";
-import { CarrierMark } from "./CarrierMark";
+import { CarrierLogo, CarrierMark } from "./CarrierMark";
+import { carrierLogo } from "@/lib/data/carriers";
 import { formatIDR } from "@/lib/utils/currency";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -57,7 +58,7 @@ export function SpecialRateCard({
 
   return (
     <Card className="relative overflow-hidden border-brand/40">
-      <div className="relative p-6">
+      <div className="relative p-4 sm:p-5">
         <div className="flex items-center justify-between gap-3">
           <Badge variant="brand">
             <Sparkles className="size-3.5" /> {t("special.badge")}
@@ -73,10 +74,16 @@ export function SpecialRateCard({
         </div>
 
         <div className="mt-2 flex items-center gap-2 text-xs text-muted">
-          <CarrierMark
-            carrier={special.carrier}
-            className="size-6 rounded-xs text-[10px]"
-          />
+          {/* inline brand mark before the sentence, like the flags in the
+              route line; the name stays in text — the sentence needs it */}
+          {carrierLogo(special.carrier) ? (
+            <CarrierLogo carrier={special.carrier} k={16} />
+          ) : (
+            <CarrierMark
+              carrier={special.carrier}
+              className="size-6 rounded-xs text-[10px]"
+            />
+          )}
           <span>
             {t("special.dilayani")}{" "}
             <span className="font-medium text-foreground">
@@ -202,7 +209,7 @@ export function SpecialRateUnavailableCard({
 
   return (
     <Card className="relative overflow-hidden">
-      <div className="p-6">
+      <div className="p-4 sm:p-5">
         <Badge variant="neutral">
           <Globe2 className="size-3.5" /> {t("special.unavailBadge")}
         </Badge>
