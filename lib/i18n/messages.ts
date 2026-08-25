@@ -797,7 +797,7 @@ const id = {
     attPickupRescheduled:
       "Pickup dijadwalkan ulang. Tim kami akan menjemput sesuai jadwal baru.",
     attDropOffRequested:
-      "Titipkan paket di lokasi drop-off FedEx dalam 2 hari, atau AWB akan diganti.",
+      "Drop-off diminta: antar paketmu ke lokasi FedEx dalam 2 hari.",
     attAwbChanged:
       "AWB diganti karena drop-off melewati batas 2 hari. Tim kami menjadwalkan ulang pickup — kami kabari jadwal barunya.",
     attClearanceReleased:
@@ -898,11 +898,11 @@ const id = {
     quSecInfo: "Informasi (di luar tagihan)",
     quSecTax: "Potensi pajak",
     quTaxEstimatedValue: "Nilai barang (estimasi)",
-    quTaxImportDuty: "Import Duty",
-    quTaxVat: "VAT",
-    quTaxIncomeTax: "Income Tax",
+    quTaxImportDuty: "Bea Masuk",
+    quTaxVat: "PPN",
+    quTaxIncomeTax: "PPh (impor)",
     quTaxCaption:
-      "Estimated Value. Final Tax Will be determined by Indonesian Customs.",
+      "Nilai estimasi. Pajak final ditetapkan oleh Bea Cukai Indonesia.",
     quSecWarehouse: "Warehouse fee",
     quWarehousePerKgDay: "/kg/hari",
     quWarehousePerDay: "/hari",
@@ -980,9 +980,10 @@ const id = {
     pickAwbRequestedToast: "Permintaan AWB baru dikirim ke tim ops.",
     pickDropOffTitle: "Drop-off diminta",
     pickDropOffBody:
-      "Titipkan paket di lokasi drop-off FedEx terdekat sebelum batas waktu, atau AWB akan diganti.",
+      "Setelah paket dititipkan, konfirmasi di sini. Lewat batas waktu, AWB diganti dan penjemputan diatur ulang.",
     pickDropOffDeadline: "Batas waktu",
     pickDropOffCta: "Sudah drop off",
+    pickDropOffAsk: "Minta alamat drop-off via WhatsApp",
     pickDropOffConfirmedToast:
       "Konfirmasi dikirim. Tim ops akan memproses kirimanmu.",
     pickDropOffAwaitOps:
@@ -1001,6 +1002,7 @@ const id = {
     pickReschedDateRequired: "Pilih tanggal dan jam dulu.",
     // AWB section
     tdAwbNumber: "Nomor AWB",
+    tdAwbTrack: "Lacak di FedEx",
     tdAwbStable:
       "Nomor booking kamu tidak berubah, hanya AWB internal yang diganti.",
     // new-AWB request dialog
@@ -1099,6 +1101,8 @@ const id = {
     itExpandAll: "Buka semua",
     itJumpTo: "Menuju paket",
     itItemsWord: "barang",
+    itItemWordOne: "barang",
+    stepOf: "Langkah {n} dari {total}",
     itPackageEmpty: "Belum diisi",
     itPackaging: "Jenis kemasan",
     itPackageN: "Paket",
@@ -1946,7 +1950,7 @@ const en: Messages = {
     modCustomerDesc: "Your details & destination address in Indonesia.",
     modItems: "Items & Packages",
     modItemsDesc: "List of items and package details.",
-    modCompliance: "Compliance Document",
+    modCompliance: "Compliance Documents",
     modComplianceDesc: "Passport, ticket, SKP and other customs documents.",
     modPickup: "Pickup Details & Schedule",
     modPickupDesc: "Pickup address & time.",
@@ -2090,7 +2094,7 @@ const en: Messages = {
     attPickupRescheduled:
       "Pickup rescheduled. Our team will collect on the new schedule.",
     attDropOffRequested:
-      "Drop the package at a FedEx location within 2 days, or the AWB will be changed.",
+      "Drop-off requested: bring your package to a FedEx location within 2 days.",
     attAwbChanged:
       "The AWB was changed because the drop-off missed the 2-day deadline. Our team is rescheduling the pickup — we'll share the new schedule.",
     attClearanceReleased:
@@ -2195,7 +2199,7 @@ const en: Messages = {
     quTaxVat: "VAT",
     quTaxIncomeTax: "Income Tax",
     quTaxCaption:
-      "Estimated Value. Final Tax Will be determined by Indonesian Customs.",
+      "Estimated value. The final tax is determined by Indonesian Customs.",
     quSecWarehouse: "Warehouse fee",
     quWarehousePerKgDay: "/kg/day",
     quWarehousePerDay: "/day",
@@ -2275,9 +2279,10 @@ const en: Messages = {
     pickAwbRequestedToast: "New AWB request sent to the ops team.",
     pickDropOffTitle: "Drop-off requested",
     pickDropOffBody:
-      "Drop the package at the nearest FedEx location before the deadline, or the AWB will be changed.",
+      "Once you've dropped the package off, confirm here. Past the deadline, the AWB is replaced and collection starts over.",
     pickDropOffDeadline: "Deadline",
     pickDropOffCta: "I've dropped it off",
+    pickDropOffAsk: "Ask for the drop-off address on WhatsApp",
     pickDropOffConfirmedToast:
       "Confirmation sent. The ops team will process your shipment.",
     pickDropOffAwaitOps:
@@ -2296,6 +2301,7 @@ const en: Messages = {
     pickReschedDateRequired: "Choose a date and a window first.",
     // AWB section
     tdAwbNumber: "AWB number",
+    tdAwbTrack: "Track on FedEx",
     tdAwbStable:
       "Your booking number never changes, only the internal AWB is replaced.",
     // new-AWB request dialog
@@ -2387,6 +2393,8 @@ const en: Messages = {
     itExpandAll: "Expand all",
     itJumpTo: "Jump to package",
     itItemsWord: "items",
+    itItemWordOne: "item",
+    stepOf: "Step {n} of {total}",
     itPackageEmpty: "Not filled yet",
     itPackaging: "Packaging type",
     itPackageN: "Package",
