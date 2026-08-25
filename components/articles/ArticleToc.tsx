@@ -1,8 +1,9 @@
 "use client";
 
 import * as React from "react";
-import { List } from "lucide-react";
+import { List, ChevronDown, ChevronUp } from "lucide-react";
 import type { TocItem } from "@/lib/articles/shared";
+import { CollapseHeight } from "@/components/ui/disclosure";
 import { cn } from "@/lib/utils/cn";
 
 /**
@@ -20,6 +21,8 @@ export function ArticleToc({
   variant: "inline" | "rail";
 }) {
   const [active, setActive] = React.useState<string | null>(items[0]?.id ?? null);
+  // inline variant only: collapsed by default, same as the old <details>
+  const [tocOpen, setTocOpen] = React.useState(false);
 
   React.useEffect(() => {
     const els = items
@@ -62,14 +65,27 @@ export function ArticleToc({
   );
 
   if (variant === "inline") {
+    // the same disclosure micro-interactions as the FAQ rows (DESIGN.md,
+    // "The disclosure open"): animated height at a content-derived duration,
+    // chevron swapped not rotated, colour-channel hover/focus — in this
+    // component's own boxed skin, driven by React state via CollapseHeight
+    const Chevron = tocOpen ? ChevronUp : ChevronDown;
     return (
-      <details className="group rounded-md border border-border bg-surface-2">
-        <summary className="flex cursor-pointer list-none items-center gap-2 px-4 py-3 text-sm font-medium [&::-webkit-details-marker]:hidden">
+      <div className="rounded-md border border-border bg-surface-2">
+        <button
+          type="button"
+          onClick={() => setTocOpen((v) => !v)}
+          aria-expanded={tocOpen}
+          className="flex w-full cursor-pointer items-center gap-2 rounded-md px-4 py-3 text-sm font-medium transition-colors hover:bg-surface-3/70 focus-visible:bg-surface-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/50"
+        >
           <List className="size-4 text-muted-2" />
           {label}
-        </summary>
-        <div className="border-t border-border px-4 py-3">{list}</div>
-      </details>
+          <Chevron aria-hidden className="ml-auto size-4 shrink-0 text-muted-2" />
+        </button>
+        <CollapseHeight open={tocOpen}>
+          <div className="border-t border-border px-4 py-3">{list}</div>
+        </CollapseHeight>
+      </div>
     );
   }
   return (

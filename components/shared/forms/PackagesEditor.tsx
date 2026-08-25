@@ -10,7 +10,8 @@ import {
   type FieldErrors,
   type FieldValues,
 } from "react-hook-form";
-import { Plus, Trash2, ChevronDown } from "lucide-react";
+import { Plus, Trash2, ChevronDown, ChevronUp } from "lucide-react";
+import { CollapseHeight } from "@/components/ui/disclosure";
 import { totalChargeableWeight } from "@/lib/utils/chargeable-weight";
 import { formatNumber } from "@/lib/utils/currency";
 import { CURRENCIES, formatCurrency } from "@/lib/data/currencies";
@@ -170,9 +171,12 @@ export function PackagesEditor<T extends FieldValues & ItemsData>({
               onClick={anyOpen ? collapseAll : expandAll}
               className="inline-flex items-center gap-1.5 rounded-sm border border-border px-2.5 py-1.5 text-xs text-muted transition-colors hover:border-border-strong hover:text-foreground"
             >
-              <ChevronDown
-                className={cn("size-3.5 transition-transform", !anyOpen && "-rotate-90")}
-              />
+              {/* swap, never rotate — the shared disclosure idiom */}
+              {anyOpen ? (
+                <ChevronUp className="size-3.5" />
+              ) : (
+                <ChevronDown className="size-3.5" />
+              )}
               {anyOpen ? t("order.itCollapseAll") : t("order.itExpandAll")}
             </button>
           )}
@@ -361,12 +365,12 @@ function PackageBlock({
           className="-my-2 flex min-w-0 flex-1 items-center gap-2 py-2 text-left"
           aria-expanded={open}
         >
-          <ChevronDown
-            className={cn(
-              "size-4 shrink-0 text-muted transition-transform",
-              !open && "-rotate-90",
-            )}
-          />
+          {/* swap, never rotate — the shared disclosure idiom */}
+          {open ? (
+            <ChevronUp className="size-4 shrink-0 text-muted" />
+          ) : (
+            <ChevronDown className="size-4 shrink-0 text-muted" />
+          )}
           <span className="shrink-0 text-xs font-semibold uppercase tracking-wider text-muted-2">
             {t("order.itPackageN")} {index + 1}
           </span>
@@ -387,7 +391,10 @@ function PackageBlock({
         )}
       </div>
 
-      {!open ? null : (
+      {/* body stays mounted and collapses with the shared disclosure motion
+          (DESIGN.md, "The disclosure open"); CollapseHeight marks the closed
+          region inert, so hidden inputs can't be tabbed into */}
+      <CollapseHeight open={open}>
       <div className="mt-4 space-y-4">
       <Field label={t("order.itPackaging")}>
         <Controller
@@ -529,7 +536,7 @@ function PackageBlock({
         </div>
       )}
       </div>
-      )}
+      </CollapseHeight>
     </Card>
   );
 }
