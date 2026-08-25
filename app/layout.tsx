@@ -67,6 +67,10 @@ export default function RootLayout({
   return (
     <html
       lang="id"
+      // Next 16 no longer forces scroll-behavior:auto during SPA navigations;
+      // this attribute restores that override so the CSS smooth scroll below
+      // only ever applies to same-page anchor jumps (globals.css, motion-safe)
+      data-scroll-behavior="smooth"
       className={`${spaceGrotesk.variable} ${inter.variable} ${jetbrainsMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-background text-foreground">
