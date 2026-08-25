@@ -11,9 +11,11 @@ const STATUS_META: Record<
   draft: { labelKey: "order.statusDraft", variant: "neutral" },
   review: { labelKey: "order.statusReview", variant: "neutral" },
   quotation: { labelKey: "order.statusQuotation", variant: "brand" },
-  pickup: { labelKey: "order.statusPickup", variant: "warning" },
+  // routine progress speaks info-blue; warning is reserved for states that
+  // actually ask something of the customer (attention banners, missing docs)
+  pickup: { labelKey: "order.statusPickup", variant: "info" },
   "in-transit": { labelKey: "order.statusInTransit", variant: "info" },
-  clearance: { labelKey: "order.statusClearance", variant: "warning" },
+  clearance: { labelKey: "order.statusClearance", variant: "info" },
   delivery: { labelKey: "order.statusDelivery", variant: "info" },
   delivered: { labelKey: "order.statusDelivered", variant: "success" },
   cancelled: { labelKey: "order.statusCancelled", variant: "danger" },

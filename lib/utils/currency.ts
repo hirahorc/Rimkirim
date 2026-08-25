@@ -9,9 +9,14 @@ export function formatIDR(value: number): string {
   return idr.format(Math.round(value));
 }
 
-/** Compact number, e.g. 153.6 -> "153,6". Indonesian decimal comma. */
-export function formatNumber(value: number, maxFractionDigits = 1): string {
-  return new Intl.NumberFormat("id-ID", {
+/** Compact number, e.g. 153.6 -> "153,6" (id) or "153.6" (en). Rupiah amounts
+ *  stay id-ID everywhere (formatIDR); bare measurements follow the UI locale. */
+export function formatNumber(
+  value: number,
+  maxFractionDigits = 1,
+  locale: "id" | "en" = "id",
+): string {
+  return new Intl.NumberFormat(locale, {
     maximumFractionDigits: maxFractionDigits,
   }).format(value);
 }

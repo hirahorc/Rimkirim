@@ -7,6 +7,9 @@ import {
   Loader2,
   ArrowLeft,
   CalendarDays,
+  ChevronRight,
+  FileWarning,
+  MessageCircle,
   Plane,
   Route as RouteIcon,
   PenLine,
@@ -28,12 +31,18 @@ import { CopyButton } from "./CopyButton";
 import { OrderStatusBadge } from "./OrderStatusBadge";
 import { StatusStepper } from "@/components/tracking/StatusStepper";
 import { AttentionBanner } from "@/components/tracking/AttentionBanner";
-import { OrderSummary, SectionBand } from "@/components/tracking/OrderSummary";
+import {
+  OrderSummary,
+  SectionBand,
+  dueComplianceDocsCount,
+} from "@/components/tracking/OrderSummary";
 import { OrderTimeline } from "@/components/tracking/OrderTimeline";
 import { QuotationCard } from "@/components/tracking/QuotationCard";
 import { RevisionCard } from "@/components/tracking/RevisionCard";
 import { PickupPanel } from "@/components/tracking/PickupPanel";
 import { ClearancePanel } from "@/components/tracking/ClearancePanel";
+
+const WA_URL = "https://wa.me/6281234567890";
 
 /** Tracking detail page — owner-only. */
 export function OrderDetail({ id }: { id: string }) {
@@ -92,7 +101,12 @@ export function OrderDetail({ id }: { id: string }) {
     showRevision ||
     !!order.quotation ||
     order.status === "pickup" ||
-    order.status === "clearance";
+    order.status === "clearance" ||
+    order.status === "cancelled";
+  // docs the customer still owes for the phases ahead — surfaced up here in
+  // the status tier so the page's one standing to-do isn't buried below the
+  // activity log (the tiles themselves live in the Compliance section)
+  const docsTodo = dueComplianceDocsCount(order);
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6 sm:py-10">
@@ -114,7 +128,9 @@ export function OrderDetail({ id }: { id: string }) {
             <div className="mt-1 flex items-center gap-2">
               <h1
                 className="font-mono text-xl font-bold tracking-tight text-foreground"
-                aria-label={`${t("order.bookingNumberLabel")} ${identifier ?? ""}`}
+                aria-label={`${t("order.bookingNumberLabel")}: ${
+                  identifier ?? t("order.bookingNumberPending")
+                }`}
               >
                 {identifier ?? "–"}
               </h1>
@@ -174,6 +190,19 @@ export function OrderDetail({ id }: { id: string }) {
       {!isDraft && (
         <Card className="mt-3 p-4 sm:p-5">
           <StatusStepper status={order.status as OrderPhase} />
+          {docsTodo > 0 && (
+            <a
+              href="#compliance-docs"
+              className="mt-4 flex items-center gap-2 rounded-sm border-t border-border pt-3.5 text-sm text-muted transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/50"
+            >
+              <FileWarning className="size-4 shrink-0 text-warning" aria-hidden />
+              {(docsTodo === 1
+                ? t("order.tdDocsTodoOne")
+                : t("order.tdDocsTodoMany")
+              ).replace("{n}", String(docsTodo))}
+              <ChevronRight className="ml-auto size-4 shrink-0 text-muted-2" aria-hidden />
+            </a>
+          )}
         </Card>
       )}
 
@@ -182,6 +211,25 @@ export function OrderDetail({ id }: { id: string }) {
           each other so they read as a single "in progress" band */}
       {hasLivePanels && (
         <div className="mt-8 space-y-3">
+          {/* a terminal status is news, not archive material: the cancelled
+              notice leads the live tier with a reason-door instead of hiding
+              as a red one-liner at the record's foot */}
+          {order.status === "cancelled" && (
+            <Card className="border-danger/40 bg-danger/10 p-4 text-sm sm:p-5">
+              <p className="font-semibold text-danger">
+                {t("order.tdCancelledNotice")}
+              </p>
+              <p className="mt-0.5 text-muted">{t("order.tdCancelledBody")}</p>
+              <a
+                href={WA_URL}
+                target="_blank"
+                rel="noreferrer"
+                className="link-mark mt-2 inline-flex items-center gap-1.5 text-sm font-medium"
+              >
+                <MessageCircle className="size-4" /> {t("order.contactWa")}
+              </a>
+            </Card>
+          )}
           <AttentionBanner attention={attention} />
           {showRevision && (
             <RevisionCard

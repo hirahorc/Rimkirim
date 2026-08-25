@@ -12,12 +12,19 @@ import {
   Info,
   Warehouse,
   ChevronDown,
+  ChevronUp,
 } from "lucide-react";
 import { useOrderStore, type Order } from "@/lib/store/useOrderStore";
 import { useLanguage, useT } from "@/lib/i18n/LanguageProvider";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { formatIDR, formatNumber } from "@/lib/utils/currency";
 import { formatCurrency } from "@/lib/data/currencies";
 import { cn } from "@/lib/utils/cn";
@@ -31,6 +38,7 @@ export function QuotationCard({ order }: { order: Order }) {
   const { locale } = useLanguage();
   const approveQuotation = useOrderStore((s) => s.approveQuotation);
   const [revOpen, setRevOpen] = React.useState(false);
+  const [approveOpen, setApproveOpen] = React.useState(false);
   // breakdown detail is collapsible; open by default so the payable is shown up front
   const [breakdownOpen, setBreakdownOpen] = React.useState(true);
 
@@ -86,7 +94,7 @@ export function QuotationCard({ order }: { order: Order }) {
         </div>
         <p className="mt-1 text-xs text-muted-2">
           <span className="font-mono tabular-nums">{formatIDR(qu.perKg)}</span> /{" "}
-          {t("order.tdPerKg")} · {formatNumber(qu.chargeableKg)} kg ·{" "}
+          {t("order.tdPerKg")} · {formatNumber(qu.chargeableKg, 1, locale)} kg ·{" "}
           {t("order.quIssued")} {dateFmt.format(qu.issuedAt)}
         </p>
 
@@ -102,12 +110,12 @@ export function QuotationCard({ order }: { order: Order }) {
             className="flex w-full items-center justify-between gap-2 text-xs font-medium uppercase tracking-wide text-muted-2 transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/40"
           >
             {t("order.quSecBreakdown")}
-            <ChevronDown
-              className={cn(
-                "size-4 transition-transform",
-                !breakdownOpen && "-rotate-90",
-              )}
-            />
+            {/* swap, never rotate — the shared disclosure idiom */}
+            {breakdownOpen ? (
+              <ChevronUp className="size-4" />
+            ) : (
+              <ChevronDown className="size-4" />
+            )}
           </button>
 
           {breakdownOpen && (
@@ -118,7 +126,7 @@ export function QuotationCard({ order }: { order: Order }) {
                 <span className="text-muted-2">
                   (<span className="font-mono tabular-nums">{formatIDR(qu.perKg)}</span>
                   {" × "}
-                  {formatNumber(qu.chargeableKg)} kg)
+                  {formatNumber(qu.chargeableKg, 1, locale)} kg)
                 </span>
               </span>
               <span className="shrink-0 font-mono font-medium tabular-nums">
@@ -135,8 +143,10 @@ export function QuotationCard({ order }: { order: Order }) {
                     {t("order.quPackage")} {pkg.index}
                   </p>
                   <p className="font-mono text-xs tabular-nums text-muted-2">
-                    {formatNumber(pkg.weightKg)}kg · {formatNumber(pkg.length)}×
-                    {formatNumber(pkg.width)}×{formatNumber(pkg.height)}
+                    {formatNumber(pkg.weightKg, 1, locale)}kg ·{" "}
+                    {formatNumber(pkg.length, 1, locale)}×
+                    {formatNumber(pkg.width, 1, locale)}×
+                    {formatNumber(pkg.height, 1, locale)}
                   </p>
                 </div>
                 <ul className="mt-2 space-y-1.5">
@@ -258,19 +268,9 @@ export function QuotationCard({ order }: { order: Order }) {
 
         {pendingApproval && (
           <div className="mt-4 space-y-2">
-            <Button
-              className="w-full"
-              onClick={() => {
-                approveQuotation(order.id);
-                // the store action is a guarded no-op outside `quotation` —
-                // only celebrate if the approval actually landed
-                const now = useOrderStore
-                  .getState()
-                  .orders.find((o) => o.id === order.id);
-                if (now?.status === "pickup")
-                  toast.success(t("order.quApprovedToast"));
-              }}
-            >
+            {/* a multi-million-rupiah commitment is never one tap: the button
+                opens a confirm sheet that restates what is being agreed to */}
+            <Button className="w-full" onClick={() => setApproveOpen(true)}>
               <CheckCircle2 /> {t("order.quApprove")}
             </Button>
             <Button asChild variant="secondary" className="w-full">
@@ -288,6 +288,47 @@ export function QuotationCard({ order }: { order: Order }) {
           </div>
         )}
       </Card>
+
+      <Dialog open={approveOpen} onOpenChange={setApproveOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>{t("order.quApproveConfirmTitle")}</DialogTitle>
+          </DialogHeader>
+          <p className="text-sm leading-relaxed text-muted">
+            {t("order.quApproveConfirmBody")}
+          </p>
+          <div className="mt-3 rounded-md bg-surface-2 p-3.5">
+            <p className="text-xs text-muted-2">{t("order.quTotal")}</p>
+            <p className="mt-0.5 font-mono text-2xl font-bold tracking-tight tabular-nums text-foreground">
+              {formatIDR(qu.total)}
+            </p>
+            <p className="mt-1 flex items-center gap-1.5 text-xs text-muted-2">
+              <Clock3 className="size-3.5" />
+              {t("order.quValidUntil")}: {dateFmt.format(qu.validUntil)}
+            </p>
+          </div>
+          <div className="mt-4 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+            <Button variant="ghost" onClick={() => setApproveOpen(false)}>
+              {t("order.baCancel")}
+            </Button>
+            <Button
+              onClick={() => {
+                approveQuotation(order.id);
+                setApproveOpen(false);
+                // the store action is a guarded no-op outside `quotation` —
+                // only celebrate if the approval actually landed
+                const now = useOrderStore
+                  .getState()
+                  .orders.find((o) => o.id === order.id);
+                if (now?.status === "pickup")
+                  toast.success(t("order.quApprovedToast"));
+              }}
+            >
+              <CheckCircle2 /> {t("order.quApproveConfirmCta")}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       <RevisionDialog
         orderId={order.id}
