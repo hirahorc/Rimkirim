@@ -250,7 +250,8 @@
       "Bash(node acc10.mjs)",
       "Bash(OUT_DIR=. node hub-probe.mjs)",
       "Bash(OUT_DIR=. node ordertl-probe.mjs)",
-      "Bash(OUT_DIR=. node -e \"0\")"
+      "Bash(OUT_DIR=. node -e \"0\")",
+      "Bash(npm i *)"
     ],
     "additionalDirectories": [
       "/private/tmp/cdp-fs",
