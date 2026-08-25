@@ -6,7 +6,14 @@ import { HelpCircle } from "lucide-react";
 import { useT } from "@/lib/i18n/LanguageProvider";
 import { cn } from "@/lib/utils/cn";
 
-export const TooltipProvider = TooltipPrimitive.Provider;
+/** House defaults: short first-hover delay, and inside the 300ms skip window
+ *  subsequent tooltips open instantly (globals also drops their animation —
+ *  a second tooltip in a sweep should appear with no ceremony). */
+export function TooltipProvider(
+  props: React.ComponentPropsWithoutRef<typeof TooltipPrimitive.Provider>,
+) {
+  return <TooltipPrimitive.Provider delayDuration={150} skipDelayDuration={300} {...props} />;
+}
 export const Tooltip = TooltipPrimitive.Root;
 export const TooltipTrigger = TooltipPrimitive.Trigger;
 
