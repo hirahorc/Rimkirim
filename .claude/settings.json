@@ -251,7 +251,9 @@
       "Bash(OUT_DIR=. node hub-probe.mjs)",
       "Bash(OUT_DIR=. node ordertl-probe.mjs)",
       "Bash(OUT_DIR=. node -e \"0\")",
-      "Bash(npm i *)"
+      "Bash(npm i *)",
+      "Bash(node capture-quest.mjs 1280 1100 clr-align-desktop.png)",
+      "Bash(node capture-quest.mjs 390 1000 clr-align-mobile.png)"
     ],
     "additionalDirectories": [
       "/private/tmp/cdp-fs",
