@@ -1,6 +1,6 @@
 "use client";
 
-import { useForm, useFieldArray, Controller } from "react-hook-form";
+import { useForm, useFieldArray, useWatch, Controller } from "react-hook-form";
 import { Plus, Trash2, Info } from "lucide-react";
 import { toast } from "sonner";
 import { useOrderStore } from "@/lib/store/useOrderStore";
@@ -46,7 +46,10 @@ export const EXPORT_DOCS: DocSpec[] = [
 
 interface ComplianceData {
   docs: Record<string, string>;
-  otherDocs: { name: string; file?: string }[];
+  /** compressed data URLs, keyed like `docs` — the record page's previews.
+      Parallel to (not replacing) the filenames, so older drafts stay valid. */
+  docFiles?: Record<string, string>;
+  otherDocs: { name: string; file?: string; fileData?: string }[];
 }
 
 export function ComplianceForm() {
@@ -63,14 +66,19 @@ export function ComplianceForm() {
     handleSubmit,
     setError,
     clearErrors,
+    setValue,
     formState: { errors },
   } = useForm<ComplianceData>({
     defaultValues: {
       docs: prev.docs ?? {},
+      docFiles: prev.docFiles ?? {},
       otherDocs: prev.otherDocs ?? [],
     },
   });
   const { fields, append, remove } = useFieldArray({ control, name: "otherDocs" });
+  // subscription-based (unlike `watch()`), so the compiler can memoize safely
+  const docFilesValues = useWatch({ control, name: "docFiles" });
+  const otherDocsValues = useWatch({ control, name: "otherDocs" });
 
   const docs = activeDocs.filter((d) => !d.personalOnly || clearance === "personal");
 
@@ -118,6 +126,10 @@ export function ComplianceForm() {
                     <FileUpload
                       label={t(d.labelKey)}
                       value={field.value}
+                      fileData={docFilesValues?.[d.key]}
+                      onFileData={(dataUrl) =>
+                        setValue(`docFiles.${d.key}` as const, dataUrl ?? "")
+                      }
                       onChange={(v) => {
                         field.onChange(v);
                         if (v) clearErrors(`docs.${d.key}` as const);
@@ -155,6 +167,10 @@ export function ComplianceForm() {
                     <FileUpload
                       label={t("order.coOtherDocs")}
                       value={field.value}
+                      fileData={otherDocsValues?.[i]?.fileData}
+                      onFileData={(dataUrl) =>
+                        setValue(`otherDocs.${i}.fileData` as const, dataUrl ?? "")
+                      }
                       onChange={field.onChange}
                     />
                   )}
@@ -174,7 +190,7 @@ export function ComplianceForm() {
           ))}
           <button
             type="button"
-            onClick={() => append({ name: "", file: "" })}
+            onClick={() => append({ name: "", file: "", fileData: "" })}
             className="-my-1.5 inline-flex min-h-9 items-center gap-1.5 py-1.5 text-sm link-mark"
           >
             <Plus className="size-4" /> {t("order.coAddOtherDoc")}

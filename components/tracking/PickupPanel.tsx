@@ -7,6 +7,7 @@ import {
   PackageX,
   MapPin,
   CheckCircle2,
+  ChevronRight,
   Clock3,
   RefreshCcw,
   Store,
@@ -128,13 +129,21 @@ export function PickupPanel({ order }: { order: Order }) {
             {t("order.pickChoiceTitle")}
           </p>
           <p className="mt-0.5 text-sm text-muted">{t("order.pickChoiceBody")}</p>
-          <div className="mt-3 flex flex-col gap-2 sm:flex-row">
-            <Button className="flex-1" onClick={() => setReschedOpen(true)}>
-              <RefreshCcw /> {t("order.pickChoiceRepickup")}
-            </Button>
-            <Button
-              className="flex-1"
-              variant="secondary"
+          {/* two equal doors, not one CTA plus a fallback — so they read as
+              option rows (icon, label, chevron), never as stretched pills.
+              The row shape survives any width; no per-breakpoint layout. */}
+          <div className="mt-3 flex flex-col gap-2">
+            <button
+              type="button"
+              onClick={() => setReschedOpen(true)}
+              className="flex w-full items-center gap-2.5 rounded-md border border-border bg-surface px-3.5 py-3 text-left text-sm font-medium text-foreground transition-colors hover:border-border-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/50"
+            >
+              <RefreshCcw className="size-4 shrink-0 text-muted-2" />
+              {t("order.pickChoiceRepickup")}
+              <ChevronRight className="ml-auto size-4 shrink-0 text-muted-2" />
+            </button>
+            <button
+              type="button"
               onClick={() => {
                 chooseDropOff(order.id);
                 const now = useOrderStore
@@ -142,9 +151,12 @@ export function PickupPanel({ order }: { order: Order }) {
                   .orders.find((o) => o.id === order.id);
                 if (now?.dropOff) toast.info(t("order.pickChoiceDropOffToast"));
               }}
+              className="flex w-full items-center gap-2.5 rounded-md border border-border bg-surface px-3.5 py-3 text-left text-sm font-medium text-foreground transition-colors hover:border-border-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/50"
             >
-              <Store /> {t("order.pickChoiceDropOff")}
-            </Button>
+              <Store className="size-4 shrink-0 text-muted-2" />
+              {t("order.pickChoiceDropOff")}
+              <ChevronRight className="ml-auto size-4 shrink-0 text-muted-2" />
+            </button>
           </div>
         </div>
       )}

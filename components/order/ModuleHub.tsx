@@ -9,7 +9,6 @@ import {
   CheckCircle2,
   ChevronRight,
   FileText,
-  Hash,
   PartyPopper,
   Download,
 } from "lucide-react";
@@ -132,22 +131,6 @@ export function ModuleHub() {
   const completeCount = MODULE_META.filter(
     (m) => modules[m.id as ModuleId].status === "complete",
   ).length;
-  const [barCount, setBarCount] = React.useState(
-    justDone ? Math.max(0, completeCount - 1) : completeCount,
-  );
-  React.useEffect(() => {
-    if (barCount === completeCount) return;
-    // double rAF so the start width paints before the transition target lands
-    const raf = requestAnimationFrame(() =>
-      requestAnimationFrame(() => setBarCount(completeCount)),
-    );
-    return () => cancelAnimationFrame(raf);
-  }, [barCount, completeCount]);
-
-  const nextUp = MODULE_META.find((m) => {
-    const locked = m.locksUntilOthers && !pickupUnlocked;
-    return !locked && modules[m.id as ModuleId].status !== "complete";
-  })?.id;
 
   if (submitted) {
     return (
@@ -203,30 +186,16 @@ export function ModuleHub() {
             <span className="text-muted-2">({t("order.hubRouteFixed")})</span>
           </p>
         )}
-        {/* the user's progress, said in numbers and shown as a filling bar */}
+        {/* progress in numbers only — the per-card badges already show it per
+            section, so a filling bar would say the same thing a third time */}
         <div className="mt-4">
           <p className="text-sm font-medium text-foreground">
             {t("order.hubProgress")
               .replace("{n}", String(completeCount))
               .replace("{total}", String(MODULE_META.length))}
           </p>
-          <div
-            role="progressbar"
-            aria-valuemin={0}
-            aria-valuemax={MODULE_META.length}
-            aria-valuenow={completeCount}
-            aria-label={t("order.hubProgress")
-              .replace("{n}", String(completeCount))
-              .replace("{total}", String(MODULE_META.length))}
-            className="mt-2 h-1.5 overflow-hidden rounded-full bg-surface-3"
-          >
-            <div
-              className="h-full rounded-full bg-brand transition-[width] duration-500 ease-out"
-              style={{ width: `${(barCount / MODULE_META.length) * 100}%` }}
-            />
-          </div>
           {lastSavedAt && completeCount > 0 && (
-            <p className="mt-2 text-xs text-muted-2">
+            <p className="mt-1 text-xs text-muted-2">
               {t("order.hubLastSaved").replace("{when}", formatRelative(lastSavedAt, locale))}
             </p>
           )}
@@ -235,10 +204,10 @@ export function ModuleHub() {
 
       {/* the receipt: what the order already HAS (booking number, packing list,
           document) in one quiet strip, so the body below is only the work */}
-      <Card className="mb-6 grid divide-y divide-border p-0 sm:grid-cols-[1fr_1fr_auto] sm:divide-x sm:divide-y-0">
+      <Card className="mb-6 grid divide-y divide-border p-0 sm:grid-cols-2 sm:divide-x sm:divide-y-0">
         <div className="px-4 py-3 sm:px-5">
-          <p className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-muted-2">
-            <Hash className="size-3.5" /> {t("order.bookingNumberLabel")}
+          <p className="text-xs font-medium uppercase tracking-wide text-muted-2">
+            {t("order.bookingNumberLabel")}
           </p>
           <div className="mt-1 flex items-center gap-2">
             {/* an identifier the customer will read out loud: mono, tabular (Numbers-Are-Mono) */}
@@ -261,42 +230,46 @@ export function ModuleHub() {
             )}
           </p>
           {packingCode ? (
-            <div className="mt-1 flex items-center gap-2">
-              <span className="font-mono text-base font-semibold tabular-nums">{packingCode}</span>
-              <CopyButton value={packingCode} />
-            </div>
+            <>
+              <div className="mt-1 flex items-center gap-2">
+                <span className="font-mono text-base font-semibold tabular-nums">
+                  {packingCode}
+                </span>
+                <CopyButton value={packingCode} />
+              </div>
+              {/* the PDF is the packing list's document, so its action lives in
+                  this cell — it appears together with the code it downloads */}
+              <Button
+                variant="secondary"
+                size="sm"
+                className="mt-2 w-full sm:w-auto"
+                loading={pdfBusy}
+                disabled={!pdfReady}
+                aria-describedby={pdfReady ? undefined : "hub-pdf-note"}
+                onClick={() =>
+                  downloadPdf(
+                    orderModulesToCipl({
+                      code: packingCode,
+                      customerInfo: modules.customerInfo.data,
+                      items: modules.items.data,
+                      pickup: modules.pickup.data,
+                      context,
+                    }),
+                  )
+                }
+              >
+                {!pdfBusy && <Download className="size-3.5" />}
+                {pdfBusy ? t("pl.downloading") : t("order.generatePdf")}
+              </Button>
+              {/* a user-supplied code can exist before the sections do */}
+              {!pdfReady && (
+                <p id="hub-pdf-note" className="mt-1 text-xs leading-snug text-muted-2">
+                  {t("order.generatePdfNote")}
+                </p>
+              )}
+            </>
           ) : (
             <p className="mt-1 text-sm text-muted">{t("order.packingListPending")}</p>
-          )}
-        </div>
-        <div className="flex flex-col justify-center gap-1 px-4 py-3 sm:px-5">
-          <Button
-            variant="secondary"
-            size="sm"
-            className="w-full sm:w-auto"
-            loading={pdfBusy}
-            disabled={!pdfReady}
-            aria-describedby={!pdfReady && packingCode ? "hub-pdf-note" : undefined}
-            onClick={() =>
-              downloadPdf(
-                orderModulesToCipl({
-                  code: packingCode,
-                  customerInfo: modules.customerInfo.data,
-                  items: modules.items.data,
-                  pickup: modules.pickup.data,
-                  context,
-                }),
-              )
-            }
-          >
-            {!pdfBusy && <Download className="size-3.5" />}
-            {pdfBusy ? t("pl.downloading") : t("order.generatePdf")}
-          </Button>
-          {/* the packing-list cell already explains the gate while no code exists */}
-          {!pdfReady && packingCode && (
-            <p id="hub-pdf-note" className="max-w-[12rem] text-xs leading-snug text-muted-2">
-              {t("order.generatePdfNote")}
-            </p>
           )}
         </div>
       </Card>
@@ -305,16 +278,15 @@ export function ModuleHub() {
         {MODULE_META.map((m) => {
           const locked = m.locksUntilOthers && !pickupUnlocked;
           const status = modules[m.id as ModuleId].status;
-          const isNext = m.id === nextUp;
           const Inner = (
             <Card
               className={cn(
                 "flex items-center gap-4 p-4 transition-colors",
                 // muted via tokens, not opacity: the badge and note must stay AA
                 locked && "border-border/70 bg-surface-2/60 text-muted",
-                // the next card to fill gets the lime frame (the same "this
-                // one" signal the cheapest rate card uses)
-                !locked && (isNext ? "border-brand/50" : "hover:border-border-strong"),
+                // no "next" highlight: the four sections are deliberately
+                // order-free, so no card is nominated over the others
+                !locked && "hover:border-border-strong",
                 m.id === "pickup" && justUnlocked && "unlock-pop",
               )}
             >
@@ -322,7 +294,7 @@ export function ModuleHub() {
                 className={cn(
                   "grid size-11 shrink-0 place-items-center rounded-md transition-colors",
                   // "done" is a status, so it speaks in the status hue (same as the
-                  // badge beside it); lime stays with the bar, the next pill and the CTA
+                  // badge beside it); lime stays with the bar and the CTA
                   status === "complete"
                     ? "bg-success/15 text-success"
                     : "bg-surface-3 text-muted",
@@ -333,32 +305,21 @@ export function ModuleHub() {
               <div className="min-w-0 flex-1">
                 <p className={cn("font-medium", locked && "text-muted")}>{t(m.titleKey)}</p>
                 {/* the description is the only explanation of the module: let it
-                    wrap (2 lines) instead of truncating on the primary device */}
-                <p className="line-clamp-2 text-sm leading-snug text-muted sm:truncate">
+                    wrap (2 lines) instead of truncating on the primary device —
+                    but always reserve both lines, so the four cards stay one
+                    height regardless of how far each description wraps */}
+                <p className="line-clamp-2 min-h-[2lh] text-sm leading-snug text-muted sm:min-h-0 sm:truncate">
                   {t(m.descKey)}
                 </p>
-                {/* phone: status sits under the text so the title keeps its width;
-                    the next-up card's Continue pill already says it */}
-                {!isNext && (
-                  <span className="mt-1.5 inline-flex sm:hidden">
-                    <StatusBadge status={status} locked={locked} justDone={m.id === justDone} />
-                  </span>
-                )}
-              </div>
-              {/* the next-up card's Continue pill already says its status */}
-              {!isNext && (
-                <span className="hidden sm:contents">
+                {/* phone: status sits under the text so the title keeps its width */}
+                <span className="mt-1.5 inline-flex sm:hidden">
                   <StatusBadge status={status} locked={locked} justDone={m.id === justDone} />
                 </span>
-              )}
-              {!locked &&
-                (isNext ? (
-                  <span className="inline-flex shrink-0 items-center gap-0.5 rounded-full bg-brand py-1 pl-2.5 pr-1.5 text-xs font-semibold text-brand-ink">
-                    {t("order.hubNext")} <ChevronRight className="size-3.5" />
-                  </span>
-                ) : (
-                  <ChevronRight className="size-4 shrink-0 text-muted-2" />
-                ))}
+              </div>
+              <span className="hidden sm:contents">
+                <StatusBadge status={status} locked={locked} justDone={m.id === justDone} />
+              </span>
+              {!locked && <ChevronRight className="size-4 shrink-0 text-muted-2" />}
             </Card>
           );
           return locked ? (

@@ -136,8 +136,8 @@ async function loadLogo(): Promise<string | null> {
   }
 }
 
-/** Build the PDF and hand it to the browser as a download. */
-export async function downloadCiplPdf(input: CiplInput): Promise<void> {
+/** Build the CIPL document; callers decide what to do with it (save / preview). */
+export async function buildCiplDoc(input: CiplInput) {
   const [{ jsPDF }, { default: autoTable }, logo] = await Promise.all([
     import("jspdf"),
     import("jspdf-autotable"),
@@ -420,5 +420,16 @@ export async function downloadCiplPdf(input: CiplInput): Promise<void> {
   }
 
   if (typeof doc.putTotalPages === "function") doc.putTotalPages(totalPagesToken);
-  doc.save(ciplFilename(input));
+  return doc;
+}
+
+/** Build the PDF and hand it to the browser as a download. */
+export async function downloadCiplPdf(input: CiplInput): Promise<void> {
+  (await buildCiplDoc(input)).save(ciplFilename(input));
+}
+
+/** Build the PDF and return an object URL for previewing in a new tab. */
+export async function previewCiplPdfUrl(input: CiplInput): Promise<string> {
+  const doc = await buildCiplDoc(input);
+  return URL.createObjectURL(doc.output("blob"));
 }
