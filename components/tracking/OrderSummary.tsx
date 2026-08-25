@@ -14,7 +14,6 @@ import { Button } from "@/components/ui/button";
 import { useDownloadCipl, usePreviewCipl } from "@/components/packing/useDownloadCipl";
 import { orderModulesToCipl } from "@/lib/pdf/cipl";
 import { useT, useLanguage } from "@/lib/i18n/LanguageProvider";
-import { Card } from "@/components/ui/card";
 import { TooltipProvider, InfoTip } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils/cn";
 import { CopyButton } from "@/components/order/CopyButton";
@@ -186,7 +185,8 @@ export function OrderSummary({ order }: { order: Order }) {
   // PendingCards decides its own visibility; mirror it here so a band is
   // never drawn above a section that then renders nothing
   const showPending =
-    order.status !== "draft" && ((!order.quotation && !!order.selectedRate) || !!order.awb);
+    (order.status === "review" && !order.quotation && !!order.selectedRate) ||
+    !!order.awb;
   const sections: React.ReactNode[] = [
     <CustomerCard key="customer" order={order} />,
     <ItemsCard key="items" order={order} />,
@@ -208,11 +208,8 @@ export function OrderSummary({ order }: { order: Order }) {
           </React.Fragment>
         ))}
         <div className="mt-8 space-y-4 sm:mt-10">
-          {order.status === "cancelled" && (
-            <Card className="border-danger/40 bg-danger/10 p-4 text-sm text-danger">
-              {t("order.tdCancelledNotice")}
-            </Card>
-          )}
+          {/* the cancelled notice lives in OrderDetail's live tier now — a
+              terminal status is news, not archive material for the record's foot */}
           {isMa && (
             <p className="text-xs text-muted-2">{t("order.tdMaNote")}</p>
           )}
@@ -334,6 +331,7 @@ const pkgTypeLabel = (t: (k: string) => string, value: string | undefined) =>
 
 function ItemsCard({ order }: { order: Order }) {
   const t = useT();
+  const { locale } = useLanguage();
   const data = order.modules.items.data as
     | { currency?: string; packages?: Pkg[] }
     | undefined;
@@ -446,7 +444,7 @@ function ItemsCard({ order }: { order: Order }) {
           <button
             type="button"
             onClick={anyOpen ? collapseAll : expandAll}
-            className="inline-flex items-center gap-1 text-xs text-muted transition-colors hover:text-foreground"
+            className="inline-flex items-center gap-1 rounded-sm text-xs text-muted transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/50"
           >
             {/* swap, never rotate — the shared disclosure idiom */}
             {anyOpen ? (
@@ -483,7 +481,7 @@ function ItemsCard({ order }: { order: Order }) {
           itemCount > 0;
         const summary = hasAny
           ? [
-              dims.weight > 0 && `${formatNumber(dims.weight)}kg`,
+              dims.weight > 0 && `${formatNumber(dims.weight, 1, locale)}kg`,
               (dims.length > 0 || dims.width > 0 || dims.height > 0) &&
                 `${dims.length} × ${dims.width} × ${dims.height}`,
               itemCount > 0 && `${itemCount} ${t("order.itItemsWord")}`,
@@ -498,7 +496,7 @@ function ItemsCard({ order }: { order: Order }) {
               type="button"
               onClick={() => toggle(i)}
               aria-expanded={open}
-              className="flex w-full items-center gap-2 text-left"
+              className="flex w-full items-center gap-2 rounded-sm text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/50"
             >
               {/* swap, never rotate — the shared disclosure idiom */}
               {open ? (
@@ -544,7 +542,7 @@ function ItemsCard({ order }: { order: Order }) {
                     <TipLabel label={t("order.tdChargeable")} tip={t("pkg.chgTooltip")} />
                   }
                 >
-                  {formatNumber(cw, 1)} kg
+                  {formatNumber(cw, 1, locale)} kg
                   {basis === "volumetric" && (
                     <span className="ml-1 text-xs text-muted-2">
                       ({t("order.tdVolumetric")})
@@ -623,30 +621,50 @@ function ItemsCard({ order }: { order: Order }) {
         // step up a size, and the estimate carries its own caveat right under it
         <div className="!border-t-2 !border-t-foreground/80 divide-y divide-border pt-1">
           <Row label={<span className="text-muted">{t("order.itTotalCw")}</span>}>
-            <span className="text-base font-medium">{formatNumber(totalCw, 1)} kg</span>
+            <span className="text-base font-medium">
+              {formatNumber(totalCw, 1, locale)} kg
+            </span>
           </Row>
           <Row label={<span className="text-muted">{t("order.itTotalValue")}</span>}>
             <span className="font-mono text-base font-medium">
               {formatCurrency(totalValue, currency)}
             </span>
           </Row>
-          {totalPrice > 0 && (
-            <div className="py-2">
-              <div className="flex items-start justify-between gap-4">
-                <span className="shrink-0 text-xs font-medium text-foreground">
-                  {t("order.itTotalPrice")}
-                </span>
-                {/* the one lime mark in the record (Marker Rule: fill behind ink) —
-                    the figure a customer comes back to check */}
-                <span className="hero-mark font-mono text-lg font-semibold tabular-nums">
-                  {formatIDR(totalPrice)}
-                </span>
+          {totalPrice > 0 &&
+            (order.quotation ? (
+              // the official quotation owns the answer now (and the mark, up in
+              // its own card) — the estimate stays only as paper trail, demoted
+              // to the ledger's quiet voice so two totals never compete
+              <div className="py-2">
+                <div className="flex items-start justify-between gap-4">
+                  <span className="shrink-0 text-xs text-muted-2">
+                    {t("order.itTotalPrice")}
+                  </span>
+                  <span className="font-mono text-sm tabular-nums text-muted-2">
+                    {formatIDR(totalPrice)}
+                  </span>
+                </div>
+                <p className="mt-1 text-xs leading-relaxed text-muted-2 sm:text-right">
+                  {t("order.tdEstimateSuperseded")}
+                </p>
               </div>
-              <p className="mt-1 text-xs leading-relaxed text-muted-2 sm:text-right">
-                {t("order.itEstimateNote")}
-              </p>
-            </div>
-          )}
+            ) : (
+              <div className="py-2">
+                <div className="flex items-start justify-between gap-4">
+                  <span className="shrink-0 text-xs font-medium text-foreground">
+                    {t("order.itTotalPrice")}
+                  </span>
+                  {/* the one lime mark in the record (Marker Rule: fill behind ink) —
+                      the figure a customer comes back to check */}
+                  <span className="hero-mark font-mono text-lg font-semibold tabular-nums">
+                    {formatIDR(totalPrice)}
+                  </span>
+                </div>
+                <p className="mt-1 text-xs leading-relaxed text-muted-2 sm:text-right">
+                  {t("order.itEstimateNote")}
+                </p>
+              </div>
+            ))}
         </div>
       )}
     </Section>
@@ -687,6 +705,7 @@ function DocTile({
   dataUrl,
   emptyWord,
   dueWord,
+  emptyTone = "warning",
 }: {
   label: string;
   fileName?: string | null;
@@ -695,6 +714,9 @@ function DocTile({
   emptyWord?: string;
   /** optional second line: when the missing doc is actually due */
   dueWord?: string;
+  /** warning while the missing doc is a live to-do; neutral once it's moot
+      (draft, the phase it served has passed, or the order ended) */
+  emptyTone?: "warning" | "neutral";
 }) {
   const t = useT();
   const isImage = !!dataUrl && dataUrl.startsWith("data:image/");
@@ -702,6 +724,7 @@ function DocTile({
     "grid aspect-[4/3] w-full place-items-center overflow-hidden rounded-md border";
   const interactive =
     "border-border bg-surface-2 transition-colors hover:border-border-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/50";
+  const warn = emptyTone === "warning";
 
   const caption = (
     <span className="mt-1.5 block">
@@ -710,9 +733,11 @@ function DocTile({
         <span className="block truncate font-mono text-xs text-muted-2">{fileName}</span>
       ) : (
         <>
-          {/* one state, one colour: not-uploaded is a to-do, so every empty
-              slot speaks warning — the due note stays a muted afterthought */}
-          <span className="block text-xs text-warning">{emptyWord}</span>
+          {/* one state, one colour at a time: while a doc is due, every empty
+              slot speaks warning; once it's moot they all quiet down together */}
+          <span className={cn("block text-xs", warn ? "text-warning" : "text-muted-2")}>
+            {emptyWord}
+          </span>
           {dueWord && <span className="block text-xs text-muted-2">{dueWord}</span>}
         </>
       )}
@@ -722,7 +747,15 @@ function DocTile({
   if (!fileName)
     return (
       <div>
-        <span className={cn(frame, "border-dashed border-warning/50 bg-warning/5 text-warning")}>
+        <span
+          className={cn(
+            frame,
+            "border-dashed",
+            warn
+              ? "border-warning/50 bg-warning/5 text-warning"
+              : "border-border bg-surface-2 text-muted-2",
+          )}
+        >
           <FileText className="size-6" aria-hidden />
         </span>
         {caption}
@@ -802,6 +835,41 @@ function DocTile({
   );
 }
 
+/* A missing doc is a live to-do only while its moment is still ahead: pickup
+   docs until the pickup phase passes, everything else until clearance is done.
+   Draft (nothing expected yet), passed phases, and terminal states read
+   neutral — a delivered shipment has no business shouting about paperwork. */
+const ACTIVE_PHASES = [
+  "review",
+  "quotation",
+  "pickup",
+  "in-transit",
+  "clearance",
+  "delivery",
+] as const;
+
+function docStillDue(noteKey: string | undefined, status: Order["status"]): boolean {
+  const idx = (ACTIVE_PHASES as readonly string[]).indexOf(status);
+  if (idx === -1) return false; // draft / delivered / cancelled
+  if (noteKey === "order.coBeforePickup") return idx <= 2; // …through pickup
+  return idx <= 4; // base + before-clearance docs matter through clearance
+}
+
+/** How many compliance docs are still a live to-do (missing and due now) —
+ *  the number OrderDetail surfaces in the status tier as a link down here. */
+export function dueComplianceDocsCount(order: Order): number {
+  const data = order.modules.compliance.data as
+    | { docs?: Record<string, string> }
+    | undefined;
+  const docs = data?.docs ?? {};
+  const isMa = order.context?.service === "moving-abroad";
+  const specs = (isMa ? EXPORT_DOCS : BFG_DOCS).filter(
+    (d) => !d.personalOnly || order.clearance === "personal",
+  );
+  return specs.filter((d) => !docs[d.key] && docStillDue(d.noteKey, order.status))
+    .length;
+}
+
 function ComplianceCard({ order }: { order: Order }) {
   const t = useT();
   const data = order.modules.compliance.data as
@@ -814,6 +882,7 @@ function ComplianceCard({ order }: { order: Order }) {
   const docs = data?.docs ?? {};
   const docFiles = data?.docFiles ?? {};
   const isMa = order.context?.service === "moving-abroad";
+  const isDraft = order.status === "draft";
   // the same spec the form uses, so the record shows exactly the docs this
   // route asks for (Passenger Goods never sees SKP / Proof of Stay)
   const specs = (isMa ? EXPORT_DOCS : BFG_DOCS).filter(
@@ -834,19 +903,26 @@ function ComplianceCard({ order }: { order: Order }) {
         : undefined;
 
   return (
-    <section>
+    // anchor target for the status-tier "documents still to upload" link
+    <section id="compliance-docs" className="scroll-mt-24">
       <SectionTitle>{t("order.modCompliance")}</SectionTitle>
       <div className="mt-3 grid grid-cols-2 gap-x-4 gap-y-5 sm:grid-cols-3">
-        {entries.map(({ key, label, spec }) => (
-          <DocTile
-            key={key}
-            label={t(label!)}
-            fileName={docs[key] || null}
-            dataUrl={docFiles[key] || null}
-            emptyWord={emptyWord(spec)}
-            dueWord={dueWord(spec)}
-          />
-        ))}
+        {entries.map(({ key, label, spec }) => {
+          const due = docStillDue(spec.noteKey, order.status);
+          return (
+            <DocTile
+              key={key}
+              label={t(label!)}
+              fileName={docs[key] || null}
+              dataUrl={docFiles[key] || null}
+              emptyWord={emptyWord(spec)}
+              // the timing hint helps while it's still ahead (draft included);
+              // once the phase has passed it would just contradict the record
+              dueWord={due || isDraft ? dueWord(spec) : undefined}
+              emptyTone={due ? "warning" : "neutral"}
+            />
+          );
+        })}
         {(data?.otherDocs ?? [])
           .filter((d) => d?.name || d?.file)
           .map((d, i) => (
@@ -856,6 +932,7 @@ function ComplianceCard({ order }: { order: Order }) {
               fileName={d?.file || null}
               dataUrl={d?.fileData || null}
               emptyWord={t("order.tdMissingOptional")}
+              emptyTone={docStillDue(undefined, order.status) ? "warning" : "neutral"}
             />
           ))}
       </div>
@@ -1003,7 +1080,10 @@ function PickupCard({
 function PendingCards({ order }: { order: Order }) {
   const t = useT();
   const rate = order.selectedRate;
-  const showRate = !order.quotation && !!rate;
+  // "waiting for the quotation" is a promise about the future — it may only
+  // be made while the order is actually there (review); once the phase moves
+  // on (or the order ends) the line would contradict every other status signal
+  const showRate = order.status === "review" && !order.quotation && !!rate;
   const showAwb = !!order.awb;
   if (!showRate && !showAwb) return null;
 
@@ -1026,7 +1106,10 @@ function PendingCards({ order }: { order: Order }) {
         <Row
           label={<TipLabel label={t("order.tdAwbSection")} tip={t("order.tdAwbTip")} />}
         >
-          <span className="font-mono font-medium text-foreground">{order.awb}</span>
+          <span className="inline-flex items-center gap-1.5">
+            <span className="font-mono font-medium text-foreground">{order.awb}</span>
+            <CopyButton value={order.awb!} />
+          </span>
         </Row>
       )}
     </Section>

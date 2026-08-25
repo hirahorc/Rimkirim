@@ -602,10 +602,12 @@ const id = {
     clUseRoute: "Pakai jalur {route}",
     clOneWayLead: "Jalur ini tidak bisa diubah lagi.",
     clOneWay: "Pastikan dulu sebelum kamu lanjut.",
-    clPersonalTitle: "Barang Pindahan",
-    clPersonalSubtitle: "Personal Belongings",
-    clPassengerTitle: "Barang Penumpang",
-    clPassengerSubtitle: "Passenger Goods",
+    // the route names are protected product terms (PRODUCT.md): the English
+    // name leads in both languages; the Indonesian gloss rides as subtitle
+    clPersonalTitle: "Personal Belongings",
+    clPersonalSubtitle: "Barang Pindahan",
+    clPassengerTitle: "Passenger Goods",
+    clPassengerSubtitle: "Barang Penumpang",
     clRowTax: "Pajak",
     clRowValueCap: "Batas nilai barang",
     clRowSkp: "SKP dari KBRI / KJRI",
@@ -671,7 +673,7 @@ const id = {
     hubLastSaved: "Terakhir disimpan {when}",
     bookingNumberPending: "Sedang dibuat…",
     tlBadgeCreated: "Dibuat",
-    tlBadgeUpdate: "Update",
+    tlBadgeUpdate: "Pembaruan",
     tlBadgeDone: "Selesai",
     tlBadgeAttention: "Perhatian",
     tlBadgeCancelled: "Dibatalkan",
@@ -774,6 +776,8 @@ const id = {
     tdClearancePending:
       "Proses clearance akan muncul setelah barang tiba di Indonesia. Proses normalnya 3–7 hari kerja.",
     tdCancelledNotice: "Pesanan ini dibatalkan.",
+    tdCancelledBody:
+      "Butuh tahu alasannya, atau mau mengatur pengiriman ulang? Tim kami siap membantu.",
     tdMaNote:
       "Tracking Moving Abroad disiapkan menyusul. Layanan ini masih dalam pengembangan.",
     // attention overlay presets (set by the ops simulator)
@@ -784,7 +788,7 @@ const id = {
     attPickupFailed:
       "Pickup pertama gagal. Tim kami akan mengatur ulang penjemputan.",
     attPickupFailCustomer:
-      "Pickup gagal. Kesalahan di sisi kamu. Pilih opsi: pickup ulang atau drop-off.",
+      "Pickup gagal — kurir belum berhasil mengambil barang di alamatmu. Pilih langkah berikutnya: pickup ulang atau drop-off.",
     attPickupFailFedEx:
       "Pickup gagal karena FedEx. Bukan salahmu: dispute internal, tanpa biaya. Pilih opsi untuk melanjutkan.",
     attNeedsNewAwb:
@@ -905,6 +909,10 @@ const id = {
     quWarehouseFreeNote: "Hari 1–3 gratis",
     quWarehouseFromDay: "Mulai hari ke-4:",
     quApprovedToast: "Quotation disetujui. Pickup akan dijadwalkan.",
+    quApproveConfirmTitle: "Setujui quotation ini?",
+    quApproveConfirmBody:
+      "Dengan menyetujui, kamu mengonfirmasi total tagihan di bawah dan pickup akan dijadwalkan. Kalau masih ada yang perlu diubah, minta revisi dulu.",
+    quApproveConfirmCta: "Ya, setujui",
     // revision flow (revisionModule)
     revTitle: "Revisi Diperlukan",
     revBody: "Selesaikan bagian ini untuk melanjutkan:",
@@ -924,7 +932,7 @@ const id = {
       "Customer sudah drop off. Konfirmasi untuk lanjut ke transit.",
     attPickupScheduled:
       "Pickup telah dijadwalkan. Tim kami akan menjemput di alamatmu.",
-    evPickupFailCustomer: "Pickup gagal: kesalahan customer.",
+    evPickupFailCustomer: "Pickup gagal — barang belum bisa diambil di alamat.",
     evPickupFailFedEx:
       "Pickup gagal: kesalahan FedEx (dispute internal, tanpa biaya).",
     evAwbRequested: "Kamu meminta AWB baru.",
@@ -952,7 +960,7 @@ const id = {
     // pickup status panel (order.pickupFails / dropOff)
     pickStatus: "Status Pickup",
     pickAttempts: "Percobaan pickup",
-    pickFailCustomer: "gagal (customer)",
+    pickFailCustomer: "gagal (di alamat)",
     pickFailFedEx: "gagal (FedEx)",
     pickFailRemaining: "percobaan tersisa",
     pickChoiceTitle: "Pilih langkah berikutnya",
@@ -961,9 +969,13 @@ const id = {
     pickChoiceDropOff: "Pilih drop-off",
     pickChoiceRepickupToast: "Pickup dijadwalkan ulang.",
     pickChoiceDropOffToast: "Drop-off diminta. Cek instruksi di panel pickup.",
+    pickDropOffConfirmTitle: "Lanjut dengan drop-off?",
+    pickDropOffConfirmBody:
+      "Kamu akan mengantar paket sendiri ke lokasi drop-off FedEx terdekat dalam 2 hari. Lewat batas itu, AWB diganti dan penjemputan diatur ulang dari awal.",
+    pickDropOffConfirmCta: "Ya, pilih drop-off",
     pickAwbNeededTitle: "AWB Baru Diperlukan",
     pickAwbNeededBody:
-      "Pickup gagal 3× karena kesalahan di sisi kamu. Minta AWB baru agar kami menerbitkan ulang dan menjadwalkan pickup baru.",
+      "Pickup sudah gagal 3× di alamatmu, jadi jatah percobaannya habis. Minta AWB baru agar kami menerbitkan ulang dan menjadwalkan pickup baru.",
     pickAwbCta: "Minta AWB baru",
     pickAwbRequestedToast: "Permintaan AWB baru dikirim ke tim ops.",
     pickDropOffTitle: "Drop-off diminta",
@@ -1107,6 +1119,9 @@ const id = {
     itPhotoHeight: "Foto tinggi",
     itTotalPrice: "Total estimasi ongkir",
     itEstimateNote: "Estimasi dari tarif yang dipilih × chargeable weight. Angka final ada di quotation resmi.",
+    tdEstimateSuperseded: "Digantikan oleh quotation resmi di atas.",
+    tdDocsTodoOne: "1 dokumen perlu diunggah — lihat daftarnya",
+    tdDocsTodoMany: "{n} dokumen perlu diunggah — lihat daftarnya",
     itTotalValue: "Total nilai barang",
     itTotalCw: "Total chargeable weight",
     pkgBox: "Kardus corrugated",
@@ -2054,6 +2069,8 @@ const en: Messages = {
     tdClearancePending:
       "Clearance status will appear once the goods arrive in Indonesia. The normal process takes 3–7 business days.",
     tdCancelledNotice: "This order was cancelled.",
+    tdCancelledBody:
+      "Need to know why, or want to arrange a re-shipment? Our team is ready to help.",
     tdMaNote:
       "Moving Abroad tracking is coming soon. This service is still in development.",
     // attention overlay presets (set by the ops simulator)
@@ -2064,7 +2081,7 @@ const en: Messages = {
     attPickupFailed:
       "The first pickup failed. Our team will reschedule the pickup.",
     attPickupFailCustomer:
-      "Pickup failed: an issue on your side. Choose: re-pickup or drop-off.",
+      "Pickup failed — the courier couldn't collect at your address. Choose the next step: re-pickup or drop-off.",
     attPickupFailFedEx:
       "Pickup failed due to FedEx. Not your fault: internal dispute, no cost. Choose how to continue.",
     attNeedsNewAwb:
@@ -2185,6 +2202,10 @@ const en: Messages = {
     quWarehouseFreeNote: "Days 1–3 free",
     quWarehouseFromDay: "From day 4:",
     quApprovedToast: "Quotation approved. Pickup will be scheduled.",
+    quApproveConfirmTitle: "Approve this quotation?",
+    quApproveConfirmBody:
+      "Approving confirms the total below, and pickup will be scheduled. If something still needs changing, request a revision first.",
+    quApproveConfirmCta: "Yes, approve",
     // revision flow (revisionModule)
     revTitle: "Revision Required",
     revBody: "Complete this section to continue:",
@@ -2205,7 +2226,8 @@ const en: Messages = {
       "Customer dropped off the package. Confirm to move to transit.",
     attPickupScheduled:
       "Pickup scheduled. Our team will collect at your address.",
-    evPickupFailCustomer: "Pickup failed: customer fault.",
+    evPickupFailCustomer:
+      "Pickup failed — the package couldn't be collected at the address.",
     evPickupFailFedEx:
       "Pickup failed: FedEx fault (internal dispute, no cost).",
     evAwbRequested: "You requested a new AWB.",
@@ -2233,7 +2255,7 @@ const en: Messages = {
     // pickup status panel (order.pickupFails / dropOff)
     pickStatus: "Pickup status",
     pickAttempts: "Pickup attempts",
-    pickFailCustomer: "failed (customer)",
+    pickFailCustomer: "failed (at the address)",
     pickFailFedEx: "failed (FedEx)",
     pickFailRemaining: "attempts remaining",
     pickChoiceTitle: "Choose next step",
@@ -2242,9 +2264,13 @@ const en: Messages = {
     pickChoiceDropOff: "Choose drop-off",
     pickChoiceRepickupToast: "Pickup rescheduled.",
     pickChoiceDropOffToast: "Drop-off requested. Check the instructions in the pickup panel.",
+    pickDropOffConfirmTitle: "Continue with drop-off?",
+    pickDropOffConfirmBody:
+      "You'll bring the package to the nearest FedEx drop-off location yourself within 2 days. Past that deadline, the AWB is replaced and collection starts over.",
+    pickDropOffConfirmCta: "Yes, choose drop-off",
     pickAwbNeededTitle: "New AWB Required",
     pickAwbNeededBody:
-      "The pickup failed 3× due to issues on your side. Request a new AWB so we can re-issue and schedule a new pickup.",
+      "The pickup has failed 3× at your address, so its attempts are used up. Request a new AWB so we can re-issue and schedule a new pickup.",
     pickAwbCta: "Request new AWB",
     pickAwbRequestedToast: "New AWB request sent to the ops team.",
     pickDropOffTitle: "Drop-off requested",
@@ -2381,6 +2407,9 @@ const en: Messages = {
     itPhotoHeight: "Height photo",
     itTotalPrice: "Total estimated shipping",
     itEstimateNote: "Estimate from the selected rate × chargeable weight. The final figure is in the official quotation.",
+    tdEstimateSuperseded: "Superseded by the official quotation above.",
+    tdDocsTodoOne: "1 document still needs uploading — see the list",
+    tdDocsTodoMany: "{n} documents still need uploading — see the list",
     itTotalValue: "Total declared value",
     itTotalCw: "Total chargeable weight",
     pkgBox: "Corrugated box",

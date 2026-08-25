@@ -21,6 +21,12 @@ import {
 import { useLanguage, useT } from "@/lib/i18n/LanguageProvider";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { NewAwbDialog } from "./NewAwbDialog";
 import { ReschedulePickupDialog } from "./ReschedulePickupDialog";
 
@@ -35,6 +41,7 @@ export function PickupPanel({ order }: { order: Order }) {
   const confirmDropOff = useOrderStore((s) => s.confirmDropOff);
   const [awbOpen, setAwbOpen] = React.useState(false);
   const [reschedOpen, setReschedOpen] = React.useState(false);
+  const [dropConfirmOpen, setDropConfirmOpen] = React.useState(false);
 
   if (order.status !== "pickup") return null;
 
@@ -142,15 +149,12 @@ export function PickupPanel({ order }: { order: Order }) {
               {t("order.pickChoiceRepickup")}
               <ChevronRight className="ml-auto size-4 shrink-0 text-muted-2" />
             </button>
+            {/* both doors open something to read first: the sibling opens the
+                reschedule dialog, this one a confirm sheet — tapping a row
+                that looks like navigation must never commit on its own */}
             <button
               type="button"
-              onClick={() => {
-                chooseDropOff(order.id);
-                const now = useOrderStore
-                  .getState()
-                  .orders.find((o) => o.id === order.id);
-                if (now?.dropOff) toast.info(t("order.pickChoiceDropOffToast"));
-              }}
+              onClick={() => setDropConfirmOpen(true)}
               className="flex w-full items-center gap-2.5 rounded-md border border-border bg-surface px-3.5 py-3 text-left text-sm font-medium text-foreground transition-colors hover:border-border-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/50"
             >
               <Store className="size-4 shrink-0 text-muted-2" />
@@ -160,6 +164,34 @@ export function PickupPanel({ order }: { order: Order }) {
           </div>
         </div>
       )}
+
+      <Dialog open={dropConfirmOpen} onOpenChange={setDropConfirmOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>{t("order.pickDropOffConfirmTitle")}</DialogTitle>
+          </DialogHeader>
+          <p className="text-sm leading-relaxed text-muted">
+            {t("order.pickDropOffConfirmBody")}
+          </p>
+          <div className="mt-4 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+            <Button variant="ghost" onClick={() => setDropConfirmOpen(false)}>
+              {t("order.baCancel")}
+            </Button>
+            <Button
+              onClick={() => {
+                chooseDropOff(order.id);
+                setDropConfirmOpen(false);
+                const now = useOrderStore
+                  .getState()
+                  .orders.find((o) => o.id === order.id);
+                if (now?.dropOff) toast.info(t("order.pickChoiceDropOffToast"));
+              }}
+            >
+              <Store /> {t("order.pickDropOffConfirmCta")}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {needsAwb && (
         <div className="mt-3 rounded-md border border-warning/40 bg-warning/10 p-4">

@@ -101,7 +101,10 @@ export function StatusStepper({ status }: { status: OrderPhase }) {
             </div>
             <p
               className={cn(
-                "mt-1.5 px-0.5 text-center text-[10px] leading-tight",
+                // text-xs, not Micro: these are functional state labels, and
+                // 12px is the smallest on-ramp step that clears the 11px
+                // legibility floor (DESIGN.md removed 11px as drift)
+                "mt-1.5 px-0.5 text-center text-xs leading-tight",
                 current && "font-semibold text-foreground",
                 done && "font-medium text-foreground",
                 !done && !current && "text-muted-2",
