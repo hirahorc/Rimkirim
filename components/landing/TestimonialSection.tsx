@@ -23,27 +23,15 @@ import {
 function Stars({
   value,
   starClass = "size-3.5",
-  label,
-  tone = "ink",
 }: {
   value: number;
   starClass?: string;
-  label?: string;
-  /** `light` for stars sitting on the ink hook card */
-  tone?: "ink" | "light";
 }) {
-  const filledClass =
-    tone === "light"
-      ? "fill-background text-background"
-      : "fill-foreground text-foreground";
-  const emptyClass =
-    tone === "light" ? "fill-none text-background/30" : "fill-none text-border-strong";
+  const filledClass = "fill-foreground text-foreground";
+  const emptyClass = "fill-none text-border-strong";
   return (
-    <span
-      className="inline-flex items-center gap-0.5"
-      // inside a labelled link the stars are redundant to a screen reader
-      {...(label ? { role: "img", "aria-label": label } : { "aria-hidden": true })}
-    >
+    // inside the labelled rating link the stars are redundant to a screen reader
+    <span className="inline-flex items-center gap-0.5" aria-hidden>
       {Array.from({ length: 5 }).map((_, i) => {
         // a 4.9 must not draw as five solid marks — the fifth star carries the
         // remainder as a real partial fill, clipped from the left
@@ -225,7 +213,7 @@ export function TestimonialSection() {
     >
       <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6">
         <div className="text-center">
-          <p className="text-xs font-medium uppercase tracking-[0.14em] text-muted">
+          <p className="font-display text-xs font-medium uppercase tracking-[0.14em] text-muted">
             {t("testimonial.eyebrow")}
           </p>
           <h2
@@ -280,20 +268,18 @@ export function TestimonialSection() {
             item={featured}
             className="w-[78%] shrink-0 snap-start sm:hidden"
           />
-          {rest.map(({ name, rating, quote, origin, affiliation, highlights }) => (
+          {rest.map(({ name, quote, origin, affiliation, highlights }) => (
             <Card
               key={name}
               id={testimonialAnchor(name)}
               className="testi-card flex w-[78%] shrink-0 snap-start scroll-mt-24 break-inside-avoid flex-col p-5 transition-colors hover:border-border-strong sm:mb-4 sm:w-auto sm:shrink"
             >
-              {/* every card opens on the same line: stars, then quote, then the
+              {/* every card opens on the same line: quote first, then the
                   route. The slides are stretched to the tallest card, and the
                   slack is spent at the foot (mt-auto on the attribution) rather
                   than by re-centring each review — centring made the first line
                   land at a different height on every swipe. */}
-              <Stars value={rating} starClass="size-3.5" label={`${rating}/5`} />
-
-              <blockquote className="mt-3 whitespace-pre-line text-sm leading-relaxed text-foreground">
+              <blockquote className="whitespace-pre-line text-sm leading-relaxed text-foreground">
                 {highlightQuote(quote, highlights)}
               </blockquote>
 

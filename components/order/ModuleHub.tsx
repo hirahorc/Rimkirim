@@ -177,7 +177,7 @@ export function ModuleHub() {
             so it is stated, not offered for editing */}
         {clearance && context?.service !== "moving-abroad" && (
           <p className="mt-3 text-sm">
-            <span className="text-xs font-medium uppercase tracking-[0.04em] text-muted-2">
+            <span className="font-display text-xs font-medium uppercase tracking-[0.04em] text-muted-2">
               {t("order.hubRouteLabel")}
             </span>{" "}
             <span className="font-medium text-foreground">
@@ -206,7 +206,7 @@ export function ModuleHub() {
           document) in one quiet strip, so the body below is only the work */}
       <Card className="mb-6 grid divide-y divide-border p-0 sm:grid-cols-2 sm:divide-x sm:divide-y-0">
         <div className="px-4 py-3 sm:px-5">
-          <p className="text-xs font-medium uppercase tracking-wide text-muted-2">
+          <p className="font-display text-xs font-medium uppercase tracking-wide text-muted-2">
             {t("order.bookingNumberLabel")}
           </p>
           <div className="mt-1 flex items-center gap-2">
@@ -222,7 +222,7 @@ export function ModuleHub() {
           </div>
         </div>
         <div className="px-4 py-3 sm:px-5">
-          <p className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-muted-2">
+          <p className="flex items-center gap-1.5 font-display text-xs font-medium uppercase tracking-wide text-muted-2">
             <FileText className="size-3.5" /> {t("order.packingListTitle")}
             {/* "created" only when we made it; a code the user typed is just their code */}
             {packingCode && !answers.packingCode?.trim() && (

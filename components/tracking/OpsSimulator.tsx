@@ -93,7 +93,7 @@ export function OpsSimulator({ order }: { order: Order }) {
     <Card className="border-info/40 bg-info/5 p-5">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="min-w-0">
-          <p className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-info">
+          <p className="flex items-center gap-1.5 font-display text-xs font-semibold uppercase tracking-wide text-info">
             <Wrench className="size-3.5" /> {t("ops.title")}
           </p>
           <Link

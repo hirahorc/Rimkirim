@@ -91,7 +91,7 @@ export function SpecialRateCard({
             {tier.display}
           </span>
           {tier.flat && (
-            <span className="rounded-full border border-border bg-surface-2 px-2 py-0.5 text-[10px] uppercase tracking-wide text-muted">
+            <span className="rounded-full border border-border bg-surface-2 px-2 py-0.5 font-display text-[10px] uppercase tracking-wide text-muted">
               {t("special.flat")}
             </span>
           )}

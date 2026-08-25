@@ -11,7 +11,7 @@ export function EnvBadge() {
   return (
     <div
       aria-hidden
-      className="pointer-events-none fixed bottom-4 left-4 z-50 select-none rounded-full border border-info/25 bg-info/15 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-info shadow-float"
+      className="pointer-events-none fixed bottom-4 left-4 z-50 select-none rounded-full border border-info/25 bg-info/15 px-3 py-1 font-display text-xs font-semibold uppercase tracking-wide text-info shadow-float"
     >
       {APP_ENV}
     </div>

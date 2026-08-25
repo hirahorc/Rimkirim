@@ -3,7 +3,7 @@
 /* ------------------------------------------------------------------ */
 /*  Rimkirim design system — LIGHT MODE ONLY  ("The Open Desk")        */
 /*  Brand accent: #C1FF00 (lime) — used as a FILL, never as text.      */
-/*  Space Grotesk (display) + Inter (body) + JetBrains Mono (figures). */
+/*  Space Grotesk (display) + Geist (body) + Geist Mono (figures). */
 /* ------------------------------------------------------------------ */
 
 :root {
@@ -69,9 +69,9 @@
   --color-danger: var(--danger);
   --color-info: var(--info);
 
-  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
-  --font-display: var(--font-space-grotesk), var(--font-inter), sans-serif;
-  --font-mono: var(--font-jetbrains-mono), ui-monospace, SFMono-Regular, Menlo,
+  --font-sans: var(--font-geist), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-space-grotesk), var(--font-geist), sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo,
     monospace;
 
   /* xs exists because radius clamps to half the shorter side: on a 24px chip
@@ -723,7 +723,7 @@ body {
 .nav-expat:hover,
 .nav-expat:focus-visible {
   background-position: 100% 50%;
-  /* Inter is a variable font, so the weight glides rather than snaps */
+  /* Geist is a variable font, so the weight glides rather than snaps */
   font-weight: 600;
 }
 @media (prefers-reduced-motion: no-preference) {

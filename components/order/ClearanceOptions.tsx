@@ -194,7 +194,7 @@ export function ClearanceOptions() {
           >
             {t(`${PREFIX[k]}Title`)}
           </span>
-          <span className="mt-1 block text-xs font-medium uppercase tracking-[0.04em] text-muted-2">
+          <span className="mt-1 block font-display text-xs font-medium uppercase tracking-[0.04em] text-muted-2">
             {t(`${PREFIX[k]}Subtitle`)}
           </span>
         </span>
@@ -240,7 +240,7 @@ export function ClearanceOptions() {
   };
 
   const rowLabel = (row: Row) => (
-    <p className="mb-1 flex items-center gap-1.5 text-xs font-medium uppercase tracking-[0.04em] text-muted-2">
+    <p className="mb-1 flex items-center gap-1.5 font-display text-xs font-medium uppercase tracking-[0.04em] text-muted-2">
       {t(row.labelKey)}
       {"tipKey" in row && (
         // the tip's tap must not double as "pick this card"

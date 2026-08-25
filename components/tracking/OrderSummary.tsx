@@ -82,7 +82,7 @@ function SubGroup({
 }) {
   return (
     <div>
-      <p className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-muted-2">
+      <p className="mb-1.5 font-display text-xs font-semibold uppercase tracking-wide text-muted-2">
         {label}
       </p>
       <div className="divide-y divide-border">{children}</div>

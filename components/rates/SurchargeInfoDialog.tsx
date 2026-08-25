@@ -183,7 +183,7 @@ function CostRowItem({ row, index }: { row: CostRow; index: number }) {
         )}
 
         <div className="mt-3 flex flex-wrap items-baseline gap-x-2 gap-y-0.5 border-t border-border/60 pt-2.5">
-          <span className="text-xs font-medium uppercase tracking-wide text-muted-2">
+          <span className="font-display text-xs font-medium uppercase tracking-wide text-muted-2">
             {t("surcharge.biaya")}
           </span>
           <span className="text-sm font-semibold text-foreground">

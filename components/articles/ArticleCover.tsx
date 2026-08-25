@@ -33,7 +33,7 @@ export function ArticleCover({
         <>
           <CoverPlaceholder slug={article.slug} title={article.title} />
           {missingLabel && process.env.NODE_ENV !== "production" && (
-            <span className="absolute left-3 top-3 rounded-full border border-warning/40 bg-background/90 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-warning">
+            <span className="absolute left-3 top-3 rounded-full border border-warning/40 bg-background/90 px-2 py-0.5 font-display text-[10px] font-medium uppercase tracking-wide text-warning">
               {missingLabel}
             </span>
           )}

@@ -114,7 +114,7 @@ export function ComplianceForm() {
                     {d.required && <span className="ml-0.5 text-danger">*</span>}
                   </span>
                   {d.noteKey && (
-                    <span className="rounded-full border border-border bg-surface-2 px-2 py-0.5 text-[10px] text-muted-2">
+                    <span className="rounded-full border border-border bg-surface-2 px-2 py-0.5 font-display text-[10px] text-muted-2">
                       {t(d.noteKey)}
                     </span>
                   )}
