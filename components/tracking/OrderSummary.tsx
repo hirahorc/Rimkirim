@@ -1,7 +1,8 @@
 "use client";
 
 import * as React from "react";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, ChevronUp } from "lucide-react";
+import { CollapseHeight } from "@/components/ui/disclosure";
 import { useT, useLanguage } from "@/lib/i18n/LanguageProvider";
 import { Card } from "@/components/ui/card";
 import { TooltipProvider, InfoTip } from "@/components/ui/tooltip";
@@ -420,9 +421,12 @@ function ItemsCard({ order }: { order: Order }) {
             onClick={anyOpen ? collapseAll : expandAll}
             className="inline-flex items-center gap-1 text-xs text-muted transition-colors hover:text-foreground"
           >
-            <ChevronDown
-              className={cn("size-3.5 transition-transform", !anyOpen && "-rotate-90")}
-            />
+            {/* swap, never rotate — the shared disclosure idiom */}
+            {anyOpen ? (
+              <ChevronUp className="size-3.5" />
+            ) : (
+              <ChevronDown className="size-3.5" />
+            )}
             {anyOpen ? t("order.itCollapseAll") : t("order.itExpandAll")}
           </button>
         </div>
@@ -469,12 +473,12 @@ function ItemsCard({ order }: { order: Order }) {
               aria-expanded={open}
               className="flex w-full items-center gap-2 text-left"
             >
-              <ChevronDown
-                className={cn(
-                  "size-4 shrink-0 text-muted transition-transform",
-                  !open && "-rotate-90",
-                )}
-              />
+              {/* swap, never rotate — the shared disclosure idiom */}
+              {open ? (
+                <ChevronUp className="size-4 shrink-0 text-muted" />
+              ) : (
+                <ChevronDown className="size-4 shrink-0 text-muted" />
+              )}
               <span className="shrink-0 text-sm font-medium text-foreground">
                 {t("order.itPackageN")} {i + 1}
               </span>
@@ -482,7 +486,9 @@ function ItemsCard({ order }: { order: Order }) {
                   scanned is the line you expanded */}
               <span className="truncate text-xs text-muted-2">{summary}</span>
             </button>
-            {open && (
+            {/* body stays mounted and collapses with the shared disclosure
+                motion (DESIGN.md, "The disclosure open") */}
+            <CollapseHeight open={open}>
               <div className="mt-1">
                 <Row label={t("order.itPackaging")}>{pkgTypeLabel(t, p?.packaging)}</Row>
                 <Row label={t("order.tdDimensions")}>
@@ -562,7 +568,7 @@ function ItemsCard({ order }: { order: Order }) {
                   </div>
                 )}
               </div>
-            )}
+            </CollapseHeight>
           </div>
         );
       })}

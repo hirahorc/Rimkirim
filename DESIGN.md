@@ -380,7 +380,11 @@ one as drift.
   10px across `entry 0% → entry 45%`, so cards arrive as they enter rather than all at once on
   load. Same guards as the settle — `@supports (animation-timeline: view())` plus
   `prefers-reduced-motion: no-preference`.
-- **The disclosure open** (FAQ accordion, `FaqDisclosure`): the answer's height is the only
+- **The disclosure open** (`Disclosure` in `components/ui` — the one accordion idiom, shared by
+  the /faq page and the article FAQs so they cannot drift; its controlled sibling
+  `CollapseHeight` carries the identical motion to every state-driven collapsible — the package
+  rows in the order form and tracking summary, and the article ToC — and marks the closed region
+  `inert` so hidden form fields can never be tabbed into): the answer's height is the only
   animated property — no fade, no slide — on the system easing, and the *duration is computed
   from the content height* (Material's `getAutoHeightDuration`: a short panel snaps at ~200ms, a
   long one glides at ~330ms, so perceived speed stays constant where a fixed 300ms cannot).
