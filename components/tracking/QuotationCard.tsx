@@ -15,6 +15,7 @@ import {
   ChevronUp,
 } from "lucide-react";
 import { useOrderStore, type Order } from "@/lib/store/useOrderStore";
+import { CollapseHeight } from "@/components/ui/disclosure";
 import { useLanguage, useT } from "@/lib/i18n/LanguageProvider";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -126,7 +127,9 @@ export function QuotationCard({ order }: { order: Order }) {
             )}
           </button>
 
-          {breakdownOpen && (
+          {/* the shared disclosure motion (auto-duration height), not a snap —
+              the same idiom every state-driven collapsible on the page speaks */}
+          <CollapseHeight open={breakdownOpen}>
           <div id="quotation-breakdown" className="mt-3 space-y-3">
             <div className="flex items-baseline justify-between gap-3 text-sm">
               <span className="text-muted">
@@ -209,7 +212,7 @@ export function QuotationCard({ order }: { order: Order }) {
               <span className="font-mono tabular-nums">{formatIDR(qu.total)}</span>
             </div>
           </div>
-          )}
+          </CollapseHeight>
         </div>
 
         {/* Information — shown for transparency but NOT part of the payable total */}

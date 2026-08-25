@@ -97,7 +97,15 @@
 
 html {
   color-scheme: light;
-  scroll-behavior: smooth;
+}
+/* Same-page anchors travel instead of teleporting (hero nav, the order
+   page's docs-todo link). Route transitions stay instant: the layout's
+   data-scroll-behavior="smooth" tells Next 16 to force auto during SPA
+   navigations. Reduced motion gets the plain jump. */
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
 }
 
 body {
@@ -527,13 +535,17 @@ body {
       box-shadow: 0 0 0 3px transparent;
     }
   }
-  .testi-card:target {
+  /* .target-flash generalizes the idiom to any deep-link landing zone
+     (the order page's compliance section, via the docs-todo link) */
+  .testi-card:target,
+  .target-flash:target {
     animation: target-flash 1.2s var(--ease-out-soft) both;
   }
 }
 @media (prefers-reduced-motion: reduce) {
   /* the accessible equivalent of the flash: a still ring while targeted */
-  .testi-card:target {
+  .testi-card:target,
+  .target-flash:target {
     box-shadow: 0 0 0 2px var(--border-strong);
   }
 }

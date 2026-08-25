@@ -904,8 +904,14 @@ function ComplianceCard({ order }: { order: Order }) {
         : undefined;
 
   return (
-    // anchor target for the status-tier "documents still to upload" link
-    <section id="compliance-docs" className="scroll-mt-24">
+    // anchor target for the status-tier "documents still to upload" link:
+    // the landing answers with the system's arrival flash (:target, colour
+    // channel only), and tabIndex lets focus land here for keyboard/SR users
+    <section
+      id="compliance-docs"
+      tabIndex={-1}
+      className="target-flash -m-2 scroll-mt-24 rounded-md p-2 outline-none"
+    >
       <SectionTitle>{t("order.modCompliance")}</SectionTitle>
       <div className="mt-3 grid grid-cols-2 gap-x-4 gap-y-5 sm:grid-cols-3">
         {entries.map(({ key, label, spec }) => {

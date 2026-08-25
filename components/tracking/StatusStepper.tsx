@@ -52,16 +52,20 @@ export function StatusStepper({ status }: { status: OrderPhase }) {
             className="flex flex-1 flex-col items-center"
           >
             <div className="flex w-full items-center">
+              {/* colour transitions on rail + node so a live phase advance
+                  (approving the quotation flips the store on this very page)
+                  reads as the rail lighting up, not a repaint — colour
+                  channel only, inert on plain page loads */}
               <span
                 className={cn(
-                  "h-0.5 flex-1",
+                  "h-0.5 flex-1 transition-colors duration-300",
                   i === 0 && "bg-transparent",
                   i > 0 && (done || current ? "bg-brand" : "bg-border"),
                 )}
               />
               <span
                 className={cn(
-                  "grid size-6 shrink-0 place-items-center rounded-full border-2",
+                  "grid size-6 shrink-0 place-items-center rounded-full border-2 transition-colors duration-300",
                   (done || arrived) && "border-brand bg-brand text-brand-ink",
                   // on daylight a lime hairline reads ~1.5:1, so the live step
                   // is framed in ink and marked with a lime core instead
@@ -93,7 +97,7 @@ export function StatusStepper({ status }: { status: OrderPhase }) {
               </span>
               <span
                 className={cn(
-                  "h-0.5 flex-1",
+                  "h-0.5 flex-1 transition-colors duration-300",
                   i === PHASE_STEPS.length - 1 && "bg-transparent",
                   i < PHASE_STEPS.length - 1 &&
                     (done || current ? "bg-brand" : "bg-border"),
