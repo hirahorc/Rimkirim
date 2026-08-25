@@ -1,11 +1,12 @@
 "use client";
 
 import * as React from "react";
-import { ChevronDown, Receipt } from "lucide-react";
+import { ChevronDown, ChevronUp, Receipt } from "lucide-react";
 import type { VendorQuote } from "@/lib/pricing/quote";
 import { formatIDR, formatNumber } from "@/lib/utils/currency";
 import { useT } from "@/lib/i18n/LanguageProvider";
 import { cn } from "@/lib/utils/cn";
+import { CollapseHeight } from "@/components/ui/disclosure";
 
 export function PriceBreakdown({
   quote,
@@ -22,17 +23,19 @@ export function PriceBreakdown({
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
+        aria-expanded={open}
         className="flex w-full items-center justify-between px-5 py-3 text-sm text-muted transition-colors hover:text-foreground"
       >
         <span className="flex items-center gap-2">
           <Receipt className="size-4" /> {t("breakdown.rincianHarga")}
         </span>
-        <ChevronDown
-          className={cn("size-4 transition-transform", open && "rotate-180")}
-        />
+        {open ? (
+          <ChevronUp className="size-4" aria-hidden />
+        ) : (
+          <ChevronDown className="size-4" aria-hidden />
+        )}
       </button>
-      {open && (
-        <div className="animate-fade-up space-y-2 px-5 pb-4 text-sm">
+      <CollapseHeight open={open} className="space-y-2 px-5 pb-4 text-sm">
           <Row
             label={`${t("breakdown.baseRate")} (${formatIDR(quote.baseRatePerKg)}/kg × ${formatNumber(chargeableWeight)} kg)`}
             value={formatIDR(quote.baseRate)}
@@ -54,8 +57,7 @@ export function PriceBreakdown({
               {formatIDR(quote.total)}
             </span>
           </div>
-        </div>
-      )}
+      </CollapseHeight>
     </div>
   );
 }

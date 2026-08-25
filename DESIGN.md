@@ -372,6 +372,11 @@ element that moves (the Google-rating link's arrow, a 1px diagonal nudge) is a d
 exception written down at the point of use, carried by `motion-safe` and falling back to a
 colour shift under `motion-reduce` so the affordance survives with animation off.
 
+**Press is the second sanctioned geometry channel.** Every button scales to 0.98 while held
+(`motion-safe:active:scale-[0.98]`, 150ms on the system easing) — feedback for a press the
+user is already making, never decoration. Under reduced motion the press answers in colour
+only.
+
 **Earned motion.** A milestone the user just reached may play one animation, once: the check
 that draws itself on a just-completed module (`check-draw`), the hub progress bar filling to
 its new count, a status banner easing in when its state changes (`banner-enter`), the
@@ -413,6 +418,8 @@ one as drift.
   down↔up, never rotated, and it swaps on the click, not after the motion; the open header
   carries no colour change — the icon alone marks the state. Instant under reduced motion.
   Rows keep the panel-fill hover idiom, one step harder on focus-visible.
+- **The segmented thumb** slides between segments (`transform`/`width`, 200ms, system easing) —
+  the state's spatial story, not decoration; it jumps instantly under reduced motion.
 - **The floating verdicts** (the one idle loop, `.hero-verdict-float`): three one-word customer
   verdicts sit in the page gutters beside the hero headline (`xl` and up — below that the gutter is
   too narrow to hold a word) and drift ±9px on a 7s/8.5s/10s cycle, phase-shifted by negative

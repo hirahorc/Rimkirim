@@ -27,6 +27,7 @@ import { INDONESIA } from "@/lib/data/countries";
 import { totalChargeableWeight } from "@/lib/utils/chargeable-weight";
 import { formatNumber } from "@/lib/utils/currency";
 import { SegmentedRoot, SegmentedItem } from "@/components/ui/toggle-group";
+import { CollapseHeight } from "@/components/ui/disclosure";
 import { Input, Label, FieldError } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -284,9 +285,11 @@ export function ShipmentCalculator() {
           </div>
         </div>
 
-        {/* Advance-only: packages */}
-        {mode === "advance" && (
-          <div className="relative animate-fade-up border-t border-border p-5 sm:p-6">
+        {/* Advance-only: packages — stays mounted; CollapseHeight animates the
+            reveal (DESIGN.md, "The disclosure open") and marks the closed
+            region inert so hidden fields can't be tabbed into */}
+        <CollapseHeight open={mode === "advance"}>
+          <div className="relative border-t border-border p-5 sm:p-6">
             <div className="mb-3 flex items-center justify-between">
               <h3 className="flex items-center gap-2 font-display text-sm font-semibold">
                 <PackagePlus className="size-4 text-foreground" /> {t("calc.detailPaket")}
@@ -341,7 +344,7 @@ export function ShipmentCalculator() {
               <Plus /> {t("calc.tambahPaket")}
             </Button>
           </div>
-        )}
+        </CollapseHeight>
 
         {/* Submit */}
         <div className="relative border-t border-border p-5 sm:p-6">
