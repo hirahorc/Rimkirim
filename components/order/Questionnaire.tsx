@@ -181,7 +181,7 @@ function Question({
     // id lets the clearance step deep-link back to the exact question
     <Card ref={ref} id={`q${n}`} className="scroll-mt-28 animate-fade-up p-5">
       {note && (
-        <p className="mb-1 text-xs font-medium uppercase tracking-[0.04em] text-muted-2">
+        <p className="mb-1 font-display text-xs font-medium uppercase tracking-[0.04em] text-muted-2">
           {note}
         </p>
       )}
@@ -497,7 +497,7 @@ export function Questionnaire() {
               )}
             </p>
             {maxQuestions > 1 && (
-              <p className="mt-3 text-xs font-medium uppercase tracking-[0.04em] text-muted-2">
+              <p className="mt-3 font-display text-xs font-medium uppercase tracking-[0.04em] text-muted-2">
                 {t("order.qProgress")
                   .replace("{n}", String(answeredShown))
                   .replace("{max}", String(maxQuestions))}
@@ -809,7 +809,7 @@ function OutcomeScreen({
       role="region"
       aria-live="polite"
     >
-      <p className="text-xs font-medium uppercase tracking-[0.04em] text-muted-2">
+      <p className="font-display text-xs font-medium uppercase tracking-[0.04em] text-muted-2">
         {eyebrow}
       </p>
       <div className="mt-3 flex items-start gap-4">

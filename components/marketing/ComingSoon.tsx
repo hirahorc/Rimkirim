@@ -30,11 +30,11 @@ export function ComingSoon({
       <span className="grid size-14 place-items-center rounded-md bg-brand/15 text-brand-ink">
         <Icon className="size-7" />
       </span>
-      <span className="mt-6 inline-flex items-center gap-2 rounded-full border border-brand/25 bg-brand/15 px-3 py-1 text-xs font-medium text-foreground">
+      <span className="mt-6 inline-flex items-center gap-2 rounded-full border border-brand/25 bg-brand/15 px-3 py-1 font-display text-xs font-medium text-foreground">
         <span className="size-1.5 rounded-full bg-brand" />
         {t("comingSoon.tag")}
       </span>
-      <p className="mt-6 text-xs font-medium uppercase tracking-wider text-muted-2">
+      <p className="mt-6 font-display text-xs font-medium uppercase tracking-wider text-muted-2">
         {t(eyebrowKey)}
       </p>
       <h1 className="mt-2 font-display text-3xl font-bold tracking-tight sm:text-4xl">

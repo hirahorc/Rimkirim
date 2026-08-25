@@ -131,7 +131,7 @@ export function Hero() {
                       still separates parent and child. First name only: the full
                       name doesn't fit the gutter on one line, and it lives in
                       the aria-label and on the card this links to. */}
-                  <span className="mt-2 block text-xs uppercase tracking-[0.04em] text-muted-2 transition-colors duration-200 group-hover:text-muted group-active:text-foreground">
+                  <span className="mt-2 block font-display text-xs uppercase tracking-[0.04em] text-muted-2 transition-colors duration-200 group-hover:text-muted group-active:text-foreground">
                     {v.name.split(/\s+/)[0]} · {t(v.origin)}
                   </span>
                 </div>

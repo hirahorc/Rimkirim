@@ -270,7 +270,7 @@ function FormBody({
 
         {existing && (
           <Card className="mb-4 p-5">
-            <p className="text-xs font-medium uppercase tracking-wide text-muted-2">
+            <p className="font-display text-xs font-medium uppercase tracking-wide text-muted-2">
               {t("pl.codeLabel")}
             </p>
             <div className="mt-1 flex items-center gap-2">

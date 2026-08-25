@@ -55,7 +55,7 @@ export function PackageRow({
   return (
     <div className="rounded-sm border border-border bg-surface-2/60 p-4">
       <div className="mb-3 flex items-center justify-between">
-        <span className="text-xs font-semibold uppercase tracking-wider text-muted">
+        <span className="font-display text-xs font-semibold uppercase tracking-wider text-muted">
           {t("pkg.paket")} {index + 1}
         </span>
         {removable && (

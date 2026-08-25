@@ -185,7 +185,7 @@ function PackingListCard({
             {pl.code}
             <CopyButton value={pl.code} />
             {pl.source && (
-              <span className="inline-flex items-center gap-1 rounded-full bg-surface-2 px-2 py-0.5 font-sans text-xs font-medium text-muted">
+              <span className="inline-flex items-center gap-1 rounded-full bg-surface-2 px-2 py-0.5 font-display text-xs font-medium text-muted">
                 <Package className="size-3" /> {t("pl.fromOrder")}
                 {pl.source.bookingNumber && (
                   <span className="font-mono">{pl.source.bookingNumber}</span>

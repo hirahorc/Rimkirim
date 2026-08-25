@@ -116,7 +116,7 @@ export function QuotationCard({ order }: { order: Order }) {
             onClick={() => setBreakdownOpen((v) => !v)}
             aria-expanded={breakdownOpen}
             aria-controls="quotation-breakdown"
-            className="flex w-full items-center justify-between gap-2 text-xs font-medium uppercase tracking-wide text-muted-2 transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/40"
+            className="flex w-full items-center justify-between gap-2 font-display text-xs font-medium uppercase tracking-wide text-muted-2 transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/40"
           >
             {t("order.quSecBreakdown")}
             {/* swap, never rotate — the shared disclosure idiom */}
@@ -217,7 +217,7 @@ export function QuotationCard({ order }: { order: Order }) {
 
         {/* Information — shown for transparency but NOT part of the payable total */}
         <div className="mt-6 border-t border-dashed border-border pt-5">
-          <p className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-muted-2">
+          <p className="flex items-center gap-1.5 font-display text-xs font-medium uppercase tracking-wide text-muted-2">
             <Info className="size-3.5" />
             {t("order.quSecInfo")}
           </p>

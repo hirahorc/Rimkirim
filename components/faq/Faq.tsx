@@ -140,7 +140,7 @@ export function Faq() {
     <section id="faq" className="bg-background">
       <div className="mx-auto max-w-3xl px-4 py-16 sm:px-6 sm:py-20">
         <header className="text-center">
-          <p className="text-xs font-medium uppercase tracking-wider text-muted-2">
+          <p className="font-display text-xs font-medium uppercase tracking-wider text-muted-2">
             {t("faq.eyebrow")}
           </p>
           <h1 className="mt-2 font-display text-2xl font-bold tracking-tight sm:text-3xl">
@@ -221,7 +221,7 @@ export function Faq() {
               <div className="mt-8 space-y-12">
                 {filtered.map((cat) => (
                   <div key={cat.slug}>
-                    <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-2">
+                    <h2 className="font-display text-xs font-semibold uppercase tracking-wider text-muted-2">
                       {cat.name}
                     </h2>
                     <div className="mt-1 divide-y divide-border">
@@ -248,7 +248,7 @@ export function Faq() {
             <div className="mt-10 space-y-12">
               {tab.categories.map((cat) => (
                 <div key={cat.slug}>
-                  <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-2">
+                  <h2 className="font-display text-xs font-semibold uppercase tracking-wider text-muted-2">
                     {cat.name}
                   </h2>
                   <div className="mt-1 divide-y divide-border">

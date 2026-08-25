@@ -109,7 +109,7 @@ export function StatusStepper({ status }: { status: OrderPhase }) {
                 // text-xs, not Micro: these are functional state labels, and
                 // 12px is the smallest on-ramp step that clears the 11px
                 // legibility floor (DESIGN.md removed 11px as drift)
-                "mt-1.5 px-0.5 text-center text-xs leading-tight",
+                "mt-1.5 px-0.5 text-center font-display text-xs leading-tight",
                 // below sm seven labels have no room to breathe: only the live
                 // step names itself (with its n/7 place); the rest stay for
                 // screen readers and return visually from sm up

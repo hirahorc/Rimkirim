@@ -371,7 +371,7 @@ function PackageBlock({
           ) : (
             <ChevronDown className="size-4 shrink-0 text-muted" />
           )}
-          <span className="shrink-0 text-xs font-semibold uppercase tracking-wider text-muted-2">
+          <span className="shrink-0 font-display text-xs font-semibold uppercase tracking-wider text-muted-2">
             {t("order.itPackageN")} {index + 1}
           </span>
           {!open && (
@@ -441,7 +441,7 @@ function PackageBlock({
             return (
               <div key={f.id} className="rounded-sm border border-border bg-surface-2/60 p-4">
                 <div className="mb-3 flex items-center justify-between">
-                  <span className="text-xs font-semibold uppercase tracking-wider text-muted">
+                  <span className="font-display text-xs font-semibold uppercase tracking-wider text-muted">
                     {t("order.itItemN")} {j + 1}
                   </span>
                   {removable && (

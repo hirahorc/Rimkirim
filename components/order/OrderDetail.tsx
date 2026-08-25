@@ -120,7 +120,7 @@ export function OrderDetail({ id }: { id: string }) {
       <Card className="p-5 sm:p-6">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <p className="text-xs font-medium uppercase tracking-wide text-muted-2">
+            <p className="font-display text-xs font-medium uppercase tracking-wide text-muted-2">
               {t("order.bookingNumberLabel")}
             </p>
             {/* the booking number names this page, so it carries the h1 —
@@ -255,7 +255,7 @@ export function OrderDetail({ id }: { id: string }) {
           everything the customer entered. a labeled hairline break drops it a
           clear step below the live tier so it reads as look-it-up material */}
       <div className="mt-12 flex items-center gap-3">
-        <h2 className="text-xs font-medium uppercase tracking-wide text-muted-2">
+        <h2 className="font-display text-xs font-medium uppercase tracking-wide text-muted-2">
           {t("order.tdRecordHeading")}
         </h2>
         <span className="h-px flex-1 bg-border" />

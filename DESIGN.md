@@ -21,49 +21,55 @@ colors:
   info: "#2563eb"
 typography:
   display:
-    fontFamily: "Space Grotesk, Inter, sans-serif"
+    fontFamily: "Space Grotesk, Geist, sans-serif"
     fontSize: "clamp(2rem, 7.5vw, 4.75rem)"
     fontWeight: 500
     lineHeight: 1.05
     letterSpacing: "-0.02em"
   headline:
-    fontFamily: "Space Grotesk, Inter, sans-serif"
+    fontFamily: "Space Grotesk, Geist, sans-serif"
     fontSize: "2.25rem"
     fontWeight: 700
     lineHeight: 1.1
     letterSpacing: "-0.025em"
   page-title:
-    fontFamily: "Space Grotesk, Inter, sans-serif"
+    fontFamily: "Space Grotesk, Geist, sans-serif"
     fontSize: "1.5rem"
     fontWeight: 700
     lineHeight: 1.3
     letterSpacing: "-0.025em"
   title:
-    fontFamily: "Space Grotesk, Inter, sans-serif"
+    fontFamily: "Space Grotesk, Geist, sans-serif"
     fontSize: "1.25rem"
     fontWeight: 600
     lineHeight: 1.4
     letterSpacing: "-0.025em"
   body:
-    fontFamily: "Inter, ui-sans-serif, system-ui, sans-serif"
+    fontFamily: "Geist, ui-sans-serif, system-ui, sans-serif"
     fontSize: "1rem"
     fontWeight: 400
     lineHeight: 1.6
     letterSpacing: "normal"
   label:
-    fontFamily: "Inter, ui-sans-serif, system-ui, sans-serif"
+    fontFamily: "Space Grotesk, Geist, sans-serif"
+    fontSize: "0.75rem"
+    fontWeight: 500
+    lineHeight: 1.4
+    letterSpacing: "0.04em"
+  label-form:
+    fontFamily: "Geist, ui-sans-serif, system-ui, sans-serif"
     fontSize: "0.75rem"
     fontWeight: 500
     lineHeight: 1.4
     letterSpacing: "0.04em"
   micro:
-    fontFamily: "Inter, ui-sans-serif, system-ui, sans-serif"
+    fontFamily: "Geist, ui-sans-serif, system-ui, sans-serif"
     fontSize: "0.625rem"
     fontWeight: 500
     lineHeight: 1.3
     letterSpacing: "0.02em"
   mono:
-    fontFamily: "JetBrains Mono, ui-monospace, SFMono-Regular, Menlo, monospace"
+    fontFamily: "Geist Mono, ui-monospace, SFMono-Regular, Menlo, monospace"
     fontSize: "0.875rem"
     fontWeight: 500
     lineHeight: 1.4
@@ -237,14 +243,17 @@ nearly invisible on white, so they use a solid Soft Lime fill with Ink on Lime t
 
 ## Typography
 
-**Display Font:** Space Grotesk (with Inter fallback)
-**Body Font:** Inter (with system sans fallback)
-**Label/Mono Font:** JetBrains Mono (with `ui-monospace` fallback)
+**Display Font:** Space Grotesk (with Geist fallback)
+**Body Font:** Geist (with system sans fallback)
+**Label/Mono Font:** Geist Mono (with `ui-monospace` fallback)
 
-**Character:** Space Grotesk gives headings a tight, geometric, slightly technical confidence;
-Inter keeps body text quiet and legible; JetBrains Mono turns every code and price into an aligned
-instrument readout. The pairing reads competent and calm, not corporate. These three carried over
-unchanged from the previous visual world — the palette moved, the voice did not.
+**Character:** Space Grotesk gives headings — and every label that *names* something — a tight,
+geometric, slightly technical confidence; Geist keeps body copy and working form labels quiet and
+legible; Geist Mono turns every code and price into an aligned instrument readout. The pairing
+reads competent and calm, not corporate. The display voice carried over from the previous visual
+world; the body and mono seats moved from Inter / JetBrains Mono to Geist / Geist Mono
+deliberately (2026-08), and in the same pass Space Grotesk widened from headings-only into the
+brand-label tier (eyebrows, chips, statuses, buttons — see The Brand-Label Rule).
 
 ### Hierarchy
 - **Display** (Space Grotesk 500, `clamp(2rem, 7.5vw, 4.75rem)` = 32px -> 76px, line-height
@@ -261,15 +270,21 @@ unchanged from the previous visual world — the palette moved, the voice did no
 - **Title** (Space Grotesk 600, `1.25rem`/20px, tracking -0.025em): card titles and panel/dialog
   headings. Every 20px display heading carries `tracking-tight` — that is the role's signature, not
   optional.
-- **Body** (Inter 400, 1rem / 0.875rem, line-height ~1.6): Descriptions and running copy; reading
+- **Body** (Geist 400, 1rem / 0.875rem, line-height ~1.6): Descriptions and running copy; reading
   columns cap around `max-w-3xl`, and long-form answers cap tighter at `max-w-[65ch]`.
-- **Label** (Inter 500, 0.75rem, letter-spacing 0.04em, often UPPERCASE): Eyebrows, field labels,
-  captions, count pills, table headers — always in Dim Grey. This is the floor for anything that
-  reads as a word; 11px is **not** a step (it was drift, now removed).
-- **Micro** (Inter 500, `0.625rem`/10px, the single smallest step): the smallest marks only —
-  status-stepper phase names, the chargeable-weight readout labels, the compact carrier monogram.
-  Never body copy, and never used where Label (12px) would do.
-- **Mono** (JetBrains Mono 500, `tabular-nums`, size follows context from 0.75rem chips to the
+- **Label — brand** (Space Grotesk 500, 0.75rem, letter-spacing 0.04em, often UPPERCASE): labels
+  that *name* something — section and sub-group eyebrows ("Paket 1", the FAQ group titles), chip
+  and badge text, status-stepper phase names, the EnvBadge — usually in Dim Grey; chips keep their
+  own colour rules. This is the floor for anything that reads as a word; 11px is **not** a step
+  (it was drift, now removed).
+- **Label — form** (Geist 500, 0.75rem, letter-spacing 0.04em): working labels inside a task —
+  field labels, table headers, the date picker's weekday row, dropdown group headings, the auth
+  divider word, and readout captions that pair with a mono figure. Same metrics as the brand
+  label; only the family differs, so the form plane stays quiet under the brand plane.
+- **Micro** (Geist 500, `0.625rem`/10px, the single smallest step): the smallest marks only —
+  the chargeable-weight readout labels and the compact carrier monogram. Never body copy, and
+  never used where Label (12px) would do. (Stepper phase names are 12px brand labels, not Micro.)
+- **Mono** (Geist Mono 500, `tabular-nums`, size follows context from 0.75rem chips to the
   3xl quotation total): Booking numbers, packing codes (`RK-PL-XXXXXX`), airway bills, and all
   IDR/currency amounts.
 - **Hollow display** (Space Grotesk 700, `clamp(2rem, 5vw − 2rem, 2.75rem)`,
@@ -283,8 +298,14 @@ unchanged from the previous visual world — the palette moved, the voice did no
 
 ### Named Rules
 **The Numbers-Are-Mono Rule.** Identifiers (`RK-…`, `RK-PL-…`, AWB) and monetary amounts render in
-JetBrains Mono with `tabular-nums`. Weights, dimensions, quantities, phone dial codes, and dates
+Geist Mono with `tabular-nums`. Weights, dimensions, quantities, phone dial codes, and dates
 stay in the sans font. Prose is never mono; a number that reads as data is never sans.
+
+**The Brand-Label Rule.** A label that *names* something — an eyebrow, a chip, a status, a
+button — is set in Space Grotesk (`font-display`); a label that *operates* something — a field
+label, a table header, a dropdown group heading, a readout caption — stays in Geist. The split is
+by job, not by size: both tiers share the same 12px / 0.04em metrics, so the brand voice comes
+from the face alone, and the form plane never competes with it.
 
 ## Layout
 
@@ -469,6 +490,8 @@ like an accident.
 - **Shape:** `rounded-md` (16px); sizes `sm` (h-2rem), `md` (h-2.5rem, default), `lg` (h-3rem);
   icon-only squares at `icon` (2.5rem), `icon-sm` (2.25rem) and `icon-xs` (1.75rem, icon steps
   down to 14px). Icons auto-sized to 16px, `gap-2` from the label.
+- **Type:** Space Grotesk (`font-display`) `text-sm font-medium` on every variant — a button names
+  an action, so it sits on the brand plane (The Brand-Label Rule).
 - **Primary:** Live Lime fill + Ink-on-Lime text, `font-semibold`, flat (no keyline, no glow).
 - **Hover / Focus:** Primary shifts to Live Lime Dim; all buttons show a `ring-2
   ring-foreground/60` on `:focus-visible` — the focus ring is **ink, not lime**, because a lime
@@ -491,8 +514,9 @@ one bordered alternative (secondary), one quiet tertiary (ghost), one dashed "ad
 one destructive tint (danger). A new button style must replace one of these, not join them.
 
 ### Chips / Badges
-- **Style:** full pill, `px-3 py-1`, `text-xs font-medium`. Status variants follow the Tint-15/25
-  Rule; the **brand variant is a solid Soft Lime fill with Ink-on-Lime text** (see Tint-15/25).
+- **Style:** full pill, `px-3 py-1`, Space Grotesk `text-xs font-medium` (The Brand-Label Rule).
+  Status variants follow the Tint-15/25 Rule; the **brand variant is a solid Soft Lime fill with
+  Ink-on-Lime text** (see Tint-15/25).
 - **Count pill:** a compact `rounded-full` Panel-2 chip with Hairline border and Dim-Grey tabular
   number, shown beside group/section headings to declare "how many".
 
@@ -624,8 +648,11 @@ a number grows. If it has columns that must line up, it is a `<table>`.
 - **Do** keep Live Lime to ≤10% of any screen — one CTA, one marked phrase (The One-Voice Rule).
 - **Do** express lime as a **fill behind dark ink**; carry text emphasis with Ink + weight
   (The Marker Rule).
-- **Do** set every code (`RK-…`, `RK-PL-…`, AWB) and every rupiah amount in JetBrains Mono with
-  `tabular-nums`; keep weights, dimensions, quantities, and dates in Inter.
+- **Do** set every code (`RK-…`, `RK-PL-…`, AWB) and every rupiah amount in Geist Mono with
+  `tabular-nums`; keep weights, dimensions, quantities, and dates in Geist.
+- **Do** set brand labels — eyebrows, chip and badge text, statuses, buttons — in Space Grotesk,
+  and keep form labels (fields, table headers, dropdown groups, readout captions) in Geist
+  (The Brand-Label Rule).
 - **Do** build depth from the panel ladder (`#ffffff` → `#fafafa` → `#f5f5f5` → `#f3f3f3`) plus 1px
   hairlines; reserve `shadow-float` for chrome that genuinely lifts.
 - **Do** use generous rounding (16px controls, 28px cards) and full pills for badges, count chips,

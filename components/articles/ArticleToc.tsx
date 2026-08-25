@@ -90,7 +90,7 @@ export function ArticleToc({
   }
   return (
     <nav aria-label={label}>
-      <p className="mb-3 text-xs font-medium uppercase tracking-[0.14em] text-muted-2">{label}</p>
+      <p className="mb-3 font-display text-xs font-medium uppercase tracking-[0.14em] text-muted-2">{label}</p>
       <div className="border-l border-border">{list}</div>
     </nav>
   );

@@ -63,7 +63,7 @@ export function CarrierSection() {
       <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
         <p
           id="carrier-heading"
-          className="text-center text-xs font-medium uppercase tracking-[0.14em] text-muted"
+          className="text-center font-display text-xs font-medium uppercase tracking-[0.14em] text-muted"
         >
           {t("carrier.eyebrow")}
         </p>

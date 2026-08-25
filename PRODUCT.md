@@ -108,7 +108,9 @@ surcharge, packing list.
   bendera SVG `public/flags/4x3` (flag-icons).
 - **Visual yang sudah mengikat** (tercatat sebagai fakta, bukan arahan estetika baru):
   **light mode only** (kanvas putih), aksen brand `#C1FF00` dengan pendamping pastel `#ccfa59`,
-  Space Grotesk untuk display + Inter untuk body + JetBrains Mono untuk kode & rupiah.
+  Space Grotesk untuk display & label brand (eyebrow, chip, status, button) + Geist untuk body &
+  label form + Geist Mono untuk kode & rupiah (sebelumnya Inter / JetBrains Mono; diganti sengaja
+  2026-08).
   Lime dipakai **hanya sebagai fill di balik teks gelap**, tidak pernah sebagai warna teks.
   (Sebelumnya dark mode only; diganti sengaja — lihat DESIGN.md "The Open Desk".)
 - **Bahasa:** bilingual Indonesia + Inggris, **ID sebagai source of truth** dan parity

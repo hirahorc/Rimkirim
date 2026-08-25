@@ -22,7 +22,7 @@ export function ArticlesIndex({ articles }: { articles: ArticleMeta[] }) {
   return (
     <section className="mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-20">
       <header className="max-w-2xl">
-        <p className="text-xs font-medium uppercase tracking-[0.14em] text-muted">
+        <p className="font-display text-xs font-medium uppercase tracking-[0.14em] text-muted">
           {t("article.eyebrow")}
         </p>
         <h1 className="mt-3 font-display text-3xl font-bold tracking-tight sm:text-4xl">
