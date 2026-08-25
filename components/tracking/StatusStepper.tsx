@@ -48,6 +48,7 @@ export function StatusStepper({ status }: { status: OrderPhase }) {
         return (
           <div
             key={phase}
+            aria-current={current ? "step" : undefined}
             className="flex flex-1 flex-col items-center"
           >
             <div className="flex w-full items-center">
@@ -105,6 +106,10 @@ export function StatusStepper({ status }: { status: OrderPhase }) {
                 // 12px is the smallest on-ramp step that clears the 11px
                 // legibility floor (DESIGN.md removed 11px as drift)
                 "mt-1.5 px-0.5 text-center text-xs leading-tight",
+                // below sm seven labels have no room to breathe: only the live
+                // step names itself (with its n/7 place); the rest stay for
+                // screen readers and return visually from sm up
+                !current && "max-sm:sr-only",
                 current && "font-semibold text-foreground",
                 done && "font-medium text-foreground",
                 !done && !current && "text-muted-2",
@@ -112,6 +117,20 @@ export function StatusStepper({ status }: { status: OrderPhase }) {
               )}
             >
               {t(STEP_LABEL_KEYS[phase])}
+              {current && (
+                <>
+                  <span aria-hidden className="font-normal text-muted-2 sm:hidden">
+                    {" "}
+                    · {i + 1}/{PHASE_STEPS.length}
+                  </span>
+                  <span className="sr-only">
+                    {" — "}
+                    {t("order.stepOf")
+                      .replace("{n}", String(i + 1))
+                      .replace("{total}", String(PHASE_STEPS.length))}
+                  </span>
+                </>
+              )}
             </p>
           </div>
         );

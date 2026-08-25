@@ -238,9 +238,16 @@ export function OrderDetail({ id }: { id: string }) {
               note={order.revisionNote}
             />
           )}
-          {order.quotation && <QuotationCard order={order} />}
+          {/* the phase that needs the customer outranks the archived
+              quotation: it leads only while approving it IS the live task */}
+          {order.status === "quotation" && order.quotation && (
+            <QuotationCard order={order} />
+          )}
           {order.status === "pickup" && <PickupPanel order={order} />}
           {order.status === "clearance" && <ClearancePanel order={order} />}
+          {order.status !== "quotation" && order.quotation && (
+            <QuotationCard order={order} />
+          )}
         </div>
       )}
 

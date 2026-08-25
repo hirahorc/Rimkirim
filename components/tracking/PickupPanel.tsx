@@ -6,6 +6,7 @@ import {
   Truck,
   PackageX,
   MapPin,
+  MessageCircle,
   CheckCircle2,
   ChevronRight,
   Clock3,
@@ -29,6 +30,8 @@ import {
 } from "@/components/ui/dialog";
 import { NewAwbDialog } from "./NewAwbDialog";
 import { ReschedulePickupDialog } from "./ReschedulePickupDialog";
+
+const WA_URL = "https://wa.me/6281234567890";
 
 /**
  * Customer-facing pickup status: after a failed pickup the customer chooses
@@ -243,6 +246,16 @@ export function PickupPanel({ order }: { order: Order }) {
           >
             <CheckCircle2 /> {t("order.pickDropOffCta")}
           </Button>
+          {/* "the nearest FedEx location" must not be a scavenger hunt —
+              the assistant hands over the address on request */}
+          <a
+            href={WA_URL}
+            target="_blank"
+            rel="noreferrer"
+            className="link-mark mt-3 flex w-fit items-center gap-1.5 text-xs font-medium"
+          >
+            <MessageCircle className="size-3.5" /> {t("order.pickDropOffAsk")}
+          </a>
         </div>
       )}
 

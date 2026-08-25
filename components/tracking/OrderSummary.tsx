@@ -484,7 +484,8 @@ function ItemsCard({ order }: { order: Order }) {
               dims.weight > 0 && `${formatNumber(dims.weight, 1, locale)}kg`,
               (dims.length > 0 || dims.width > 0 || dims.height > 0) &&
                 `${dims.length} × ${dims.width} × ${dims.height}`,
-              itemCount > 0 && `${itemCount} ${t("order.itItemsWord")}`,
+              itemCount > 0 &&
+                `${itemCount} ${t(itemCount === 1 ? "order.itItemWordOne" : "order.itItemsWord")}`,
               pkgValue > 0 && formatCurrency(pkgValue, currency),
             ]
               .filter(Boolean)
@@ -1088,7 +1089,9 @@ function PendingCards({ order }: { order: Order }) {
   if (!showRate && !showAwb) return null;
 
   return (
-    <Section title={t("order.tdNextSection")}>
+    // "what's next" only fits a promise; once the AWB exists the section is
+    // simply the shipment's artifact and says so
+    <Section title={t(showRate ? "order.tdNextSection" : "order.tdAwbSection")}>
       {showRate && (
         // the figure on its own line, the status sentence as prose under it —
         // a paragraph never belongs in a value cell
@@ -1104,11 +1107,23 @@ function PendingCards({ order }: { order: Order }) {
       )}
       {showAwb && (
         <Row
-          label={<TipLabel label={t("order.tdAwbSection")} tip={t("order.tdAwbTip")} />}
+          label={<TipLabel label={t("order.tdAwbNumber")} tip={t("order.tdAwbTip")} />}
         >
-          <span className="inline-flex items-center gap-1.5">
-            <span className="font-mono font-medium text-foreground">{order.awb}</span>
-            <CopyButton value={order.awb!} />
+          <span className="flex flex-col items-end gap-1">
+            <span className="inline-flex items-center gap-1.5">
+              <span className="font-mono font-medium text-foreground">{order.awb}</span>
+              <CopyButton value={order.awb!} />
+            </span>
+            {/* the AWB's whole job is being pasted into the carrier's tracker —
+                hand over the link instead of making Alex build it */}
+            <a
+              href={`https://www.fedex.com/fedextrack/?trknbr=${order.awb!.replace(/\D/g, "")}`}
+              target="_blank"
+              rel="noreferrer"
+              className="link-mark text-xs font-medium"
+            >
+              {t("order.tdAwbTrack")}
+            </a>
           </span>
         </Row>
       )}

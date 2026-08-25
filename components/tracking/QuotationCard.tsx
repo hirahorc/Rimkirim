@@ -39,8 +39,12 @@ export function QuotationCard({ order }: { order: Order }) {
   const approveQuotation = useOrderStore((s) => s.approveQuotation);
   const [revOpen, setRevOpen] = React.useState(false);
   const [approveOpen, setApproveOpen] = React.useState(false);
-  // breakdown detail is collapsible; open by default so the payable is shown up front
-  const [breakdownOpen, setBreakdownOpen] = React.useState(true);
+  // breakdown open while approval is the live decision; once the quotation is
+  // archive material the card shrinks to header + total so it stops towering
+  // over the panel that actually needs the customer
+  const [breakdownOpen, setBreakdownOpen] = React.useState(
+    order.status === "quotation",
+  );
 
   if (!order.quotation) return null;
   const qu = order.quotation;
@@ -75,6 +79,10 @@ export function QuotationCard({ order }: { order: Order }) {
             <Badge variant="success">
               <CheckCircle2 className="size-3" /> {t("order.quApproved")}
             </Badge>
+          ) : order.status === "cancelled" ? (
+            // a cancelled order's quotation is neither pending nor in revision —
+            // claiming "in revision" beside the cancellation notice would lie
+            <Badge variant="neutral">{t("order.statusCancelled")}</Badge>
           ) : (
             <Badge variant="warning">{t("order.quInRevision")}</Badge>
           )}
