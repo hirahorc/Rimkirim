@@ -12,7 +12,8 @@ import { ChevronDown, ChevronUp } from "lucide-react";
 const autoDuration = (h: number) => {
   if (!h) return 0;
   const c = h / 36;
-  return Math.round((4 + 15 * Math.pow(c, 0.25) + c / 5) * 10);
+  // capped at 340ms: past that a tall panel reads as slow, not as smooth
+  return Math.min(340, Math.round((4 + 15 * Math.pow(c, 0.25) + c / 5) * 10));
 };
 
 /** the system's one standard easing (DESIGN.md, Motion) */

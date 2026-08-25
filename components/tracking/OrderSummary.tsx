@@ -774,7 +774,8 @@ function DocTile({
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={dataUrl!} alt="" aria-hidden className="size-full object-cover" />
           </DialogTrigger>
-          <DialogContent className="max-w-3xl p-0">
+          {/* media lightbox stays a centred modal at every size */}
+          <DialogContent sheet={false} className="max-w-3xl p-0">
             <DialogHeader className="pb-4">
               <DialogTitle className="truncate pr-8 text-base font-medium sm:text-base">
                 {fileName}

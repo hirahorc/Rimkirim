@@ -113,6 +113,28 @@ surcharge, packing list.
   2026-08).
   Lime dipakai **hanya sebagai fill di balik teks gelap**, tidak pernah sebagai warna teks.
   (Sebelumnya dark mode only; diganti sengaja — lihat DESIGN.md "The Open Desk".)
+- **Interaksi yang sudah mengikat** (tercatat sebagai aturan, diadopsi sadar dari doktrin
+  animasi Emil Kowalski, 2026-08; detail normatif — kurva, durasi, idiom bernama — di
+  DESIGN.md → Motion):
+  - Setiap animasi harus bisa menyebut tujuannya dalam satu kata: feedback, spasial, status,
+    mencegah lompatan, penjelasan, atau delight (delight hanya untuk momen langka). Tidak bisa
+    menyebut tujuannya = tidak dianimasikan.
+  - Frekuensi menentukan: aksi berfrekuensi tinggi dan **semua aksi yang dipicu keyboard tidak
+    pernah dianimasikan**.
+  - Budget animasi UI **di bawah 300ms**. Entrance selalu ease-out, tidak pernah ease-in, dan
+    tidak pernah mulai dari `scale(0)` — minimal 0.9.
+  - Setiap tombol memberi feedback tekan: `scale(0.98)` selagi ditahan (motion-safe).
+  - Popover dan tooltip tumbuh dari pemicunya (`transform-origin` di sisi trigger), bukan dari
+    tengah; keduanya juga punya exit — tidak ada permukaan yang menghilang lompat.
+  - Tooltip: delay hanya di hover pertama; dalam sapuan yang sama, tooltip berikutnya muncul
+    instan tanpa delay dan tanpa animasi.
+  - Di bawah `sm`, dialog adalah **bottom sheet** (vaul, kurva iOS
+    `cubic-bezier(0.32, 0.72, 0, 1)`, bisa di-drag tutup dengan velocity); modal tengah hanya
+    di desktop. Kecuali lightbox media dan LoginDialog (punya bentuk mobile sendiri).
+  - Toast didelegasikan ke sonner — enter/exit-nya diperlakukan sebagai bagian sistem.
+  - Interupsi harus anggun: permukaan yang bisa di-toggle cepat memakai transition yang
+    me-retarget, bukan keyframe yang restart dari nol.
+  - `prefers-reduced-motion` selalu dihormati: gerak dihilangkan, feedback warna/opacity tetap.
 - **Bahasa:** bilingual Indonesia + Inggris, **ID sebagai source of truth** dan parity
   di-enforce compile-time lewat tipe di `lib/i18n/messages.ts`. Mata uang tetap format `id-ID`
   (Rupiah) di kedua bahasa.

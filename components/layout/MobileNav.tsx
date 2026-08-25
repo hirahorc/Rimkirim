@@ -41,8 +41,8 @@ export function MobileNav() {
         </IconPillButton>
       </Dialog.Trigger>
       <Dialog.Portal>
-        <Dialog.Overlay className="fixed inset-0 z-50 bg-foreground/25 backdrop-blur-sm data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0" />
-        <Dialog.Content className="fixed right-0 top-0 z-50 flex h-full w-[min(86vw,340px)] flex-col rounded-l-lg border-l border-border bg-background shadow-overlay outline-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=open]:slide-in-from-right-[340px] data-[state=closed]:slide-out-to-right-[340px] data-[state=open]:duration-300 data-[state=closed]:duration-200">
+        <Dialog.Overlay className="dlg-overlay fixed inset-0 z-50 bg-foreground/25 backdrop-blur-sm" />
+        <Dialog.Content className="nav-sheet fixed right-0 top-0 z-50 flex h-full w-[min(86vw,340px)] flex-col rounded-l-lg border-l border-border bg-background shadow-overlay outline-none">
           <Dialog.Title className="sr-only">{t("nav.menu")}</Dialog.Title>
           <div className="flex items-center justify-between border-b border-border p-4">
             <Logo height={28} />

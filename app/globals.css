@@ -285,9 +285,13 @@ body {
 .tip-bubble {
   transform-origin: var(--radix-tooltip-content-transform-origin);
 }
-.tip-bubble[data-state="delayed-open"],
-.tip-bubble[data-state="instant-open"] {
+.tip-bubble[data-state="delayed-open"] {
   animation: tip-in 100ms cubic-bezier(0.5, 1, 0.89, 1) both;
+}
+/* inside the skip-delay window the user is sweeping a row of tips: the
+   second and later bubbles appear with no delay AND no ceremony */
+.tip-bubble[data-state="instant-open"] {
+  animation: none;
 }
 .tip-bubble[data-state="closed"] {
   animation: tip-out 100ms cubic-bezier(0.11, 0, 0.5, 0) both;
@@ -626,6 +630,31 @@ body {
   from { opacity: 0; transform: translateY(4px) scale(0.98); }
   to { opacity: 1; transform: none; }
 }
+/* the exit retreats toward the trigger — shorter and accelerating, so the
+   panel answers the close without a jump cut */
+@keyframes pop-out {
+  from { opacity: 1; transform: none; }
+  to { opacity: 0; transform: translateY(-2px) scale(0.99); }
+}
+@keyframes pop-out-up {
+  from { opacity: 1; transform: none; }
+  to { opacity: 0; transform: translateY(2px) scale(0.99); }
+}
+.pop-panel[data-state="closed"] { animation: pop-out 120ms cubic-bezier(0.11, 0, 0.5, 0) both; }
+.pop-panel[data-side="top"][data-state="closed"] { animation-name: pop-out-up; }
+
+/* Mobile nav sheet: slides in from the right edge it lives on; the exit is
+   shorter and accelerating (the same asymmetry as the dialog panel). */
+@keyframes nav-sheet-in {
+  from { transform: translateX(100%); }
+  to { transform: none; }
+}
+@keyframes nav-sheet-out {
+  from { transform: none; }
+  to { transform: translateX(100%); }
+}
+.nav-sheet[data-state="open"] { animation: nav-sheet-in 300ms var(--ease-out-soft) both; }
+.nav-sheet[data-state="closed"] { animation: nav-sheet-out 200ms cubic-bezier(0.11, 0, 0.5, 0) both; }
 
 /* Route-card radio: the lime check pops in (scale from the dot) in 100ms,
    same clock as the tooltip, so choosing a route feels like a stamp landing. */
@@ -659,8 +688,15 @@ body {
   /* the panel's translate is its centring, so only the animation goes */
   .dlg-overlay,
   .dlg-panel,
-  .pop-panel {
+  .pop-panel,
+  .nav-sheet {
     animation: none !important;
+  }
+  /* vaul's sheet transition collapses to instant; finger-driven drag is the
+     user's own motion and stays */
+  [data-vaul-drawer],
+  [data-vaul-overlay] {
+    transition-duration: 0.01ms !important;
   }
   .animate-fade-up,
   .reveal,

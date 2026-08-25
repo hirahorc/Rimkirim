@@ -235,7 +235,9 @@ point of use.
 - **`.nav-expat`.** The "Expat Relocation" nav link is gradient *text* (82° `#21b1ec → #d41ce6`),
   lifted from the Figma header, with the gradient painted 3× wider than the label and slid across
   on hover. It is the one place gradient carries identity rather than decoration, and it reserves
-  its hover width up front so neighbours never nudge.
+  its hover width up front so neighbours never nudge. While hovered the gradient keeps flowing
+  (1.8s alternate loop) — a deliberate exception to the one-loop rule, kept because it runs only
+  under the pointer, never on idle UI, and stops the moment the hover ends.
 
 **The Tint-15/25 Rule.** *Status* chips use the colour at 15% opacity for the fill, 25% for the
 border, and full strength for the text/icon. **Brand chips are the exception** — a 15% lime wash is
@@ -413,13 +415,24 @@ one as drift.
   `inert` so hidden form fields can never be tabbed into): the answer's height is the only
   animated property — no fade, no slide — on the system easing, and the *duration is computed
   from the content height* (Material's `getAutoHeightDuration`: a short panel snaps at ~200ms, a
-  long one glides at ~330ms, so perceived speed stays constant where a fixed 300ms cannot).
+  long one glides at ~330ms, hard-capped at 340ms — past that a tall panel reads as slow, not
+  smooth — so perceived speed stays constant where a fixed 300ms cannot).
   Height lands on `auto` after opening so growing content never clips. The chevron is swapped
   down↔up, never rotated, and it swaps on the click, not after the motion; the open header
   carries no colour change — the icon alone marks the state. Instant under reduced motion.
   Rows keep the panel-fill hover idiom, one step harder on focus-visible.
 - **The segmented thumb** slides between segments (`transform`/`width`, 200ms, system easing) —
   the state's spatial story, not decoration; it jumps instantly under reduced motion.
+- **The mobile sheet** (below `sm`, every dialog): a vaul bottom sheet on the iOS curve
+  (`cubic-bezier(0.32, 0.72, 0, 1)`, 500ms) with a grab handle, drag-to-dismiss on velocity —
+  a flick is enough — and damping past the top. The centred modal is a desktop-only shape.
+  Exceptions: media lightboxes (`sheet={false}`) and the login dialog, which owns its own
+  full-screen mobile form. Under reduced motion the transition collapses to instant; the drag
+  itself is the user's own motion and stays.
+- **Popovers and tooltips exit too.** `pop-out` retreats toward the trigger (120ms, the exit
+  curve) so no panel ends on a jump cut; the tooltip keeps its 100ms out. And inside a
+  skip-delay sweep, the second and later tooltips open **instantly — no delay, no animation**
+  (`data-state="instant-open"`): ceremony belongs to the first bubble only.
 - **The floating verdicts** (the one idle loop, `.hero-verdict-float`): three one-word customer
   verdicts sit in the page gutters beside the hero headline (`xl` and up — below that the gutter is
   too narrow to hold a word) and drift ±9px on a 7s/8.5s/10s cycle, phase-shifted by negative

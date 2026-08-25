@@ -161,7 +161,8 @@ export function FileUpload({
               </span>
               <Eye className="size-4 shrink-0 text-muted" aria-hidden="true" />
             </DialogTrigger>
-            <DialogContent className="max-w-3xl p-0">
+            {/* media lightbox stays a centred modal at every size */}
+            <DialogContent sheet={false} className="max-w-3xl p-0">
               <DialogHeader className="pb-4">
                 <DialogTitle className="truncate pr-8 text-base font-medium sm:text-base">
                   {value}
