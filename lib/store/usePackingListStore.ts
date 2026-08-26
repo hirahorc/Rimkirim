@@ -66,10 +66,13 @@ export function findOwnedByCode(
   code: string,
 ): PackingList | undefined {
   if (!email) return undefined;
-  const n = code.trim().toUpperCase();
+  // both sides drop dashes/spaces: input may be typed dashed, and lists persisted
+  // before the no-dash rule still carry the old "RK-PL-…" style code
+  const strip = (s: string) => s.trim().toUpperCase().replace(/[\s-]/g, "");
+  const n = strip(code);
   return usePackingListStore
     .getState()
-    .lists.find((l) => l.ownerEmail === email && l.code === n);
+    .lists.find((l) => l.ownerEmail === email && strip(l.code) === n);
 }
 
 export function usePackingHydrated(): boolean {

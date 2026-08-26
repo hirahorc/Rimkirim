@@ -38,7 +38,7 @@ Tiga hal yang tidak bisa diklaim jujur oleh forwarder atau agregator tarif sebel
    "membantu dokumen" — ia menentukan dan menjalankan jalur clearance yang tepat
    (Personal Belongings vs Passenger Goods) berdasarkan kelayakan customer, lalu
    mengeksekusinya. Customer tidak menyentuh dokumen.
-2. **Rimkirim Packing List.** Sistem kode packing list milik Rimkirim (format `RK-PL-XXXXXX`)
+2. **Rimkirim Packing List.** Sistem kode packing list milik Rimkirim (format `RKPLXXXXXX`, tanpa dash)
    yang membuat isi kiriman terdata dan terverifikasi sebelum barang berangkat, dan menjadi
    rujukan yang sama di sisi clearance. Ini artefak khas Rimkirim, bukan praktik industri umum.
 3. **Transparansi harga total.** Base rate, chargeable weight, dan surcharge dibuka sebagai

@@ -538,7 +538,7 @@ const id = {
     qEligibleLanePassenger: "Barang Penumpang: bebas pajak sampai USD 500, tanpa SKP. Kamu konfirmasi di langkah berikutnya.",
     qPerKg: "/ kg",
     qYourAnswer: "Jawabanmu",
-    qPackingTip: "Kode packing list Rimkirim (RK-PL-…) membuat data barang & pengirim terisi otomatis di formulir.",
+    qPackingTip: "Kode packing list Rimkirim (RKPL…) membuat data barang & pengirim terisi otomatis di formulir.",
     ineligibleAlt: "Cek tarif layanan lain",
     qA: "Apakah kamu mengirim barang pribadi ke Indonesia?",
     qAGloss: "Barang bekas pakai milik sendiri (pakaian, buku, perabot), bukan barang dagangan atau barang baru dalam jumlah banyak.",
@@ -560,7 +560,7 @@ const id = {
     indonesian: "Indonesia (WNI)",
     foreigner: "Asing (WNA)",
     packingCodeLabel: "Kode Packing List",
-    packingCodePlaceholder: "mis. RK-PL-000123",
+    packingCodePlaceholder: "mis. RKPL000123",
     packingCodeSearch: "Cari",
     packingCodeChecking: "Mengecek…",
     packingCodeFound: "Kode ditemukan & valid",
@@ -762,7 +762,7 @@ const id = {
     tdLaterClearance: "Menyusul sebelum clearance",
     tdNotFilled: "Belum diisi",
     tdPackingTip:
-      "Kode packing list Rimkirim (RK-PL-XXXXXX): daftar resmi isi kirimanmu yang dipakai untuk verifikasi bea cukai.",
+      "Kode packing list Rimkirim (RKPLXXXXXX): daftar resmi isi kirimanmu yang dipakai untuk verifikasi bea cukai.",
     tdAwbTip:
       "Air Waybill: nomor resi dari kurir 3PL untuk melacak paket di jaringan mereka. Beda dari Nomor Booking Rimkirim yang tetap sama.",
     tdNextSection: "Proses berikutnya",
@@ -1844,7 +1844,7 @@ const en: Messages = {
     qEligibleLanePassenger: "Passenger Goods: tax-free up to USD 500, no SKP. You confirm it in the next step.",
     qPerKg: "/ kg",
     qYourAnswer: "Your answer",
-    qPackingTip: "A Rimkirim packing list code (RK-PL-…) pre-fills your items & sender details in the form.",
+    qPackingTip: "A Rimkirim packing list code (RKPL…) pre-fills your items & sender details in the form.",
     ineligibleAlt: "Check rates for other services",
     qA: "Are you shipping personal belongings to Indonesia?",
     qAGloss: "Your own used belongings (clothes, books, furniture), not merchandise or new goods in bulk.",
@@ -1866,7 +1866,7 @@ const en: Messages = {
     indonesian: "Indonesian",
     foreigner: "Foreigner",
     packingCodeLabel: "Packing List code",
-    packingCodePlaceholder: "e.g. RK-PL-000123",
+    packingCodePlaceholder: "e.g. RKPL000123",
     packingCodeSearch: "Search",
     packingCodeChecking: "Checking…",
     packingCodeFound: "Code found & valid",
@@ -2060,7 +2060,7 @@ const en: Messages = {
     tdLaterClearance: "Due before clearance",
     tdNotFilled: "Not filled in yet",
     tdPackingTip:
-      "Rimkirim packing-list code (RK-PL-XXXXXX): the official manifest of your shipment's contents, used to verify it through customs.",
+      "Rimkirim packing-list code (RKPLXXXXXX): the official manifest of your shipment's contents, used to verify it through customs.",
     tdAwbTip:
       "Air Waybill: the tracking number from the 3PL courier for their own network. Separate from your Rimkirim booking number, which stays the same.",
     tdNextSection: "What's next",

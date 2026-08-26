@@ -68,7 +68,7 @@ export interface PackingListData {
 export interface PackingList {
   /** internal id used for routing/edit */
   id: string;
-  /** the user-facing code, e.g. RK-PL-483920 — issued once, never changes */
+  /** the user-facing code, e.g. RKPL483920 — issued once, never changes */
   code: string;
   ownerEmail: string;
   createdAt: number;
