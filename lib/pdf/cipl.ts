@@ -83,7 +83,7 @@ export function orderModulesToCipl(args: {
   };
 }
 
-/** File name for the download, e.g. RK-PL-483920_CIPL_2026-08-18.pdf */
+/** File name for the download, e.g. RKPL483920_CIPL_2026-08-18.pdf */
 export function ciplFilename(input: CiplInput): string {
   const date = input.shippingDate || new Date().toISOString().slice(0, 10);
   return `${input.code ?? "packing-list"}_CIPL_${date}.pdf`;

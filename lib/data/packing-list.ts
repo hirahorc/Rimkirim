@@ -6,22 +6,19 @@
  * standalone packing lists the current user created in this app. Swap the body
  * for a real API call later — the call sites only await a boolean.
  *
- * Sample valid codes (for demo/testing): the placeholder RK-PL-000123 is valid.
+ * Sample valid codes (for demo/testing): the placeholder RKPL000123 is valid.
  */
 import { findOwnedByCode } from "@/lib/store/usePackingListStore";
 
-const REGISTRY = new Set<string>([
-  "RK-PL-000123",
-  "RK-PL-000456",
-  "RK-PL-100001",
-]);
+const REGISTRY = new Set<string>(["RKPL000123", "RKPL000456", "RKPL100001"]);
 
 /** Returns true if the packing-list code exists in the registry or belongs to the user. */
 export function validatePackingCode(
   code: string,
   ownerEmail?: string | null,
 ): Promise<boolean> {
-  const normalized = code.trim().toUpperCase();
+  // dashes/spaces are stripped so codes typed in the old dashed style still match
+  const normalized = code.trim().toUpperCase().replace(/[\s-]/g, "");
   return new Promise((resolve) => {
     setTimeout(
       () =>

@@ -70,8 +70,8 @@ export const termsDoc: LegalDocData = {
       heading: { id: "Bea Cukai & Dokumen", en: "Customs & Documents" },
       paragraphs: [
         {
-          id: "Rimkirim menyiapkan dan menjalankan proses bea cukai serta menerbitkan Rimkirim Packing List (format RK-PL-XXXXXX) sebagai rujukan kiriman. Keputusan akhir atas pemeriksaan, pajak, dan pelepasan barang tetap berada di tangan otoritas bea cukai terkait.",
-          en: "Rimkirim prepares and runs the customs process and issues a Rimkirim Packing List (format RK-PL-XXXXXX) as the shipment's reference. Final decisions on inspection, taxes, and release of goods remain with the relevant customs authorities.",
+          id: "Rimkirim menyiapkan dan menjalankan proses bea cukai serta menerbitkan Rimkirim Packing List (format RKPLXXXXXX) sebagai rujukan kiriman. Keputusan akhir atas pemeriksaan, pajak, dan pelepasan barang tetap berada di tangan otoritas bea cukai terkait.",
+          en: "Rimkirim prepares and runs the customs process and issues a Rimkirim Packing List (format RKPLXXXXXX) as the shipment's reference. Final decisions on inspection, taxes, and release of goods remain with the relevant customs authorities.",
         },
       ],
     },
