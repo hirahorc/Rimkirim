@@ -46,15 +46,29 @@ export function defaultCurrencyFor(countryCode: string | undefined): string {
   return "USD";
 }
 
-/** Format an amount in a given currency code. */
-export function formatCurrency(amount: number, code: string): string {
+/** Format an amount in a given currency code. Pass the UI locale where the
+ *  figure sits beside other localized numerals (the order record) so one view
+ *  never mixes decimal conventions; callers that omit it keep en-US. */
+const currencyFormats = new Map<string, Intl.NumberFormat>();
+export function formatCurrency(
+  amount: number,
+  code: string,
+  locale: "id" | "en" = "en",
+): string {
+  const tag = locale === "id" ? "id-ID" : "en-US";
   try {
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: code,
-      maximumFractionDigits: 2,
-    }).format(amount);
+    const key = `${tag}:${code}`;
+    let fmt = currencyFormats.get(key);
+    if (!fmt) {
+      fmt = new Intl.NumberFormat(tag, {
+        style: "currency",
+        currency: code,
+        maximumFractionDigits: 2,
+      });
+      currencyFormats.set(key, fmt);
+    }
+    return fmt.format(amount);
   } catch {
-    return `${code} ${amount.toLocaleString("en-US")}`;
+    return `${code} ${amount.toLocaleString(tag)}`;
   }
 }
