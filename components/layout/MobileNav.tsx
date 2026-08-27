@@ -4,14 +4,7 @@ import * as React from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import * as Dialog from "@radix-ui/react-dialog";
-import {
-  Menu,
-  X,
-  LogOut,
-  Package,
-  ClipboardList,
-  UserCog,
-} from "lucide-react";
+import { Menu, X, LogOut, Package, ClipboardList } from "lucide-react";
 import { toast } from "sonner";
 import { Logo } from "./Logo";
 import { Button } from "@/components/ui/button";
@@ -19,15 +12,8 @@ import { IconPillButton } from "@/components/ui/icon-pill-button";
 import { useAuthStore, useCurrentUser } from "@/lib/store/useAuthStore";
 import { useLoginModal } from "@/lib/store/useLoginModal";
 import { useT } from "@/lib/i18n/LanguageProvider";
+import { NAV_LINKS } from "@/lib/nav-links";
 import { cn } from "@/lib/utils/cn";
-
-const NAV_LINKS = [
-  { href: "/articles", key: "nav.article" },
-  { href: "/about", key: "nav.about" },
-  { href: "/faq", key: "nav.faq" },
-  // always last: rightmost on desktop, bottom of the sheet on mobile
-  { href: "/expat-relocation", key: "nav.expat", accent: true },
-] as const;
 
 /** Mobile-only hamburger that opens a right slide-over sheet with the nav. */
 export function MobileNav() {
@@ -88,7 +74,32 @@ export function MobileNav() {
           <div className="space-y-3 border-t border-border p-4">
             {user ? (
               <>
-                <Button asChild variant="secondary" className="w-full">
+                {/* who is signed in, and the door to /akun — same pattern as
+                    the AccountMenu identity block, so the sheet is never
+                    anonymous. "Pengaturan Akun" needs no button of its own. */}
+                <Link
+                  href="/akun"
+                  onClick={close}
+                  className="flex min-h-12 items-center gap-3 rounded-sm px-2 py-1.5 transition-colors hover:bg-surface-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/50"
+                >
+                  <span
+                    aria-hidden
+                    className="grid size-9 shrink-0 place-items-center rounded-full border border-border bg-surface-2 font-display text-sm font-bold text-foreground"
+                  >
+                    {user.name.trim().charAt(0).toUpperCase() || "?"}
+                  </span>
+                  <span className="min-w-0">
+                    <span className="block truncate text-sm font-medium">
+                      {user.name}
+                    </span>
+                    <span className="block truncate text-xs text-muted">
+                      {user.email}
+                    </span>
+                  </span>
+                </Link>
+                {/* signed in, the sheet changes register too: the customer's
+                    orders take the lime and the sales CTA steps down */}
+                <Button asChild className="w-full">
                   <Link href="/pesanan" onClick={close}>
                     <Package className="size-4" /> {t("auth.myOrders")}
                   </Link>
@@ -99,8 +110,8 @@ export function MobileNav() {
                   </Link>
                 </Button>
                 <Button asChild variant="secondary" className="w-full">
-                  <Link href="/akun" onClick={close}>
-                    <UserCog className="size-4" /> {t("auth.acctSettings")}
+                  <Link href="/#kalkulator" onClick={close}>
+                    {t("nav.cekTarif")}
                   </Link>
                 </Button>
                 <button
@@ -111,29 +122,31 @@ export function MobileNav() {
                     toast.success(t("auth.loggedOut"));
                     router.push("/");
                   }}
-                  className="flex w-full items-center justify-center gap-2 rounded-sm px-3 py-2 text-sm text-muted transition-colors hover:bg-surface-2 hover:text-foreground"
+                  className="flex min-h-12 w-full items-center justify-center gap-2 rounded-sm px-3 py-2 text-sm text-muted transition-colors hover:bg-surface-2 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/50"
                 >
                   <LogOut className="size-4" /> {t("auth.logout")}
                 </button>
               </>
             ) : (
-              <Button
-                type="button"
-                variant="secondary"
-                className="w-full"
-                onClick={() => {
-                  close();
-                  openLogin();
-                }}
-              >
-                {t("nav.masuk")}
-              </Button>
+              <>
+                <Button
+                  type="button"
+                  variant="secondary"
+                  className="w-full"
+                  onClick={() => {
+                    close();
+                    openLogin();
+                  }}
+                >
+                  {t("nav.masuk")}
+                </Button>
+                <Button asChild className="w-full">
+                  <Link href="/#kalkulator" onClick={close}>
+                    {t("nav.cekTarif")}
+                  </Link>
+                </Button>
+              </>
             )}
-            <Button asChild className="w-full">
-              <Link href="/#kalkulator" onClick={close}>
-                {t("nav.cekTarif")}
-              </Link>
-            </Button>
           </div>
         </Dialog.Content>
       </Dialog.Portal>

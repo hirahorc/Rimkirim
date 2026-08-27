@@ -253,7 +253,8 @@
       "Bash(OUT_DIR=. node -e \"0\")",
       "Bash(npm i *)",
       "Bash(node capture-quest.mjs 1280 1100 clr-align-desktop.png)",
-      "Bash(node capture-quest.mjs 390 1000 clr-align-mobile.png)"
+      "Bash(node capture-quest.mjs 390 1000 clr-align-mobile.png)",
+      "Bash(node /Users/hira.rimkirim/.claude/plugins/cache/impeccable/impeccable/4.0.2/skills/impeccable/scripts/critique-storage.mjs slug components/layout/AppHeader.tsx)"
     ],
     "additionalDirectories": [
       "/private/tmp/cdp-fs",

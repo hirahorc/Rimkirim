@@ -24,7 +24,7 @@ export function LanguageToggle() {
             // a compact segmented pill, identical on every viewport — no
             // tap-row: its 44px min-height deformed this into a tall oval on
             // touch. Segmented controls are exempt from the row-height rule.
-            "rounded-full px-2.5 py-1 text-xs font-medium transition-colors",
+            "rounded-full px-2.5 py-1 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/50",
             locale === opt
               ? "bg-background text-foreground shadow-float"
               : "text-muted hover:text-foreground",

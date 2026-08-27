@@ -223,7 +223,7 @@ light system.
 **The No-Gradient Rule.** Surfaces are solid fills. No gradient backgrounds, no ambient glows, no
 glass blur used as *decoration*. Depth comes from panels, hairlines, and the two sanctioned shadows.
 The one sanctioned translucency is functional: sticky chrome (the header capsule) is
-`bg-background/70` + `backdrop-blur-xl` so the page reads legibly as it scrolls underneath — an
+`bg-background/85` + `backdrop-blur-xl` so the page reads legibly as it scrolls underneath — an
 effect doing a specific job, not a texture.
 
 There are exactly **two standing exceptions**, both narrow, both doing a job no solid fill can do.
@@ -333,7 +333,9 @@ below ~44px that a finger has to hit gets sized up inside `@media (pointer: coar
 layouts keep their density. Two utilities, and picking the wrong one is a bug:
 
 - **`.tap-row`** grows the element's *real* height to 44px. Use it for text links and controls that
-  sit in a list or a row — footer links, the language toggle, segmented items. Real height is
+  sit in a list or a row — footer links, list rows. Segmented controls (the language toggle) are
+  **exempt**: real height deforms a compact pill into a tall oval, so they stay compact and carry a
+  focus ring instead. Real height is
   required here because invisible hit areas in a dense list overlap and steal each other's taps.
 - **`.tap-target`** paints a 44px invisible `::after` over a small control without changing its
   visual size. Only for **isolated** icon buttons with clear space around them (the bell, the
@@ -638,12 +640,26 @@ the vertical space it saves.
 ### Navigation (signature)
 - **Header capsule:** the header does not sit on a bar — it is a **floating capsule**. A sticky
   wrapper (`px-3 sm:px-6`, `pt-3`) holds a `max-w-6xl`, 60px, `rounded-full` capsule with a
-  hairline border, `bg-background/70`, `backdrop-blur-xl` and `shadow-float`. The page scrolls
+  hairline border, `bg-background/85` (thicker than the reference's /55: display type scrolling
+  underneath must stay legible), `backdrop-blur-xl` and `shadow-float`. The page scrolls
   behind it and blurs underneath, so the chrome floats clear of the page edge instead of ruling a
   line across it.
 - **Contents:** wordmark left (the dark-ink logo, `rimkirim-logo-dark.png`), nav links center, and
-  the language toggle, account/notification controls and the lime "Cek Tarif" CTA right. Small
+  the language toggle, account/notification controls and the lime CTA right. Small
   icon controls inside the capsule are `rounded-full` to echo its geometry.
+
+**The Two-Registers Rule.** The header is shared chrome for two audiences and it changes register
+at login. **Signed out (Persuade):** the lime CTA is "Cek Tarif", visible at every width — on
+phones the capsule is the only place a first-timer reaches the calculator without opening the
+sheet. **Signed in (Operate):** the sales CTA steps aside; the customer's own progress takes the
+lime as a "Pesanan Saya" button, and on /pesanan itself that button collapses into the active
+Panel-2 pill (`aria-current="page"`) — arrived, not still being sold to. The account trigger is
+the customer's initial in a `size-9` Panel-2 chip (IconPillButton geometry), never an anonymous
+silhouette, and the mobile sheet opens its signed-in block with the same identity row. The nav IA
+lives once, in `lib/nav-links.ts`, shared by capsule and sheet. Internal tools (the ops simulator)
+never sit among customer rows: fenced below a hairline and dressed in ops Info Blue. The nav-expat
+gradient's stops each clear 4.5:1 on white — the gradient is the sanctioned exception, illegible
+text is not.
 - **Nav links:** `rounded-full`, `px-[18px] py-2`, `font-medium`. Inactive is Readout Grey with a
   faint Panel-2 hover; the **active link is a solid Panel-2 pill** with Ink text and
   `aria-current="page"`.
