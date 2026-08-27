@@ -11,6 +11,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
+  DialogBody,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 
@@ -37,9 +38,9 @@ export function RevisionDialog({
           <DialogTitle>{t("order.revDialogTitle")}</DialogTitle>
           <DialogDescription>{t("order.revDialogHint")}</DialogDescription>
         </DialogHeader>
-        {/* the list IS the action row, so there is no DialogFooter — but the
-            body keeps the family's padding and clears the home indicator */}
-        <div className="space-y-2 px-5 pb-[calc(1.25rem+env(safe-area-inset-bottom))] sm:px-6 sm:pb-6">
+        {/* the list IS the action row, so there is no DialogFooter — the
+            footerless body carries the safe-area bottom itself */}
+        <DialogBody className="space-y-2 pb-dialog-safe sm:pb-6">
           {MODULE_META.map((m) => (
             <Button
               key={m.id}
@@ -55,7 +56,7 @@ export function RevisionDialog({
               {t(m.titleKey)}
             </Button>
           ))}
-        </div>
+        </DialogBody>
       </DialogContent>
     </Dialog>
   );

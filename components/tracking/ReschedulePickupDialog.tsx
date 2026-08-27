@@ -12,6 +12,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
+  DialogBody,
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -60,15 +61,15 @@ export function ReschedulePickupDialog({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
-        <DialogHeader className="p-5 pb-4 sm:p-6 sm:pb-4">
-          <DialogTitle className="flex items-center gap-2">
-            <RefreshCcw className="size-5 text-foreground" />
+        <DialogHeader>
+          <DialogTitle>
+            <RefreshCcw />
             {t("order.pickReschedTitle")}
           </DialogTitle>
           <DialogDescription>{t("order.pickReschedBody")}</DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-4 px-5 sm:px-6">
+        <DialogBody className="space-y-4">
           <div>
             <Label htmlFor="resched-date">{t("order.puDate")}</Label>
             <DatePicker
@@ -94,8 +95,7 @@ export function ReschedulePickupDialog({
               wrapperClassName="mt-1.5"
             />
           </div>
-
-        </div>
+        </DialogBody>
 
         <DialogFooter>
           <Button variant="secondary" onClick={() => onOpenChange(false)}>

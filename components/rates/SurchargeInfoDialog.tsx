@@ -283,7 +283,7 @@ export function SurchargeInfoDialog({ children }: { children: React.ReactNode })
     <Dialog>
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent>
-        <DialogHeader className="p-5 pb-4 sm:p-6 sm:pb-4">
+        <DialogHeader>
           <DialogTitle>{t("surcharge.title")}</DialogTitle>
           <DialogDescription>{t("surcharge.desc")}</DialogDescription>
         </DialogHeader>

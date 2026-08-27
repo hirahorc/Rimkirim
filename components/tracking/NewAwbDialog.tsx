@@ -14,6 +14,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
+  DialogBody,
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -62,15 +63,15 @@ export function NewAwbDialog({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
-        <DialogHeader className="p-5 pb-4 sm:p-6 sm:pb-4">
-          <DialogTitle className="flex items-center gap-2">
-            <PackageX className="size-5 text-foreground" />
+        <DialogHeader>
+          <DialogTitle>
+            <PackageX />
             {t("order.awbDialogTitle")}
           </DialogTitle>
           <DialogDescription>{t("order.awbDialogBody")}</DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-4 px-5 sm:px-6">
+        <DialogBody className="space-y-4">
           <div>
             <Label>{t("order.awbDialogService")}</Label>
             <SegmentedRoot
@@ -99,8 +100,7 @@ export function NewAwbDialog({
               className="mt-1.5"
             />
           </div>
-
-        </div>
+        </DialogBody>
 
         <DialogFooter>
           <Button variant="secondary" onClick={() => onOpenChange(false)}>
