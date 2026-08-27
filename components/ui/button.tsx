@@ -7,19 +7,24 @@ import { Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-display text-sm font-medium transition-all motion-safe:active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/60 focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:pointer-events-none disabled:opacity-50 [&_svg]:size-4 [&_svg]:shrink-0",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-display text-sm font-medium transition-all motion-safe:active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/60 focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
   {
     variants: {
       variant: {
-        brand: "bg-brand text-brand-ink font-semibold hover:bg-brand-dim",
+        // disabled brand goes grey, not washed lime: a half-lime pill reads
+        // "almost", a Panel fill reads "not yet" — and its label stays AA
+        brand:
+          "bg-brand text-brand-ink font-semibold hover:bg-brand-dim disabled:bg-surface-3 disabled:text-muted",
         secondary:
-          "bg-surface-2 text-foreground border border-border-strong hover:bg-surface-3",
-        ghost: "text-muted hover:text-foreground hover:bg-surface-2",
+          "bg-surface-2 text-foreground border border-border-strong hover:bg-surface-3 disabled:opacity-50",
+        ghost:
+          "text-muted hover:text-foreground hover:bg-surface-2 disabled:opacity-50",
         // the "add something that isn't here yet" affordance: add package,
         // add document, upload a file
         dashed:
-          "border border-dashed border-border-strong bg-transparent font-normal text-muted hover:text-foreground",
-        danger: "bg-danger/15 text-danger border border-danger/30 hover:bg-danger/25",
+          "border border-dashed border-border-strong bg-transparent font-normal text-muted hover:text-foreground disabled:opacity-50",
+        danger:
+          "bg-danger/15 text-danger border border-danger/30 hover:bg-danger/25 disabled:opacity-50",
       },
       size: {
         // the small sizes step the radius down to `sm` (12px): at h-8 and
