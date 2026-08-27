@@ -48,7 +48,10 @@ export function CookieConsent() {
   const dismiss = () => setDismissed(true);
 
   return (
-    <div className="pointer-events-none fixed inset-x-0 bottom-0 z-40 flex justify-end p-4">
+    // centred on phones (a corner reads as misalignment when the card nearly
+    // fills the row); the corner-card treatment starts where there is a corner
+    // worth of empty page beside it
+    <div className="pointer-events-none fixed inset-x-0 bottom-0 z-40 flex justify-center p-4 sm:justify-end">
       {/* a corner card, not a full-width bar: the page stays usable beside it */}
       <div className="animate-fade-up pointer-events-auto flex w-full max-w-sm flex-col gap-3 rounded-md border border-border bg-surface/95 p-4 shadow-overlay backdrop-blur">
         <div className="flex items-start gap-2.5 text-sm text-muted">
