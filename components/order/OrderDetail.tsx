@@ -55,6 +55,17 @@ export function OrderDetail({ id }: { id: string }) {
   const order = useOrderStore((s) => s.orders.find((o) => o.id === id));
   const resumeOrder = useOrderStore((s) => s.resumeOrder);
 
+  // hooks stay above the early returns
+  const dateFmt = React.useMemo(
+    () =>
+      new Intl.DateTimeFormat(locale, {
+        day: "numeric",
+        month: "short",
+        year: "numeric",
+      }),
+    [locale],
+  );
+
   React.useEffect(() => {
     if (!hydrated || !authHydrated) return;
     if (!user) {
@@ -81,11 +92,7 @@ export function OrderDetail({ id }: { id: string }) {
     order.context?.service === "moving-abroad"
       ? "order.serviceMa"
       : "order.serviceBfg";
-  const date = new Intl.DateTimeFormat(locale, {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  }).format(new Date(order.createdAt));
+  const date = dateFmt.format(new Date(order.createdAt));
   const isDraft = order.status === "draft";
   const identifier = order.bookingNumber;
 
@@ -240,7 +247,11 @@ export function OrderDetail({ id }: { id: string }) {
             />
           )}
           {/* the phase that needs the customer outranks the archived
-              quotation: it leads only while approving it IS the live task */}
+              quotation: it leads only while approving it IS the live task.
+              NOTE: the two mutually-exclusive QuotationCard slots also force a
+              REMOUNT when the status changes — the card's breakdownOpen
+              initial state relies on that. Merging the slots into one would
+              silently freeze the breakdown open after approval. */}
           {order.status === "quotation" && order.quotation && (
             <QuotationCard order={order} />
           )}

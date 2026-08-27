@@ -35,9 +35,9 @@ export function RevisionCard({
       <div>
         {/* warning-ink, not raw warning: 14px on the tint needs the darkened
             token to clear 4.5:1 (the Tint-15/25 rule) */}
-        <p className="text-sm font-semibold text-warning-ink">
+        <h3 className="text-sm font-semibold text-warning-ink">
           {t("order.revTitle")}
-        </p>
+        </h3>
         <p className="mt-0.5 text-sm text-muted">
           {t("order.revBody")}{" "}
           <span className="font-medium text-foreground">

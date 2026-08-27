@@ -69,6 +69,9 @@ export const DialogContent = React.forwardRef<
         <Drawer.Overlay className="fixed inset-0 z-50 bg-foreground/25 backdrop-blur-sm" />
         <Drawer.Content
           ref={ref}
+          // measured missing from vaul's content: the scrim blocks the page,
+          // so the sheet IS modal and should say so to assistive tech
+          aria-modal="true"
           className={cn(
             "fixed inset-x-0 bottom-0 z-50 flex max-h-[92dvh] flex-col overflow-hidden rounded-t-lg border-t border-border-strong bg-surface text-foreground shadow-overlay outline-none",
             className,
