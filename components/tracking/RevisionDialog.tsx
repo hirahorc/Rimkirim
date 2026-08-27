@@ -56,14 +56,38 @@ export function RevisionDialog({
           <DialogDescription>{t("order.revDialogHint")}</DialogDescription>
         </DialogHeader>
         <DialogBody className="space-y-4">
-          <div className="space-y-2">
-            {MODULE_META.map((m) => {
+          {/* a real radiogroup: single-select is announced, arrows move the
+              choice, and the roving tabindex keeps one stop in the tab order */}
+          <div
+            role="radiogroup"
+            aria-label={t("order.revDialogTitle")}
+            className="space-y-2"
+            onKeyDown={(e) => {
+              const dir =
+                e.key === "ArrowDown" || e.key === "ArrowRight"
+                  ? 1
+                  : e.key === "ArrowUp" || e.key === "ArrowLeft"
+                    ? -1
+                    : 0;
+              if (!dir) return;
+              e.preventDefault();
+              const ids = MODULE_META.map((m) => m.id as ModuleId);
+              const idx = selected ? ids.indexOf(selected) : -1;
+              const next = ids[(idx + dir + ids.length) % ids.length];
+              setSelected(next);
+              document.getElementById(`rev-opt-${next}`)?.focus();
+            }}
+          >
+            {MODULE_META.map((m, i) => {
               const active = selected === (m.id as ModuleId);
               return (
                 <button
                   key={m.id}
+                  id={`rev-opt-${m.id}`}
                   type="button"
-                  aria-pressed={active}
+                  role="radio"
+                  aria-checked={active}
+                  tabIndex={active || (!selected && i === 0) ? 0 : -1}
                   onClick={() => setSelected(m.id as ModuleId)}
                   className={cn(
                     "flex h-10 w-full items-center gap-3 rounded-md border px-4 font-display text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/60",

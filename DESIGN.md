@@ -440,8 +440,10 @@ one as drift.
   home indicator on gesture-nav phones. Never park a button row inside the scroll body —
   every action dialog in the app now follows this (reschedule, drop-off, new AWB, quotation
   approval, packing-list delete, photo warning, booking agreement, questionnaire outcome).
-  A choice-list dialog (RevisionDialog) has no footer — the list is the action row — but its
-  body keeps the family's padding and the safe-area bottom. The booking agreement's hint +
+  Even the revision choice list graduated to the footer: RevisionDialog rows only *select*
+  (a radiogroup with a note field), and the request fires from an explicit `DialogFooter`
+  CTA — regressing an order is never one tap. A dialog whose list still *is* the action row
+  keeps the footerless body with the safe-area bottom. The booking agreement's hint +
   checkbox sit in their own block above the footer; only buttons live in `DialogFooter`.
   Exceptions: media lightboxes (`sheet={false}`), info-only dialogs with zero buttons, and
   the login dialog, which owns its own full-screen mobile form.

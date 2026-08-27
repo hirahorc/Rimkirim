@@ -934,8 +934,9 @@ const id = {
     quWarehouseFreeNote: "Hari 1–3 gratis",
     quWarehouseFromDay: "Mulai hari ke-4:",
     quApprovedToast: "Quotation disetujui. Pickup akan dijadwalkan.",
-    quApproveFailedToast:
-      "Quotation tidak bisa disetujui. Muat ulang halaman lalu coba lagi.",
+    quApproveFailed:
+      "Quotation tidak bisa disetujui. Status pesanan mungkin sudah berubah, coba lagi.",
+    quNoTaxes: "Tidak ada potensi pajak untuk kiriman ini.",
     quExpired: "Masa berlaku habis",
     quExpiredHint: "Hubungi tim Rimkirim untuk quotation baru.",
     quSurchargeNote: "Hanya surcharge tertinggi per paket yang ditagih.",
@@ -2263,8 +2264,9 @@ const en: Messages = {
     quWarehouseFreeNote: "Days 1–3 free",
     quWarehouseFromDay: "From day 4:",
     quApprovedToast: "Quotation approved. Pickup will be scheduled.",
-    quApproveFailedToast:
-      "The quotation could not be approved. Reload the page and try again.",
+    quApproveFailed:
+      "The quotation could not be approved. The order status may have changed, try again.",
+    quNoTaxes: "No potential taxes for this shipment.",
     quExpired: "Quote expired",
     quExpiredHint: "Contact the Rimkirim team for a new quotation.",
     quSurchargeNote: "Only the highest surcharge per package is billed.",

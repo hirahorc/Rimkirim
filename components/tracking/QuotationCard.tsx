@@ -43,6 +43,7 @@ export function QuotationCard({ order }: { order: Order }) {
   const approveQuotation = useOrderStore((s) => s.approveQuotation);
   const [revOpen, setRevOpen] = React.useState(false);
   const [approveOpen, setApproveOpen] = React.useState(false);
+  const [approveError, setApproveError] = React.useState(false);
   // breakdown open while approval is the live decision; once the quotation is
   // archive material the card shrinks to header + total so it stops towering
   // over the panel that actually needs the customer
@@ -85,8 +86,13 @@ export function QuotationCard({ order }: { order: Order }) {
             <ReceiptText className="size-4 text-foreground" />
             {t("order.tdQuotationSection")}
           </h2>
-          {pendingApproval ? (
-            <Badge variant="brand">{t("order.quPending")}</Badge>
+          {expired ? (
+            // the badge must not say "awaiting approval" beside a dead date
+            <Badge variant="warning">{t("order.quExpired")}</Badge>
+          ) : pendingApproval ? (
+            // neutral, not brand: pending is a status, and the lime voice
+            // belongs to the Approve CTA alone on this screen
+            <Badge variant="neutral">{t("order.quPending")}</Badge>
           ) : approved ? (
             <Badge variant="success">
               <CheckCircle2 className="size-3" /> {t("order.quApproved")}
@@ -107,17 +113,26 @@ export function QuotationCard({ order }: { order: Order }) {
               {formatIDR(qu.total)}
             </p>
           </div>
-          <p
-            className={cn(
-              "flex items-center gap-1.5 text-xs",
-              expired ? "font-medium text-warning-ink" : "text-muted-2",
-            )}
-          >
-            <Clock3 className="size-3.5" />
-            {expired ? t("order.quExpired") : t("order.quValidUntil")}:{" "}
-            {dateFmt.format(qu.validUntil)}
-          </p>
+          {/* only while the decision is live: an approved card headlining a
+              stale "valid until" date would just sow doubt */}
+          {pendingApproval && (
+            <p
+              className={cn(
+                "flex items-center gap-1.5 text-xs",
+                expired ? "font-medium text-warning-ink" : "text-muted-2",
+              )}
+            >
+              <Clock3 className="size-3.5" />
+              {expired ? t("order.quExpired") : t("order.quValidUntil")}:{" "}
+              {dateFmt.format(qu.validUntil)}
+            </p>
+          )}
         </div>
+        {expired && (
+          <p className="mt-2 text-sm font-medium text-warning-ink">
+            {t("order.quExpiredHint")}
+          </p>
+        )}
         <p className="mt-1 text-xs text-muted-2">
           <span className="font-mono tabular-nums">{formatIDR(qu.perKg)}</span> /{" "}
           {t("order.tdPerKg")} · {formatNumber(qu.chargeableKg, 1, locale)} kg ·{" "}
@@ -261,23 +276,28 @@ export function QuotationCard({ order }: { order: Order }) {
                   {formatCurrency(qu.declaredValue, qu.declaredCurrency)}
                 </span>
               </div>
-              {(
-                [
-                  ["order.quTaxImportDuty", qu.taxes.importDuty],
-                  ["order.quTaxVat", qu.taxes.vat],
-                  ["order.quTaxIncomeTax", qu.taxes.incomeTax],
-                ] as const
-              ).map(([key, amount]) => (
-                <div
-                  key={key}
-                  className="flex items-center justify-between gap-3 text-sm"
-                >
-                  <span className="text-muted">{t(key)}</span>
-                  <span className="shrink-0 font-mono tabular-nums text-muted-2">
-                    {formatIDR(amount)}
-                  </span>
-                </div>
-              ))}
+              {qu.taxes.importDuty + qu.taxes.vat + qu.taxes.incomeTax === 0 ? (
+                // three rows of Rp 0 are rows, not information
+                <p className="text-sm text-muted">{t("order.quNoTaxes")}</p>
+              ) : (
+                (
+                  [
+                    ["order.quTaxImportDuty", qu.taxes.importDuty],
+                    ["order.quTaxVat", qu.taxes.vat],
+                    ["order.quTaxIncomeTax", qu.taxes.incomeTax],
+                  ] as const
+                ).map(([key, amount]) => (
+                  <div
+                    key={key}
+                    className="flex items-center justify-between gap-3 text-sm"
+                  >
+                    <span className="text-muted">{t(key)}</span>
+                    <span className="shrink-0 font-mono tabular-nums text-muted-2">
+                      {formatIDR(amount)}
+                    </span>
+                  </div>
+                ))
+              )}
             </div>
             <p className="mt-2 text-xs leading-relaxed text-muted-2">
               {t("order.quTaxCaption")}
@@ -308,13 +328,11 @@ export function QuotationCard({ order }: { order: Order }) {
 
         {pendingApproval && (
           <div className="mt-4 space-y-2">
-            {expired ? (
-              <p className="text-sm font-medium text-warning-ink">
-                {t("order.quExpiredHint")}
-              </p>
-            ) : (
-              /* a multi-million-rupiah commitment is never one tap: the button
-                 opens a confirm sheet that restates what is being agreed to */
+            {/* a multi-million-rupiah commitment is never one tap: the button
+                opens a confirm sheet that restates what is being agreed to.
+                Expired quotes hide it — the hint beside the total routes to
+                support instead */}
+            {!expired && (
               <Button className="w-full" onClick={() => setApproveOpen(true)}>
                 <CheckCircle2 /> {t("order.quApprove")}
               </Button>
@@ -335,7 +353,13 @@ export function QuotationCard({ order }: { order: Order }) {
         )}
       </Card>
 
-      <Dialog open={approveOpen} onOpenChange={setApproveOpen}>
+      <Dialog
+        open={approveOpen}
+        onOpenChange={(next) => {
+          setApproveOpen(next);
+          if (!next) setApproveError(false);
+        }}
+      >
         <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle>{t("order.quApproveConfirmTitle")}</DialogTitle>
@@ -354,6 +378,11 @@ export function QuotationCard({ order }: { order: Order }) {
                 {t("order.quValidUntil")}: {dateFmt.format(qu.validUntil)}
               </p>
             </div>
+            {approveError && (
+              <p className="mt-3 text-sm font-medium text-danger-ink" role="alert">
+                {t("order.quApproveFailed")}
+              </p>
+            )}
           </DialogBody>
           <DialogFooter>
             <Button variant="ghost" onClick={() => setApproveOpen(false)}>
@@ -362,17 +391,21 @@ export function QuotationCard({ order }: { order: Order }) {
             <Button
               onClick={() => {
                 approveQuotation(order.id);
-                setApproveOpen(false);
                 // the store action is a guarded no-op outside `quotation` —
                 // only celebrate if the approval actually landed
                 const now = useOrderStore
                   .getState()
                   .orders.find((o) => o.id === order.id);
-                if (now?.status === "pickup")
+                if (now?.status === "pickup") {
+                  setApproveOpen(false);
+                  setApproveError(false);
                   toast.success(t("order.quApprovedToast"));
-                // a silent nothing is the worst feeling at a money moment:
-                // if the approval didn't land, say so
-                else toast.error(t("order.quApproveFailedToast"));
+                } else {
+                  // failure keeps the dialog open with the error inline:
+                  // the recovery (try again) belongs to the dialog that just
+                  // took the commitment, not to the user via a page reload
+                  setApproveError(true);
+                }
               }}
             >
               <CheckCircle2 /> {t("order.quApproveConfirmCta")}
