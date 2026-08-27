@@ -936,7 +936,6 @@ const id = {
     quApprovedToast: "Quotation disetujui. Pickup akan dijadwalkan.",
     quApproveFailed:
       "Quotation tidak bisa disetujui. Status pesanan mungkin sudah berubah, coba lagi.",
-    quNoTaxes: "Tidak ada potensi pajak untuk kiriman ini.",
     quExpired: "Masa berlaku habis",
     quExpiredHint: "Hubungi tim Rimkirim untuk quotation baru.",
     quSurchargeNote: "Hanya surcharge tertinggi per paket yang ditagih.",
@@ -2266,7 +2265,6 @@ const en: Messages = {
     quApprovedToast: "Quotation approved. Pickup will be scheduled.",
     quApproveFailed:
       "The quotation could not be approved. The order status may have changed, try again.",
-    quNoTaxes: "No potential taxes for this shipment.",
     quExpired: "Quote expired",
     quExpiredHint: "Contact the Rimkirim team for a new quotation.",
     quSurchargeNote: "Only the highest surcharge per package is billed.",
