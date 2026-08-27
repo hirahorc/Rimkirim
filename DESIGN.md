@@ -427,6 +427,9 @@ one as drift.
 - **The mobile sheet** (below `sm`, every dialog): a vaul bottom sheet on the iOS curve
   (`cubic-bezier(0.32, 0.72, 0, 1)`, 500ms) with a grab handle, drag-to-dismiss on velocity —
   a flick is enough — and damping past the top. The centred modal is a desktop-only shape.
+  The sheet carries **no close button**: it dismisses by swipe, scrim tap, or Esc, and an X
+  would fight the grab-handle row. The X belongs to the modal presentation (no drag
+  affordance) and to the mobile nav slide-over, which has no handle either.
   Exceptions: media lightboxes (`sheet={false}`) and the login dialog, which owns its own
   full-screen mobile form. Under reduced motion the transition collapses to instant; the drag
   itself is the user's own motion and stays.
