@@ -30,11 +30,12 @@
      may be used as coloured ink or an underline stroke. */
   --accent: #9c26f5;
 
-  /* status — tuned for a light canvas (the old pastels wash out on white) */
-  --success: #16a34a;
-  --warning: #b45309;
-  --danger: #dc2626;
-  --info: #2563eb;
+  /* status — aligned to Sonner's richColors light palette (text hues) so
+     toasts and in-app status surfaces share one palette */
+  --success: hsl(140 100% 27%);
+  --warning: hsl(31 92% 45%);
+  --danger: hsl(360 100% 45%);
+  --info: hsl(210 92% 45%);
 
   /* rounded corners */
   --radius: 1rem;

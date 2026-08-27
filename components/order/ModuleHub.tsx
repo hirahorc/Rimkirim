@@ -360,7 +360,7 @@ export function ModuleHub() {
       {/* all four complete: name the moment before asking for the booking */}
       {canSubmit && (
         <p className="mt-6 flex items-center justify-center gap-1.5 text-sm font-medium text-foreground">
-          {/* success lives in the icon; #16a34a text on white is only 3.3:1 */}
+          {/* success lives in the icon, per the Tint-15/25 rule: body text stays ink */}
           <CheckCircle2 className="size-4 text-success" /> {t("order.hubAllDone")}
         </p>
       )}
