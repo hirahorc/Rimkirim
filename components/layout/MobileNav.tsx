@@ -69,6 +69,18 @@ export function MobileNav() {
                 </Link>
               );
             })}
+            {/* signed in, "Cek Tarif" folds into the browse list: it is no
+                longer the forward CTA (Pesanan Saya holds the lime below),
+                just another place to go */}
+            {user && (
+              <Link
+                href="/#kalkulator"
+                onClick={close}
+                className="flex min-h-[48px] items-center rounded-full px-4 text-base text-muted transition-colors hover:bg-surface-2 hover:text-foreground"
+              >
+                {t("nav.cekTarif")}
+              </Link>
+            )}
           </nav>
 
           <div className="space-y-3 border-t border-border p-4">
@@ -107,11 +119,6 @@ export function MobileNav() {
                 <Button asChild variant="secondary" className="w-full">
                   <Link href="/packing-list" onClick={close}>
                     <ClipboardList className="size-4" /> {t("auth.myPackingLists")}
-                  </Link>
-                </Button>
-                <Button asChild variant="secondary" className="w-full">
-                  <Link href="/#kalkulator" onClick={close}>
-                    {t("nav.cekTarif")}
                   </Link>
                 </Button>
                 <button
