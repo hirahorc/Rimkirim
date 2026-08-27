@@ -30,6 +30,7 @@ import {
   DialogContent,
   DialogTitle,
   DialogDescription,
+  DialogFooter,
 } from "@/components/ui/dialog";
 import { InfoTip, TooltipProvider } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils/cn";
@@ -808,7 +809,7 @@ function OutcomeScreen({
       }}
     >
       <DialogContent>
-        <div className="min-h-0 overflow-y-auto p-6 sm:p-8">
+        <div className="min-h-0 overflow-y-auto p-6 pb-2 sm:p-8 sm:pb-2">
           <p className="font-display text-xs font-medium uppercase tracking-[0.04em] text-muted-2">
             {eyebrow}
           </p>
@@ -824,36 +825,34 @@ function OutcomeScreen({
               <p className="mt-2 text-xs text-muted-2">{echo}</p>
             </div>
           </div>
-          <div className="mt-6 flex flex-col gap-2 sm:flex-row sm:flex-wrap">
-            <Button
-              asChild
-              variant={primary.tone ?? "brand"}
-              className="w-full sm:w-auto"
-            >
-              {primary.external ? (
-                <a href={primary.href} target="_blank" rel="noreferrer">
-                  {primary.icon} {primary.label}
-                </a>
-              ) : (
-                <Link href={primary.href}>
-                  {primary.icon} {primary.label}
-                </Link>
-              )}
-            </Button>
-            {alt && (
-              <Button asChild variant="secondary" className="w-full sm:w-auto">
-                <Link href={alt.href}>{alt.label}</Link>
-              </Button>
-            )}
-            <Button
-              variant="ghost"
-              className="w-full sm:ml-auto sm:w-auto"
-              onClick={onSecondary}
-            >
-              {secondaryLabel}
-            </Button>
-          </div>
         </div>
+        {/* DOM order [ghost, alt?, primary] so the sheet's flex-col-reverse
+            stacks primary on top; on desktop the ghost sits apart on the left */}
+        <DialogFooter className="px-6 sm:px-8">
+          <Button
+            variant="ghost"
+            className="sm:mr-auto"
+            onClick={onSecondary}
+          >
+            {secondaryLabel}
+          </Button>
+          {alt && (
+            <Button asChild variant="secondary">
+              <Link href={alt.href}>{alt.label}</Link>
+            </Button>
+          )}
+          <Button asChild variant={primary.tone ?? "brand"}>
+            {primary.external ? (
+              <a href={primary.href} target="_blank" rel="noreferrer">
+                {primary.icon} {primary.label}
+              </a>
+            ) : (
+              <Link href={primary.href}>
+                {primary.icon} {primary.label}
+              </Link>
+            )}
+          </Button>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );
