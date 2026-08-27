@@ -731,15 +731,20 @@ choice). Reach for a de-boxed record when content is a *long read you scan* — 
 walls the eye has to climb. Never nest a card inside the record.
 
 ### Line-item table
-Tabular data (the items inside a package) is a real semantic **`<table>`** inside a **4px**
-(`rounded-[4px]`) hairline-fenced container — never a set of per-row `grid` divs. The fence stays
-near-square: a data grid is made of sharp rows and right angles, and any card-scale radius around it
-reads as a soft box fighting its own contents; 4px only keeps the hairline from cracking at the
-corner. The header sits on Panel 2 with 12px
-uppercase Dim-Grey labels; body rows are hairline-separated; the description column flexes and wraps
-while every **numeric column is right-aligned, Mono `tabular-nums`, and `whitespace-nowrap`** so a
-currency figure never breaks mid-number; a Panel-2 `tfoot` carries the total, aligned under its
-column.
+Tabular data (the items inside a package) is a real semantic **`<table>`** — never a set of
+per-row `grid` divs. It ships in two dressings, chosen by the surface it sits in:
+- **Fenced** (standalone contexts — the article table): a **4px** (`rounded-[4px]`)
+  hairline-fenced container. The fence stays near-square: a data grid is made of sharp rows and
+  right angles, and any card-scale radius around it reads as a soft box fighting its own contents;
+  4px only keeps the hairline from cracking at the corner. The header sits on Panel 2 with 12px
+  uppercase Dim-Grey labels; a Panel-2 `tfoot` carries the total.
+- **De-boxed** (inside a hairline ledger — the order record's items table): no fence, no Panel-2
+  fills; the table speaks the surrounding ledger's language — a plain `border-t` opens it, 12px
+  Dim-Grey headers, hairline-separated rows, a hairline `tfoot`. A fence inside a de-boxed record
+  would nest a box in the record (the De-Box Rule).
+In both dressings the description column flexes and wraps while every **numeric column is
+right-aligned, Mono `tabular-nums`, and `whitespace-nowrap`** so a currency figure never breaks
+mid-number, and the total aligns under its column.
 
 **The Real-Table Rule.** Columns must align across header, body, and footer — which independent
 per-row grids cannot guarantee, because each row sizes its own tracks and they drift apart the moment

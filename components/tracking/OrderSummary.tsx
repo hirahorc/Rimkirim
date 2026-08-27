@@ -136,6 +136,46 @@ function EmptyLine() {
   return <p className="py-2 text-sm text-muted-2">{t("order.tdNotFilled")}</p>;
 }
 
+/** The four measurement photos, in ledger order. */
+const PHOTO_ROW = [
+  ["weight", "order.itPhotoWeight"],
+  ["length", "order.itPhotoLength"],
+  ["width", "order.itPhotoWidth"],
+  ["height", "order.itPhotoHeight"],
+] as const;
+
+/** One measurement photo as a mini thumbnail opening the media lightbox. */
+function PhotoThumb({ label, dataUrl }: { label: string; dataUrl: string }) {
+  const t = useT();
+  return (
+    <Dialog>
+      <DialogTrigger
+        aria-label={`${t("order.viewFile")}: ${label}`}
+        className="h-10 w-12 shrink-0 overflow-hidden rounded-sm border border-border transition-colors hover:border-border-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/50"
+      >
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={dataUrl} alt="" aria-hidden className="size-full object-cover" />
+      </DialogTrigger>
+      {/* media lightbox stays a centred modal at every size */}
+      <DialogContent sheet={false} className="max-w-3xl p-0">
+        <DialogHeader className="pb-4">
+          <DialogTitle className="truncate pr-8 text-base font-medium sm:text-base">
+            {label}
+          </DialogTitle>
+        </DialogHeader>
+        <div className="min-h-0 flex-1 overflow-auto bg-surface-2 p-4">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={dataUrl}
+            alt={label}
+            className="mx-auto max-h-[72dvh] w-auto rounded-sm object-contain"
+          />
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 /** Empty-string/null/undefined → en dash, otherwise the string form. */
 function val(x: unknown): string {
   return x === undefined || x === null || x === "" ? dash : String(x);
@@ -486,7 +526,7 @@ function ItemsCard({ order }: { order: Order }) {
                 `${dims.length} × ${dims.width} × ${dims.height}`,
               itemCount > 0 &&
                 `${itemCount} ${t(itemCount === 1 ? "order.itItemWordOne" : "order.itItemsWord")}`,
-              pkgValue > 0 && formatCurrency(pkgValue, currency),
+              pkgValue > 0 && formatCurrency(pkgValue, currency, locale),
             ]
               .filter(Boolean)
               .join(" · ")
@@ -516,23 +556,35 @@ function ItemsCard({ order }: { order: Order }) {
                 motion (DESIGN.md, "The disclosure open") */}
             <CollapseHeight open={open}>
               <div className="mt-1">
+                {/* an all-empty package is one muted line, not a stack of
+                    zero-value rows (this file's own EmptyLine doctrine) */}
+                {!hasAny ? (
+                  <EmptyLine />
+                ) : (
+                <>
                 {/* the package's physique reads itself — a packaging name, an
                     L×W×H in cm, a kg figure — so it goes label-less in one spec
                     line (the same move as Customer Info). What stays in the
                     ledger genuinely needs its label: a second kg figure is
                     mute without "chargeable", and a photo status without its
-                    subject */}
-                {(p?.packaging ||
-                  p?.length ||
-                  p?.width ||
-                  p?.height ||
-                  p?.weight) && (
+                    subject. Boolean(), not a bare && chain: a chain of falsy
+                    numbers resolves to 0 and React renders the character */}
+                {Boolean(
+                  p?.packaging ||
+                    dims.length ||
+                    dims.width ||
+                    dims.height ||
+                    dims.weight,
+                ) && (
                   <p className="py-2 text-sm text-muted">
                     {[
                       p?.packaging && pkgTypeLabel(t, p.packaging),
-                      (p?.length || p?.width || p?.height) &&
-                        `${val(p?.length)} × ${val(p?.width)} × ${val(p?.height)} cm`,
-                      p?.weight && `${val(p.weight)} kg`,
+                      // same formatter as the collapsed summary line: one
+                      // decimal convention for the same figure, five lines apart
+                      (dims.length > 0 || dims.width > 0 || dims.height > 0) &&
+                        `${formatNumber(dims.length, 1, locale)} × ${formatNumber(dims.width, 1, locale)} × ${formatNumber(dims.height, 1, locale)} cm`,
+                      dims.weight > 0 &&
+                        `${formatNumber(dims.weight, 1, locale)} kg`,
                     ]
                       .filter(Boolean)
                       .join(" · ")}
@@ -551,9 +603,24 @@ function ItemsCard({ order }: { order: Order }) {
                   )}
                 </Row>
                 <Row label={t("order.tdPhotos")}>
-                  {p?.photos && Object.keys(p.photos).length > 0
-                    ? t("order.tdUploaded")
-                    : t("order.tdMissingOptional")}
+                  {/* the photos ARE the evidence this record exists to hold:
+                      show them, don't assert them */}
+                  {p?.photos && Object.keys(p.photos).length > 0 ? (
+                    <span className="flex flex-wrap justify-end gap-1.5">
+                      {PHOTO_ROW.map(([key, labelKey]) =>
+                        typeof p.photos?.[key] === "string" &&
+                        (p.photos[key] as string).startsWith("data:image/") ? (
+                          <PhotoThumb
+                            key={key}
+                            label={t(labelKey)}
+                            dataUrl={p.photos[key] as string}
+                          />
+                        ) : null,
+                      )}
+                    </span>
+                  ) : (
+                    t("order.tdMissingOptional")
+                  )}
                 </Row>
                 {items.length > 0 && (
                   // a real table: columns align natively across header/body/
@@ -586,12 +653,13 @@ function ItemsCard({ order }: { order: Order }) {
                               {val(it?.quantity)}
                             </td>
                             <td className="whitespace-nowrap px-3 py-1.5 text-right font-mono tabular-nums text-muted">
-                              {formatCurrency(Number(it?.value) || 0, currency)}
+                              {formatCurrency(Number(it?.value) || 0, currency, locale)}
                             </td>
                             <td className="whitespace-nowrap py-1.5 pl-3 text-right font-mono font-medium tabular-nums">
                               {formatCurrency(
                                 (Number(it?.value) || 0) * (Number(it?.quantity) || 0),
                                 currency,
+                                locale,
                               )}
                             </td>
                           </tr>
@@ -603,12 +671,14 @@ function ItemsCard({ order }: { order: Order }) {
                             {t("order.itSubtotalPkg")}
                           </td>
                           <td className="whitespace-nowrap py-1.5 pl-3 text-right font-mono text-sm font-medium tabular-nums">
-                            {formatCurrency(pkgValue, currency)}
+                            {formatCurrency(pkgValue, currency, locale)}
                           </td>
                         </tr>
                       </tfoot>
                     </table>
                   </div>
+                )}
+                </>
                 )}
               </div>
             </CollapseHeight>
@@ -628,7 +698,7 @@ function ItemsCard({ order }: { order: Order }) {
           </Row>
           <Row label={<span className="text-muted">{t("order.itTotalValue")}</span>}>
             <span className="font-mono text-base font-medium">
-              {formatCurrency(totalValue, currency)}
+              {formatCurrency(totalValue, currency, locale)}
             </span>
           </Row>
           {totalPrice > 0 &&
