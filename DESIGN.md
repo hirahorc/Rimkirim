@@ -241,7 +241,10 @@ point of use.
   under the pointer, never on idle UI, and stops the moment the hover ends.
 
 **The Tint-15/25 Rule.** *Status* chips use the colour at 15% opacity for the fill, 25% for the
-border, and full strength for the text/icon. **Brand chips are the exception** — a 15% lime wash is
+border, full strength for the icon, and the **status ink** (`--*-ink`: the accent color-mixed
+80% toward black, warning 70%) for the words — so the label speaks the status hue like the
+richColors toasts do, while 12px text still clears AA 4.5:1 on the tint (the raw accents
+measure only 2.7–3.8:1 there). **Brand chips are the exception** — a 15% lime wash is
 nearly invisible on white, so they use a solid Soft Lime fill with Ink on Lime text.
 
 ## Typography

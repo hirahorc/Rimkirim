@@ -37,6 +37,15 @@
   --danger: hsl(360 100% 45%);
   --info: hsl(210 92% 45%);
 
+  /* status ink: the accent darkened just enough to clear 4.5:1 as 12px text on
+     its own 15% tint (the raw accents measure 2.7–3.8:1 there) — the same
+     color-mix trick the info link uses. Warning starts lightest, so it mixes
+     deeper than its siblings. */
+  --success-ink: color-mix(in srgb, var(--success) 80%, black);
+  --warning-ink: color-mix(in srgb, var(--warning) 70%, black);
+  --danger-ink: color-mix(in srgb, var(--danger) 80%, black);
+  --info-ink: color-mix(in srgb, var(--info) 80%, black);
+
   /* rounded corners */
   --radius: 1rem;
 
@@ -69,6 +78,10 @@
   --color-warning: var(--warning);
   --color-danger: var(--danger);
   --color-info: var(--info);
+  --color-success-ink: var(--success-ink);
+  --color-warning-ink: var(--warning-ink);
+  --color-danger-ink: var(--danger-ink);
+  --color-info-ink: var(--info-ink);
 
   --font-sans: var(--font-geist), ui-sans-serif, system-ui, sans-serif;
   --font-display: var(--font-space-grotesk), var(--font-geist), sans-serif;
