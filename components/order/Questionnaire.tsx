@@ -6,8 +6,6 @@ import { useRouter } from "next/navigation";
 import {
   ArrowRight,
   MessageCircle,
-  PackageX,
-  Globe2,
   Search,
   Loader2,
   CheckCircle2,
@@ -413,8 +411,6 @@ export function Questionnaire() {
   const outcomeProps =
     outcome === "ineligible"
       ? {
-          icon: <PackageX className="size-6 text-foreground" />,
-          eyebrow: t("order.qOutcomeEyebrow"),
           title: t("order.ineligibleTitle"),
           body: t("order.ineligibleBody"),
           echo: `${t("order.qYourAnswer")}: ${t("order.no")}`,
@@ -425,14 +421,11 @@ export function Questionnaire() {
             tone: "secondary" as const,
             icon: <MessageCircle className="size-4" />,
           },
-          alt: { label: t("order.ineligibleAlt"), href: "/cek-tarif" },
           secondaryLabel: t("order.backToRates"),
           onSecondary: () => setAnswers({ shippingPersonal: undefined }),
         }
       : outcome === "foreigner"
         ? {
-            icon: <Globe2 className="size-6 text-foreground" />,
-            eyebrow: t("order.qOutcomeEyebrow"),
             title: t("order.foreignerTitle"),
             body: t("order.foreignerBody"),
             echo: `${t("order.qYourAnswer")}: ${t("order.foreigner")}`,
@@ -769,8 +762,6 @@ export function Questionnaire() {
 }
 
 function OutcomeScreen({
-  icon,
-  eyebrow,
   title,
   body,
   echo,
@@ -780,8 +771,6 @@ function OutcomeScreen({
   onSecondary,
   open,
 }: {
-  icon: React.ReactNode;
-  eyebrow: string;
   title: string;
   body: string;
   /** the answer that routed them here, repeated so the hand-off has a reason */
@@ -809,22 +798,13 @@ function OutcomeScreen({
       }}
     >
       <DialogContent>
+        {/* no eyebrow, no icon: the title carries the moment by itself */}
         <div className="min-h-0 overflow-y-auto p-6 pb-2 sm:p-8 sm:pb-2">
-          <p className="font-display text-xs font-medium uppercase tracking-[0.04em] text-muted-2">
-            {eyebrow}
-          </p>
-          <div className="mt-3 flex items-start gap-4">
-            <div className="grid size-12 shrink-0 place-items-center rounded-full bg-surface-2">
-              {icon}
-            </div>
-            <div className="min-w-0">
-              <DialogTitle className="font-semibold sm:text-xl">
-                {title}
-              </DialogTitle>
-              <DialogDescription className="mt-1.5">{body}</DialogDescription>
-              <p className="mt-2 text-xs text-muted-2">{echo}</p>
-            </div>
-          </div>
+          <DialogTitle className="font-semibold sm:text-xl">
+            {title}
+          </DialogTitle>
+          <DialogDescription className="mt-1.5">{body}</DialogDescription>
+          <p className="mt-2 text-xs text-muted-2">{echo}</p>
         </div>
         {/* DOM order [ghost, alt?, primary] so the sheet's flex-col-reverse
             stacks primary on top; on desktop the ghost sits apart on the left */}
