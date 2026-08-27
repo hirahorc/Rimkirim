@@ -430,6 +430,10 @@ one as drift.
   The sheet carries **no close button**: it dismisses by swipe, scrim tap, or Esc, and an X
   would fight the grab-handle row. The X belongs to the modal presentation (no drag
   affordance) and to the mobile nav slide-over, which has no handle either.
+  Dialog actions live in **`DialogFooter`**: stacked full-width on the sheet (primary on
+  top — DOM order [secondary, primary] through `flex-col-reverse`), a right-aligned row in
+  the modal, with `env(safe-area-inset-bottom)` added below so the bottom button clears the
+  home indicator on gesture-nav phones. Never park a button row inside the scroll body.
   Exceptions: media lightboxes (`sheet={false}`) and the login dialog, which owns its own
   full-screen mobile form. Under reduced motion the transition collapses to instant; the drag
   itself is the user's own motion and stays.
