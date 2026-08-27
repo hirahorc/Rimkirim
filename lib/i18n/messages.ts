@@ -934,6 +934,16 @@ const id = {
     quWarehouseFreeNote: "Hari 1–3 gratis",
     quWarehouseFromDay: "Mulai hari ke-4:",
     quApprovedToast: "Quotation disetujui. Pickup akan dijadwalkan.",
+    quApproveFailedToast:
+      "Quotation tidak bisa disetujui. Muat ulang halaman lalu coba lagi.",
+    quExpired: "Masa berlaku habis",
+    quExpiredHint: "Hubungi tim Rimkirim untuk quotation baru.",
+    quSurchargeNote: "Hanya surcharge tertinggi per paket yang ditagih.",
+    quNotCharged: "tidak ditagih",
+    quWaText: "Halo, saya mau bertanya tentang quotation untuk order",
+    revNoteLabel: "Catatan untuk tim (opsional)",
+    revNotePlaceholder: "Contoh: berat paket 2 harusnya 8 kg",
+    revSubmit: "Kirim permintaan revisi",
     quApproveConfirmTitle: "Setujui quotation ini?",
     quApproveConfirmBody:
       "Dengan menyetujui, kamu mengonfirmasi total tagihan di bawah dan pickup akan dijadwalkan. Kalau masih ada yang perlu diubah, minta revisi dulu.",
@@ -2253,6 +2263,16 @@ const en: Messages = {
     quWarehouseFreeNote: "Days 1–3 free",
     quWarehouseFromDay: "From day 4:",
     quApprovedToast: "Quotation approved. Pickup will be scheduled.",
+    quApproveFailedToast:
+      "The quotation could not be approved. Reload the page and try again.",
+    quExpired: "Quote expired",
+    quExpiredHint: "Contact the Rimkirim team for a new quotation.",
+    quSurchargeNote: "Only the highest surcharge per package is billed.",
+    quNotCharged: "not billed",
+    quWaText: "Hello, I have a question about the quotation for order",
+    revNoteLabel: "Note for the team (optional)",
+    revNotePlaceholder: "e.g. package 2 should be 8 kg",
+    revSubmit: "Send revision request",
     quApproveConfirmTitle: "Approve this quotation?",
     quApproveConfirmBody:
       "Approving confirms the total below, and pickup will be scheduled. If something still needs changing, request a revision first.",

@@ -55,6 +55,14 @@ export function QuotationCard({ order }: { order: Order }) {
   // only packages that actually triggered a surcharge earn a breakdown row
   const surchargePkgs = (qu.packages ?? []).filter((p) => p.triggered.length > 0);
   const pendingApproval = order.status === "quotation";
+  // past validUntil the lime Approve would be a lie next to a dead date:
+  // the card switches to warning ink and routes to support instead
+  const expired = pendingApproval && qu.validUntil < Date.now();
+  // the WA composer opens pre-filled so nobody has to memorise the booking
+  // number mid-thumb-scroll
+  const waUrl = `${WA_URL}?text=${encodeURIComponent(
+    `${t("order.quWaText")} ${order.bookingNumber ?? ""}`.trim(),
+  )}`;
   const approved = [
     "pickup",
     "in-transit",
@@ -99,9 +107,15 @@ export function QuotationCard({ order }: { order: Order }) {
               {formatIDR(qu.total)}
             </p>
           </div>
-          <p className="flex items-center gap-1.5 text-xs text-muted-2">
+          <p
+            className={cn(
+              "flex items-center gap-1.5 text-xs",
+              expired ? "font-medium text-warning-ink" : "text-muted-2",
+            )}
+          >
             <Clock3 className="size-3.5" />
-            {t("order.quValidUntil")}: {dateFmt.format(qu.validUntil)}
+            {expired ? t("order.quExpired") : t("order.quValidUntil")}:{" "}
+            {dateFmt.format(qu.validUntil)}
           </p>
         </div>
         <p className="mt-1 text-xs text-muted-2">
@@ -180,6 +194,13 @@ export function QuotationCard({ order }: { order: Order }) {
                         ) : (
                           <span className="mt-0.5 size-3.5 shrink-0" aria-hidden />
                         )}
+                        {/* line-through is invisible to screen readers, which
+                            would happily read a struck fee as a charge */}
+                        {!s.applied && (
+                          <span className="sr-only">
+                            ({t("order.quNotCharged")}){" "}
+                          </span>
+                        )}
                         {s.label}
                       </span>
                       <span
@@ -197,6 +218,11 @@ export function QuotationCard({ order }: { order: Order }) {
                 </ul>
               </div>
             ))}
+            {surchargePkgs.length > 0 && (
+              <p className="text-xs text-muted-2">
+                {t("order.quSurchargeNote")}
+              </p>
+            )}
 
             <div className="flex items-center justify-between gap-3 text-sm">
               <span className="text-muted">{t("order.quSurcharge")}</span>
@@ -282,13 +308,19 @@ export function QuotationCard({ order }: { order: Order }) {
 
         {pendingApproval && (
           <div className="mt-4 space-y-2">
-            {/* a multi-million-rupiah commitment is never one tap: the button
-                opens a confirm sheet that restates what is being agreed to */}
-            <Button className="w-full" onClick={() => setApproveOpen(true)}>
-              <CheckCircle2 /> {t("order.quApprove")}
-            </Button>
+            {expired ? (
+              <p className="text-sm font-medium text-warning-ink">
+                {t("order.quExpiredHint")}
+              </p>
+            ) : (
+              /* a multi-million-rupiah commitment is never one tap: the button
+                 opens a confirm sheet that restates what is being agreed to */
+              <Button className="w-full" onClick={() => setApproveOpen(true)}>
+                <CheckCircle2 /> {t("order.quApprove")}
+              </Button>
+            )}
             <Button asChild variant="secondary" className="w-full">
-              <a href={WA_URL} target="_blank" rel="noreferrer">
+              <a href={waUrl} target="_blank" rel="noreferrer">
                 <MessageCircle /> {t("order.quContact")}
               </a>
             </Button>
@@ -338,6 +370,9 @@ export function QuotationCard({ order }: { order: Order }) {
                   .orders.find((o) => o.id === order.id);
                 if (now?.status === "pickup")
                   toast.success(t("order.quApprovedToast"));
+                // a silent nothing is the worst feeling at a money moment:
+                // if the approval didn't land, say so
+                else toast.error(t("order.quApproveFailedToast"));
               }}
             >
               <CheckCircle2 /> {t("order.quApproveConfirmCta")}
