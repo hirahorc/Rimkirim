@@ -435,7 +435,6 @@ export function Questionnaire() {
               external: false,
               icon: <ArrowRight className="size-4" />,
             },
-            alt: { label: t("order.ineligibleAlt"), href: "/cek-tarif" },
             secondaryLabel: t("order.backToRates"),
             onSecondary: () => setAnswers({ citizenship: undefined }),
           }
@@ -766,7 +765,6 @@ function OutcomeScreen({
   body,
   echo,
   primary,
-  alt,
   secondaryLabel,
   onSecondary,
   open,
@@ -783,8 +781,6 @@ function OutcomeScreen({
     /** lime means "forward"; a hand-off (WhatsApp) wears the secondary coat */
     tone?: "brand" | "secondary";
   };
-  /** an optional second way forward (never a dead end) */
-  alt?: { label: string; href: string };
   secondaryLabel: string;
   /** clears the routing answer — also what any dismissal maps to */
   onSecondary: () => void;
@@ -806,7 +802,7 @@ function OutcomeScreen({
           <DialogDescription className="mt-1.5">{body}</DialogDescription>
           <p className="mt-2 text-xs text-muted-2">{echo}</p>
         </div>
-        {/* DOM order [ghost, alt?, primary] so the sheet's flex-col-reverse
+        {/* DOM order [ghost, primary] so the sheet's flex-col-reverse
             stacks primary on top; on desktop the ghost sits apart on the left */}
         <DialogFooter className="px-6 sm:px-8">
           <Button
@@ -816,11 +812,6 @@ function OutcomeScreen({
           >
             {secondaryLabel}
           </Button>
-          {alt && (
-            <Button asChild variant="secondary">
-              <Link href={alt.href}>{alt.label}</Link>
-            </Button>
-          )}
           <Button asChild variant={primary.tone ?? "brand"}>
             {primary.external ? (
               <a href={primary.href} target="_blank" rel="noreferrer">
