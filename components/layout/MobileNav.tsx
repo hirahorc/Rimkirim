@@ -4,7 +4,14 @@ import * as React from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import * as Dialog from "@radix-ui/react-dialog";
-import { Menu, X, LogOut, Package, ClipboardList } from "lucide-react";
+import {
+  Menu,
+  X,
+  LogOut,
+  Package,
+  ClipboardList,
+  UserCog,
+} from "lucide-react";
 import { toast } from "sonner";
 import { Logo } from "./Logo";
 import { Button } from "@/components/ui/button";
@@ -89,6 +96,11 @@ export function MobileNav() {
                 <Button asChild variant="secondary" className="w-full">
                   <Link href="/packing-list" onClick={close}>
                     <ClipboardList className="size-4" /> {t("auth.myPackingLists")}
+                  </Link>
+                </Button>
+                <Button asChild variant="secondary" className="w-full">
+                  <Link href="/akun" onClick={close}>
+                    <UserCog className="size-4" /> {t("auth.acctSettings")}
                   </Link>
                 </Button>
                 <button
