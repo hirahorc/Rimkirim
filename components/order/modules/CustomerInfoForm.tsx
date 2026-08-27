@@ -117,7 +117,7 @@ export function CustomerInfoForm() {
         className="space-y-4"
       >
         {/* Sender */}
-        <Card className="space-y-4 p-5">
+        <Card className="space-y-4 px-5 py-7">
           <h2 className="font-display font-semibold">{t("order.ciSectionSender")}</h2>
           <PartyFields
             control={control}
@@ -130,7 +130,7 @@ export function CustomerInfoForm() {
         </Card>
 
         {/* Receiver */}
-        <Card className="space-y-4 p-5">
+        <Card className="space-y-4 px-5 py-7">
           <div className="flex items-center justify-between gap-2">
             <h2 className="font-display font-semibold">{t("order.ciSectionReceiver")}</h2>
             <Button type="button" variant="ghost" size="sm" className="min-h-9" onClick={receiverFromSender}>
@@ -157,7 +157,7 @@ export function CustomerInfoForm() {
         </Card>
 
         {/* Shipment Owner */}
-        <Card className="space-y-4 p-5">
+        <Card className="space-y-4 px-5 py-7">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <h2 className="font-display font-semibold">{t("order.ciSectionOwner")}</h2>
             <div className="flex flex-wrap justify-end gap-1">

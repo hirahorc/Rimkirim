@@ -77,7 +77,7 @@ export function ClearancePanel({ order }: { order: Order }) {
   const descKey = blocked ? "order.clDescBlocked" : STEP_DESC[current];
 
   return (
-    <Card className="p-5 sm:p-6">
+    <Card className="px-5 py-7 sm:px-6">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h2 className="flex items-center gap-2 font-display text-base font-semibold tracking-tight">
           <ShieldCheck className="size-4 text-foreground" />

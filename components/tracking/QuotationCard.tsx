@@ -71,7 +71,7 @@ export function QuotationCard({ order }: { order: Order }) {
 
   return (
     <>
-      <Card className="p-5 sm:p-6">
+      <Card className="p-5 pt-7 sm:p-6 sm:pt-7">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <h2 className="flex items-center gap-2 font-display text-base font-semibold tracking-tight">
             <ReceiptText className="size-4 text-foreground" />

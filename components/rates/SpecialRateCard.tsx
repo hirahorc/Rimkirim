@@ -57,7 +57,7 @@ export function SpecialRateCard({
   const regions = special.entry.regions;
 
   return (
-    <Card className="relative overflow-hidden border-brand/40">
+    <Card className="relative rounded-md overflow-hidden border-brand/40">
       <div className="relative p-4 sm:p-5">
         <div className="flex items-center justify-between gap-3">
           <Badge variant="brand">
@@ -208,7 +208,7 @@ export function SpecialRateUnavailableCard({
     t("special.negaraIni");
 
   return (
-    <Card className="relative overflow-hidden">
+    <Card className="relative rounded-md overflow-hidden">
       <div className="p-4 sm:p-5">
         <Badge variant="neutral">
           <Globe2 className="size-3.5" /> {t("special.unavailBadge")}

@@ -90,7 +90,7 @@ export function OpsSimulator({ order }: { order: Order }) {
   const identifier = order.bookingNumber;
 
   return (
-    <Card className="border-info/40 bg-info/5 p-5">
+    <Card className="border-info/40 bg-info/5 p-5 pt-7">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="min-w-0">
           <p className="flex items-center gap-1.5 font-display text-xs font-semibold uppercase tracking-wide text-info">

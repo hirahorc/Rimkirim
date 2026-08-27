@@ -101,7 +101,7 @@ export function ComplianceForm() {
   return (
     <ModuleShell moduleId="compliance">
       <form noValidate onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-        <Card className="space-y-4 p-5">
+        <Card className="space-y-4 px-5 py-7">
           <h2 className="font-display font-semibold">{t("order.coHeading")}</h2>
           {/* each doc is one unit (label + timing pill → control → help); the
               row gap is wider than the intra-row gaps so rows read as distinct */}
@@ -150,7 +150,7 @@ export function ComplianceForm() {
         </Card>
 
         {/* other supporting documents */}
-        <Card className="space-y-4 p-5">
+        <Card className="space-y-4 px-5 py-7">
           <h2 className="font-display font-semibold">{t("order.coOtherDocs")}</h2>
           {fields.map((f, i) => (
             <div key={f.id} className="flex flex-col gap-2 sm:flex-row sm:items-start">

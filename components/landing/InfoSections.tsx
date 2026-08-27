@@ -29,7 +29,7 @@ export function ServiceSection() {
       </div>
       <div className="grid gap-5 md:grid-cols-2">
         {/* marketing cards keep the generous lg corner (Card default is md) */}
-        <Card className="relative overflow-hidden rounded-lg p-6">
+        <Card className="relative overflow-hidden rounded-lg px-6 py-7">
           <div className="relative">
             <span className="grid size-11 place-items-center rounded-md bg-surface-3 text-foreground">
               <Home className="size-5" />
@@ -45,7 +45,7 @@ export function ServiceSection() {
             <p className="mt-3 text-sm text-muted">{t("service.bfgBody")}</p>
           </div>
         </Card>
-        <Card className="rounded-lg p-6">
+        <Card className="rounded-lg px-6 py-7">
           <span className="grid size-11 place-items-center rounded-md bg-surface-3 text-foreground">
             <Plane className="size-5" />
           </span>

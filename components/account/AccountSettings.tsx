@@ -84,7 +84,7 @@ export function AccountSettings() {
 
       <div className="space-y-4">
         {/* identity */}
-        <Card className="p-5 sm:p-6">
+        <Card className="p-5 pb-7 sm:p-6 sm:pb-7">
           <div className="flex items-center gap-4">
             <div
               aria-hidden
@@ -145,7 +145,7 @@ export function AccountSettings() {
         </Card>
 
         {/* session */}
-        <Card className="flex flex-wrap items-center justify-between gap-3 p-5 sm:p-6">
+        <Card className="flex flex-wrap items-center justify-between gap-3 p-5 pt-7 sm:p-6 sm:pt-7">
           <div>
             <h2 className="font-display text-base font-semibold tracking-tight">
               {t("auth.acctSessionTitle")}
@@ -168,7 +168,7 @@ export function AccountSettings() {
         </Card>
 
         {/* danger zone */}
-        <Card className="flex flex-wrap items-center justify-between gap-3 border-danger/25 p-5 sm:p-6">
+        <Card className="flex flex-wrap items-center justify-between gap-3 border-danger/25 p-5 pt-7 sm:p-6 sm:pt-7">
           <div>
             <h2 className="font-display text-base font-semibold tracking-tight text-danger-ink">
               {t("auth.acctDangerTitle")}

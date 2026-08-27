@@ -115,7 +115,7 @@ export function PickupForm() {
         {/* Details — who the courier meets and where. The page <h1> already
             says "Pickup Details & Schedule"; these two cards are its two halves,
             so the section titles name the parts without repeating the whole. */}
-        <Card className="space-y-4 p-5 sm:p-6">
+        <Card className="space-y-4 px-5 py-7 sm:px-6">
           <div className="flex flex-wrap items-center justify-between gap-x-2 gap-y-1">
             <h2 className="font-display text-base font-semibold tracking-tight">
               {t("order.puSecDetails")}
@@ -231,7 +231,7 @@ export function PickupForm() {
             time-window chips get full width and never cram into a half column;
             the date and the standby stepper cap at max-w-xs so a lone control
             doesn't stretch across the whole page. */}
-        <Card className="space-y-4 p-5 sm:p-6">
+        <Card className="space-y-4 px-5 py-7 sm:px-6">
           <h2 className="font-display text-base font-semibold tracking-tight">
             {t("order.puSecSchedule")}
           </h2>

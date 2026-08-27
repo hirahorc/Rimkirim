@@ -81,7 +81,6 @@ rounded:
   sm: "0.75rem"
   md: "1rem"
   lg: "1.75rem"
-  xl: "2.5rem"
   full: "9999px"
 spacing:
   xs: "8px"
@@ -515,10 +514,11 @@ Rounded on a 16px base (`--radius: 1rem`). The scale is
 - **xs** — micro icon chips (24px section chips, mini carrier marks) and micro thumbnails.
 - **sm** — nested boxes, dense data strips (`p-3` spec rows, notes), popover item rows, small
   buttons (h-8 and below), calendar cells.
-- **md** — the workhorse: inputs, buttons, 40px icon tiles, **functional cards** (the `Card`
-  default), popover panels.
-- **lg** — the panel tier only: dialogs, sheets, the mobile nav, media frames (article covers),
-  and **marketing cards** on landing/articles that opt up explicitly (padding `p-6`+).
+- **md** — the workhorse: inputs, buttons, 40px icon tiles, popover panels, and compact utility
+  cards that can't afford `lg` clearance (they opt *down* explicitly).
+- **lg** — the soft tier: **cards** (the `Card` default), dialogs, sheets, the mobile nav, media
+  frames (article covers), and marketing cards. The big corner costs clearance — see the
+  Clearance Rule's vertical-padding contract below.
 - **full** — pills: badges, count chips, segmented controls, numbered markers, the navbar capsule.
 
 Below `xs`, micro radii are bespoke and stated inline where the element's own size dictates them:
@@ -537,11 +537,16 @@ radius minus the padding between them. The popover is the worked example: an `md
 `p-1` (4px) wants 12px rows, which is exactly `sm` — so list popovers are always `md` panel +
 `sm` item rows.
 
-**The Clearance Rule.** A corner's curve sweeps its radius deep into the box, so **padding must be
-at least the radius** or the content crowds the corners — a 28px `lg` card needs ~28px of padding
-before anything sits level with its corners. When a compact box can't afford that much padding, the
-radius steps down to meet the padding instead (a `p-4` utility card is `rounded-md`, not
-`rounded-lg`); never leave a big curve sweeping into a tight box.
+**The Clearance Rule.** A corner's curve sweeps its radius deep into the box, so square-edged
+content needs **vertical padding at least the radius** or it crowds the corners — a 28px `lg` card
+wants `pt-7` (28px) above a heading and `pb-7` below a table. The exception is a **concentric
+edge**: an element that echoes the curve may sit at standard padding (`py-5 → sm:py-6`) because
+its own roundness clears the sweep. Concretely: the top edge is exempt when its first element is a
+pill, badge, or circle (avatar chip, count pill, segmented control); the bottom edge is exempt when
+its last element is a button. One exempt edge does not exempt the other — a card opening with a
+heading and closing with a button runs `pt-7 … pb-5 sm:pb-6`. When a compact box can't afford
+clearance at all, the radius steps down to meet the padding instead (a `p-4` utility card is
+`rounded-md`, not `rounded-lg`); never leave a big curve sweeping into a tight box.
 
 **The Clamp Rule.** A border-radius silently collapses to half the shorter side, so any radius at or
 above half an element's height turns it into a pill or a circle whether you meant it or not. Check
@@ -589,14 +594,15 @@ one destructive tint (danger). A new button style must replace one of these, not
   number, shown beside group/section headings to declare "how many".
 
 ### Cards / Containers
-- **Corner Style:** `rounded-md` (16px) — the `Card` default, for every functional card (forms,
-  order flow, tracking, lists, empty states). `rounded-lg` (28px) is opted into explicitly by
-  marketing cards on landing/articles (testimonials, service cards, the FAQ band, article
-  cards/CTA — always with `p-6`+ padding) and otherwise belongs to overlays (dialogs, sheets,
-  the mobile nav) and media frames.
+- **Corner Style:** `rounded-lg` (28px) — the `Card` default, for functional and marketing cards
+  alike. Compact data-dense cards (rate comparison rows, spec strips) opt *down* to `rounded-md`
+  explicitly because their padding can't afford the clearance.
 - **Background:** Panel 1 (`#fafafa`) on the white canvas; nested strips step to Panel 2/3.
 - **Shadow Strategy:** none — separated by a 1px Hairline border.
-- **Internal Padding:** `p-5 → sm:p-6` (20–24px). Data-dense comparison cards (the rate list:
+- **Internal Padding:** horizontal `px-5 → sm:px-6` (20–24px); vertical follows the Clearance
+  Rule's contract — `pt-7`/`pb-7` (28px) on a square edge, standard `py-5 → sm:py-6` on a
+  concentric edge (pill/badge/circle on top, button on the bottom). Data-dense comparison cards
+  (the rate list:
   RateCard, SpecialRateCard, their PriceBreakdown rows; the clearance route picker) run one step
   tighter, `p-4 → sm:p-5` (16–20px), so on phones their rhythm stays close to the de-boxed
   record's 16px page inset — and per the Clearance Rule their corner steps down with the padding,

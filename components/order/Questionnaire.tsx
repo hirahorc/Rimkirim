@@ -151,7 +151,7 @@ function Question({
       <Card
         ref={ref}
         id={`q${n}`}
-        className="scroll-mt-28 flex flex-col gap-1 px-5 py-3 text-sm sm:flex-row sm:items-center sm:gap-3"
+        className="rounded-md scroll-mt-28 flex flex-col gap-1 px-5 py-3 text-sm sm:flex-row sm:items-center sm:gap-3"
       >
         <span className="flex min-w-0 flex-1 gap-2">
           <span className="tabular-nums text-muted-2">{n}.</span>
@@ -177,7 +177,7 @@ function Question({
   }
   return (
     // id lets the clearance step deep-link back to the exact question
-    <Card ref={ref} id={`q${n}`} className="scroll-mt-28 animate-fade-up p-5">
+    <Card ref={ref} id={`q${n}`} className="scroll-mt-28 animate-fade-up p-5 pt-7">
       {note && (
         <p className="mb-1 font-display text-xs font-medium uppercase tracking-[0.04em] text-muted-2">
           {note}
