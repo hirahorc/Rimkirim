@@ -63,6 +63,14 @@ export function RevisionDialog({
             aria-label={t("order.revDialogTitle")}
             className="space-y-2"
             onKeyDown={(e) => {
+              const ids = MODULE_META.map((m) => m.id as ModuleId);
+              const pick = (next: ModuleId) => {
+                e.preventDefault();
+                setSelected(next);
+                document.getElementById(`rev-opt-${next}`)?.focus();
+              };
+              if (e.key === "Home") return pick(ids[0]);
+              if (e.key === "End") return pick(ids[ids.length - 1]);
               const dir =
                 e.key === "ArrowDown" || e.key === "ArrowRight"
                   ? 1
@@ -70,12 +78,14 @@ export function RevisionDialog({
                     ? -1
                     : 0;
               if (!dir) return;
-              e.preventDefault();
-              const ids = MODULE_META.map((m) => m.id as ModuleId);
               const idx = selected ? ids.indexOf(selected) : -1;
-              const next = ids[(idx + dir + ids.length) % ids.length];
-              setSelected(next);
-              document.getElementById(`rev-opt-${next}`)?.focus();
+              // APG: with nothing selected, Down enters at the first item and
+              // Up at the last — the -1 must not fall into the modulo walk
+              pick(
+                idx === -1
+                  ? ids[dir === 1 ? 0 : ids.length - 1]
+                  : ids[(idx + dir + ids.length) % ids.length],
+              );
             }}
           >
             {MODULE_META.map((m, i) => {

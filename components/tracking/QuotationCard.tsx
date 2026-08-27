@@ -50,6 +50,16 @@ export function QuotationCard({ order }: { order: Order }) {
   const [breakdownOpen, setBreakdownOpen] = React.useState(
     order.status === "quotation",
   );
+  // hooks stay above the early return
+  const dateFmt = React.useMemo(
+    () =>
+      new Intl.DateTimeFormat(locale, {
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+      }),
+    [locale],
+  );
 
   if (!order.quotation) return null;
   const qu = order.quotation;
@@ -71,12 +81,6 @@ export function QuotationCard({ order }: { order: Order }) {
     "delivery",
     "delivered",
   ].includes(order.status);
-
-  const dateFmt = new Intl.DateTimeFormat(locale, {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  });
 
   return (
     <>
@@ -143,12 +147,14 @@ export function QuotationCard({ order }: { order: Order }) {
             Collapsible (open by default) so the long detail can be tidied away; the big
             Total above stays visible either way. */}
         <div className="mt-5">
+          {/* py-3.5 grows the 16px text row to a 44px hit area; the negative
+              margin gives the space right back so the layout doesn't move */}
           <button
             type="button"
             onClick={() => setBreakdownOpen((v) => !v)}
             aria-expanded={breakdownOpen}
             aria-controls="quotation-breakdown"
-            className="flex w-full items-center justify-between gap-2 font-display text-xs font-medium uppercase tracking-wide text-muted-2 transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/40"
+            className="-my-3.5 flex w-full items-center justify-between gap-2 py-3.5 font-display text-xs font-medium uppercase tracking-wide text-muted-2 transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/40"
           >
             {t("order.quSecBreakdown")}
             {/* swap, never rotate — the shared disclosure idiom */}
@@ -162,7 +168,9 @@ export function QuotationCard({ order }: { order: Order }) {
           {/* the shared disclosure motion (auto-duration height), not a snap —
               the same idiom every state-driven collapsible on the page speaks */}
           <CollapseHeight open={breakdownOpen}>
-          <div id="quotation-breakdown" className="mt-3 space-y-3">
+          {/* pt, not mt: a top margin escapes the collapsible's scrollHeight
+              measurement and the open animation ends on a 12px snap */}
+          <div id="quotation-breakdown" className="pt-3 space-y-3">
             <div className="flex items-baseline justify-between gap-3 text-sm">
               <span className="text-muted">
                 {t("order.tdBaseRate")}{" "}
@@ -268,7 +276,7 @@ export function QuotationCard({ order }: { order: Order }) {
 
           {/* Potential tax — always zero here; Indonesian Customs sets the final figure */}
           <div className="mt-3">
-            <p className="text-sm font-semibold text-foreground">{t("order.quSecTax")}</p>
+            <h3 className="text-sm font-semibold text-foreground">{t("order.quSecTax")}</h3>
             <div className="mt-2 space-y-1.5">
               <div className="flex items-center justify-between gap-3 text-sm">
                 <span className="text-muted">{t("order.quTaxEstimatedValue")}</span>
@@ -304,10 +312,10 @@ export function QuotationCard({ order }: { order: Order }) {
 
           {/* Warehouse fee — only accrues past the free window; never in the total */}
           <div className="mt-5">
-            <p className="flex items-center gap-1.5 text-sm font-semibold text-foreground">
+            <h3 className="flex items-center gap-1.5 text-sm font-semibold text-foreground">
               <Warehouse className="size-3.5" />
               {t("order.quSecWarehouse")}
-            </p>
+            </h3>
             <p className="mt-1 text-sm text-muted">
               <span className="font-mono tabular-nums">
                 {formatIDR(qu.warehousePerKgPerDay)}
