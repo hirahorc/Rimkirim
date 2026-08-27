@@ -15,10 +15,10 @@ colors:
   brand-soft: "#ccfa59"
   brand-dim: "#a3d600"
   brand-ink: "#282828"
-  success: "#16a34a"
-  warning: "#b45309"
-  danger: "#dc2626"
-  info: "#2563eb"
+  success: "hsl(140 100% 27%)" # ≈ #008a2e
+  warning: "hsl(31 92% 45%)" # ≈ #dc7609
+  danger: "hsl(360 100% 45%)" # ≈ #e60000
+  info: "hsl(210 92% 45%)" # ≈ #0973dc
 typography:
   display:
     fontFamily: "Space Grotesk, Geist, sans-serif"
@@ -202,9 +202,10 @@ A daylight field with one electric accent and a small, disciplined status set.
 - **Dim Grey** (`#64646c`): Labels, eyebrows, captions, and de-emphasised meta.
 
 ### Status (tint system, used sparingly)
-- **Go Green** (`#16a34a`), **Hold Amber** (`#b45309`), **Stop Red** (`#dc2626`),
-  **Info Blue** (`#2563eb`) — tuned for a light canvas; the previous dark-mode pastels wash out on
-  white. Info Blue also carries the ops/simulator (demo) chrome.
+- **Go Green** (`hsl(140 100% 27%)`), **Hold Amber** (`hsl(31 92% 45%)`), **Stop Red**
+  (`hsl(360 100% 45%)`), **Info Blue** (`hsl(210 92% 45%)`) — the text hues of Sonner's
+  richColors light palette, adopted app-wide so toasts and in-app status surfaces share one
+  palette. Info Blue also carries the ops/simulator (demo) chrome.
 
 ### Named Rules
 **The One-Voice Rule.** Live Lime appears on ≤10% of any given screen — the primary CTA, the one
@@ -696,6 +697,16 @@ column.
 **The Real-Table Rule.** Columns must align across header, body, and footer — which independent
 per-row grids cannot guarantee, because each row sizes its own tracks and they drift apart the moment
 a number grows. If it has columns that must line up, it is a `<table>`.
+
+### Toast
+Sonner with **`richColors`** and `theme="light"`, mounted once (`components/ui/toaster.tsx`),
+`position="top-center"`. Each type (success / error / warning / info) renders on Sonner's own
+richColors pastel (tinted background + border + hued text); the plain `toast()` stays neutral
+white. The toast is the **only** status surface that uses Sonner's stock pastels — every in-app
+status surface (badges, banners, panels) keeps the token tint system (15/25 chips, 10/40
+banners). The two stay in one palette because the status tokens ARE the richColors text hues.
+The only local override is the corner: `--radius-sm` (12px — Sonner's 8px default is off-scale;
+16px padding keeps the Clearance Rule).
 
 ## Do's and Don'ts
 
