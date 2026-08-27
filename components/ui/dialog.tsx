@@ -115,6 +115,28 @@ export function DialogHeader({
   return <div className={cn("shrink-0 p-6 pb-4", className)} {...props} />;
 }
 
+/**
+ * Pinned action row: stacked full-width buttons on the sheet (DOM order
+ * [secondary, primary] renders primary on top via flex-col-reverse), a
+ * right-aligned row in the modal. The safe-area term keeps the bottom button
+ * clear of the home indicator on gesture-nav phones — without it the last
+ * button sits in the swipe zone.
+ */
+export function DialogFooter({
+  className,
+  ...props
+}: React.HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={cn(
+        "flex shrink-0 flex-col-reverse gap-2 px-5 pt-4 pb-[calc(1.25rem+env(safe-area-inset-bottom))] sm:flex-row sm:justify-end sm:px-6 sm:pb-6",
+        className,
+      )}
+      {...props}
+    />
+  );
+}
+
 export const DialogTitle = React.forwardRef<
   React.ElementRef<typeof DialogPrimitive.Title>,
   React.ComponentPropsWithoutRef<typeof DialogPrimitive.Title>

@@ -27,6 +27,8 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
+  DialogFooter,
 } from "@/components/ui/dialog";
 import { NewAwbDialog } from "./NewAwbDialog";
 import { ReschedulePickupDialog } from "./ReschedulePickupDialog";
@@ -169,15 +171,18 @@ export function PickupPanel({ order }: { order: Order }) {
       )}
 
       <Dialog open={dropConfirmOpen} onOpenChange={setDropConfirmOpen}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle>{t("order.pickDropOffConfirmTitle")}</DialogTitle>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader className="p-5 pb-4 sm:p-6 sm:pb-4">
+            <DialogTitle className="flex items-center gap-2">
+              <Store className="size-5 text-foreground" />
+              {t("order.pickDropOffConfirmTitle")}
+            </DialogTitle>
+            <DialogDescription>
+              {t("order.pickDropOffConfirmBody")}
+            </DialogDescription>
           </DialogHeader>
-          <p className="text-sm leading-relaxed text-muted">
-            {t("order.pickDropOffConfirmBody")}
-          </p>
-          <div className="mt-4 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
-            <Button variant="ghost" onClick={() => setDropConfirmOpen(false)}>
+          <DialogFooter>
+            <Button variant="secondary" onClick={() => setDropConfirmOpen(false)}>
               {t("order.baCancel")}
             </Button>
             <Button
@@ -192,7 +197,7 @@ export function PickupPanel({ order }: { order: Order }) {
             >
               <Store /> {t("order.pickDropOffConfirmCta")}
             </Button>
-          </div>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
 
