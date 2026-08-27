@@ -8,6 +8,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
+  DialogFooter,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -179,7 +180,9 @@ function AgreementContent({
         </div>
       </div>
 
-      <div className="shrink-0 space-y-2 p-5 pt-3 sm:p-6 sm:pt-3">
+      {/* the gate's own state (hint + checkbox) sits above the action row;
+          the buttons live in DialogFooter like every other action dialog */}
+      <div className="shrink-0 space-y-2 px-5 pt-3 sm:px-6">
         <p
           aria-live="polite"
           className={cn(
@@ -202,15 +205,15 @@ function AgreementContent({
           />
           <span>{t("order.baCheckbox")}</span>
         </label>
-        <div className="flex gap-2">
-          <Button variant="secondary" className="flex-1" onClick={onCancel}>
-            {t("order.baCancel")}
-          </Button>
-          <Button className="flex-1" disabled={!agreed} onClick={onAgree}>
-            {t("order.baAgree")}
-          </Button>
-        </div>
       </div>
+      <DialogFooter className="pt-2">
+        <Button variant="secondary" onClick={onCancel}>
+          {t("order.baCancel")}
+        </Button>
+        <Button disabled={!agreed} onClick={onAgree}>
+          {t("order.baAgree")}
+        </Button>
+      </DialogFooter>
     </DialogContent>
   );
 }

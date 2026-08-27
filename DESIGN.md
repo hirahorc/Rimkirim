@@ -436,9 +436,14 @@ one as drift.
   Dialog actions live in **`DialogFooter`**: stacked full-width on the sheet (primary on
   top — DOM order [secondary, primary] through `flex-col-reverse`), a right-aligned row in
   the modal, with `env(safe-area-inset-bottom)` added below so the bottom button clears the
-  home indicator on gesture-nav phones. Never park a button row inside the scroll body.
-  Exceptions: media lightboxes (`sheet={false}`) and the login dialog, which owns its own
-  full-screen mobile form. Under reduced motion the transition collapses to instant; the drag
+  home indicator on gesture-nav phones. Never park a button row inside the scroll body —
+  every action dialog in the app now follows this (reschedule, drop-off, new AWB, quotation
+  approval, packing-list delete, photo warning, booking agreement, questionnaire outcome).
+  A choice-list dialog (RevisionDialog) has no footer — the list is the action row — but its
+  body keeps the family's padding and the safe-area bottom. The booking agreement's hint +
+  checkbox sit in their own block above the footer; only buttons live in `DialogFooter`.
+  Exceptions: media lightboxes (`sheet={false}`), info-only dialogs with zero buttons, and
+  the login dialog, which owns its own full-screen mobile form. Under reduced motion the transition collapses to instant; the drag
   itself is the user's own motion and stays.
 - **Popovers and tooltips exit too.** `pop-out` retreats toward the trigger (120ms, the exit
   curve) so no panel ends on a jump cut; the tooltip keeps its 100ms out. And inside a

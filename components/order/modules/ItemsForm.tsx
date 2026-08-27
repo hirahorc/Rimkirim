@@ -17,6 +17,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
+  DialogFooter,
 } from "@/components/ui/dialog";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import {
@@ -162,19 +163,14 @@ export function ItemsForm() {
             <DialogTitle>{t("order.itPhotoWarnTitle")}</DialogTitle>
             <DialogDescription>{t("order.itPhotoWarnBody")}</DialogDescription>
           </DialogHeader>
-          <div className="flex flex-col gap-2 p-6 pt-0 sm:flex-row-reverse">
-            <Button type="button" onClick={gotoFirstMissingPhotos} className="sm:flex-1">
-              {t("order.itPhotoWarnUpload")}
-            </Button>
-            <Button
-              type="button"
-              variant="secondary"
-              onClick={saveAnyway}
-              className="sm:flex-1"
-            >
+          <DialogFooter>
+            <Button type="button" variant="secondary" onClick={saveAnyway}>
               {t("order.itPhotoWarnContinue")}
             </Button>
-          </div>
+            <Button type="button" onClick={gotoFirstMissingPhotos}>
+              {t("order.itPhotoWarnUpload")}
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </ModuleShell>

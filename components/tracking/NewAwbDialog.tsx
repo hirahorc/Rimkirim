@@ -14,6 +14,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
+  DialogFooter,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input, Label } from "@/components/ui/input";
@@ -69,7 +70,7 @@ export function NewAwbDialog({
           <DialogDescription>{t("order.awbDialogBody")}</DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-4 px-5 pb-5 sm:px-6 sm:pb-6">
+        <div className="space-y-4 px-5 sm:px-6">
           <div>
             <Label>{t("order.awbDialogService")}</Label>
             <SegmentedRoot
@@ -99,19 +100,14 @@ export function NewAwbDialog({
             />
           </div>
 
-          <div className="flex gap-2">
-            <Button
-              variant="secondary"
-              className="flex-1"
-              onClick={() => onOpenChange(false)}
-            >
-              {t("order.awbDialogCancel")}
-            </Button>
-            <Button className="flex-1" onClick={submit}>
-              {t("order.awbDialogSubmit")}
-            </Button>
-          </div>
         </div>
+
+        <DialogFooter>
+          <Button variant="secondary" onClick={() => onOpenChange(false)}>
+            {t("order.awbDialogCancel")}
+          </Button>
+          <Button onClick={submit}>{t("order.awbDialogSubmit")}</Button>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );
