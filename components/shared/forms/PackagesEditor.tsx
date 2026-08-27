@@ -229,7 +229,7 @@ export function PackagesEditor<T extends FieldValues & ItemsData>({
 
       {/* currency — demoted below the packages: it is a customs-declaration
           detail, not the reason the user came to this page */}
-      <Card className="space-y-4 p-5">
+      <Card className="space-y-4 px-5 py-7">
         <h2 className="font-display font-semibold">{t("order.itCurrency")}</h2>
         <Field hint={t("order.itCurrencyHelp")}>
           <Controller
@@ -258,7 +258,7 @@ export function PackagesEditor<T extends FieldValues & ItemsData>({
       {/* totals */}
       <Card
         className={cn(
-          "grid gap-4 p-5",
+          "grid gap-4 px-5 py-7",
           totals.length >= 3 ? "sm:grid-cols-3" : "sm:grid-cols-2",
         )}
       >
@@ -356,7 +356,7 @@ function PackageBlock({
   const hasError = Boolean(pErr);
 
   return (
-    <Card className="p-5">
+    <Card className="rounded-md p-5">
       <div className="flex items-center justify-between gap-2">
         <button
           type="button"

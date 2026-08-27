@@ -31,7 +31,7 @@ export function RevisionCard({
   const meta = getModuleMeta(moduleId);
 
   return (
-    <Card className="flex flex-col gap-3 border-warning/40 bg-warning/10 p-5 sm:flex-row sm:items-center sm:justify-between">
+    <Card className="flex flex-col gap-3 border-warning/40 bg-warning/10 p-5 pt-7 sm:flex-row sm:items-center sm:justify-between">
       <div>
         <p className="text-sm font-semibold text-warning">{t("order.revTitle")}</p>
         <p className="mt-0.5 text-sm text-muted">

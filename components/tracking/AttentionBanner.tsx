@@ -39,7 +39,7 @@ export function AttentionBanner({ attention }: { attention: string | null }) {
     <Card
       key={attention}
       className={cn(
-        "banner-enter flex items-start gap-3 p-4 sm:p-5",
+        "banner-enter rounded-md flex items-start gap-3 p-4 sm:p-5",
         positive ? "border-success/40 bg-success/10" : "border-warning/40 bg-warning/10",
       )}
     >

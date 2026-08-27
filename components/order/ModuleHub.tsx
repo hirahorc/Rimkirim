@@ -206,7 +206,7 @@ export function ModuleHub() {
 
       {/* the receipt: what the order already HAS (booking number, packing list,
           document) in one quiet strip, so the body below is only the work */}
-      <Card className="mb-6 grid divide-y divide-border overflow-hidden p-0 sm:grid-cols-2 sm:divide-x sm:divide-y-0">
+      <Card className="mb-6 grid rounded-md divide-y divide-border overflow-hidden p-0 sm:grid-cols-2 sm:divide-x sm:divide-y-0">
         <div className="px-4 py-3 sm:px-5">
           <p className="font-display text-xs font-medium uppercase tracking-wide text-muted-2">
             {t("order.bookingNumberLabel")}
@@ -283,7 +283,7 @@ export function ModuleHub() {
           const Inner = (
             <Card
               className={cn(
-                "flex items-center gap-4 p-4 transition-colors",
+                "rounded-md flex items-center gap-4 p-4 transition-colors",
                 // muted via tokens, not opacity: the badge and note must stay AA
                 locked && "border-border/70 bg-surface-2/60 text-muted",
                 // no "next" highlight: the four sections are deliberately

@@ -12,7 +12,7 @@ export function FaqTeaser() {
   return (
     <section className="mx-auto max-w-4xl px-4 py-12 sm:px-6 sm:py-16">
       {/* marketing card: keeps the generous lg corner (Card default is md) */}
-      <Card className="flex flex-col gap-4 rounded-lg p-6 sm:flex-row sm:items-center sm:justify-between sm:p-8">
+      <Card className="flex flex-col gap-4 rounded-lg p-6 pt-7 sm:flex-row sm:items-center sm:justify-between sm:p-8">
         <div className="flex items-start gap-3">
           <span className="grid size-10 shrink-0 place-items-center rounded-md bg-brand/15 text-brand-ink">
             <HelpCircle className="size-5" />

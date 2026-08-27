@@ -10,9 +10,12 @@ export function Card({
     <div
       ref={ref}
       className={cn(
-        // md, not lg: the functional-card corner (DESIGN.md, Shapes) — 28px is
-        // reserved for overlays, media frames, and marketing cards that opt up
-        "rounded-md border border-border bg-surface text-foreground",
+        // lg: cards wear the big corner again (DESIGN.md, Shapes). The curve
+        // costs clearance — square-edged content pays for it with generous
+        // vertical padding (The Clearance Rule), while a concentric edge
+        // (pill/badge/circle on top, a button at the bottom) may sit closer
+        // because it echoes the curve.
+        "rounded-lg border border-border bg-surface text-foreground",
         className,
       )}
       {...props}

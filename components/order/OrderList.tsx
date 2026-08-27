@@ -107,7 +107,7 @@ function OrderCard({ order, locale }: { order: Order; locale: "id" | "en" }) {
   const phaseIdx = PHASE_STEPS.indexOf(order.status as OrderPhase);
 
   return (
-    <Card className="p-4 transition-colors hover:border-border-strong">
+    <Card className="rounded-md p-4 transition-colors hover:border-border-strong">
       <div className="flex items-center justify-between gap-3">
         <Link href={`/pesanan/${order.id}`} className="min-w-0 flex-1">
           <p className="flex items-center gap-2 font-mono text-sm font-semibold text-foreground">

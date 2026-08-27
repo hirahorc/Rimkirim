@@ -269,7 +269,7 @@ function FormBody({
         </header>
 
         {existing && (
-          <Card className="mb-4 p-5">
+          <Card className="mb-4 rounded-md p-5">
             <p className="font-display text-xs font-medium uppercase tracking-wide text-muted-2">
               {t("pl.codeLabel")}
             </p>
@@ -283,7 +283,7 @@ function FormBody({
         )}
 
         <form onSubmit={handleSubmit(onValid, onInvalid)} className="space-y-4">
-          <Card className="space-y-4 p-5">
+          <Card className="space-y-4 px-5 py-7">
             <h2 className="font-display font-semibold">{t("order.ciSectionSender")}</h2>
             <PartyFields
               control={control}
@@ -294,7 +294,7 @@ function FormBody({
             />
           </Card>
 
-          <Card className="space-y-4 p-5">
+          <Card className="space-y-4 px-5 py-7">
             <div className="flex items-center justify-between gap-2">
               <h2 className="font-display font-semibold">{t("order.ciSectionReceiver")}</h2>
               <Button type="button" variant="ghost" size="sm" onClick={receiverFromSender}>
@@ -310,7 +310,7 @@ function FormBody({
             />
           </Card>
 
-          <Card className="space-y-4 p-5">
+          <Card className="space-y-4 px-5 py-7">
             <h2 className="font-display font-semibold">{t("pl.sectionShipment")}</h2>
             <div className="grid gap-4 sm:grid-cols-2">
               <Field label={t("pl.shippingDate")} error={errors.shippingDate?.message}>

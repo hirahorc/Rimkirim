@@ -178,7 +178,7 @@ function PackingListCard({
   }).format(new Date(pl.updatedAt));
 
   return (
-    <Card className="p-4 transition-colors hover:border-border-strong">
+    <Card className="rounded-md p-4 transition-colors hover:border-border-strong">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between sm:gap-3">
         <div className="min-w-0 flex-1">
           <p className="flex flex-wrap items-center gap-1.5 font-mono text-sm font-semibold text-foreground">

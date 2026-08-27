@@ -35,7 +35,7 @@ export function RateCard({
   return (
     // the frame and CTA stay neutral for every option — value signals live
     // only in the Termurah/Tercepat badges, the choice stays the customer's
-    <Card className="overflow-hidden transition-colors hover:border-border-strong">
+    <Card className="rounded-md overflow-hidden transition-colors hover:border-border-strong">
       {/* header: the official logo IS the carrier name (its alt keeps the
           accessible one) — repeating it in text would say DHL twice. Carriers
           without a logo file keep the monogram tile + text identity. */}

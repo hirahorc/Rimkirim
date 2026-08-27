@@ -189,7 +189,7 @@ export function OrderDetail({ id }: { id: string }) {
 
       {/* status tier: the first boxed unit under the de-boxed header */}
       {!isDraft && (
-        <Card className="mt-6 p-4 sm:p-5">
+        <Card className="mt-6 rounded-md p-4 sm:p-5">
           <StatusStepper status={order.status as OrderPhase} />
           {docsTodo > 0 && (
             <a
@@ -216,7 +216,7 @@ export function OrderDetail({ id }: { id: string }) {
               notice leads the live tier with a reason-door instead of hiding
               as a red one-liner at the record's foot */}
           {order.status === "cancelled" && (
-            <Card className="border-danger/40 bg-danger/10 p-4 text-sm sm:p-5">
+            <Card className="rounded-md border-danger/40 bg-danger/10 p-4 text-sm sm:p-5">
               <p className="font-semibold text-danger">
                 {t("order.tdCancelledNotice")}
               </p>
