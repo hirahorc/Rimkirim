@@ -80,9 +80,7 @@ export function ClearancePanel({ order }: { order: Order }) {
     <Card className="p-5 sm:p-6">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h2 className="flex items-center gap-2 font-display text-base font-semibold tracking-tight">
-          <span className="grid size-6 place-items-center rounded-xs bg-brand/10 text-brand-ink">
-            <ShieldCheck className="size-3.5" />
-          </span>
+          <ShieldCheck className="size-4 text-foreground" />
           {t("order.stepClearance")}
         </h2>
         {current === "npd" && (
