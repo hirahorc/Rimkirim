@@ -1,7 +1,6 @@
 "use client";
 
 import * as React from "react";
-import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { useShallow } from "zustand/react/shallow";
 import {
@@ -28,7 +27,6 @@ interface FlatEvent {
  */
 export function LiveOrderToasts() {
   const t = useT();
-  const router = useRouter();
   const hydrated = useOrderHydrated();
   const authHydrated = useAuthHydrated();
   const email = useCurrentUser()?.email ?? null;
@@ -74,15 +72,11 @@ export function LiveOrderToasts() {
             : e.kind === "cancelled"
               ? toast.error
               : toast.info;
-      fire(t(e.messageKey), {
-        description: e.identifier ?? undefined,
-        action: {
-          label: t("notif.view"),
-          onClick: () => router.push(`/pesanan/${e.orderId}`),
-        },
-      });
+      // no action button: the toast is the transient ping, the bell is the
+      // archive — its rows link to the same order, permanently
+      fire(t(e.messageKey), { description: e.identifier ?? undefined });
     }
-  }, [orders, hydrated, authHydrated, email, router, t]);
+  }, [orders, hydrated, authHydrated, email, t]);
 
   return null;
 }
