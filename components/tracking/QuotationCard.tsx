@@ -25,6 +25,8 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
+  DialogFooter,
 } from "@/components/ui/dialog";
 import { formatIDR, formatNumber } from "@/lib/utils/currency";
 import { formatCurrency } from "@/lib/data/currencies";
@@ -302,23 +304,25 @@ export function QuotationCard({ order }: { order: Order }) {
 
       <Dialog open={approveOpen} onOpenChange={setApproveOpen}>
         <DialogContent className="max-w-md">
-          <DialogHeader>
+          <DialogHeader className="p-5 pb-4 sm:p-6 sm:pb-4">
             <DialogTitle>{t("order.quApproveConfirmTitle")}</DialogTitle>
+            <DialogDescription>
+              {t("order.quApproveConfirmBody")}
+            </DialogDescription>
           </DialogHeader>
-          <p className="text-sm leading-relaxed text-muted">
-            {t("order.quApproveConfirmBody")}
-          </p>
-          <div className="mt-3 rounded-sm bg-surface-2 p-3.5">
-            <p className="text-xs text-muted-2">{t("order.quTotal")}</p>
-            <p className="mt-0.5 font-mono text-2xl font-bold tracking-tight tabular-nums text-foreground">
-              {formatIDR(qu.total)}
-            </p>
-            <p className="mt-1 flex items-center gap-1.5 text-xs text-muted-2">
-              <Clock3 className="size-3.5" />
-              {t("order.quValidUntil")}: {dateFmt.format(qu.validUntil)}
-            </p>
+          <div className="px-5 sm:px-6">
+            <div className="rounded-sm bg-surface-2 p-3.5">
+              <p className="text-xs text-muted-2">{t("order.quTotal")}</p>
+              <p className="mt-0.5 font-mono text-2xl font-bold tracking-tight tabular-nums text-foreground">
+                {formatIDR(qu.total)}
+              </p>
+              <p className="mt-1 flex items-center gap-1.5 text-xs text-muted-2">
+                <Clock3 className="size-3.5" />
+                {t("order.quValidUntil")}: {dateFmt.format(qu.validUntil)}
+              </p>
+            </div>
           </div>
-          <div className="mt-4 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+          <DialogFooter>
             <Button variant="ghost" onClick={() => setApproveOpen(false)}>
               {t("order.baCancel")}
             </Button>
@@ -337,7 +341,7 @@ export function QuotationCard({ order }: { order: Order }) {
             >
               <CheckCircle2 /> {t("order.quApproveConfirmCta")}
             </Button>
-          </div>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
 
