@@ -81,7 +81,9 @@ export const DialogContent = React.forwardRef<
             className="mx-auto mb-1 mt-3 h-1.5 w-10 shrink-0 rounded-full bg-border-strong"
           />
           {children}
-          <CloseButton />
+          {/* no close button on the sheet: it dismisses by swipe, scrim tap, or
+              Esc, and an X would fight the grab-handle row. The X belongs to the
+              modal presentation, which has no drag affordance. */}
         </Drawer.Content>
       </Drawer.Portal>
     );

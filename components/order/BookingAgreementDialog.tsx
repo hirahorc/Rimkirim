@@ -108,7 +108,7 @@ function AgreementContent({
         regionRef.current?.focus({ preventScroll: true });
       }}
     >
-      <DialogHeader className="flex flex-row items-start gap-3 p-5 pb-3 pr-14 sm:p-6 sm:pb-3 sm:pr-16">
+      <DialogHeader className="flex flex-row items-start gap-3 p-5 pb-3 sm:p-6 sm:pb-3 sm:pr-16">
         <span className="mt-0.5 grid size-9 shrink-0 place-items-center rounded-full bg-surface-3">
           <ShieldCheck className="size-[1.125rem]" strokeWidth={2} />
         </span>
