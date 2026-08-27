@@ -54,6 +54,14 @@ interface AuthState {
   logInWithGoogle: (account: { email: string; name: string }) => AuthUser;
   cancelPending: () => void;
   logOut: () => void;
+  /** Rename the signed-in account (display name only; email is the key). */
+  updateName: (name: string) => void;
+  /**
+   * Remove the signed-in account from this browser and end the session.
+   * Deliberately leaves the other stores alone: orders and packing lists are
+   * keyed by email, so signing up again with the same email re-attaches them.
+   */
+  deleteAccount: () => void;
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -114,6 +122,22 @@ export const useAuthStore = create<AuthState>()(
 
       cancelPending: () => set({ pending: null }),
       logOut: () => set({ currentEmail: null, pending: null }),
+
+      updateName: (name) => {
+        const email = get().currentEmail;
+        const user = email ? get().users[email] : null;
+        const trimmed = name.trim();
+        if (!email || !user || !trimmed) return;
+        set({ users: { ...get().users, [email]: { ...user, name: trimmed } } });
+      },
+
+      deleteAccount: () => {
+        const email = get().currentEmail;
+        if (!email) return;
+        const users = { ...get().users };
+        delete users[email];
+        set({ users, currentEmail: null, pending: null });
+      },
     }),
     {
       // v2: passwordless; the old email+password demo accounts are left behind

@@ -3,7 +3,14 @@
 import * as React from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { User, LogOut, Package, Wrench, ClipboardList } from "lucide-react";
+import {
+  User,
+  LogOut,
+  Package,
+  Wrench,
+  ClipboardList,
+  UserCog,
+} from "lucide-react";
 import {
   Popover,
   PopoverTrigger,
@@ -32,10 +39,15 @@ export function AccountMenu() {
         </IconPillButton>
       </PopoverTrigger>
       <PopoverContent align="end" className="w-60 p-2">
-        <div className="border-b border-border px-2 pb-2 pt-1">
+        {/* the identity block is itself the door to /akun */}
+        <Link
+          href="/akun"
+          onClick={() => setOpen(false)}
+          className="block rounded-sm border-b border-border px-2 pb-2 pt-1 transition-colors hover:bg-surface-2"
+        >
           <p className="truncate text-sm font-medium">{user.name}</p>
           <p className="truncate text-xs text-muted">{user.email}</p>
-        </div>
+        </Link>
         <Link
           href="/pesanan"
           onClick={() => setOpen(false)}
@@ -56,6 +68,13 @@ export function AccountMenu() {
           className="flex items-center gap-2 rounded-sm px-2 py-2 text-sm transition-colors hover:bg-surface-2"
         >
           <Wrench className="size-4 text-muted" /> {t("ops.menu")}
+        </Link>
+        <Link
+          href="/akun"
+          onClick={() => setOpen(false)}
+          className="flex items-center gap-2 rounded-sm px-2 py-2 text-sm transition-colors hover:bg-surface-2"
+        >
+          <UserCog className="size-4 text-muted" /> {t("auth.acctSettings")}
         </Link>
         <button
           type="button"
