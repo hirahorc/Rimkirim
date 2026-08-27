@@ -26,6 +26,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
+  DialogBody,
   DialogFooter,
 } from "@/components/ui/dialog";
 import { formatIDR, formatNumber } from "@/lib/utils/currency";
@@ -304,13 +305,13 @@ export function QuotationCard({ order }: { order: Order }) {
 
       <Dialog open={approveOpen} onOpenChange={setApproveOpen}>
         <DialogContent className="max-w-md">
-          <DialogHeader className="p-5 pb-4 sm:p-6 sm:pb-4">
+          <DialogHeader>
             <DialogTitle>{t("order.quApproveConfirmTitle")}</DialogTitle>
             <DialogDescription>
               {t("order.quApproveConfirmBody")}
             </DialogDescription>
           </DialogHeader>
-          <div className="px-5 sm:px-6">
+          <DialogBody>
             <div className="rounded-sm bg-surface-2 p-3.5">
               <p className="text-xs text-muted-2">{t("order.quTotal")}</p>
               <p className="mt-0.5 font-mono text-2xl font-bold tracking-tight tabular-nums text-foreground">
@@ -321,7 +322,7 @@ export function QuotationCard({ order }: { order: Order }) {
                 {t("order.quValidUntil")}: {dateFmt.format(qu.validUntil)}
               </p>
             </div>
-          </div>
+          </DialogBody>
           <DialogFooter>
             <Button variant="ghost" onClick={() => setApproveOpen(false)}>
               {t("order.baCancel")}

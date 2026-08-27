@@ -443,7 +443,15 @@ one as drift.
   body keeps the family's padding and the safe-area bottom. The booking agreement's hint +
   checkbox sit in their own block above the footer; only buttons live in `DialogFooter`.
   Exceptions: media lightboxes (`sheet={false}`), info-only dialogs with zero buttons, and
-  the login dialog, which owns its own full-screen mobile form. Under reduced motion the transition collapses to instant; the drag
+  the login dialog, which owns its own full-screen mobile form.
+  **Dialog anatomy is tokenized, not restated.** The numbers live in the primitives
+  (`components/ui/dialog.tsx`) and consumers only compose them: `DialogHeader` owns
+  `p-5 pb-4 sm:p-6 sm:pb-4`; `DialogBody` owns the scrollable middle with `px-5 sm:px-6`
+  (footerless bodies add `pb-dialog-safe sm:pb-6`); `DialogFooter` owns the action row and
+  the `--spacing-dialog-safe` bottom inset (`calc(1.25rem + env(safe-area-inset-bottom))`,
+  a `@theme` token — the only place that value exists); `DialogTitle` owns the icon slot
+  (a bare `<Icon />` as first child auto-lays-out as the size-5 glyph beside the words).
+  Writing these paddings by hand at a call site is a smell: extend the primitive instead. Under reduced motion the transition collapses to instant; the drag
   itself is the user's own motion and stays.
 - **Popovers and tooltips exit too.** `pop-out` retreats toward the trigger (120ms, the exit
   curve) so no panel ends on a jump cut; the tooltip keeps its 100ms out. And inside a

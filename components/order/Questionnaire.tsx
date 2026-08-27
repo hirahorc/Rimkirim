@@ -30,6 +30,7 @@ import {
   DialogContent,
   DialogTitle,
   DialogDescription,
+  DialogHeader,
   DialogFooter,
 } from "@/components/ui/dialog";
 import { InfoTip, TooltipProvider } from "@/components/ui/tooltip";
@@ -413,7 +414,7 @@ export function Questionnaire() {
   const outcomeProps =
     outcome === "ineligible"
       ? {
-          icon: <PackageX className="size-5 shrink-0 text-foreground" />,
+          icon: <PackageX />,
           title: t("order.ineligibleTitle"),
           body: t("order.ineligibleBody"),
           echo: `${t("order.qYourAnswer")}: ${t("order.no")}`,
@@ -429,7 +430,7 @@ export function Questionnaire() {
         }
       : outcome === "foreigner"
         ? {
-            icon: <Globe2 className="size-5 shrink-0 text-foreground" />,
+            icon: <Globe2 />,
             title: t("order.foreignerTitle"),
             body: t("order.foreignerBody"),
             echo: `${t("order.qYourAnswer")}: ${t("order.foreigner")}`,
@@ -802,17 +803,17 @@ function OutcomeScreen({
     >
       <DialogContent>
         {/* no eyebrow: the icon-led title carries the moment by itself */}
-        <div className="min-h-0 overflow-y-auto p-6 pb-2 sm:p-8 sm:pb-2">
-          <DialogTitle className="flex items-center gap-2 font-semibold sm:text-xl">
+        <DialogHeader>
+          <DialogTitle>
             {icon}
             {title}
           </DialogTitle>
           <DialogDescription className="mt-1.5">{body}</DialogDescription>
           <p className="mt-2 text-xs text-muted-2">{echo}</p>
-        </div>
+        </DialogHeader>
         {/* DOM order [ghost, primary] so the sheet's flex-col-reverse
             stacks primary on top; on desktop the ghost sits apart on the left */}
-        <DialogFooter className="px-6 sm:px-8">
+        <DialogFooter>
           <Button
             variant="ghost"
             className="sm:mr-auto"

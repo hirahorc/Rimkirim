@@ -172,9 +172,9 @@ export function PickupPanel({ order }: { order: Order }) {
 
       <Dialog open={dropConfirmOpen} onOpenChange={setDropConfirmOpen}>
         <DialogContent className="sm:max-w-md">
-          <DialogHeader className="p-5 pb-4 sm:p-6 sm:pb-4">
-            <DialogTitle className="flex items-center gap-2">
-              <Store className="size-5 text-foreground" />
+          <DialogHeader>
+            <DialogTitle>
+              <Store />
               {t("order.pickDropOffConfirmTitle")}
             </DialogTitle>
             <DialogDescription>

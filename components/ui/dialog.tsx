@@ -108,11 +108,39 @@ export const DialogContent = React.forwardRef<
 });
 DialogContent.displayName = "DialogContent";
 
+/* ---- Dialog anatomy (DESIGN.md, "The mobile sheet") ----------------------
+   The paddings below ARE the dialog design system: header p-5/p-6, body
+   px-5/px-6, footer with the pb-dialog-safe token. Consumers compose these
+   primitives instead of restating the numbers — change them here, and every
+   dialog in the app follows. */
+
 export function DialogHeader({
   className,
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) {
-  return <div className={cn("shrink-0 p-6 pb-4", className)} {...props} />;
+  return (
+    <div
+      className={cn("shrink-0 p-5 pb-4 sm:p-6 sm:pb-4", className)}
+      {...props}
+    />
+  );
+}
+
+/**
+ * The scrollable middle: side padding only, so a DialogFooter below owns the
+ * bottom edge. A footerless dialog (choice list, info sheet) adds its own
+ * `pb-dialog-safe sm:pb-6` to keep the last row clear of the home indicator.
+ */
+export function DialogBody({
+  className,
+  ...props
+}: React.HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={cn("min-h-0 flex-1 overflow-y-auto px-5 sm:px-6", className)}
+      {...props}
+    />
+  );
 }
 
 /**
@@ -129,7 +157,7 @@ export function DialogFooter({
   return (
     <div
       className={cn(
-        "flex shrink-0 flex-col-reverse gap-2 px-5 pt-4 pb-[calc(1.25rem+env(safe-area-inset-bottom))] sm:flex-row sm:justify-end sm:px-6 sm:pb-6",
+        "flex shrink-0 flex-col-reverse gap-2 px-5 pt-4 pb-dialog-safe sm:flex-row sm:justify-end sm:px-6 sm:pb-6",
         className,
       )}
       {...props}
@@ -144,7 +172,10 @@ export const DialogTitle = React.forwardRef<
   <DialogPrimitive.Title
     ref={ref}
     className={cn(
+      // an icon-led title lays itself out: drop a bare <Icon /> in as the
+      // first child and it sizes to the family's size-5 glyph automatically
       "font-display text-xl font-bold tracking-tight sm:text-2xl",
+      "has-[>svg]:flex has-[>svg]:items-center has-[>svg]:gap-2 [&>svg]:size-5 [&>svg]:shrink-0 [&>svg]:text-foreground",
       className,
     )}
     {...props}
