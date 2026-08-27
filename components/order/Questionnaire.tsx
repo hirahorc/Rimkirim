@@ -6,6 +6,8 @@ import { useRouter } from "next/navigation";
 import {
   ArrowRight,
   MessageCircle,
+  PackageX,
+  Globe2,
   Search,
   Loader2,
   CheckCircle2,
@@ -411,6 +413,7 @@ export function Questionnaire() {
   const outcomeProps =
     outcome === "ineligible"
       ? {
+          icon: <PackageX className="size-5 shrink-0 text-foreground" />,
           title: t("order.ineligibleTitle"),
           body: t("order.ineligibleBody"),
           echo: `${t("order.qYourAnswer")}: ${t("order.no")}`,
@@ -426,6 +429,7 @@ export function Questionnaire() {
         }
       : outcome === "foreigner"
         ? {
+            icon: <Globe2 className="size-5 shrink-0 text-foreground" />,
             title: t("order.foreignerTitle"),
             body: t("order.foreignerBody"),
             echo: `${t("order.qYourAnswer")}: ${t("order.foreigner")}`,
@@ -761,6 +765,7 @@ export function Questionnaire() {
 }
 
 function OutcomeScreen({
+  icon,
   title,
   body,
   echo,
@@ -769,6 +774,8 @@ function OutcomeScreen({
   onSecondary,
   open,
 }: {
+  /** inline beside the title, like every other action dialog in the family */
+  icon: React.ReactNode;
   title: string;
   body: string;
   /** the answer that routed them here, repeated so the hand-off has a reason */
@@ -794,9 +801,10 @@ function OutcomeScreen({
       }}
     >
       <DialogContent>
-        {/* no eyebrow, no icon: the title carries the moment by itself */}
+        {/* no eyebrow: the icon-led title carries the moment by itself */}
         <div className="min-h-0 overflow-y-auto p-6 pb-2 sm:p-8 sm:pb-2">
-          <DialogTitle className="font-semibold sm:text-xl">
+          <DialogTitle className="flex items-center gap-2 font-semibold sm:text-xl">
+            {icon}
             {title}
           </DialogTitle>
           <DialogDescription className="mt-1.5">{body}</DialogDescription>
