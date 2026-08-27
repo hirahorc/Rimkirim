@@ -30,7 +30,6 @@ import { SegmentedRoot, SegmentedItem } from "@/components/ui/toggle-group";
 import { CollapseHeight } from "@/components/ui/disclosure";
 import { Input, Label, FieldError } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { CountrySelect } from "@/components/shared/CountrySelect";
 import { SurchargeInfoDialog } from "@/components/rates/SurchargeInfoDialog";
@@ -297,7 +296,9 @@ export function ShipmentCalculator() {
               {liveChargeable > 0 && (
                 <span className="flex items-center gap-1.5 text-xs text-muted">
                   {t("calc.totalChargeable")}
-                  <Badge variant="brand">{formatNumber(liveChargeable)} kg</Badge>
+                  <span className="font-semibold tabular-nums text-foreground">
+                    {formatNumber(liveChargeable)} kg
+                  </span>
                 </span>
               )}
             </div>

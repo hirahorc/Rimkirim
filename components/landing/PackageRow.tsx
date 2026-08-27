@@ -10,7 +10,6 @@ import {
   rowChargeableWeight,
 } from "@/lib/utils/chargeable-weight";
 import { Input, Label, FieldError } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
 import { InfoTip } from "@/components/ui/tooltip";
 import { formatNumber } from "@/lib/utils/currency";
 import { useT } from "@/lib/i18n/LanguageProvider";
@@ -146,14 +145,11 @@ export function PackageRow({
               {t("pkg.chargeable")}
               <InfoTip content={t("pkg.chgTooltip")} label={t("pkg.chargeable")} />
             </span>
-            {/* pull the pill back by its own padding so the number lines up
-                with the actual/volumetric values above it */}
-            <Badge
-              variant={untouched ? "neutral" : "brand"}
-              className="-my-1 -mr-3 tabular-nums sm:-ml-3 sm:mr-0"
-            >
+            {/* the deciding number: one weight up from its actual/volumetric
+                inputs — emphasis by weight, not by a chip */}
+            <span className="font-semibold tabular-nums text-foreground">
               {kg(chg)}
-            </Badge>
+            </span>
           </div>
         </div>
         {!untouched && dims.quantity > 1 && (
