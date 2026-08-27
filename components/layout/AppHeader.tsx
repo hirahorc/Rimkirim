@@ -13,15 +13,8 @@ import { useCurrentUser } from "@/lib/store/useAuthStore";
 import { useLoginModal } from "@/lib/store/useLoginModal";
 import { useT } from "@/lib/i18n/LanguageProvider";
 import { isBareRoute } from "@/lib/utils/routes";
+import { NAV_LINKS } from "@/lib/nav-links";
 import { cn } from "@/lib/utils/cn";
-
-const NAV_LINKS = [
-  { href: "/articles", key: "nav.article" },
-  { href: "/about", key: "nav.about" },
-  { href: "/faq", key: "nav.faq" },
-  // always last: rightmost on desktop, bottom of the sheet on mobile
-  { href: "/expat-relocation", key: "nav.expat", accent: true },
-] as const;
 
 export function AppHeader() {
   const t = useT();
@@ -67,26 +60,54 @@ export function AppHeader() {
           <LanguageToggle />
           {user ? (
             <>
-              {/* "Pesanan Saya" lives only in the profile menu (AccountMenu) —
-                  the header keeps just the bell + profile when signed in */}
+              {/* Signed in, the capsule changes register: the sales CTA steps
+                  aside and the customer's own progress takes the lime. On
+                  /pesanan itself the CTA collapses into the active Panel-2
+                  pill — arrived, not still being sold to. */}
               <NotificationBell />
               <LiveOrderToasts />
+              <Button
+                asChild
+                size="sm"
+                variant={
+                  pathname === "/pesanan" || pathname.startsWith("/pesanan/")
+                    ? "secondary"
+                    : "brand"
+                }
+                className="hidden lg:inline-flex"
+              >
+                <Link
+                  href="/pesanan"
+                  aria-current={
+                    pathname === "/pesanan" || pathname.startsWith("/pesanan/")
+                      ? "page"
+                      : undefined
+                  }
+                >
+                  {t("auth.myOrders")}
+                </Link>
+              </Button>
               <AccountMenu />
             </>
           ) : (
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              className="hidden lg:inline-flex"
-              onClick={() => openLogin()}
-            >
-              {t("nav.masuk")}
-            </Button>
+            <>
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                className="hidden lg:inline-flex"
+                onClick={() => openLogin()}
+              >
+                {t("nav.masuk")}
+              </Button>
+              {/* visible at every width: on phones the capsule is the only
+                  place a first-time visitor can reach the calculator without
+                  opening the sheet first */}
+              <Button asChild size="sm">
+                <Link href="/#kalkulator">{t("nav.cekTarif")}</Link>
+              </Button>
+            </>
           )}
-          <Button asChild size="sm" className="hidden lg:inline-flex">
-            <Link href="/#kalkulator">{t("nav.cekTarif")}</Link>
-          </Button>
           <MobileNav />
         </div>
       </div>
