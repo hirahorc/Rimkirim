@@ -33,7 +33,11 @@ export function RevisionCard({
   return (
     <Card className="flex flex-col gap-3 border-warning/40 bg-warning/10 p-5 pt-7 sm:flex-row sm:items-center sm:justify-between">
       <div>
-        <p className="text-sm font-semibold text-warning">{t("order.revTitle")}</p>
+        {/* warning-ink, not raw warning: 14px on the tint needs the darkened
+            token to clear 4.5:1 (the Tint-15/25 rule) */}
+        <p className="text-sm font-semibold text-warning-ink">
+          {t("order.revTitle")}
+        </p>
         <p className="mt-0.5 text-sm text-muted">
           {t("order.revBody")}{" "}
           <span className="font-medium text-foreground">
