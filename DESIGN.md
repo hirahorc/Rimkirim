@@ -658,8 +658,8 @@ the customer's initial in a `size-9` Panel-2 chip (IconPillButton geometry), nev
 silhouette, and the mobile sheet opens its signed-in block with the same identity row. The nav IA
 lives once, in `lib/nav-links.ts`, shared by capsule and sheet. Internal tools (the ops simulator)
 never sit among customer rows: fenced below a hairline and dressed in ops Info Blue. The nav-expat
-gradient's stops each clear 4.5:1 on white — the gradient is the sanctioned exception, illegible
-text is not.
+gradient keeps its bright stops by deliberate call: it is the brand's one loud voice, and its
+vividness outranks the AA contrast number on this single decorative link.
 - **Nav links:** `rounded-full`, `px-[18px] py-2`, `font-medium`. Inactive is Readout Grey with a
   faint Panel-2 hover; the **active link is a solid Panel-2 pill** with Ink text and
   `aria-current="page"`.

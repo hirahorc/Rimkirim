@@ -744,10 +744,10 @@ body {
    The gradient is painted 3x wider than the text and slid across on hover,
    so the colours flow through the label rather than just swapping. */
 .nav-expat {
-  /* both stops clear 4.5:1 on white (4.72 and 5.64) — the gradient is the
-     sanctioned exception, illegible text is not */
-  --nav-expat-from: #0a7ab3;
-  --nav-expat-to: #b016c0;
+  /* the bright stops are a deliberate call: this link is the brand's one
+     loud voice and its vividness outranks the AA number here */
+  --nav-expat-from: #21b1ec;
+  --nav-expat-to: #d41ce6;
   color: transparent;
   background-image: linear-gradient(
     82deg,
