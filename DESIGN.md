@@ -713,7 +713,10 @@ white. The toast is the **only** status surface that uses Sonner's stock pastels
 status surface (badges, banners, panels) keeps the token tint system (15/25 chips, 10/40
 banners). The two stay in one palette because the status tokens ARE the richColors text hues.
 The only local override is the corner: `--radius-sm` (12px — Sonner's 8px default is off-scale;
-16px padding keeps the Clearance Rule).
+16px padding keeps the Clearance Rule). Toasts are **non-interactive**: no action buttons — a
+control inside a surface that auto-dismisses in seconds is a vanishing target. The toast is the
+transient ping; navigation belongs to durable surfaces (the notification bell's rows link to the
+same order, permanently).
 
 ## Do's and Don'ts
 

@@ -1253,7 +1253,6 @@ const id = {
     title: "Notifikasi",
     unread: "belum dibaca",
     empty: "Belum ada notifikasi.",
-    view: "Lihat pesanan",
   },
   lang: {
     label: "Bahasa",
@@ -2542,7 +2541,6 @@ const en: Messages = {
     title: "Notifications",
     unread: "unread",
     empty: "No notifications yet.",
-    view: "View order",
   },
   lang: {
     label: "Language",
