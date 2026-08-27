@@ -276,28 +276,26 @@ export function QuotationCard({ order }: { order: Order }) {
                   {formatCurrency(qu.declaredValue, qu.declaredCurrency)}
                 </span>
               </div>
-              {qu.taxes.importDuty + qu.taxes.vat + qu.taxes.incomeTax === 0 ? (
-                // three rows of Rp 0 are rows, not information
-                <p className="text-sm text-muted">{t("order.quNoTaxes")}</p>
-              ) : (
-                (
-                  [
-                    ["order.quTaxImportDuty", qu.taxes.importDuty],
-                    ["order.quTaxVat", qu.taxes.vat],
-                    ["order.quTaxIncomeTax", qu.taxes.incomeTax],
-                  ] as const
-                ).map(([key, amount]) => (
-                  <div
-                    key={key}
-                    className="flex items-center justify-between gap-3 text-sm"
-                  >
-                    <span className="text-muted">{t(key)}</span>
-                    <span className="shrink-0 font-mono tabular-nums text-muted-2">
-                      {formatIDR(amount)}
-                    </span>
-                  </div>
-                ))
-              )}
+              {/* the three tax lines always render, zeros included: the full
+                  schedule spelled out is part of the receipt's honesty
+                  (deliberate call, reverted from a one-line collapse) */}
+              {(
+                [
+                  ["order.quTaxImportDuty", qu.taxes.importDuty],
+                  ["order.quTaxVat", qu.taxes.vat],
+                  ["order.quTaxIncomeTax", qu.taxes.incomeTax],
+                ] as const
+              ).map(([key, amount]) => (
+                <div
+                  key={key}
+                  className="flex items-center justify-between gap-3 text-sm"
+                >
+                  <span className="text-muted">{t(key)}</span>
+                  <span className="shrink-0 font-mono tabular-nums text-muted-2">
+                    {formatIDR(amount)}
+                  </span>
+                </div>
+              ))}
             </div>
             <p className="mt-2 text-xs leading-relaxed text-muted-2">
               {t("order.quTaxCaption")}
