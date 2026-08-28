@@ -269,7 +269,7 @@ brand-label tier (eyebrows, chips, statuses, buttons — see The Brand-Label Rul
   heading — landing section titles ("Kenapa Rimkirim", "Dua arah, satu tim"), set `text-3xl
   sm:text-4xl`.
 - **Page title** (Space Grotesk 700, `1.5rem`/24px, tracking -0.025em): the `h1` of a focused page
-  — questionnaire, module hub, "Pesanan Saya", auth, legal, order tracking. A few wider pages
+  — questionnaire, module hub, "Kiriman Saya", auth, legal, order tracking. A few wider pages
   (check-rates, coming-soon) step to `sm:text-3xl`/30px; treat that as the top of this role, not a
   separate one.
 - **Title** (Space Grotesk 600, `1.25rem`/20px, tracking -0.025em): card titles and panel/dialog
@@ -594,6 +594,10 @@ one destructive tint (danger). A new button style must replace one of these, not
   Ink-on-Lime text** (see Tint-15/25).
 - **Count pill:** a compact `rounded-full` Panel-2 chip with Hairline border and Dim-Grey tabular
   number, shown beside group/section headings to declare "how many".
+- **Status semantics:** a status that *asks something of the customer* (a quotation awaiting
+  approval, an attention state) speaks Hold Amber; routine progress speaks Info Blue; terminal
+  good news is Go Green, terminal bad news Stop Red. Lime never marks a status — it would read
+  as "the answer" an inch from an amber row saying "your move".
 
 ### Cards / Containers
 - **Corner Style:** `rounded-lg` (28px) — the `Card` default, for functional and marketing cards
@@ -660,7 +664,7 @@ the vertical space it saves.
 at login. **Signed out (Persuade):** the lime CTA is "Cek Tarif", visible at every width — on
 phones the capsule is the only place a first-timer reaches the calculator without opening the
 sheet. **Signed in (Operate):** the sales CTA steps aside; the customer's own progress takes the
-lime as a "Pesanan Saya" button, and on /pesanan itself that button collapses into the active
+lime as a "Kiriman Saya" button, and on /kiriman itself that button collapses into the active
 Panel-2 pill (`aria-current="page"`) — arrived, not still being sold to. The account trigger is
 the customer's initial in a `size-9` Panel-2 chip (IconPillButton geometry), never an anonymous
 silhouette, and the mobile sheet opens its signed-in block with the same identity row. The nav IA
@@ -696,6 +700,12 @@ the active link is a Panel-2 pill instead. Same principle, inverted fill.
   Ink with a lime core** (a lime hairline would read ~1.5:1 on white and lose the live step), and
   upcoming dots are Hairline on Panel 2. The connecting track is lime up to the current phase.
   "Needs attention" states surface as a Hold-Amber banner below the rail, never by recolouring it.
+- **The phase miniature** (the stepper at list density, on each Kiriman Saya card): seven flat
+  segments, one per phase, speaking the same encoding — completed segments lime fenced in Live
+  Lime Dim, the **current segment taller and framed in Ink with a lime core**, upcoming ones
+  Hairline-Strong-fenced on Panel 2. The fences are load-bearing: bare lime or pale grey pills
+  measure ~1.2:1 on daylight and vanish. The bar always pairs with an `sr-only` "Langkah N dari
+  7"; it is never the only carrier of journey position.
 
 ### Marked text (signature)
 - **`.hero-mark`** — the highlighter: Soft Lime fill behind Ink-on-Lime, `0.12em` radius, with
@@ -719,7 +729,11 @@ The read-only counterpart to the card. A long reference record — the order sum
 section is a display-font **Title** (Ink, 20px `tracking-tight` or 16px on dense records) sitting
 directly on the page over a `divide-y` hairline list of label/value rows — no container, no icon
 chip. Sections are separated by a generous `space-y-10` (40px); rows inside by a 1px hairline. A
-sub-group within a section (Sender / Receiver, Paket N) is a 12px uppercase eyebrow.
+sub-group within a section (Sender / Receiver, Paket N) is a 12px uppercase eyebrow. A repeating,
+collapsible sub-group family (the packages) gets a **group head row** first — the family name with
+a count pill on the left, the expand/collapse control anchored right on the same line, mirroring
+the order form's packages header — so the one control that acts on the whole family never floats
+in a ledger row of its own.
 
 **The Label-Ramp Rule.** Once the card is gone, the eyebrow is the only grouping cue, so the label
 tiers step in darkness, not size: section title **Ink** → sub-group eyebrow **Readout Grey** → row
