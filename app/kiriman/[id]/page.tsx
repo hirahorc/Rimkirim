@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   description: "Pantau status pengiriman kiriman Rimkirim kamu.",
 };
 
-export default async function PesananDetailPage({
+export default async function KirimanDetailPage({
   params,
 }: {
   params: Promise<{ id: string }>;

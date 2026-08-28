@@ -98,7 +98,7 @@ const id = {
   },
   auth: {
     account: "Akun",
-    myOrders: "Pesanan Saya",
+    myOrders: "Kiriman Saya",
     myPackingLists: "Packing List Saya",
     title: "Masuk atau daftar",
     subtitle: "Satu email, tanpa kata sandi. Kelola pesanan & lacak kirimanmu.",
@@ -726,7 +726,7 @@ const id = {
     confirmBody:
       "Terima kasih! Tim kami akan menghubungi kamu untuk konfirmasi jadwal & dokumen.",
     backHome: "Kembali ke beranda",
-    viewOrder: "Lihat Pesanan Saya",
+    viewOrder: "Lihat Kiriman Saya",
     resumeDraft: "Lanjutkan mengisi",
     draftNote: "Draft tersimpan. Lanjutkan kapan saja.",
     // status phases
@@ -738,14 +738,19 @@ const id = {
     statusClearance: "Clearance",
     statusDelivery: "Delivery",
     statusDelivered: "Delivered",
-    statusCancelled: "Cancelled",
-    // order list (Pesanan Saya)
-    ordersTitle: "Pesanan Saya",
+    statusCancelled: "Dibatalkan",
+    // shipment list (Kiriman Saya)
+    ordersTitle: "Kiriman Saya",
     ordersSubtitle: "Pantau semua kirimanmu di satu tempat.",
-    ordersEmpty: "Belum ada pesanan.",
+    ordersListHeading: "Daftar kiriman",
+    ordersEmpty: "Belum ada kiriman.",
+    ordersEmptyBody:
+      "Cek tarif dulu, lalu buat order pertamamu. Tim kami mendampingi lewat WhatsApp sampai barang tiba.",
     ordersEmptyCta: "Mulai order baru",
     ordersCreatedAt: "Dibuat",
     listNeedsAction: "Perlu tindakan kamu:",
+    listCancelledNote:
+      "Pesanan ini dibatalkan. Ada pertanyaan, atau mau mulai lagi? Tim kami siap bantu.",
     ordersRoute: "Rute",
     serviceLabel: "Layanan",
     serviceBfg: "Back For Good",
@@ -838,7 +843,7 @@ const id = {
     attNpd:
       "Bea Cukai menerbitkan NPD (permintaan dokumen). Tim kami melengkapinya dan mengajukan ulang.",
     attClearanceTax:
-      "Bea Cukai menerbitkan SPTNP. Bayar pajak agar barang bisa dikeluarkan.",
+      "Ada pajak impor yang perlu kamu bayar (SPTNP dari Bea Cukai). Setelah dibayar, barang langsung bisa keluar. Tim kami siap pandu lewat WhatsApp.",
     attClearanceReject:
       "Pengajuan ditolak Bea Cukai. Tim kami menyiapkan permohonan baru dan mengulang clearance dari awal. Tidak ada yang perlu kamu lakukan sekarang. Perlu diketahui: biaya warehouse tetap berjalan selama proses ini.",
     attDelivered:
@@ -1448,7 +1453,7 @@ const en: Messages = {
   },
   auth: {
     account: "Account",
-    myOrders: "My Orders",
+    myOrders: "My Shipments",
     myPackingLists: "My Packing Lists",
     title: "Sign in or sign up",
     subtitle: "One email, no password. Manage orders & track your shipments.",
@@ -2057,7 +2062,7 @@ const en: Messages = {
     confirmBody:
       "Thank you! Our team will contact you to confirm the schedule & documents.",
     backHome: "Back to home",
-    viewOrder: "View My Orders",
+    viewOrder: "View My Shipments",
     resumeDraft: "Continue filling",
     draftNote: "Draft saved. Continue anytime.",
     statusDraft: "Draft",
@@ -2069,12 +2074,17 @@ const en: Messages = {
     statusDelivery: "Delivery",
     statusDelivered: "Delivered",
     statusCancelled: "Cancelled",
-    ordersTitle: "My Orders",
+    ordersTitle: "My Shipments",
     ordersSubtitle: "Track all your shipments in one place.",
-    ordersEmpty: "No orders yet.",
+    ordersListHeading: "Shipment list",
+    ordersEmpty: "No shipments yet.",
+    ordersEmptyBody:
+      "Check rates first, then start your first order. Our team stays with you on WhatsApp until your goods arrive.",
     ordersEmptyCta: "Start a new order",
     ordersCreatedAt: "Created",
     listNeedsAction: "Action needed:",
+    listCancelledNote:
+      "This order was cancelled. Questions, or want to start again? Our team is ready to help.",
     ordersRoute: "Route",
     serviceLabel: "Service",
     serviceBfg: "Back For Good",
@@ -2167,7 +2177,7 @@ const en: Messages = {
     attNpd:
       "Customs issued an NPD (document request). Our team completes it and resubmits.",
     attClearanceTax:
-      "Customs issued an SPTNP. Pay the tax so the goods can be released.",
+      "There is an import tax for you to pay (an SPTNP from Customs). Once paid, your goods can be released. Our team is ready to guide you on WhatsApp.",
     attClearanceReject:
       "Customs rejected the submission. Our team is preparing a new application and restarting clearance from the beginning. Nothing for you to do right now. Heads up: warehouse costs keep running during this process.",
     attDelivered:

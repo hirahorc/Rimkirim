@@ -152,9 +152,9 @@ export function ModuleHub() {
         <Button
           className="mt-6 w-full"
           onClick={() => {
-            // detach from the draft, then land on the "Pesanan Saya" list
+            // detach from the draft, then land on the "Kiriman Saya" list
             reset();
-            router.push("/pesanan");
+            router.push("/kiriman");
           }}
         >
           {t("order.viewOrder")}

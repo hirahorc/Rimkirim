@@ -48,7 +48,7 @@ export function AccountMenu() {
           <p className="truncate text-xs text-muted">{user.email}</p>
         </Link>
         <Link
-          href="/pesanan"
+          href="/kiriman"
           onClick={() => setOpen(false)}
           className="mt-1 flex items-center gap-2 rounded-sm px-2 py-2 text-sm transition-colors hover:bg-surface-2"
         >

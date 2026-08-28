@@ -300,11 +300,13 @@ function PartyBlock({ party }: { party: Party | undefined }) {
       {party?.address && <p className="text-muted">{party.address}</p>}
       {country && <p className="text-muted">{country}</p>}
       {(party?.email || phone) && (
-        <p className="break-words pt-1 text-muted">
-          {party?.email}
-          {party?.email && phone && " · "}
-          {phone && <span className="tabular-nums">{phone}</span>}
-        </p>
+        // stacked, like the owner block's contact lines: joined on one line
+        // the pair wraps mid-phone in a three-column grid, and a dialled
+        // number split across lines stops reading as one number
+        <div className="space-y-0.5 pt-1">
+          {party?.email && <p className="break-words text-muted">{party.email}</p>}
+          {phone && <p className="tabular-nums text-muted">{phone}</p>}
+        </div>
       )}
     </div>
   );
@@ -438,13 +440,16 @@ function ItemsCard({ order }: { order: Order }) {
 
   return (
     <Section title={t("order.modItems")}>
-      <Row label={t("order.itCurrency")}>{currency}</Row>
+      {/* the artifact of the goods leads the meta rows; the currency footnote
+          sits last, right against the tables whose figures it qualifies */}
       <Row
         prose
         label={<TipLabel label={t("order.coPackingCode")} tip={t("order.tdPackingTip")} />}
       >
         {packing ? (
-          <span className="flex flex-col items-start gap-2 sm:items-end">
+          // one line on sm (code · copy · the two PDF actions) — the stacked
+          // desktop form left a tall row that was mostly empty left gutter
+          <span className="flex flex-col items-start gap-2 sm:flex-row sm:items-center sm:justify-end">
             <span className="inline-flex items-center gap-1.5">
               <span className="font-mono">{packing}</span>
               <CopyButton value={packing} />
@@ -476,15 +481,26 @@ function ItemsCard({ order }: { order: Order }) {
           dash
         )}
       </Row>
+      <Row label={t("order.itCurrency")}>{currency}</Row>
       {packages.length === 0 && (
         <Row label={t("order.itPackagesHeading")}>{dash}</Row>
       )}
       {manyPackages && (
-        <div className="flex justify-end py-2">
+        // the packages group head, mirroring the order form's: name + count on
+        // the left, the expand/collapse control anchored to the group it acts
+        // on — not floating in a ledger row of its own. Generous air above,
+        // snug to its rows below: the one loose interval in a tight ledger.
+        <div className="flex items-center justify-between gap-2 pb-1 pt-4">
+          <p className="flex items-center gap-2 font-display text-sm font-semibold text-foreground">
+            {t("order.itPackagesHeading")}
+            <span className="rounded-full bg-surface-2 px-2 py-0.5 text-xs font-medium tabular-nums text-muted">
+              {packages.length}
+            </span>
+          </p>
           <button
             type="button"
             onClick={anyOpen ? collapseAll : expandAll}
-            className="inline-flex items-center gap-1 rounded-sm text-xs text-muted transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/50"
+            className="-my-2 inline-flex items-center gap-1 rounded-sm py-2 text-xs text-muted transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/50"
           >
             {/* swap, never rotate — the shared disclosure idiom */}
             {anyOpen ? (
@@ -532,12 +548,12 @@ function ItemsCard({ order }: { order: Order }) {
               .join(" · ")
           : t("order.itPackageEmpty");
         return (
-          <div key={i} className="py-2">
+          <div key={i} className="py-2.5">
             <button
               type="button"
               onClick={() => toggle(i)}
               aria-expanded={open}
-              className="flex w-full items-center gap-2 rounded-sm text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/50"
+              className="-my-1 flex w-full items-center gap-2 rounded-sm py-1 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/50"
             >
               {/* swap, never rotate — the shared disclosure idiom */}
               {open ? (
@@ -545,12 +561,16 @@ function ItemsCard({ order }: { order: Order }) {
               ) : (
                 <ChevronDown className="size-4 shrink-0 text-muted" />
               )}
-              <span className="shrink-0 text-sm font-medium text-foreground">
+              {/* the sub-group eyebrow tier (SENDER / RECEIVER / PAKET N):
+                  same voice as the form's package heads, one step below the
+                  group head, so the ramp reads title → head → eyebrow → rows */}
+              <span className="shrink-0 font-display text-xs font-semibold uppercase tracking-wider text-muted-2">
                 {t("order.itPackageN")} {i + 1}
               </span>
               {/* the one-line summary stays put when open, so the line you
-                  scanned is the line you expanded */}
-              <span className="truncate text-xs text-muted-2">{summary}</span>
+                  scanned is the line you expanded; a step darker than its
+                  eyebrow — it is data, the eyebrow is the label */}
+              <span className="truncate text-xs text-muted">{summary}</span>
             </button>
             {/* body stays mounted and collapses with the shared disclosure
                 motion (DESIGN.md, "The disclosure open") */}
@@ -631,7 +651,10 @@ function ItemsCard({ order }: { order: Order }) {
                     <table className="w-full border-collapse text-sm">
                       <thead>
                         <tr className="text-xs text-muted-2">
-                          <th scope="col" className="py-1.5 pr-3 text-left font-medium">
+                          {/* the description column soaks up all slack, so the
+                              three numeric columns cluster at the right edge
+                              instead of drifting across the full measure */}
+                          <th scope="col" className="w-full py-1.5 pr-3 text-left font-medium">
                             {t("order.itColDescription")}
                           </th>
                           <th scope="col" className="px-3 py-1.5 text-right font-medium last:pr-0">
