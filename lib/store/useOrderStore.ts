@@ -18,6 +18,7 @@ import {
   assessShipmentSurcharges,
   type SurchargeLine,
 } from "@/lib/pricing/surcharge-engine";
+import { ACTION_ATTENTION } from "@/lib/order/attention";
 import { useAuthStore } from "./useAuthStore";
 
 export type Citizenship = "indonesian" | "foreigner";
@@ -474,6 +475,11 @@ export interface PendingStart {
 
 interface OrderStoreState {
   orders: Order[];
+  /** The pre-hub draft (questionnaire/clearance stage). An order does not
+   *  exist in `orders` until the customer reaches the module hub — entering
+   *  the eligibility questionnaire must not create an order. Promoted into
+   *  `orders` by ensureBookingNumber (hub entry). At most one. */
+  draftOrder: Order | null;
   /** The order currently being created/edited in the /pesan flow. */
   activeDraftId: string | null;
   /** Flat mirrors of the active draft — kept so existing selectors keep working. */
@@ -581,19 +587,25 @@ function syncFlatFrom(order: Order): Partial<OrderStoreState> {
   return flat;
 }
 
-/** Mutate the active draft (both the `orders` entry and the flat mirrors). */
+/** Mutate the active draft (the `orders` entry or the pre-hub `draftOrder`,
+ *  plus the flat mirrors). */
 function updateDraft(
   set: (fn: (s: OrderStoreState) => Partial<OrderStoreState>) => void,
   updater: (order: Order) => Partial<Order> | null,
 ): void {
   set((s) => {
-    const order = s.orders.find((o) => o.id === s.activeDraftId);
+    const inOrders = s.orders.find((o) => o.id === s.activeDraftId);
+    const order =
+      inOrders ??
+      (s.draftOrder?.id === s.activeDraftId ? s.draftOrder : undefined);
     if (!order) return {};
     const patch = updater(order);
     if (!patch) return {};
     const next: Order = { ...order, ...patch, updatedAt: Date.now() };
     return {
-      orders: s.orders.map((o) => (o.id === next.id ? next : o)),
+      ...(inOrders
+        ? { orders: s.orders.map((o) => (o.id === next.id ? next : o)) }
+        : { draftOrder: next }),
       ...syncFlatFrom(next),
     };
   });
@@ -603,6 +615,7 @@ export const useOrderStore = create<OrderStoreState>()(
   persist(
     (set) => ({
       orders: [],
+      draftOrder: null,
       activeDraftId: null,
       context: null,
       selectedRate: null,
@@ -616,15 +629,14 @@ export const useOrderStore = create<OrderStoreState>()(
       startOrder: (ctx, rate = null) =>
         set((s) => {
           const email = useAuthStore.getState().currentEmail;
-          // Reuse an existing un-booked draft (a questionnaire abandoned before
-          // the hub issued a booking number) so repeat price-card clicks don't
-          // pile up orphan drafts. Keep its id/createdAt; reset everything else.
-          const existing = s.orders.find(
-            (o) =>
-              o.ownerEmail === email &&
-              o.status === "draft" &&
-              o.bookingNumber === null,
-          );
+          // Reuse the standing pre-hub draft (a questionnaire abandoned before
+          // the hub) so repeat price-card clicks don't pile up orphan drafts.
+          // Keep its id/createdAt; reset everything else. This is NOT an order
+          // yet: it enters `orders` only when the hub issues a booking number.
+          const existing =
+            s.draftOrder && s.draftOrder.ownerEmail === email
+              ? s.draftOrder
+              : null;
           const id = existing?.id ?? makeOrderId();
           const order: Order = {
             id,
@@ -657,9 +669,7 @@ export const useOrderStore = create<OrderStoreState>()(
             generatedPackingCode: null,
           };
           return {
-            orders: existing
-              ? s.orders.map((o) => (o.id === id ? order : o))
-              : [...s.orders, order],
+            draftOrder: order,
             activeDraftId: id,
             ...syncFlatFrom(order),
             pendingStart: null,
@@ -691,9 +701,37 @@ export const useOrderStore = create<OrderStoreState>()(
           return changed ? { modules } : null;
         }),
       ensureBookingNumber: () =>
-        updateDraft(set, (o) =>
-          o.bookingNumber ? null : { bookingNumber: makeBookingNumber() },
-        ),
+        set((s) => {
+          // Hub entry is the moment the order comes into existence. A pre-hub
+          // draft is promoted into `orders` here, stamped as created now —
+          // the questionnaire stage never was an order.
+          if (s.draftOrder && s.draftOrder.id === s.activeDraftId) {
+            const now = Date.now();
+            const order: Order = {
+              ...s.draftOrder,
+              bookingNumber: s.draftOrder.bookingNumber ?? makeBookingNumber(),
+              createdAt: now,
+              updatedAt: now,
+              timeline: [makeEvent("created", "order.evCreated", now)],
+            };
+            return {
+              orders: [...s.orders, order],
+              draftOrder: null,
+              ...syncFlatFrom(order),
+            };
+          }
+          const order = s.orders.find((o) => o.id === s.activeDraftId);
+          if (!order || order.bookingNumber) return {};
+          const next: Order = {
+            ...order,
+            bookingNumber: makeBookingNumber(),
+            updatedAt: Date.now(),
+          };
+          return {
+            orders: s.orders.map((o) => (o.id === next.id ? next : o)),
+            ...syncFlatFrom(next),
+          };
+        }),
       ensurePackingCode: () =>
         updateDraft(set, (o) => {
           // a code supplied in the questionnaire always wins; nothing to generate
@@ -732,6 +770,7 @@ export const useOrderStore = create<OrderStoreState>()(
         }),
       reset: () =>
         set({
+          draftOrder: null,
           activeDraftId: null,
           context: null,
           selectedRate: null,
@@ -743,7 +782,9 @@ export const useOrderStore = create<OrderStoreState>()(
         }),
       resumeOrder: (id) =>
         set((s) => {
-          const order = s.orders.find((o) => o.id === id);
+          const order =
+            s.orders.find((o) => o.id === id) ??
+            (s.draftOrder?.id === id ? s.draftOrder : undefined);
           if (!order) return {};
           return { activeDraftId: id, ...syncFlatFrom(order), pendingStart: null };
         }),
@@ -1425,6 +1466,7 @@ export const useOrderStore = create<OrderStoreState>()(
       name: "rimkirim:order",
       partialize: (s) => ({
         orders: s.orders,
+        draftOrder: s.draftOrder,
         activeDraftId: s.activeDraftId,
         context: s.context,
         selectedRate: s.selectedRate,
@@ -1471,7 +1513,21 @@ export const useOrderStore = create<OrderStoreState>()(
             barpinConfirmedAt: o.barpinConfirmedAt ?? null,
             taxPaidAt: o.taxPaidAt ?? null,
           }));
-          return { ...current, ...p, orders };
+          // Pre-draftOrder shape kept un-booked questionnaire drafts inside
+          // `orders`. Those are not orders any more: the active one migrates
+          // into `draftOrder`, the rest (orphans) are dropped.
+          const isPreHub = (o: Order) =>
+            o.status === "draft" && o.bookingNumber === null;
+          const migrated =
+            (p.draftOrder as Order | undefined) ??
+            orders.find((o) => isPreHub(o) && o.id === p.activeDraftId) ??
+            null;
+          return {
+            ...current,
+            ...p,
+            orders: orders.filter((o) => !isPreHub(o)),
+            draftOrder: migrated,
+          };
         }
         if (p.context) {
           const id = makeOrderId();
@@ -1505,10 +1561,14 @@ export const useOrderStore = create<OrderStoreState>()(
             bookingNumber: p.bookingNumber ?? null,
             generatedPackingCode: p.generatedPackingCode ?? null,
           };
+          // A booked single-draft was a real order; an un-booked one becomes
+          // the pre-hub draftOrder (see draftOrder on the state interface).
+          const booked = order.bookingNumber !== null;
           return {
             ...current,
             ...p,
-            orders: [order],
+            orders: booked ? [order] : [],
+            draftOrder: booked ? null : order,
             activeDraftId: id,
             pendingStart: null,
           };
@@ -1577,29 +1637,42 @@ export function effectivePackingCode(s: {
 }
 
 /**
- * The current user's orders. A draft only appears once it has a booking number
- * (i.e. the user reached the order hub) — an abandoned-at-questionnaire draft
- * has no identifier yet and is hidden until then.
+ * The current user's orders, urgency first: orders where the ball is in the
+ * customer's court outrank the quiet ones, newest first within each group —
+ * the list is an inbox before it is an archive. (Every entry in `orders` has
+ * a booking number now — a questionnaire-stage draft is not an order; the
+ * legacy filter stays as a guard against stale persisted state.)
  */
 export function useMyOrders(email: string | null): Order[] {
   return useOrderStore(
     useShallow((s) => {
       if (!email) return [];
+      const needsAction = (o: Order) =>
+        o.attention !== null && ACTION_ATTENTION.has(o.attention) ? 1 : 0;
       return s.orders
         .filter(
           (o) =>
             o.ownerEmail === email &&
             (o.status !== "draft" || o.bookingNumber !== null),
         )
-        .sort((a, b) => b.createdAt - a.createdAt);
+        .sort(
+          (a, b) => needsAction(b) - needsAction(a) || b.createdAt - a.createdAt,
+        );
     }),
   );
 }
 
-/** Every order the user owns, drafts included (for linkage checks, not lists). */
+/** Every order the user owns, the pre-hub draft included (for linkage checks,
+ *  not lists). */
 export function useAllMyOrders(email: string | null): Order[] {
   return useOrderStore(
-    useShallow((s) => (email ? s.orders.filter((o) => o.ownerEmail === email) : [])),
+    useShallow((s) => {
+      if (!email) return [];
+      const owned = s.orders.filter((o) => o.ownerEmail === email);
+      return s.draftOrder?.ownerEmail === email
+        ? [...owned, s.draftOrder]
+        : owned;
+    }),
   );
 }
 
