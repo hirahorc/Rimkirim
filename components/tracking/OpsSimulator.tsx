@@ -97,7 +97,7 @@ export function OpsSimulator({ order }: { order: Order }) {
             <Wrench className="size-3.5" /> {t("ops.title")}
           </p>
           <Link
-            href={`/pesanan/${order.id}`}
+            href={`/kiriman/${order.id}`}
             className="mt-1.5 inline-flex items-center gap-1.5 font-mono text-sm font-semibold text-foreground transition-colors hover:text-foreground"
           >
             {identifier ?? "–"} <Eye className="size-3.5" />

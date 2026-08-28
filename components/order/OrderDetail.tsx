@@ -69,11 +69,11 @@ export function OrderDetail({ id }: { id: string }) {
   React.useEffect(() => {
     if (!hydrated || !authHydrated) return;
     if (!user) {
-      router.replace(`/masuk?next=${encodeURIComponent(`/pesanan/${id}`)}`);
+      router.replace(`/masuk?next=${encodeURIComponent(`/kiriman/${id}`)}`);
       return;
     }
     if (!order || order.ownerEmail !== user.email) {
-      router.replace("/pesanan");
+      router.replace("/kiriman");
     }
   }, [hydrated, authHydrated, user, order, id, router]);
 
@@ -118,7 +118,7 @@ export function OrderDetail({ id }: { id: string }) {
   return (
     <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6 sm:py-10">
       <Link
-        href="/pesanan"
+        href="/kiriman"
         className="tap-row mb-4 inline-flex items-center gap-1.5 text-sm text-muted transition-colors hover:text-foreground"
       >
         <ArrowLeft className="size-4" /> {t("order.ordersTitle")}

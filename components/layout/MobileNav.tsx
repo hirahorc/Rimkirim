@@ -70,7 +70,7 @@ export function MobileNav() {
               );
             })}
             {/* signed in, "Cek Tarif" folds into the browse list: it is no
-                longer the forward CTA (Pesanan Saya holds the lime below),
+                longer the forward CTA (Kiriman Saya holds the lime below),
                 just another place to go */}
             {user && (
               <Link
@@ -112,7 +112,7 @@ export function MobileNav() {
                 {/* signed in, the sheet changes register too: the customer's
                     orders take the lime and the sales CTA steps down */}
                 <Button asChild className="w-full">
-                  <Link href="/pesanan" onClick={close}>
+                  <Link href="/kiriman" onClick={close}>
                     <Package className="size-4" /> {t("auth.myOrders")}
                   </Link>
                 </Button>

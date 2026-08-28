@@ -132,7 +132,7 @@ export function NotificationBell() {
             {notifications.map((n) => (
               <li key={n.key}>
                 <Link
-                  href={`/pesanan/${n.orderId}`}
+                  href={`/kiriman/${n.orderId}`}
                   onClick={() => setOpen(false)}
                   className={cn(
                     "flex gap-2.5 rounded-md px-2 py-2.5 transition-colors hover:bg-surface-2",

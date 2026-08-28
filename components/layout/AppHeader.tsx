@@ -62,7 +62,7 @@ export function AppHeader() {
             <>
               {/* Signed in, the capsule changes register: the sales CTA steps
                   aside and the customer's own progress takes the lime. On
-                  /pesanan itself the CTA collapses into the active Panel-2
+                  /kiriman itself the CTA collapses into the active Panel-2
                   pill — arrived, not still being sold to. */}
               <NotificationBell />
               <LiveOrderToasts />
@@ -70,16 +70,16 @@ export function AppHeader() {
                 asChild
                 size="sm"
                 variant={
-                  pathname === "/pesanan" || pathname.startsWith("/pesanan/")
+                  pathname === "/kiriman" || pathname.startsWith("/kiriman/")
                     ? "secondary"
                     : "brand"
                 }
                 className="hidden lg:inline-flex"
               >
                 <Link
-                  href="/pesanan"
+                  href="/kiriman"
                   aria-current={
-                    pathname === "/pesanan" || pathname.startsWith("/pesanan/")
+                    pathname === "/kiriman" || pathname.startsWith("/kiriman/")
                       ? "page"
                       : undefined
                   }

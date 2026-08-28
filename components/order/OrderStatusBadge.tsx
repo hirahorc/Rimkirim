@@ -10,7 +10,10 @@ const STATUS_META: Record<
 > = {
   draft: { labelKey: "order.statusDraft", variant: "neutral" },
   review: { labelKey: "order.statusReview", variant: "neutral" },
-  quotation: { labelKey: "order.statusQuotation", variant: "brand" },
+  // quotation asks something of the customer (approve it), so it speaks the
+  // ask-colour, not the brand lime: lime an inch from an amber attention row
+  // read as two different verdicts about the same order
+  quotation: { labelKey: "order.statusQuotation", variant: "warning" },
   // routine progress speaks info-blue; warning is reserved for states that
   // actually ask something of the customer (attention banners, missing docs)
   pickup: { labelKey: "order.statusPickup", variant: "info" },

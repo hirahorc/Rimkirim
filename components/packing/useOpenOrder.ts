@@ -12,7 +12,7 @@ export function useOpenOrder() {
       resumeOrder(o.orderId);
       router.push(o.bookingNumber ? "/pesan/modul" : "/pesan");
     } else {
-      router.push(`/pesanan/${o.orderId}`);
+      router.push(`/kiriman/${o.orderId}`);
     }
   };
 }
