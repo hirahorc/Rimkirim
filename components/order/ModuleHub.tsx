@@ -27,6 +27,7 @@ import { useDownloadCipl } from "@/components/packing/useDownloadCipl";
 import { CopyButton } from "./CopyButton";
 import { BookingAgreementDialog } from "./BookingAgreementDialog";
 import { VoucherRow } from "./VoucherRow";
+import { CostEstimateCard } from "./CostEstimateCard";
 import { useT, useLanguage } from "@/lib/i18n/LanguageProvider";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -378,9 +379,14 @@ export function ModuleHub() {
         </p>
       )}
 
-      {/* campaign code, BFG pilot only: the last optional thing before the
-          booking, so it never competes with the four modules for attention */}
-      {context?.service === "bfg" && <VoucherRow />}
+      {/* the money, then the code that changes it, then the button: BFG pilot
+          only, and always after the four modules so it never competes */}
+      {context?.service === "bfg" && (
+        <>
+          <CostEstimateCard />
+          <VoucherRow />
+        </>
+      )}
 
       {/* all four complete: name the moment before asking for the booking */}
       {canSubmit && (

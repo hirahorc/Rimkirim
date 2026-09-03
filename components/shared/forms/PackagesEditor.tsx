@@ -66,6 +66,7 @@ export function PackagesEditor<T extends FieldValues & ItemsData>({
   showPhotos,
   currencyNote,
   extraTotals = [],
+  totalsDetail,
   totalsNote,
   editorRef,
 }: {
@@ -79,6 +80,8 @@ export function PackagesEditor<T extends FieldValues & ItemsData>({
   currencyNote?: React.ReactNode;
   /** totals shown before the standard value + chargeable-weight cells */
   extraTotals?: TotalCell[];
+  /** the arithmetic behind the money cell, full width under the cells */
+  totalsDetail?: React.ReactNode;
   /** one quiet line under the totals (e.g. how the estimate is computed) */
   totalsNote?: React.ReactNode;
   editorRef?: React.RefObject<PackagesEditorHandle | null>;
@@ -265,6 +268,9 @@ export function PackagesEditor<T extends FieldValues & ItemsData>({
         {totals.map((c) => (
           <Total key={c.label} {...c} />
         ))}
+        {totalsDetail && (
+          <div className="border-t border-border pt-4 sm:col-span-full">{totalsDetail}</div>
+        )}
         {totalsNote && (
           <p className="text-xs leading-snug text-muted-2 sm:col-span-full">
             {totalsNote}

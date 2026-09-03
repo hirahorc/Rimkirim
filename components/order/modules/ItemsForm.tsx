@@ -5,8 +5,10 @@ import { useForm } from "react-hook-form";
 import { Package } from "lucide-react";
 import { useOrderStore } from "@/lib/store/useOrderStore";
 import { useCalculatorStore } from "@/lib/store/useCalculatorStore";
-import { totalChargeableWeight } from "@/lib/utils/chargeable-weight";
+import { useVoucherStore } from "@/lib/store/useVoucherStore";
+import { estimateOrder } from "@/lib/voucher/estimate";
 import { formatIDR, formatNumber } from "@/lib/utils/currency";
+import { EstimateBreakdown } from "@/components/order/EstimateBreakdown";
 import { defaultCurrencyFor } from "@/lib/data/currencies";
 import { emptyPackage, type ItemsData } from "@/lib/types/packing";
 import { useT } from "@/lib/i18n/LanguageProvider";
@@ -70,17 +72,23 @@ export function ItemsForm() {
     isDirty,
   );
 
-  const packages = watch("packages") ?? [];
-  const totalCw = totalChargeableWeight(
-    packages.map((p) => ({
-      weight: Number(p?.weight) || 0,
-      length: Number(p?.length) || 0,
-      width: Number(p?.width) || 0,
-      height: Number(p?.height) || 0,
-      quantity: 1,
-    })),
+  // the live estimate runs the real quotation math over the form's packages,
+  // voucher included, so this number and the hub's are the same number
+  const voucher = useOrderStore(
+    (s) => s.orders.find((o) => o.id === s.activeDraftId)?.voucher ?? null,
   );
-  const totalPrice = selectedRate ? selectedRate.perKg * totalCw : null;
+  const campaigns = useVoucherStore((s) => s.campaigns);
+  const modules = useOrderStore((s) => s.modules);
+  const [now] = React.useState(() => Date.now());
+  const packages = watch("packages") ?? [];
+  const estimate = estimateOrder({
+    modules: { ...modules, items: { status: "complete", data: { packages } } },
+    selectedRate,
+    voucher,
+    campaigns,
+    now,
+  });
+  const totalPrice = estimate ? estimate.quotation.total : null;
 
   // Warn (not block) when saving without complete measurement photos.
   const [photoWarnOpen, setPhotoWarnOpen] = React.useState(false);
@@ -143,6 +151,7 @@ export function ItemsForm() {
               mono: true,
             },
           ]}
+          totalsDetail={estimate ? <EstimateBreakdown estimate={estimate} compact /> : null}
           // a bare dash on the money line reads as a bug; say why it is empty
           totalsNote={
             totalPrice === null

@@ -48,3 +48,6 @@ next-env.d.ts
 
 # impeccable (local design tooling)
 /.impeccable/
+
+# design verification screenshots (headless captures, not part of the app)
+/screenshots/
