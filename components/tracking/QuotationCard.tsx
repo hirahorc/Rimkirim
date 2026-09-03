@@ -15,6 +15,7 @@ import {
   ChevronUp,
 } from "lucide-react";
 import { useOrderStore, type Order } from "@/lib/store/useOrderStore";
+import { useVoucherStore } from "@/lib/store/useVoucherStore";
 import { CollapseHeight } from "@/components/ui/disclosure";
 import { useLanguage, useT } from "@/lib/i18n/LanguageProvider";
 import { Card } from "@/components/ui/card";
@@ -48,6 +49,7 @@ export function QuotationCard({
   const t = useT();
   const { locale } = useLanguage();
   const approveQuotation = useOrderStore((s) => s.approveQuotation);
+  const campaigns = useVoucherStore((s) => s.campaigns);
   const [revOpen, setRevOpen] = React.useState(false);
   const [approveOpen, setApproveOpen] = React.useState(false);
   const [approveError, setApproveError] = React.useState(false);
@@ -88,6 +90,16 @@ export function QuotationCard({
     "delivery",
     "delivered",
   ].includes(order.status);
+  // a seasonal code that missed its weight floor: the quotation stands
+  // without the discount and the customer is told why, in one line
+  const minWeightRelease =
+    order.voucher?.state === "released" &&
+    order.voucher.releaseReason === "min-weight"
+      ? {
+          code: order.voucher.code,
+          kg: campaigns.find((c) => c.id === order.voucher?.campaignId)?.minWeightKg ?? 0,
+        }
+      : null;
 
   return (
     <>
@@ -193,6 +205,27 @@ export function QuotationCard({
                 {formatIDR(qu.baseRate)}
               </span>
             </div>
+
+            {/* voucher: a deduction line, not a struck-through price — the hero
+                total is already net, so the breakdown only has to explain it */}
+            {qu.discount > 0 && qu.voucherCode && (
+              <div className="flex items-baseline justify-between gap-3 text-sm">
+                <span className="text-muted">
+                  {t("order.quDiscount")}{" "}
+                  <span className="font-mono text-muted-2">({qu.voucherCode})</span>
+                </span>
+                <span className="shrink-0 font-mono font-medium tabular-nums text-success-ink">
+                  −{formatIDR(qu.discount)}
+                </span>
+              </div>
+            )}
+            {minWeightRelease && (
+              <p className="text-xs text-warning-ink" role="status">
+                {t("order.vcMinWeightNotice")
+                  .replace("{code}", minWeightRelease.code)
+                  .replace("{kg}", String(minWeightRelease.kg))}
+              </p>
+            )}
 
             {/* per-package surcharges: every triggered line shown; the charged one
                 carries a check, the rest are struck through (only the highest counts) */}
@@ -392,6 +425,11 @@ export function QuotationCard({
                 <Clock3 className="size-3.5" />
                 {t("order.quValidUntil")}: {dateFmt.format(qu.validUntil)}
               </p>
+              {qu.discount > 0 && qu.voucherCode && (
+                <p className="mt-1 text-xs text-muted-2">
+                  {t("order.vcInclCode").replace("{code}", qu.voucherCode)}
+                </p>
+              )}
             </div>
             {approveError && (
               <p className="mt-3 text-sm font-medium text-danger-ink" role="alert">

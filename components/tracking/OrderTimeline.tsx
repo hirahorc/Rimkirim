@@ -13,6 +13,7 @@ import {
   QrCodeIcon,
   ReceiptPercentIcon,
   ShieldCheckIcon,
+  TicketIcon,
   TruckIcon,
   XMarkIcon,
 } from "@heroicons/react/24/solid";
@@ -37,6 +38,7 @@ export const EVENT_DOT: Record<TimelineEventType, string> = {
   attention: "bg-warning",
   "attention-cleared": "bg-surface-3",
   awb: "bg-brand",
+  voucher: "bg-info",
 };
 
 /* Each event renders as an icon tile on the rail plus an action-family badge
@@ -67,6 +69,8 @@ const EVENT_META: Record<
   delivery: { icon: TruckIcon, tile: "bg-info/15 text-info", badge: "info", badgeKey: "order.tlBadgeUpdate" },
   awb: { icon: QrCodeIcon, tile: "bg-info/15 text-info", badge: "info", badgeKey: "order.tlBadgeUpdate" },
   "attention-cleared": { icon: CheckIcon, tile: "bg-info/15 text-info", badge: "info", badgeKey: "order.tlBadgeUpdate" },
+  // a voucher line is a record of the campaign slot, never a move: info-blue
+  voucher: { icon: TicketIcon, tile: "bg-info/15 text-info", badge: "info", badgeKey: "order.tlBadgeUpdate" },
   delivered: { icon: CheckIcon, tile: "bg-success/15 text-success", badge: "success", badgeKey: "order.tlBadgeDone" },
   attention: { icon: ExclamationTriangleIcon, tile: "bg-warning/15 text-warning", badge: "warning", badgeKey: "order.tlBadgeAttention" },
   cancelled: { icon: XMarkIcon, tile: "bg-danger/15 text-danger", badge: "danger", badgeKey: "order.tlBadgeCancelled" },

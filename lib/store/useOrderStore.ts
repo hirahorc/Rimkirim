@@ -19,7 +19,17 @@ import {
   type SurchargeLine,
 } from "@/lib/pricing/surcharge-engine";
 import { ACTION_ATTENTION } from "@/lib/order/attention";
+import {
+  applyVoucherToQuotation,
+  effectiveVoucher,
+  findCampaign,
+  transitionVoucher,
+  validateCode,
+  type VoucherError,
+  type VoucherRedemption,
+} from "@/lib/voucher/engine";
 import { useAuthStore } from "./useAuthStore";
+import { useVoucherStore } from "./useVoucherStore";
 
 export type Citizenship = "indonesian" | "foreigner";
 export type ClearanceKind = "personal" | "passenger";
@@ -64,16 +74,21 @@ export interface QuotationPackage {
 /**
  * The official quotation issued by ops (mock — numbers are demo-only).
  *
- * The payable total is base rate + the one charged surcharge per package. Tax and
- * warehouse fields are **informational only** and deliberately excluded from `total`:
+ * The payable total is base rate − voucher discount + the one charged surcharge
+ * per package. Tax and warehouse fields are **informational only** and
+ * deliberately excluded from `total`:
  * clearance handling, insurance and pickup are free, taxes are settled by Indonesian
  * Customs, and warehouse only accrues if the goods sit past the free window.
  */
 export interface Quotation {
-  total: number; // IDR — base + surcharge, the amount approved
+  total: number; // IDR — base − discount + surcharge, the amount approved
   perKg: number; // IDR charged per chargeable kg
   chargeableKg: number;
   baseRate: number; // round(perKg × chargeableKg)
+  /** voucher discount off the base rate only (0 when none applied) */
+  discount: number;
+  /** the campaign code behind `discount` (null when none applied) */
+  voucherCode: string | null;
   surchargeTotal: number; // Σ charged surcharge across packages
   packages: QuotationPackage[];
   // --- informational, NOT part of `total` ---
@@ -288,7 +303,9 @@ export function buildQuotation(
     };
   });
 
-  const total = baseRate + surchargeTotal;
+  // voucher-agnostic: the discount is folded in by quoteWithVoucher
+  const discount = 0;
+  const total = baseRate - discount + surchargeTotal;
 
   // declared value (Σ item value × qty) drives the tax basis; taxes stay zero
   const declaredValue = packages.reduce((sum, p) => {
@@ -309,6 +326,8 @@ export function buildQuotation(
     perKg,
     chargeableKg,
     baseRate,
+    discount,
+    voucherCode: null,
     surchargeTotal,
     packages: quotationPackages,
     declaredValue,
@@ -378,7 +397,8 @@ export type TimelineEventType =
   | "cancelled"
   | "attention"
   | "attention-cleared"
-  | "awb";
+  | "awb"
+  | "voucher";
 
 export interface TimelineEvent {
   id: string;
@@ -412,6 +432,35 @@ function makeEvent(
 function nextEventAt(order: Order): number {
   const last = order.timeline[order.timeline.length - 1];
   return Math.max(Date.now(), (last?.at ?? 0) + 1);
+}
+
+/** Timeline line for each voucher state a status change can produce. */
+const VOUCHER_EVENT_KEY: Partial<Record<VoucherRedemption["state"], string>> = {
+  redeemed: "order.evVoucherRedeemed",
+  released: "order.evVoucherReleased",
+  reversed: "order.evVoucherReversed",
+  // finalized rides on the delivered line
+};
+
+/** Build the quotation and fold the order's reserved voucher into it. */
+function quoteWithVoucher(
+  order: Order,
+  at: number,
+): { quotation: Quotation; voucher: VoucherRedemption | null; events: TimelineEvent[] } {
+  const base = buildQuotation(order);
+  const v = effectiveVoucher(order, Date.now());
+  const campaign = v
+    ? useVoucherStore.getState().campaigns.find((c) => c.id === v.campaignId) ??
+      findCampaign(useVoucherStore.getState().campaigns, v.code)
+    : undefined;
+  const r = applyVoucherToQuotation(base, v, campaign, at);
+  const events: TimelineEvent[] = [];
+  if (r.outcome === "applied") {
+    events.push(makeEvent("voucher", "order.evVoucherApplied", at + 1));
+  } else if (r.outcome === "min-weight") {
+    events.push(makeEvent("voucher", "order.evVoucherMinWeight", at + 1));
+  }
+  return { quotation: r.quotation, voucher: r.voucher, events };
 }
 
 export interface Order {
@@ -457,6 +506,8 @@ export interface Order {
   barpinConfirmedAt: number | null;
   /** When the customer paid the SPTNP tax (null = not required / not yet). */
   taxPaidAt: number | null;
+  /** The campaign voucher attached to this order (null = none). */
+  voucher: VoucherRedemption | null;
 
   context: OrderContext | null;
   selectedRate: SelectedRate | null;
@@ -506,6 +557,11 @@ interface OrderStoreState {
   ensurePackingCode: () => void;
   /** final agree → the order leaves the draft and enters Review (tracking issued) */
   submitOrder: () => void;
+  /** customer (hub): attach a campaign code to the active draft; returns the
+   *  validation error or null. The slot is only taken at submit. */
+  applyVoucher: (raw: string) => VoucherError | null;
+  /** customer: drop the code again (before pickup) */
+  removeVoucher: () => void;
   /** detach from the active draft; orders themselves persist */
   reset: () => void;
   /** make an existing draft the active one again (resume it in the /pesan flow) */
@@ -613,7 +669,7 @@ function updateDraft(
 
 export const useOrderStore = create<OrderStoreState>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       orders: [],
       draftOrder: null,
       activeDraftId: null,
@@ -660,6 +716,7 @@ export const useOrderStore = create<OrderStoreState>()(
             npdRound: 0,
             barpinConfirmedAt: null,
             taxPaidAt: null,
+            voucher: null,
             context: ctx,
             selectedRate: rate,
             answers: {},
@@ -746,8 +803,34 @@ export const useOrderStore = create<OrderStoreState>()(
           if (o.status !== "draft" && o.status !== "review") return null;
           const isResubmit = o.status === "review";
           const nextStatus: OrderStatus = o.quotation ? "quotation" : "review";
+          const now = nextEventAt(o);
+          // first submit takes the voucher slot: re-validate, since capacity
+          // and eligibility may have moved since the code was typed
+          const voucherEvents: TimelineEvent[] = [];
+          let voucher = isResubmit ? effectiveVoucher(o, Date.now()) : o.voucher;
+          if (!isResubmit && voucher?.state === "pending") {
+            const res = validateCode({
+              raw: voucher.code,
+              campaigns: useVoucherStore.getState().campaigns,
+              orders: get().orders,
+              email: o.ownerEmail,
+              order: o,
+              now: Date.now(),
+            });
+            voucher = res.ok
+              ? { ...voucher, state: "reserved", at: now }
+              : { ...voucher, state: "released", releaseReason: "capacity", at: now };
+            voucherEvents.push(
+              makeEvent(
+                "voucher",
+                res.ok ? "order.evVoucherReserved" : "order.evVoucherReleased",
+                now + 1,
+              ),
+            );
+          }
           return {
             status: nextStatus,
+            voucher,
             // the hub already issued a booking number; guarantee one as the
             // single lifecycle identifier just in case.
             bookingNumber: o.bookingNumber ?? makeBookingNumber(),
@@ -763,8 +846,57 @@ export const useOrderStore = create<OrderStoreState>()(
               makeEvent(
                 isResubmit ? "resubmitted" : "submitted",
                 isResubmit ? "order.evResubmitted" : "order.evSubmitted",
-                nextEventAt(o),
+                now,
               ),
+              ...voucherEvents,
+            ],
+          };
+        }),
+      applyVoucher: (raw) => {
+        const s = get();
+        const o = s.orders.find((x) => x.id === s.activeDraftId);
+        if (!o || o.status !== "draft") return "not-found";
+        const res = validateCode({
+          raw,
+          campaigns: useVoucherStore.getState().campaigns,
+          orders: s.orders,
+          email: o.ownerEmail,
+          order: o,
+          now: Date.now(),
+        });
+        if (!res.ok) return res.error;
+        updateDraft(set, () => ({
+          voucher: {
+            code: res.code,
+            campaignId: res.campaign.id,
+            state: "pending",
+            discount: null,
+            at: Date.now(),
+          },
+        }));
+        return null;
+      },
+      removeVoucher: () =>
+        updateDraft(set, (o) => {
+          const v = o.voucher;
+          if (!v || (v.state !== "pending" && v.state !== "reserved")) return null;
+          if (!["draft", "review", "quotation"].includes(o.status)) return null;
+          if (v.state === "pending") return { voucher: null };
+          const now = nextEventAt(o);
+          return {
+            voucher: { ...v, state: "released", releaseReason: "removed", discount: null, at: now },
+            // the quotation loses its discount but keeps its validity
+            quotation: o.quotation
+              ? {
+                  ...o.quotation,
+                  discount: 0,
+                  voucherCode: null,
+                  total: o.quotation.baseRate + o.quotation.surchargeTotal,
+                }
+              : null,
+            timeline: [
+              ...o.timeline,
+              makeEvent("voucher", "order.evVoucherReleased", now),
             ],
           };
         }),
@@ -797,9 +929,20 @@ export const useOrderStore = create<OrderStoreState>()(
             return {};
           }
           const eventKey = PHASE_EVENT_KEY[status];
+          const at = nextEventAt(order);
+          const voucher = transitionVoucher(
+            effectiveVoucher(order, Date.now()),
+            status,
+            at,
+          );
+          const voucherKey =
+            voucher && voucher.state !== order.voucher?.state
+              ? VOUCHER_EVENT_KEY[voucher.state]
+              : undefined;
           const next: Order = {
             ...order,
             status,
+            voucher,
             // entering clearance starts the sub-state machine; leaving clears it
             clearanceStep:
               status === "clearance"
@@ -813,16 +956,13 @@ export const useOrderStore = create<OrderStoreState>()(
                 ? null
                 : order.attention,
             updatedAt: Date.now(),
-            timeline: eventKey
-              ? [
-                  ...order.timeline,
-                  makeEvent(
-                    status as TimelineEventType,
-                    eventKey,
-                    nextEventAt(order),
-                  ),
-                ]
-              : order.timeline,
+            timeline: [
+              ...order.timeline,
+              ...(eventKey
+                ? [makeEvent(status as TimelineEventType, eventKey, at)]
+                : []),
+              ...(voucherKey ? [makeEvent("voucher", voucherKey, at + 1)] : []),
+            ],
           };
           return {
             orders: s.orders.map((o) => (o.id === id ? next : o)),
@@ -1080,16 +1220,20 @@ export const useOrderStore = create<OrderStoreState>()(
         set((s) => {
           const order = s.orders.find((o) => o.id === id);
           if (!order || order.status === "draft") return {};
+          const at = nextEventAt(order);
+          const q = quoteWithVoucher(order, at);
           const next: Order = {
             ...order,
-            quotation: buildQuotation(order),
+            quotation: q.quotation,
+            voucher: q.voucher,
             status: "quotation",
             attention: "order.attQuotationReady",
             opsNotice: null,
             updatedAt: Date.now(),
             timeline: [
               ...order.timeline,
-              makeEvent("quotation", "order.evQuotation", nextEventAt(order)),
+              makeEvent("quotation", "order.evQuotation", at),
+              ...q.events,
             ],
           };
           return {
@@ -1103,7 +1247,9 @@ export const useOrderStore = create<OrderStoreState>()(
             !order ||
             order.status === "draft" ||
             !order.quotation ||
-            order.status !== "quotation"
+            order.status !== "quotation" ||
+            // a stale tab must not approve a total whose reservation lapsed
+            order.quotation.validUntil < Date.now()
           ) {
             return {};
           }
@@ -1363,16 +1509,21 @@ export const useOrderStore = create<OrderStoreState>()(
             pickupChoicePending: false,
             dropOff: null,
           };
+          const at = nextEventAt(rebased);
+          // the reservation survives the re-quote; the discount is recomputed
+          const q = quoteWithVoucher(rebased, at + 2);
           const next: Order = {
             ...rebased,
             status: "quotation",
-            quotation: buildQuotation(rebased),
+            quotation: q.quotation,
+            voucher: q.voucher,
             attention: "order.attQuotationReady",
             updatedAt: Date.now(),
             timeline: [
               ...rebased.timeline,
-              makeEvent("awb", "order.evAwbIssued", nextEventAt(rebased)),
-              makeEvent("quotation", "order.evQuotation", nextEventAt(rebased) + 1),
+              makeEvent("awb", "order.evAwbIssued", at),
+              makeEvent("quotation", "order.evQuotation", at + 1),
+              ...q.events,
             ],
           };
           return {
@@ -1419,15 +1570,21 @@ export const useOrderStore = create<OrderStoreState>()(
           ) {
             return {};
           }
+          const at = nextEventAt(order);
+          const voucher = transitionVoucher(order.voucher, "in-transit", at);
           const next: Order = {
             ...order,
             status: "in-transit",
+            voucher,
             opsNotice: null,
             attention: null,
             updatedAt: Date.now(),
             timeline: [
               ...order.timeline,
-              makeEvent("in-transit", "order.evDroppedOff", nextEventAt(order)),
+              makeEvent("in-transit", "order.evDroppedOff", at),
+              ...(voucher?.state === "redeemed" && order.voucher?.state !== "redeemed"
+                ? [makeEvent("voucher", "order.evVoucherRedeemed", at + 1)]
+                : []),
             ],
           };
           return {
@@ -1493,7 +1650,13 @@ export const useOrderStore = create<OrderStoreState>()(
             quotation:
               o.quotation && (o.quotation as Partial<Quotation>).baseRate === undefined
                 ? buildQuotation(o)
-                : o.quotation ?? null,
+                : o.quotation
+                  ? {
+                      ...o.quotation,
+                      discount: o.quotation.discount ?? 0,
+                      voucherCode: o.quotation.voucherCode ?? null,
+                    }
+                  : null,
             revisionModule: o.revisionModule ?? null,
             revisionNote: o.revisionNote ?? null,
             opsNotice: o.opsNotice ?? null,
@@ -1512,6 +1675,7 @@ export const useOrderStore = create<OrderStoreState>()(
             npdRound: o.npdRound ?? 0,
             barpinConfirmedAt: o.barpinConfirmedAt ?? null,
             taxPaidAt: o.taxPaidAt ?? null,
+            voucher: o.voucher ?? null,
           }));
           // Pre-draftOrder shape kept un-booked questionnaire drafts inside
           // `orders`. Those are not orders any more: the active one migrates
@@ -1553,6 +1717,7 @@ export const useOrderStore = create<OrderStoreState>()(
             npdRound: 0,
             barpinConfirmedAt: null,
             taxPaidAt: null,
+            voucher: null,
             context: p.context,
             selectedRate: p.selectedRate ?? null,
             answers: p.answers ?? {},

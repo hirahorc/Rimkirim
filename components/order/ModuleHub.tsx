@@ -26,6 +26,7 @@ import { orderModulesToCipl } from "@/lib/pdf/cipl";
 import { useDownloadCipl } from "@/components/packing/useDownloadCipl";
 import { CopyButton } from "./CopyButton";
 import { BookingAgreementDialog } from "./BookingAgreementDialog";
+import { VoucherRow } from "./VoucherRow";
 import { useT, useLanguage } from "@/lib/i18n/LanguageProvider";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -376,6 +377,10 @@ export function ModuleHub() {
           <Lock className="size-3.5" /> {t("order.pickupLockedNote")}
         </p>
       )}
+
+      {/* campaign code, BFG pilot only: the last optional thing before the
+          booking, so it never competes with the four modules for attention */}
+      {context?.service === "bfg" && <VoucherRow />}
 
       {/* all four complete: name the moment before asking for the booking */}
       {canSubmit && (

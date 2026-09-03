@@ -34,6 +34,7 @@ import {
   type Order,
 } from "@/lib/store/useOrderStore";
 import { WA_URL } from "@/lib/contact";
+import { effectiveVoucher, type VoucherState } from "@/lib/voucher/engine";
 
 const dash = "–";
 /** Carrier tracking deep-link for an AWB — shared by OrderDetail's status
@@ -275,9 +276,12 @@ export function OrderSummary({ order }: { order: Order }) {
 
   // PendingCards decides its own visibility; mirror it here so a band is
   // never drawn above a section that then renders nothing
+  const [now] = React.useState(() => Date.now());
+  const pendingVoucher = effectiveVoucher(order, now);
   const showPending =
     (order.status === "review" && !order.quotation && !!order.selectedRate) ||
-    !!order.awb;
+    !!order.awb ||
+    (!!pendingVoucher && pendingVoucher.state !== "pending");
   const sections: React.ReactNode[] = [
     <CustomerCard key="customer" order={order} />,
     <ItemsCard key="items" order={order} />,
@@ -1291,12 +1295,25 @@ function PendingCards({ order }: { order: Order }) {
   // on (or the order ends) the line would contradict every other status signal
   const showRate = order.status === "review" && !order.quotation && !!rate;
   const showAwb = !!order.awb;
-  if (!showRate && !showAwb) return null;
+  // the campaign slot as it stands now (a lapsed reservation reads released
+  // even before the store has rewritten it) — a record line, nothing to do
+  const [now] = React.useState(() => Date.now());
+  const voucher = effectiveVoucher(order, now);
+  const showVoucher = !!voucher && voucher.state !== "pending";
+  if (!showRate && !showAwb && !showVoucher) return null;
 
   return (
     // "what's next" only fits a promise; once the AWB exists the section is
-    // simply the shipment's artifact and says so
-    <Section title={t(showRate ? "order.tdNextSection" : "order.tdAwbSection")}>
+    // simply the shipment's artifact and says so; a voucher alone names itself
+    <Section
+      title={t(
+        showRate
+          ? "order.tdNextSection"
+          : showAwb
+            ? "order.tdAwbSection"
+            : "order.tdVoucher",
+      )}
+    >
       {showRate && (
         // the figure on its own line, the status sentence as prose under it —
         // a paragraph never belongs in a value cell
@@ -1332,6 +1349,25 @@ function PendingCards({ order }: { order: Order }) {
           </span>
         </Row>
       )}
+      {showVoucher && (
+        <Row label={t("order.tdVoucherCode")}>
+          <span className="inline-flex items-baseline gap-1.5">
+            <span className="font-mono font-medium text-foreground">{voucher!.code}</span>
+            <span className="text-xs text-muted-2">
+              {t(VOUCHER_STATE_KEY[voucher!.state])}
+            </span>
+          </span>
+        </Row>
+      )}
     </Section>
   );
 }
+
+const VOUCHER_STATE_KEY: Record<VoucherState, string> = {
+  pending: "order.vcStatePending",
+  reserved: "order.vcStateReserved",
+  redeemed: "order.vcStateRedeemed",
+  finalized: "order.vcStateFinalized",
+  reversed: "order.vcStateReversed",
+  released: "order.vcStateReleased",
+};

@@ -271,6 +271,9 @@ white card.
 - **Go Green / Info Blue** — progress, no verdict about you. Routine phases are blue, terminal
   good news is green.
 - **Stop Red** — cancelled. Terminal bad news only.
+- A **voucher** is a record, never a move: its lifecycle (reserved → redeemed → finalized, or
+  released) reads in Info Blue on the timeline and as neutral mono text in the summary. The
+  discount line is the one place it earns Go Green ink — a deduction, not a struck-out price.
 A state that is purple and orange at once has been diagnosed wrong: pick the one the customer
 can act on. Gojek's red-and-green everything is the anti-reference — there every surface has a
 colour, so no colour means anything.

@@ -14,6 +14,7 @@ import {
   Truck,
   ShieldCheck,
   PenLine,
+  Ticket,
 } from "lucide-react";
 import {
   useOrderStore,
@@ -32,9 +33,32 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
+import { formatIDR } from "@/lib/utils/currency";
+import { effectiveVoucher, type VoucherState } from "@/lib/voucher/engine";
 import { cn } from "@/lib/utils/cn";
 
 const ALL_STATES: OrderStatus[] = [...PHASE_STEPS, "cancelled"];
+
+const VOUCHER_STATE_KEY: Record<VoucherState, string> = {
+  pending: "ops.vcStatePending",
+  reserved: "ops.vcStateReserved",
+  redeemed: "ops.vcStateRedeemed",
+  finalized: "ops.vcStateFinalized",
+  reversed: "ops.vcStateReversed",
+  released: "ops.vcStateReleased",
+};
+const VOUCHER_STATE_BADGE: Record<
+  VoucherState,
+  "neutral" | "info" | "success" | "warning" | "danger"
+> = {
+  pending: "neutral",
+  reserved: "info",
+  redeemed: "success",
+  finalized: "success",
+  reversed: "danger",
+  released: "neutral",
+};
 
 /** Preset attention overlays the ops panel can set on an order to demo the banner. */
 const ATTENTION_PRESETS: { key: string; labelKey: string }[] = [
@@ -88,6 +112,9 @@ export function OpsSimulator({ order }: { order: Order }) {
     : null;
 
   const identifier = order.bookingNumber;
+  // a render-stable "now": the card remounts per visit, which is fresh enough
+  const [now] = React.useState(() => Date.now());
+  const voucher = effectiveVoucher(order, now);
 
   return (
     <Card className="border-info/40 bg-info/5 p-5 pt-7">
@@ -258,6 +285,20 @@ export function OpsSimulator({ order }: { order: Order }) {
         <p className="flex items-center gap-1.5 text-xs font-medium text-muted-2">
           <ReceiptText className="size-3.5" /> {t("ops.quotation")}
         </p>
+        {/* read-only: the slot is owned by the order's lifecycle, ops only sees it */}
+        {voucher && (
+          <p className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted">
+            <Ticket className="size-3.5" />
+            <span>{t("ops.vcOnOrder")}:</span>
+            <span className="font-mono font-medium text-foreground">{voucher.code}</span>
+            <Badge variant={VOUCHER_STATE_BADGE[voucher.state]}>
+              {t(VOUCHER_STATE_KEY[voucher.state])}
+            </Badge>
+            {voucher.discount != null && voucher.discount > 0 && (
+              <span className="font-mono tabular-nums">−{formatIDR(voucher.discount)}</span>
+            )}
+          </p>
+        )}
         {order.quotation ? (
           <p className="mt-2 text-xs text-muted">{t("ops.quotationIssued")}</p>
         ) : (
