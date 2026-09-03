@@ -18,6 +18,7 @@ import { useOrderStore, type Order } from "@/lib/store/useOrderStore";
 import { CollapseHeight } from "@/components/ui/disclosure";
 import { useLanguage, useT } from "@/lib/i18n/LanguageProvider";
 import { Card } from "@/components/ui/card";
+import { AttentionStrip } from "@/components/tracking/AttentionStrip";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -33,11 +34,17 @@ import { formatIDR, formatNumber } from "@/lib/utils/currency";
 import { formatCurrency } from "@/lib/data/currencies";
 import { cn } from "@/lib/utils/cn";
 import { RevisionDialog } from "./RevisionDialog";
-
-const WA_URL = "https://wa.me/6281234567890";
+import { WA_URL } from "@/lib/contact";
 
 /** The ops-issued quotation with approve / contact-support / revise actions. */
-export function QuotationCard({ order }: { order: Order }) {
+export function QuotationCard({
+  order,
+  attention = null,
+}: {
+  order: Order;
+  /** the order's attention state, worn as this card's head */
+  attention?: string | null;
+}) {
   const t = useT();
   const { locale } = useLanguage();
   const approveQuotation = useOrderStore((s) => s.approveQuotation);
@@ -84,7 +91,8 @@ export function QuotationCard({ order }: { order: Order }) {
 
   return (
     <>
-      <Card className="p-5 pt-7 sm:p-6 sm:pt-7">
+      <Card className="rounded-md p-5 sm:p-6">
+        <AttentionStrip attention={attention} />
         <div className="flex flex-wrap items-center justify-between gap-2">
           <h2 className="flex items-center gap-2 font-display text-base font-semibold tracking-tight">
             <ReceiptText className="size-4 text-foreground" />
@@ -94,9 +102,12 @@ export function QuotationCard({ order }: { order: Order }) {
             // the badge must not say "awaiting approval" beside a dead date
             <Badge variant="warning">{t("order.quExpired")}</Badge>
           ) : pendingApproval ? (
-            // neutral, not brand: pending is a status, and the lime voice
-            // belongs to the Approve CTA alone on this screen
-            <Badge variant="neutral">{t("order.quPending")}</Badge>
+            // purple, not brand: a quotation waits on the customer, and that
+            // is the "your move" voice the status badge and the list speak
+            // (The Whose-Move Rule); lime belongs to the Approve CTA alone
+            <Badge variant="accent">
+              <Clock3 className="size-3" /> {t("order.quPending")}
+            </Badge>
           ) : approved ? (
             <Badge variant="success">
               <CheckCircle2 className="size-3" /> {t("order.quApproved")}
@@ -120,13 +131,11 @@ export function QuotationCard({ order }: { order: Order }) {
           {/* only while the decision is live: an approved card headlining a
               stale "valid until" date would just sow doubt */}
           {pendingApproval && (
-            <p
-              className={cn(
-                "flex items-center gap-1.5 text-xs",
-                expired ? "font-medium text-warning-ink" : "text-muted-2",
-              )}
-            >
-              <Clock3 className="size-3.5" />
+            // the deadline is the one number this phase turns on: a clock is
+            // time pressure, so it keeps the hold hue (orange glyph, ink words)
+            // even though the card itself is "your move"
+            <p className="flex items-center gap-1.5 text-sm font-medium text-warning-ink">
+              <Clock3 className="size-4 text-warning" aria-hidden />
               {expired ? t("order.quExpired") : t("order.quValidUntil")}:{" "}
               {dateFmt.format(qu.validUntil)}
             </p>
@@ -154,7 +163,7 @@ export function QuotationCard({ order }: { order: Order }) {
             onClick={() => setBreakdownOpen((v) => !v)}
             aria-expanded={breakdownOpen}
             aria-controls="quotation-breakdown"
-            className="-my-3.5 flex w-full items-center justify-between gap-2 py-3.5 font-display text-xs font-medium uppercase tracking-wide text-muted-2 transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/40"
+            className="-my-3.5 flex w-full items-center justify-between gap-2 py-3.5 font-display text-xs font-medium uppercase tracking-wide text-muted-2 transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/50"
           >
             {t("order.quSecBreakdown")}
             {/* swap, never rotate — the shared disclosure idiom */}

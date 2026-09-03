@@ -15,7 +15,11 @@ export function Card({
         // vertical padding (The Clearance Rule), while a concentric edge
         // (pill/badge/circle on top, a button at the bottom) may sit closer
         // because it echoes the curve.
-        "rounded-lg border border-border bg-surface text-foreground",
+        // inside the field (data-field, the app pages on Panel 2) globals.css
+        // re-points --card-surface / --card-border so a card is a white plane
+        // with no outline (The Stroke Rule). Read through variables rather
+        // than a variant so a caller's own bg-*/border-* still wins the merge.
+        "rounded-lg border border-[var(--card-border,var(--border))] bg-[var(--card-surface,var(--surface))] text-foreground",
         className,
       )}
       {...props}

@@ -24,8 +24,7 @@ import { RouteArrow } from "@/components/ui/route-arrow";
 import { Button } from "@/components/ui/button";
 import { useStartOrder } from "@/components/order/useStartOrder";
 import { useT } from "@/lib/i18n/LanguageProvider";
-
-const WA_URL = "https://wa.me/6281234567890";
+import { WA_URL } from "@/lib/contact";
 
 function RouteLine({ route }: { route: RouteInfo }) {
   return (

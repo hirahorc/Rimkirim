@@ -3,8 +3,7 @@
 import { MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useT } from "@/lib/i18n/LanguageProvider";
-
-const WA_URL = "https://wa.me/6281234567890";
+import { WA_URL } from "@/lib/contact";
 
 export function ArticleCta() {
   const t = useT();

@@ -31,10 +31,13 @@ export function CollapseHeight({
   open,
   children,
   className,
+  id,
 }: {
   open: boolean;
   children: React.ReactNode;
   className?: string;
+  /** lets the toggle point at the region with aria-controls */
+  id?: string;
 }) {
   const panelRef = React.useRef<HTMLDivElement>(null);
   const innerRef = React.useRef<HTMLDivElement>(null);
@@ -108,6 +111,7 @@ export function CollapseHeight({
   return (
     <div
       ref={panelRef}
+      id={id}
       className="overflow-hidden"
       style={{
         height: initialOpen ? "auto" : 0,

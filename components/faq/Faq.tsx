@@ -12,10 +12,9 @@ import { SegmentedRoot, SegmentedItem } from "@/components/ui/toggle-group";
 import { Disclosure } from "@/components/ui/disclosure";
 import { Button } from "@/components/ui/button";
 import { useT, useLanguage } from "@/lib/i18n/LanguageProvider";
+import { WA_URL } from "@/lib/contact";
 
 type TabId = FaqTab["id"];
-
-const WA_URL = "https://wa.me/6281234567890";
 
 const isTabId = (v: string | null): v is TabId =>
   v === "bfg" || v === "moving-abroad";

@@ -6,15 +6,16 @@ import { useRouter } from "next/navigation";
 import {
   Loader2,
   ArrowLeft,
+  ArrowUpRight,
   CalendarDays,
   ChevronRight,
-  FileWarning,
   MessageCircle,
   Plane,
   Route as RouteIcon,
   PenLine,
   ShieldCheck,
 } from "lucide-react";
+import { DocumentArrowUpIcon, XCircleIcon } from "@heroicons/react/24/solid";
 import {
   useOrderStore,
   useOrderHydrated,
@@ -30,19 +31,21 @@ import { RouteArrow } from "@/components/ui/route-arrow";
 import { CopyButton } from "./CopyButton";
 import { OrderStatusBadge } from "./OrderStatusBadge";
 import { StatusStepper } from "@/components/tracking/StatusStepper";
-import { AttentionBanner } from "@/components/tracking/AttentionBanner";
+import { AttentionStrip } from "@/components/tracking/AttentionStrip";
+import { CardStrip, stripInk } from "@/components/ui/card-strip";
+import { cn } from "@/lib/utils/cn";
 import {
   OrderSummary,
   SectionBand,
   dueComplianceDocsCount,
+  fedexTrackUrl,
 } from "@/components/tracking/OrderSummary";
 import { OrderTimeline } from "@/components/tracking/OrderTimeline";
 import { QuotationCard } from "@/components/tracking/QuotationCard";
 import { RevisionCard } from "@/components/tracking/RevisionCard";
 import { PickupPanel } from "@/components/tracking/PickupPanel";
 import { ClearancePanel } from "@/components/tracking/ClearancePanel";
-
-const WA_URL = "https://wa.me/6281234567890";
+import { WA_URL } from "@/lib/contact";
 
 /** Tracking detail page — owner-only. */
 export function OrderDetail({ id }: { id: string }) {
@@ -79,7 +82,7 @@ export function OrderDetail({ id }: { id: string }) {
 
   if (!hydrated || !authHydrated) {
     return (
-      <div className="flex min-h-[50vh] items-center justify-center text-muted">
+      <div data-field className="flex min-h-[50vh] items-center justify-center text-muted">
         <Loader2 className="size-5 animate-spin" />
       </div>
     );
@@ -92,7 +95,9 @@ export function OrderDetail({ id }: { id: string }) {
     order.context?.service === "moving-abroad"
       ? "order.serviceMa"
       : "order.serviceBfg";
-  const date = dateFmt.format(new Date(order.createdAt));
+  const createdAt = new Date(order.createdAt);
+  // a corrupt persisted timestamp must not throw the whole page away
+  const date = Number.isNaN(createdAt.getTime()) ? null : dateFmt.format(createdAt);
   const isDraft = order.status === "draft";
   const identifier = order.bookingNumber;
 
@@ -103,20 +108,33 @@ export function OrderDetail({ id }: { id: string }) {
   const attention =
     order.attention ??
     (order.status === "delivered" ? "order.attDelivered" : null);
+  // the attention rides as the head of the card it explains (The
+  // Attached-Strip Rule): the live panel for that phase when there is one,
+  // otherwise the status card — never a box of its own
+  const attentionHost: "revision" | "quotation" | "pickup" | "clearance" | "status" =
+    showRevision
+      ? "revision"
+      : order.status === "quotation" && order.quotation
+        ? "quotation"
+        : order.status === "pickup"
+          ? "pickup"
+          : order.status === "clearance"
+            ? "clearance"
+            : "status";
+  const hosted = (host: typeof attentionHost) =>
+    attentionHost === host ? attention : null;
   const hasLivePanels =
-    !!attention ||
     showRevision ||
     !!order.quotation ||
     order.status === "pickup" ||
-    order.status === "clearance" ||
-    order.status === "cancelled";
+    order.status === "clearance";
   // docs the customer still owes for the phases ahead — surfaced up here in
   // the status tier so the page's one standing to-do isn't buried below the
   // activity log (the tiles themselves live in the Compliance section)
   const docsTodo = dueComplianceDocsCount(order);
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6 sm:py-10">
+    <div data-field className="mx-auto max-w-3xl px-4 py-8 sm:px-6 sm:py-10">
       <Link
         href="/kiriman"
         className="tap-row mb-4 inline-flex items-center gap-1.5 text-sm text-muted transition-colors hover:text-foreground"
@@ -154,7 +172,7 @@ export function OrderDetail({ id }: { id: string }) {
             <span className="flex items-center gap-1.5 text-muted-2">
               <CalendarDays className="size-4" /> {t("order.ordersCreatedAt")}
             </span>
-            <span className="text-muted">{date}</span>
+            <span className="text-muted">{date ?? "–"}</span>
           </div>
           <div className="flex items-center justify-between gap-3">
             <span className="flex items-center gap-1.5 text-muted-2">
@@ -197,19 +215,82 @@ export function OrderDetail({ id }: { id: string }) {
       {/* status tier: the first boxed unit under the de-boxed header */}
       {!isDraft && (
         <Card className="mt-6 rounded-md p-4 sm:p-5">
+          {/* head: why you are here (in transit, delivered, cancelled —
+              phases with no live panel to carry it). A terminal status is
+              news, not archive material: cancelled leads the record here,
+              with a reason-door, instead of as a red box of its own */}
+          {order.status === "cancelled" ? (
+            <CardStrip edge="top" tone="danger" inset="sm" icon={XCircleIcon}>
+              <p className={cn("font-semibold", stripInk("danger"))}>
+                {t("order.tdCancelledNotice")}
+              </p>
+              <p className="mt-0.5 text-muted">{t("order.tdCancelledBody")}</p>
+              <a
+                href={WA_URL}
+                target="_blank"
+                rel="noreferrer"
+                className="link-mark tap-row relative mt-2 inline-flex items-center gap-1.5 text-sm font-medium"
+              >
+                <MessageCircle className="size-4" /> {t("order.contactWa")}
+              </a>
+            </CardStrip>
+          ) : (
+            <AttentionStrip attention={hosted("status")} inset="sm" />
+          )}
           <StatusStepper status={order.status as OrderPhase} />
+          {/* the tracking artifact rides with the rail it advances: once the
+              AWB exists, an in-transit customer finds it beside the stepper
+              instead of below the whole record (its archival row stays in
+              "what's next" at the record's foot) */}
+          {order.awb && (
+            // the number is the headline: a small label above, the mono
+            // number large beneath with its copy, and the tracking link as a
+            // chip on the right. Nothing has to share a line with the label,
+            // so no width turns it into a ragged second row
+            <div className="mt-4 flex items-end justify-between gap-3 border-t border-border pt-3.5">
+              <div className="min-w-0">
+                <p className="flex items-center gap-1.5 font-display text-xs font-medium uppercase tracking-wide text-muted-2">
+                  <Plane className="size-3.5" aria-hidden /> {t("order.tdAwbNumber")}
+                </p>
+                <p className="mt-1 flex items-center gap-1.5">
+                  <span className="truncate font-mono text-base font-medium text-foreground">
+                    {order.awb}
+                  </span>
+                  <CopyButton value={order.awb} />
+                </p>
+              </div>
+              <a
+                href={fedexTrackUrl(order.awb)}
+                target="_blank"
+                rel="noreferrer"
+                aria-label={t("order.tdAwbTrack")}
+                className="tap-target relative inline-flex h-9 shrink-0 items-center gap-1.5 rounded-full border border-border bg-surface-2 px-2.5 text-sm font-medium text-foreground transition-colors hover:bg-surface-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/50 sm:px-3.5"
+              >
+                <span className="hidden sm:inline">{t("order.tdAwbTrack")}</span>
+                <ArrowUpRight className="size-4" aria-hidden />
+              </a>
+            </div>
+          )}
           {docsTodo > 0 && (
-            <a
+            // the card's foot wears the ask (purple tint, no outline, ink
+            // words, raw hue in the glyphs): a to-do reads as "your move"
+            // from across the room, not as one grey line under the rail
+            <CardStrip
+              edge="bottom"
+              tone="action"
+              inset="sm"
+              icon={DocumentArrowUpIcon}
               href="#compliance-docs"
-              className="mt-4 flex items-center gap-2 rounded-sm border-t border-border pt-3.5 text-sm text-muted transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/50"
+              rowClassName="items-center"
             >
-              <FileWarning className="size-4 shrink-0 text-warning" aria-hidden />
-              {(docsTodo === 1
-                ? t("order.tdDocsTodoOne")
-                : t("order.tdDocsTodoMany")
-              ).replace("{n}", String(docsTodo))}
-              <ChevronRight className="ml-auto size-4 shrink-0 text-muted-2" aria-hidden />
-            </a>
+              <span className="flex items-center gap-2 font-medium text-accent">
+                {(docsTodo === 1
+                  ? t("order.tdDocsTodoOne")
+                  : t("order.tdDocsTodoMany")
+                ).replace("{n}", String(docsTodo))}
+                <ChevronRight className="ml-auto size-4 shrink-0 text-accent" aria-hidden />
+              </span>
+            </CardStrip>
           )}
         </Card>
       )}
@@ -219,31 +300,12 @@ export function OrderDetail({ id }: { id: string }) {
           each other so they read as a single "in progress" band */}
       {hasLivePanels && (
         <div className="mt-8 space-y-3">
-          {/* a terminal status is news, not archive material: the cancelled
-              notice leads the live tier with a reason-door instead of hiding
-              as a red one-liner at the record's foot */}
-          {order.status === "cancelled" && (
-            <Card className="rounded-md border-danger/40 bg-danger/10 p-4 text-sm sm:p-5">
-              <p className="font-semibold text-danger">
-                {t("order.tdCancelledNotice")}
-              </p>
-              <p className="mt-0.5 text-muted">{t("order.tdCancelledBody")}</p>
-              <a
-                href={WA_URL}
-                target="_blank"
-                rel="noreferrer"
-                className="link-mark mt-2 inline-flex items-center gap-1.5 text-sm font-medium"
-              >
-                <MessageCircle className="size-4" /> {t("order.contactWa")}
-              </a>
-            </Card>
-          )}
-          <AttentionBanner attention={attention} />
           {showRevision && (
             <RevisionCard
               orderId={order.id}
               moduleId={order.revisionModule!}
               note={order.revisionNote}
+              attention={hosted("revision")}
             />
           )}
           {/* the phase that needs the customer outranks the archived
@@ -253,10 +315,14 @@ export function OrderDetail({ id }: { id: string }) {
               initial state relies on that. Merging the slots into one would
               silently freeze the breakdown open after approval. */}
           {order.status === "quotation" && order.quotation && (
-            <QuotationCard order={order} />
+            <QuotationCard order={order} attention={hosted("quotation")} />
           )}
-          {order.status === "pickup" && <PickupPanel order={order} />}
-          {order.status === "clearance" && <ClearancePanel order={order} />}
+          {order.status === "pickup" && (
+            <PickupPanel order={order} attention={hosted("pickup")} />
+          )}
+          {order.status === "clearance" && (
+            <ClearancePanel order={order} attention={hosted("clearance")} />
+          )}
           {order.status !== "quotation" && order.quotation && (
             <QuotationCard order={order} />
           )}

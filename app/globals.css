@@ -27,22 +27,28 @@
   --brand-ink: #282828; /* text placed on top of brand fills */
 
   /* accent — the second, sanctioned colour. Unlike lime (fill-only), this one
-     may be used as coloured ink or an underline stroke. */
+     may be used as coloured ink or an underline stroke. In the app it is the
+     "your move" hue: every surface that waits on the customer (attention
+     rows, the docs to-do, a quotation to approve) speaks it, so lime keeps
+     "press this" and orange keeps "hold / deadline" (The Whose-Move Rule). */
   --accent: #9c26f5;
+  --accent-ink: color-mix(in srgb, var(--accent) 80%, black);
 
   /* status — aligned to Sonner's richColors light palette (text hues) so
-     toasts and in-app status surfaces share one palette */
+     toasts and in-app status surfaces share one palette. Warning is the one
+     departure: Sonner's amber went brown once tinted and inked, so it sits
+     at a clean orange instead, still a hue away from danger's red. */
   --success: hsl(140 100% 27%);
-  --warning: hsl(31 92% 45%);
+  --warning: hsl(22 95% 52%);
   --danger: hsl(360 100% 45%);
   --info: hsl(210 92% 45%);
 
   /* status ink: the accent darkened just enough to clear 4.5:1 as 12px text on
      its own 15% tint (the raw accents measure 2.7–3.8:1 there) — the same
      color-mix trick the info link uses. Warning starts lightest, so it mixes
-     deeper than its siblings. */
+     deeper than its siblings (68%: 4.8:1 on its 15% chip tint). */
   --success-ink: color-mix(in srgb, var(--success) 80%, black);
-  --warning-ink: color-mix(in srgb, var(--warning) 70%, black);
+  --warning-ink: color-mix(in srgb, var(--warning) 68%, black);
   --danger-ink: color-mix(in srgb, var(--danger) 80%, black);
   --info-ink: color-mix(in srgb, var(--info) 80%, black);
 
@@ -73,6 +79,7 @@
   --color-brand-ink: var(--brand-ink);
 
   --color-accent: var(--accent);
+  --color-accent-ink: var(--accent-ink);
 
   --color-success: var(--success);
   --color-warning: var(--warning);
@@ -134,6 +141,18 @@ body {
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
+}
+
+/* The field: signed-in app pages (tracking, the order hub) sit on Panel 2 so
+   white cards read as cards with no outline (The Stroke Rule). Marketing pages
+   keep the white canvas; the header capsule and footer are chrome and stay
+   white on both. */
+body:has(main > [data-field]) {
+  background: var(--surface-2);
+  /* cards become white planes with no outline (The Stroke Rule); Card reads
+     these through var() fallbacks so a tinted caller still wins */
+  --card-surface: var(--background);
+  --card-border: transparent;
 }
 
 /* grid backdrop for hero */
@@ -335,7 +354,9 @@ body {
    moves to the underline stroke: dark ink, lime marker beneath. */
 /* Inline links read as links: conventional blue with an underline. */
 .link-mark {
-  color: var(--info);
+  /* a hair darker than raw --info: 4.47:1 on --surface becomes 4.9:1, the
+     hue is untouched */
+  color: color-mix(in srgb, var(--info) 92%, black);
   font-weight: 500;
   text-decoration-line: underline;
   text-decoration-color: color-mix(in srgb, var(--info) 45%, transparent);

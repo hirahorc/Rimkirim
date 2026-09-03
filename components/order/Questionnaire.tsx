@@ -37,8 +37,7 @@ import { InfoTip, TooltipProvider } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils/cn";
 import { formatIDR } from "@/lib/utils/currency";
 import { RouteArrow } from "@/components/ui/route-arrow";
-
-const WA_URL = "https://wa.me/6281234567890";
+import { WA_URL } from "@/lib/contact";
 
 /**
  * A yes/no (or A/B) answer as two standalone buttons side by side — not a

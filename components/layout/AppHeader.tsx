@@ -60,33 +60,12 @@ export function AppHeader() {
           <LanguageToggle />
           {user ? (
             <>
-              {/* Signed in, the capsule changes register: the sales CTA steps
-                  aside and the customer's own progress takes the lime. On
-                  /kiriman itself the CTA collapses into the active Panel-2
-                  pill — arrived, not still being sold to. */}
+              {/* Signed in, the sales CTA steps aside and nothing takes its
+                  place: the bell is the door to the customer's shipments, so
+                  a second "My Shipments" pill beside it would be one door
+                  drawn twice. */}
               <NotificationBell />
               <LiveOrderToasts />
-              <Button
-                asChild
-                size="sm"
-                variant={
-                  pathname === "/kiriman" || pathname.startsWith("/kiriman/")
-                    ? "secondary"
-                    : "brand"
-                }
-                className="hidden lg:inline-flex"
-              >
-                <Link
-                  href="/kiriman"
-                  aria-current={
-                    pathname === "/kiriman" || pathname.startsWith("/kiriman/")
-                      ? "page"
-                      : undefined
-                  }
-                >
-                  {t("auth.myOrders")}
-                </Link>
-              </Button>
               <AccountMenu />
             </>
           ) : (

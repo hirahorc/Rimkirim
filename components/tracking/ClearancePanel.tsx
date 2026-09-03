@@ -2,15 +2,8 @@
 
 import * as React from "react";
 import { toast } from "sonner";
-import {
-  ShieldCheck,
-  Check,
-  AlertTriangle,
-  FileCheck2,
-  PenLine,
-  Receipt,
-  Info,
-} from "lucide-react";
+import { ShieldCheck, FileCheck2, PenLine, Receipt, Info } from "lucide-react";
+import { ExclamationTriangleIcon } from "@heroicons/react/24/solid";
 import {
   useOrderStore,
   CLEARANCE_SPINE,
@@ -22,8 +15,10 @@ import {
 } from "@/lib/store/useOrderStore";
 import { useT } from "@/lib/i18n/LanguageProvider";
 import { Card } from "@/components/ui/card";
+import { AttentionStrip } from "@/components/tracking/AttentionStrip";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { StepRail } from "@/components/tracking/StatusStepper";
 import { cn } from "@/lib/utils/cn";
 
 const SPINE_LABEL: Record<ClearanceSpineNode, string> = {
@@ -58,7 +53,14 @@ const RESULT_BADGE: Partial<Record<ClearanceStep, string>> = {
  * confirmation → submission → Bea Cukai review (with NPD rounds) → a final
  * result (SPPB / SPPBL / SPTNP / Reject). Some states need a customer action.
  */
-export function ClearancePanel({ order }: { order: Order }) {
+export function ClearancePanel({
+  order,
+  attention = null,
+}: {
+  order: Order;
+  /** the order's attention state, worn as this card's head */
+  attention?: string | null;
+}) {
   const t = useT();
   const confirmBarpin = useOrderStore((s) => s.confirmBarpin);
   const requestBarpinRevision = useOrderStore((s) => s.requestBarpinRevision);
@@ -77,7 +79,8 @@ export function ClearancePanel({ order }: { order: Order }) {
   const descKey = blocked ? "order.clDescBlocked" : STEP_DESC[current];
 
   return (
-    <Card className="px-5 py-7 sm:px-6">
+    <Card className="rounded-md p-5 sm:p-6">
+      <AttentionStrip attention={attention} />
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h2 className="flex items-center gap-2 font-display text-base font-semibold tracking-tight">
           <ShieldCheck className="size-4 text-foreground" />
@@ -89,93 +92,45 @@ export function ClearancePanel({ order }: { order: Order }) {
             {order.npdRound}
           </Badge>
         )}
+        {/* a tax bill waits on the customer: purple, not orange */}
         {isReleased && RESULT_BADGE[current] && (
-          <Badge variant={current === "sptnp" ? "warning" : "success"}>
+          <Badge variant={current === "sptnp" ? "accent" : "success"}>
             {t(RESULT_BADGE[current]!)}
           </Badge>
         )}
       </div>
 
-      {/* sub-stepper spine */}
-      <div className="mt-4 flex items-start">
-        {CLEARANCE_SPINE.map((node, i) => {
-          const done = i < currentIdx;
-          const currentNode = i === currentIdx;
-          return (
-            <div
-              key={node}
-              className={cn(
-                "flex flex-1 flex-col items-center",
-                i === 0 && "items-start",
-                i === CLEARANCE_SPINE.length - 1 && "items-end",
-              )}
-            >
-              <div className="flex w-full items-center">
-                <span
-                  className={cn(
-                    "h-0.5 flex-1",
-                    i === 0 && "bg-transparent",
-                    i > 0 && (done || currentNode ? "bg-brand" : "bg-border"),
-                  )}
-                />
-                <span
-                  className={cn(
-                    "grid size-5 shrink-0 place-items-center rounded-full border-2",
-                    done && "border-brand bg-brand text-brand-ink",
-                    currentNode && "border-foreground bg-background text-brand-ink",
-                    !done &&
-                      !currentNode &&
-                      "border-border bg-surface-2 text-muted-2",
-                  )}
-                >
-                  {done ? (
-                    <Check className="size-3" strokeWidth={3} />
-                  ) : currentNode ? (
-                    <span className="size-1.5 rounded-full bg-brand" />
-                  ) : null}
-                </span>
-                <span
-                  className={cn(
-                    "h-0.5 flex-1",
-                    i === CLEARANCE_SPINE.length - 1 && "bg-transparent",
-                    i < CLEARANCE_SPINE.length - 1 &&
-                      (done || currentNode ? "bg-brand" : "bg-border"),
-                  )}
-                />
-              </div>
-              <p
-                className={cn(
-                  "mt-1.5 px-0.5 text-center text-[10px] leading-tight",
-                  currentNode && "font-semibold text-foreground",
-                  done && "font-medium text-foreground",
-                  !done && !currentNode && "text-muted-2",
-                )}
-              >
-                {t(SPINE_LABEL[node])}
-              </p>
-            </div>
-          );
-        })}
+      {/* sub-stepper spine: the same rail as the order stepper, sized for a card */}
+      <div className="mt-4">
+        <StepRail
+          size="sm"
+          steps={CLEARANCE_SPINE.map((node) => ({ key: node, label: t(SPINE_LABEL[node]) }))}
+          currentIdx={currentIdx}
+          arrived={isReleased && current !== "sptnp"}
+        />
       </div>
 
       {/* current-state description */}
       <p
         className={cn(
           "mt-4 flex items-start gap-2 rounded-sm px-3 py-2.5 text-sm",
-          blocked
-            ? "bg-warning/10 text-warning"
-            : "bg-surface-2 text-muted",
+          // words wear the ink, the glyph keeps the raw hue (Tint-15/25)
+          blocked ? "bg-warning/10 text-warning-ink" : "bg-surface-2 text-muted",
         )}
       >
-        {blocked && <AlertTriangle className="mt-0.5 size-4 shrink-0" />}
+        {blocked && (
+          <ExclamationTriangleIcon aria-hidden className="mt-0.5 size-5 shrink-0 text-warning" />
+        )}
         <span>{t(descKey)}</span>
       </p>
 
       {/* Barpin confirmation — customer action */}
       {current === "barpin-confirm" && (
         <div className="mt-3 flex flex-col gap-2 sm:flex-row">
+          {/* flex-1 only once the row is a row: in the column, a 0% basis
+              lets the buttons collapse to their text height */}
           <Button
-            className="flex-1"
+            className="sm:flex-1"
             onClick={() => {
               confirmBarpin(order.id);
               // guarded no-op outside barpin-confirm — toast only on effect
@@ -190,7 +145,7 @@ export function ClearancePanel({ order }: { order: Order }) {
           </Button>
           <Button
             variant="secondary"
-            className="flex-1"
+            className="sm:flex-1"
             onClick={() => {
               requestBarpinRevision(order.id);
               const now = useOrderStore
@@ -229,8 +184,9 @@ export function ClearancePanel({ order }: { order: Order }) {
           </Button>
         ))}
 
-      {/* supporting documents info (from the clearance MD) */}
-      <div className="mt-4 rounded-sm border border-border p-3">
+      {/* supporting documents info (from the clearance MD): a reference
+          panel, so tone rather than outline (The Stroke Rule) */}
+      <div className="mt-4 rounded-sm bg-surface-2 p-3">
         <p className="flex items-center gap-1.5 text-xs font-medium text-muted-2">
           <Info className="size-3.5" /> {t("order.clDocsTitle")}
         </p>

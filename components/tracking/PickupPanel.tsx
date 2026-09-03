@@ -21,6 +21,7 @@ import {
 } from "@/lib/store/useOrderStore";
 import { useLanguage, useT } from "@/lib/i18n/LanguageProvider";
 import { Card } from "@/components/ui/card";
+import { AttentionStrip } from "@/components/tracking/AttentionStrip";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -32,14 +33,20 @@ import {
 } from "@/components/ui/dialog";
 import { NewAwbDialog } from "./NewAwbDialog";
 import { ReschedulePickupDialog } from "./ReschedulePickupDialog";
-
-const WA_URL = "https://wa.me/6281234567890";
+import { WA_URL } from "@/lib/contact";
 
 /**
  * Customer-facing pickup status: after a failed pickup the customer chooses
  * re-pickup or drop-off; 3 customer-fault fails escalate to a new-AWB request.
  */
-export function PickupPanel({ order }: { order: Order }) {
+export function PickupPanel({
+  order,
+  attention = null,
+}: {
+  order: Order;
+  /** the order's attention state, worn as this card's head */
+  attention?: string | null;
+}) {
   const t = useT();
   const { locale } = useLanguage();
   const chooseDropOff = useOrderStore((s) => s.chooseDropOff);
@@ -47,6 +54,15 @@ export function PickupPanel({ order }: { order: Order }) {
   const [awbOpen, setAwbOpen] = React.useState(false);
   const [reschedOpen, setReschedOpen] = React.useState(false);
   const [dropConfirmOpen, setDropConfirmOpen] = React.useState(false);
+  const deadlineFmt = React.useMemo(
+    () =>
+      new Intl.DateTimeFormat(locale, {
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+      }),
+    [locale],
+  );
 
   if (order.status !== "pickup") return null;
 
@@ -58,11 +74,6 @@ export function PickupPanel({ order }: { order: Order }) {
   ).length;
   const needsAwb = customerFails >= MAX_CUSTOMER_PICKUP_FAILS;
   const dropOff = order.dropOff;
-  const deadlineFmt = new Intl.DateTimeFormat(locale, {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  });
 
   // the quiet states: nothing is being asked of the customer. without these the
   // card would render as a lone heading — right after the booking, and again
@@ -70,9 +81,12 @@ export function PickupPanel({ order }: { order: Order }) {
   const schedule = order.modules.pickup.data as
     | { date?: string; time?: string }
     | undefined;
-  const scheduledDate = schedule?.date
-    ? deadlineFmt.format(new Date(`${schedule.date}T00:00:00`))
-    : null;
+  // a malformed persisted date must not take the whole card down
+  const scheduledAt = schedule?.date ? new Date(`${schedule.date}T00:00:00`) : null;
+  const scheduledDate =
+    scheduledAt && !Number.isNaN(scheduledAt.getTime())
+      ? deadlineFmt.format(scheduledAt)
+      : null;
   const awaiting =
     !needsAwb &&
     !order.pickupChoicePending &&
@@ -80,8 +94,11 @@ export function PickupPanel({ order }: { order: Order }) {
     !dropOff?.fulfilledAt;
 
   return (
-    <Card className="px-5 py-7 sm:px-6">
-      <h2 className="flex items-center gap-2 font-display text-base font-semibold tracking-tight">
+    <Card className="rounded-md p-5 sm:p-6">
+      <AttentionStrip attention={attention} />
+      {/* a 48px heading row: on the strip's 16px shoulder it puts the title
+          28px under the tint, the way the Figma revamp draws it */}
+      <h2 className="flex h-12 items-center gap-2 font-display text-base font-semibold tracking-tight">
         <Truck className="size-4 text-foreground" />
         {t("order.pickStatus")}
       </h2>
@@ -133,20 +150,25 @@ export function PickupPanel({ order }: { order: Order }) {
         </div>
       )}
 
+      {/* both asks below wait on the customer, so they wear the "your move"
+          purple as a tint with no outline (Whose-Move + Stroke rules). The
+          heading stays foreground: the tint and the card's head already say
+          whose move it is, a third purple would be shouting. */}
       {!needsAwb && order.pickupChoicePending && (
-        <div className="mt-3 rounded-md border border-warning/40 bg-warning/10 p-4">
-          <p className="text-sm font-semibold text-warning">
+        <div className="mt-3 rounded-md bg-accent/10 p-4">
+          <p className="text-sm font-semibold text-foreground">
             {t("order.pickChoiceTitle")}
           </p>
           <p className="mt-0.5 text-sm text-muted">{t("order.pickChoiceBody")}</p>
           {/* two equal doors, not one CTA plus a fallback — so they read as
               option rows (icon, label, chevron), never as stretched pills.
+              Surface on the tint with a hairline, as the Figma revamp draws them.
               The row shape survives any width; no per-breakpoint layout. */}
           <div className="mt-3 flex flex-col gap-2">
             <button
               type="button"
               onClick={() => setReschedOpen(true)}
-              className="flex w-full items-center gap-2.5 rounded-sm border border-border bg-surface px-3.5 py-3 text-left text-sm font-medium text-foreground transition-colors hover:border-border-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/50"
+              className="flex w-full items-center gap-2.5 rounded-sm border border-border bg-surface px-3.5 py-3 text-left text-sm font-medium text-foreground transition-colors hover:bg-surface-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/50"
             >
               <RefreshCcw className="size-4 shrink-0 text-muted-2" />
               {t("order.pickChoiceRepickup")}
@@ -158,7 +180,7 @@ export function PickupPanel({ order }: { order: Order }) {
             <button
               type="button"
               onClick={() => setDropConfirmOpen(true)}
-              className="flex w-full items-center gap-2.5 rounded-sm border border-border bg-surface px-3.5 py-3 text-left text-sm font-medium text-foreground transition-colors hover:border-border-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/50"
+              className="flex w-full items-center gap-2.5 rounded-sm border border-border bg-surface px-3.5 py-3 text-left text-sm font-medium text-foreground transition-colors hover:bg-surface-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/50"
             >
               <Store className="size-4 shrink-0 text-muted-2" />
               {t("order.pickChoiceDropOff")}
@@ -200,8 +222,8 @@ export function PickupPanel({ order }: { order: Order }) {
       </Dialog>
 
       {needsAwb && (
-        <div className="mt-3 rounded-md border border-warning/40 bg-warning/10 p-4">
-          <p className="text-sm font-semibold text-warning">
+        <div className="mt-3 rounded-md bg-accent/10 p-4">
+          <p className="text-sm font-semibold text-foreground">
             {t("order.pickAwbNeededTitle")}
           </p>
           <p className="mt-0.5 text-sm text-muted">
@@ -226,9 +248,9 @@ export function PickupPanel({ order }: { order: Order }) {
       />
 
       {dropOff && !dropOff.expired && !dropOff.fulfilledAt && (
-        <div className="mt-3 rounded-md border border-info/40 bg-info/10 p-4">
-          <p className="flex items-center gap-1.5 text-sm font-semibold text-info">
-            <MapPin /> {t("order.pickDropOffTitle")}
+        <div className="mt-3 rounded-md bg-info/10 p-4">
+          <p className="flex items-center gap-1.5 text-sm font-semibold text-info-ink">
+            <MapPin className="size-4 text-info" /> {t("order.pickDropOffTitle")}
           </p>
           <p className="mt-0.5 text-sm text-muted">{t("order.pickDropOffBody")}</p>
           <p className="mt-1 flex items-center gap-1.5 text-xs text-muted-2">
@@ -255,7 +277,7 @@ export function PickupPanel({ order }: { order: Order }) {
             href={WA_URL}
             target="_blank"
             rel="noreferrer"
-            className="link-mark mt-3 flex w-fit items-center gap-1.5 text-xs font-medium"
+            className="link-mark tap-row relative mt-3 flex w-fit items-center gap-1.5 text-sm font-medium"
           >
             <MessageCircle className="size-3.5" /> {t("order.pickDropOffAsk")}
           </a>

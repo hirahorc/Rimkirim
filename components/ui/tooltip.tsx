@@ -79,11 +79,12 @@ export function InfoTip({ content, label }: { content: React.ReactNode; label?: 
             setOpen(next);
           }}
           className={cn(
-            "relative inline-grid size-[1.125rem] shrink-0 cursor-help place-items-center rounded-full text-muted-2 opacity-55 transition-[opacity,color] duration-200",
+            // quiet, not faint: 70% keeps the glyph above the 3:1 non-text floor
+            "relative inline-grid size-[1.125rem] shrink-0 cursor-help place-items-center rounded-full text-muted-2 opacity-70 transition-[opacity,color] duration-200",
             "hover:text-muted hover:opacity-100 focus-visible:text-muted focus-visible:opacity-100",
             "focus-visible:outline-2 focus-visible:outline-offset-[3px] focus-visible:outline-accent",
-            // 28px hit target without growing the visual
-            "after:absolute after:-inset-[5px] after:rounded-full",
+            // 28px hit target on mouse, 44px on touch, without growing the visual
+            "after:absolute after:-inset-[5px] after:rounded-full pointer-coarse:after:-inset-[13px]",
           )}
           aria-label={
             label ? t("common.infoAbout").replace("{label}", label) : t("common.moreInfo")

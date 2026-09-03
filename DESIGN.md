@@ -16,9 +16,11 @@ colors:
   brand-dim: "#a3d600"
   brand-ink: "#282828"
   success: "hsl(140 100% 27%)" # ≈ #008a2e
-  warning: "hsl(31 92% 45%)" # ≈ #dc7609
+  warning: "hsl(22 95% 52%)" # ≈ #fb5a0f, orange not amber: tinted amber read as cardboard
   danger: "hsl(360 100% 45%)" # ≈ #e60000
   info: "hsl(210 92% 45%)" # ≈ #0973dc
+  accent: "#9c26f5" # Move Purple: "your move" surfaces, inline links, the Expat nav
+  accent-ink: "color-mix(in srgb, #9c26f5 80%, black)"
 typography:
   display:
     fontFamily: "Space Grotesk, Geist, sans-serif"
@@ -201,10 +203,18 @@ A daylight field with one electric accent and a small, disciplined status set.
 - **Dim Grey** (`#64646c`): Labels, eyebrows, captions, and de-emphasised meta.
 
 ### Status (tint system, used sparingly)
-- **Go Green** (`hsl(140 100% 27%)`), **Hold Amber** (`hsl(31 92% 45%)`), **Stop Red**
-  (`hsl(360 100% 45%)`), **Info Blue** (`hsl(210 92% 45%)`) — the text hues of Sonner's
-  richColors light palette, adopted app-wide so toasts and in-app status surfaces share one
-  palette. Info Blue also carries the ops/simulator (demo) chrome.
+- **Go Green** (`hsl(140 100% 27%)`), **Stop Red** (`hsl(360 100% 45%)`), **Info Blue**
+  (`hsl(210 92% 45%)`) — the text hues of Sonner's richColors light palette, adopted app-wide so
+  toasts and in-app status surfaces share one palette. Info Blue also carries the ops/simulator
+  (demo) chrome.
+- **Hold Orange** (`hsl(22 95% 52%)`): the warning hue, deliberately *orange* rather than
+  Sonner's amber — tinted amber at 10–15% read as cardboard next to the purple. Ink at 68%
+  toward black.
+- **Move Purple** (`#9c26f5`, `--accent`): the second sanctioned colour. Where lime says *press
+  this*, purple says *this waits on you* — the attention banner, the "perlu tindakan kamu" strip,
+  the docs-to-upload strip, the quotation-pending chip, the in-progress module tile. It is also
+  the inline link hue and the Expat nav gradient's far end, so the two jobs share one family.
+  Ink at 80% toward black (`--accent-ink`) for words on its own tint.
 
 ### Named Rules
 **The One-Voice Rule.** Live Lime appears on ≤10% of any given screen — the primary CTA, the one
@@ -239,12 +249,62 @@ point of use.
   (1.8s alternate loop) — a deliberate exception to the one-loop rule, kept because it runs only
   under the pointer, never on idle UI, and stops the moment the hover ends.
 
-**The Tint-15/25 Rule.** *Status* chips use the colour at 15% opacity for the fill, 25% for the
-border, full strength for the icon, and the **status ink** (`--*-ink`: the accent color-mixed
-80% toward black, warning 70%) for the words — so the label speaks the status hue like the
-richColors toasts do, while 12px text still clears AA 4.5:1 on the tint (the raw accents
-measure only 2.7–3.8:1 there). **Brand chips are the exception** — a 15% lime wash is
-nearly invisible on white, so they use a solid Soft Lime fill with Ink on Lime text.
+**The Tint-15 Rule.** *Status* chips use the colour at 15% opacity for the fill (banners and
+strips step down to 10%), full strength for the icon, and the **status ink** (`--*-ink`: the
+accent color-mixed 80% toward black, warning 68%) for the words — so the label speaks the
+status hue like the richColors toasts do, while 12px text still clears AA 4.5:1 on the tint
+(the raw accents measure only 2.7–3.8:1 there). There is **no border** on a tint: the wash *is*
+the edge (The Stroke Rule). **Brand chips are the exception** — a 15% lime wash is nearly
+invisible on white, so they use a solid Soft Lime fill with Ink on Lime text. Neutral chips are
+`foreground/10`, a translucent grey, so they still read on the Panel 2 field and not only on a
+white card.
+
+**The Whose-Move Rule.** Colour on a shipment answers one question: *whose move is it?*
+- **Lime** — press this. The one primary action on the screen; never a state.
+- **Move Purple** — waits on *you*. Anything the customer must do before the shipment can
+  continue: approve the quotation, confirm Barpin, choose after a failed pickup, upload a
+  document, fix a revision. Banner, strip, chip, and tile all speak it, so the eye learns one
+  hue means "my turn".
+- **Hold Orange** — held, or the clock is running. Nothing to do yet but worth knowing: a
+  rejected clearance being refiled, an expiring or expired quotation, a blocked pre-clearance,
+  an NPD round. Time pressure keeps the clock glyph orange even on a purple surface.
+- **Go Green / Info Blue** — progress, no verdict about you. Routine phases are blue, terminal
+  good news is green.
+- **Stop Red** — cancelled. Terminal bad news only.
+A state that is purple and orange at once has been diagnosed wrong: pick the one the customer
+can act on. Gojek's red-and-green everything is the anti-reference — there every surface has a
+colour, so no colour means anything.
+
+**The Stroke Rule.** *A line marks something you can act on; tone marks a container.* Strokes
+belong to inputs, secondary/dashed buttons, the segmented control, the stepper's rings, and the
+hover edge of a card that is itself a link. Everything else — cards on the field, chips, banners,
+strips, tiles, nested boxes — is a tint or a panel with no outline. This is what lets a screen
+carry six status surfaces without turning into a wireframe: the rule keeps the stroke budget
+for the things that need a "this is pressable" cue.
+
+**The Field.** Signed-in app pages (Kiriman Saya, an order's tracking page, the order-form hub)
+wrap their content in `data-field`, which drops the page canvas to **Panel 2** (`#f5f5f5`) and
+turns every `Card` into a **white plane with no outline** — separation comes from the tone step,
+not a hairline. The header capsule and footer stay white chrome. Marketing and reading pages
+keep the daylight canvas with Panel-1 cards and hairlines: there, cards are few and the line is
+cheap. `Card` reads its surface through `--card-surface` / `--card-border` so a tinted caller
+(`bg-accent/10`, `border-transparent`) still wins the class merge inside the field.
+
+**The Attached-Strip Rule.** *Information or an action that belongs to a card is worn by that
+card, not stacked beside it.* A strip (`CardStrip`) bleeds through the card's padding to its
+edge and shares its radius: the **head** says why you are looking at this card (the order's
+attention state, as the head of the live panel it explains, or of the status card when no panel
+exists; a cancelled order's red notice, as the head of its status card), the **foot** says what
+to do next (documents still to upload, under the stepper; on a Kiriman Saya card, the state that
+waits on you, holds you, or ended the shipment). The
+sentence *is* the headline — no "needs attention" label above it; the tint already says that.
+One card, one silhouette: the page never shows a purple box floating above the purple-badged
+card it is talking about. Gojek's voucher callout is the reference; its tinted head over a
+white body is one expression, not the only one — the tone and the attachment are the rule, the
+shape may vary. The seam is a **shoulder**: the card's white plane curves back over the strip
+(16px, the card's own radius), so the tint shows in the corner curves and the card reads as one
+sheet laid on the strip. Words on the purple head are set in the raw hue, not the ink — the
+one place Move Purple speaks at full strength (Figma *Customer Revamp*, node 191:2097).
 
 ## Typography
 
@@ -589,22 +649,41 @@ one bordered alternative (secondary), one quiet tertiary (ghost), one dashed "ad
 one destructive tint (danger). A new button style must replace one of these, not join them.
 
 ### Chips / Badges
-- **Style:** full pill, `px-3 py-1`, Space Grotesk `text-xs font-medium` (The Brand-Label Rule).
-  Status variants follow the Tint-15/25 Rule; the **brand variant is a solid Soft Lime fill with
-  Ink-on-Lime text** (see Tint-15/25).
-- **Count pill:** a compact `rounded-full` Panel-2 chip with Hairline border and Dim-Grey tabular
-  number, shown beside group/section headings to declare "how many".
-- **Status semantics:** a status that *asks something of the customer* (a quotation awaiting
-  approval, an attention state) speaks Hold Amber; routine progress speaks Info Blue; terminal
-  good news is Go Green, terminal bad news Stop Red. Lime never marks a status — it would read
-  as "the answer" an inch from an amber row saying "your move".
+- **Style:** full pill, `px-3 py-[0.3125rem]`, Space Grotesk `text-xs font-medium` (The
+  Brand-Label Rule), **no border** — the extra 1px of vertical padding buys the stature the
+  hairline used to. Status variants follow the Tint-15 Rule; `accent` is the "your move" variant;
+  the **brand variant is a solid Soft Lime fill with Ink-on-Lime text**.
+- **Count pill:** a compact `rounded-full` Panel-2 chip with Dim-Grey tabular number, shown
+  beside group/section headings to declare "how many".
+- **Status semantics:** The Whose-Move Rule — a status that *asks something of the customer*
+  (quotation pending, Barpin confirm, SPTNP due, a module being filled) speaks Move Purple; a
+  hold (expired quotation, NPD, in-revision, blocked) speaks Hold Orange; routine progress speaks
+  Info Blue; terminal good news is Go Green, terminal bad news Stop Red. Lime never marks a
+  status — it would read as "the answer" an inch from a purple row saying "your move".
+
+### Icons
+- **Two weights, two jobs.** Small inline metadata (a 14–16px calendar beside a date, the
+  copy glyph, a chevron, the field icons in a form) is **Lucide line**. Anything that sits *in a
+  coloured surface* — the icon of an attention banner or strip, a module tile, a timeline
+  event dot, the glyph of a stat tile — is **Heroicons solid** (`@heroicons/react/24/solid`),
+  a single-colour filled glyph at 18–20px. A solid glyph reads at a glance on a tint where a 2px
+  outline dissolves into it; a line glyph stays quiet beside text where a solid one would
+  shout. Never duotone.
+- The set is swappable: the solid imports are the only coupling, so a licensed set (Central
+  filled, say) can replace Heroicons by changing the import line.
 
 ### Cards / Containers
 - **Corner Style:** `rounded-lg` (28px) — the `Card` default, for functional and marketing cards
   alike. Compact data-dense cards (rate comparison rows, spec strips) opt *down* to `rounded-md`
   explicitly because their padding can't afford the clearance.
-- **Background:** Panel 1 (`#fafafa`) on the white canvas; nested strips step to Panel 2/3.
-- **Shadow Strategy:** none — separated by a 1px Hairline border.
+- **Background:** Panel 1 (`#fafafa`) on the white canvas, separated by a 1px Hairline border;
+  **inside the field** (The Field), Daylight white with a transparent border on the Panel 2
+  canvas. Nested strips step to Panel 2 in both.
+- **Shadow Strategy:** none — the canvas/plane tone step does the separating.
+- **Strips (head / foot):** `CardStrip` — full-bleed to the card's edge, `rounded-t-md` or
+  `rounded-b-md` to match, `inset` naming the host's padding — at the tone's 10%, no outline,
+  solid glyph at `size-5` in the raw hue, words in the ink (The Attached-Strip Rule). The
+  attention state is `AttentionStrip`, always a head; a foot with an `href` is one tap target.
 - **Internal Padding:** horizontal `px-5 → sm:px-6` (20–24px); vertical follows the Clearance
   Rule's contract — `pt-7`/`pb-7` (28px) on a square edge, standard `py-5 → sm:py-6` on a
   concentric edge (pill/badge/circle on top, button on the bottom). Data-dense comparison cards
@@ -663,9 +742,9 @@ the vertical space it saves.
 **The Two-Registers Rule.** The header is shared chrome for two audiences and it changes register
 at login. **Signed out (Persuade):** the lime CTA is "Cek Tarif", visible at every width — on
 phones the capsule is the only place a first-timer reaches the calculator without opening the
-sheet. **Signed in (Operate):** the sales CTA steps aside; the customer's own progress takes the
-lime as a "Kiriman Saya" button, and on /kiriman itself that button collapses into the active
-Panel-2 pill (`aria-current="page"`) — arrived, not still being sold to. The account trigger is
+sheet. **Signed in (Operate):** the sales CTA steps aside and nothing takes its place — the
+bell is the door to the customer's shipments, so the capsule carries no "Kiriman Saya" button
+(one door, not two); the mobile sheet keeps its link. The account trigger is
 the customer's initial in a `size-9` Panel-2 chip (IconPillButton geometry), never an anonymous
 silhouette, and the mobile sheet opens its signed-in block with the same identity row. The nav IA
 lives once, in `lib/nav-links.ts`, shared by capsule and sheet. Internal tools (the ops simulator)
@@ -699,7 +778,8 @@ the active link is a Panel-2 pill instead. Same principle, inverted fill.
   Delivered): completed dots are filled Live Lime with an Ink check, the **current dot is framed in
   Ink with a lime core** (a lime hairline would read ~1.5:1 on white and lose the live step), and
   upcoming dots are Hairline on Panel 2. The connecting track is lime up to the current phase.
-  "Needs attention" states surface as a Hold-Amber banner below the rail, never by recolouring it.
+  "Needs attention" states surface as a banner below the rail — Move Purple when the move is the
+  customer's, Hold Orange when the shipment is held — never by recolouring the rail.
 - **The phase miniature** (the stepper at list density, on each Kiriman Saya card): seven flat
   segments, one per phase, speaking the same encoding — completed segments lime fenced in Live
   Lime Dim, the **current segment taller and framed in Ink with a lime core**, upcoming ones
@@ -716,10 +796,11 @@ the active link is a Panel-2 pill instead. Same principle, inverted fill.
   gets one marked phrase per page, a card section gets one marked title per section, and the two
   budgets never borrow from each other. This is how lime reaches a card without becoming its
   surface.
-- **`.link-mark`** — inline links: conventional link blue (`--info`) with a soft underline that
-  darkens on hover. Lime is never used to mark a link.
-- **Tooltip (`InfoTip`)** — an 18px help-circle trigger (muted, 55% → 100% on hover/focus,
-  28px hit target, `cursor: help`) opening an Ink bubble: white 14px text, 6px radius, small
+- **`.link-mark`** — inline links: conventional link blue (`--info`, mixed 8% toward black so it
+  clears 4.5:1 on `--surface`) with a soft underline that darkens on hover. Lime is never used
+  to mark a link. On touch, a link that stands alone on its line also wears `.tap-row`.
+- **Tooltip (`InfoTip`)** — an 18px help-circle trigger (muted, 70% → 100% on hover/focus,
+  28px hit target on mouse and 44px on touch, `cursor: help`) opening an Ink bubble: white 14px text, 6px radius, small
   arrow, soft shadow, `max-width: 16rem`, above by default and shifted/flipped off the viewport
   edge. Motion 100ms in (lift + 0.95 scale) / 100ms out; opens on hover, focus, and tap.
 
@@ -769,8 +850,10 @@ Sonner with **`richColors`** and `theme="light"`, mounted once (`components/ui/t
 `position="top-center"`. Each type (success / error / warning / info) renders on Sonner's own
 richColors pastel (tinted background + border + hued text); the plain `toast()` stays neutral
 white. The toast is the **only** status surface that uses Sonner's stock pastels — every in-app
-status surface (badges, banners, panels) keeps the token tint system (15/25 chips, 10/40
-banners). The two stay in one palette because the status tokens ARE the richColors text hues.
+status surface (badges, banners, panels) keeps the token tint system (15% chips, 10% banners,
+no border — The Tint-15 Rule). The two stay in one palette because the status tokens ARE the
+richColors text hues, with the one deliberate divergence that warning is Hold Orange, not
+Sonner's amber.
 The only local override is the corner: `--radius-sm` (12px — Sonner's 8px default is off-scale;
 16px padding keeps the Clearance Rule). Toasts are **non-interactive**: no action buttons — a
 control inside a surface that auto-dismisses in seconds is a vanishing target. The toast is the
@@ -803,7 +886,13 @@ same order, permanently).
 - **Don't** put prose in the mono font, or set a data figure in the sans display font.
 - **Don't** reintroduce a dark theme — light-mode-only is a committed product decision, so guard
   text contrast in the one theme.
-- **Don't** let a second accent colour compete with Live Lime for "the answer"; status colours
-  signal state, they don't take the primary voice.
+- **Don't** let Move Purple compete with Live Lime for "the answer"; purple says *whose move*,
+  lime says *press here*. A purple button, or a lime banner, is a category error.
+- **Don't** float an attention notice as its own card above the card it explains — attach it as
+  that card's head, and let the sentence be the headline (The Attached-Strip Rule).
+- **Don't** outline a chip, banner, strip, or tint box. A stroke means "you can act on this";
+  spend it on inputs and secondary buttons (The Stroke Rule).
+- **Don't** put a line icon inside a coloured surface, or a solid one beside inline metadata —
+  the two weights have two jobs (Icons).
 - **Don't** wrap a long read-only record in a stack of cards, or rebuild a data table from per-row
   `grid` divs — use a de-boxed hairline record and a real `<table>` (The De-Box / Real-Table Rules).

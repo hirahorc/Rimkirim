@@ -6,16 +6,16 @@ import { Badge } from "@/components/ui/badge";
 
 const STATUS_META: Record<
   OrderStatus,
-  { labelKey: string; variant: "neutral" | "brand" | "warning" | "info" | "success" | "danger" }
+  { labelKey: string; variant: "neutral" | "brand" | "accent" | "warning" | "info" | "success" | "danger" }
 > = {
   draft: { labelKey: "order.statusDraft", variant: "neutral" },
   review: { labelKey: "order.statusReview", variant: "neutral" },
-  // quotation asks something of the customer (approve it), so it speaks the
-  // ask-colour, not the brand lime: lime an inch from an amber attention row
+  // quotation waits on the customer (approve it), so it speaks the "your
+  // move" purple, not the brand lime: lime an inch from an attention row
   // read as two different verdicts about the same order
-  quotation: { labelKey: "order.statusQuotation", variant: "warning" },
-  // routine progress speaks info-blue; warning is reserved for states that
-  // actually ask something of the customer (attention banners, missing docs)
+  quotation: { labelKey: "order.statusQuotation", variant: "accent" },
+  // routine progress speaks info-blue; purple is reserved for states that
+  // actually wait on the customer, orange for holds (The Whose-Move Rule)
   pickup: { labelKey: "order.statusPickup", variant: "info" },
   "in-transit": { labelKey: "order.statusInTransit", variant: "info" },
   clearance: { labelKey: "order.statusClearance", variant: "info" },

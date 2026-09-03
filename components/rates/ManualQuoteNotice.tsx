@@ -3,6 +3,7 @@
 import { Headset } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useT } from "@/lib/i18n/LanguageProvider";
+import { WA_URL } from "@/lib/contact";
 
 /**
  * Banner shown above the price cards when the domestic (Indonesia-side) leg for
@@ -35,7 +36,7 @@ export function ManualQuoteNotice({
         </p>
       </div>
       <Button asChild variant="brand" size="sm" className="shrink-0 sm:self-center">
-        <a href="https://wa.me/6281234567890" target="_blank" rel="noreferrer">
+        <a href={WA_URL} target="_blank" rel="noreferrer">
           {t("rates.manualCta")}
         </a>
       </Button>

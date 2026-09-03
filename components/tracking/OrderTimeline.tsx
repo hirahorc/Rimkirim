@@ -1,20 +1,21 @@
 "use client";
 
-import type { LucideIcon } from "lucide-react";
+import * as React from "react";
+// solid glyphs: a 36px tile on the rail is an anchor, and a filled shape
+// reads as one from across the room where a 2px line reads as a diagram
 import {
-  AlertTriangle,
-  Barcode,
-  Check,
-  FilePlus2,
-  Package,
-  Plane,
-  ReceiptText,
-  RefreshCw,
-  Send,
-  ShieldCheck,
-  Truck,
-  X,
-} from "lucide-react";
+  ArrowPathIcon,
+  CheckIcon,
+  CubeIcon,
+  DocumentPlusIcon,
+  ExclamationTriangleIcon,
+  PaperAirplaneIcon,
+  QrCodeIcon,
+  ReceiptPercentIcon,
+  ShieldCheckIcon,
+  TruckIcon,
+  XMarkIcon,
+} from "@heroicons/react/24/solid";
 import type { TimelineEvent, TimelineEventType } from "@/lib/store/useOrderStore";
 import { useLanguage, useT } from "@/lib/i18n/LanguageProvider";
 import { Badge, type BadgeProps } from "@/components/ui/badge";
@@ -44,26 +45,31 @@ export const EVENT_DOT: Record<TimelineEventType, string> = {
    lime keeps its One-Voice budget elsewhere on the page. */
 const EVENT_META: Record<
   TimelineEventType,
-  { icon: LucideIcon; tile: string; badge: BadgeProps["variant"]; badgeKey: string }
+  {
+    icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
+    tile: string;
+    badge: BadgeProps["variant"];
+    badgeKey: string;
+  }
 > = {
   created: {
-    icon: FilePlus2,
-    tile: "border border-border bg-surface-2 text-muted",
+    icon: DocumentPlusIcon,
+    tile: "bg-surface-2 text-muted",
     badge: "neutral",
     badgeKey: "order.tlBadgeCreated",
   },
-  submitted: { icon: Send, tile: "bg-info/15 text-info", badge: "info", badgeKey: "order.tlBadgeUpdate" },
-  resubmitted: { icon: RefreshCw, tile: "bg-info/15 text-info", badge: "info", badgeKey: "order.tlBadgeUpdate" },
-  quotation: { icon: ReceiptText, tile: "bg-info/15 text-info", badge: "info", badgeKey: "order.tlBadgeUpdate" },
-  pickup: { icon: Package, tile: "bg-info/15 text-info", badge: "info", badgeKey: "order.tlBadgeUpdate" },
-  "in-transit": { icon: Plane, tile: "bg-info/15 text-info", badge: "info", badgeKey: "order.tlBadgeUpdate" },
-  clearance: { icon: ShieldCheck, tile: "bg-info/15 text-info", badge: "info", badgeKey: "order.tlBadgeUpdate" },
-  delivery: { icon: Truck, tile: "bg-info/15 text-info", badge: "info", badgeKey: "order.tlBadgeUpdate" },
-  awb: { icon: Barcode, tile: "bg-info/15 text-info", badge: "info", badgeKey: "order.tlBadgeUpdate" },
-  "attention-cleared": { icon: Check, tile: "bg-info/15 text-info", badge: "info", badgeKey: "order.tlBadgeUpdate" },
-  delivered: { icon: Check, tile: "bg-success/15 text-success", badge: "success", badgeKey: "order.tlBadgeDone" },
-  attention: { icon: AlertTriangle, tile: "bg-warning/15 text-warning", badge: "warning", badgeKey: "order.tlBadgeAttention" },
-  cancelled: { icon: X, tile: "bg-danger/15 text-danger", badge: "danger", badgeKey: "order.tlBadgeCancelled" },
+  submitted: { icon: PaperAirplaneIcon, tile: "bg-info/15 text-info", badge: "info", badgeKey: "order.tlBadgeUpdate" },
+  resubmitted: { icon: ArrowPathIcon, tile: "bg-info/15 text-info", badge: "info", badgeKey: "order.tlBadgeUpdate" },
+  quotation: { icon: ReceiptPercentIcon, tile: "bg-info/15 text-info", badge: "info", badgeKey: "order.tlBadgeUpdate" },
+  pickup: { icon: CubeIcon, tile: "bg-info/15 text-info", badge: "info", badgeKey: "order.tlBadgeUpdate" },
+  "in-transit": { icon: PaperAirplaneIcon, tile: "bg-info/15 text-info", badge: "info", badgeKey: "order.tlBadgeUpdate" },
+  clearance: { icon: ShieldCheckIcon, tile: "bg-info/15 text-info", badge: "info", badgeKey: "order.tlBadgeUpdate" },
+  delivery: { icon: TruckIcon, tile: "bg-info/15 text-info", badge: "info", badgeKey: "order.tlBadgeUpdate" },
+  awb: { icon: QrCodeIcon, tile: "bg-info/15 text-info", badge: "info", badgeKey: "order.tlBadgeUpdate" },
+  "attention-cleared": { icon: CheckIcon, tile: "bg-info/15 text-info", badge: "info", badgeKey: "order.tlBadgeUpdate" },
+  delivered: { icon: CheckIcon, tile: "bg-success/15 text-success", badge: "success", badgeKey: "order.tlBadgeDone" },
+  attention: { icon: ExclamationTriangleIcon, tile: "bg-warning/15 text-warning", badge: "warning", badgeKey: "order.tlBadgeAttention" },
+  cancelled: { icon: XMarkIcon, tile: "bg-danger/15 text-danger", badge: "danger", badgeKey: "order.tlBadgeCancelled" },
 };
 
 /* Phase milestones read a step heavier than housekeeping events (attention
@@ -83,29 +89,29 @@ const MILESTONE = new Set<TimelineEventType>([
 export function OrderTimeline({ events }: { events: TimelineEvent[] }) {
   const t = useT();
   const { locale } = useLanguage();
+  // 24-hour in both locales: logistics timestamps read as clock time, not
+  // conversation ("13:51 · 22 Okt 2026"); built once per locale, not per render
+  const timeFmt = React.useMemo(
+    () => new Intl.DateTimeFormat(locale, { hour: "2-digit", minute: "2-digit", hour12: false }),
+    [locale],
+  );
+  const dateFmt = React.useMemo(
+    () => new Intl.DateTimeFormat(locale, { day: "numeric", month: "short", year: "numeric" }),
+    [locale],
+  );
   if (!events || events.length === 0) return null;
 
   const sorted = [...events].reverse(); // stored oldest→newest; show newest first
-  // 24-hour in both locales: logistics timestamps read as clock time, not
-  // conversation ("13:51 · 22 Okt 2026")
-  const timeFmt = new Intl.DateTimeFormat(locale, {
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: false,
-  });
-  const dateFmt = new Intl.DateTimeFormat(locale, {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  });
 
   return (
     // de-boxed to match OrderSummary's Section language — the whole reference
     // zone reads as one document; the icon rail itself carries the shape.
     <section>
-      <h2 className="font-display text-xl font-semibold tracking-tight text-foreground">
+      {/* h3 like the record's SectionTitle: sections under the "Detail
+          Pesanan" tier h2 */}
+      <h3 className="font-display text-xl font-semibold tracking-tight text-foreground">
         {t("order.tdTimeline")}
-      </h2>
+      </h3>
       <ol className="mt-4">
         {sorted.map((ev, i) => {
           const meta = EVENT_META[ev.type];
@@ -113,7 +119,7 @@ export function OrderTimeline({ events }: { events: TimelineEvent[] }) {
             <li key={ev.id} className="relative flex gap-4 pb-6 last:pb-0">
               {/* the rail: a hairline between this tile and the next */}
               {i < sorted.length - 1 && (
-                <span aria-hidden className="absolute bottom-0 left-[17px] top-9 w-px bg-border" />
+                <span aria-hidden className="absolute bottom-0 left-[1.125rem] top-9 w-px -translate-x-1/2 bg-border" />
               )}
               <span
                 className={cn(
@@ -121,7 +127,7 @@ export function OrderTimeline({ events }: { events: TimelineEvent[] }) {
                   meta.tile,
                 )}
               >
-                <meta.icon aria-hidden className="size-4" />
+                <meta.icon aria-hidden className="size-[1.125rem]" />
               </span>
               <div className="min-w-0 pt-0.5">
                 <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1">

@@ -31,9 +31,11 @@ const buttonVariants = cva(
         // below, the base `md` (16px) is ≥ half the height and silently
         // clamps into a pill (The Clamp Rule)
         sm: "h-8 rounded-sm px-3 text-xs",
-        md: "h-10 px-4",
+        // md and icon grow to 44px on touch (Coarse-Pointer rule) without
+        // changing their desktop stature
+        md: "h-10 px-4 pointer-coarse:h-11",
         lg: "h-12 px-6 text-base",
-        icon: "size-10",
+        icon: "size-10 pointer-coarse:size-11",
         "icon-sm": "size-9 rounded-sm",
         "icon-xs": "size-7 rounded-sm [&_svg]:size-3.5",
       },

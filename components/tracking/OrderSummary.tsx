@@ -7,6 +7,7 @@ import {
   Dialog,
   DialogTrigger,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
@@ -32,9 +33,14 @@ import {
   effectivePackingCode,
   type Order,
 } from "@/lib/store/useOrderStore";
+import { WA_URL } from "@/lib/contact";
 
 const dash = "–";
-const WA_URL = "https://wa.me/6281234567890";
+/** Carrier tracking deep-link for an AWB — shared by OrderDetail's status
+ *  tier (the live copy) and this record's archival row. */
+export function fedexTrackUrl(awb: string): string {
+  return `https://www.fedex.com/fedextrack/?trknbr=${awb.replace(/\D/g, "")}`;
+}
 
 /**
  * De-boxed section: no card, no icon chip. The section title (display, dark)
@@ -45,10 +51,12 @@ const WA_URL = "https://wa.me/6281234567890";
 function SectionTitle({ children }: { children: React.ReactNode }) {
   return (
     // Title role (20/600, tracking-tight): a full step above the 12px eyebrows
-    // and the 14px values, so the record can be skimmed section by section
-    <h2 className="font-display text-xl font-semibold tracking-tight text-foreground">
+    // and the 14px values, so the record can be skimmed section by section.
+    // h3, not h2: the "Detail Pesanan" tier label above is the h2, and these
+    // sections belong to it in the outline
+    <h3 className="font-display text-xl font-semibold tracking-tight text-foreground">
       {children}
-    </h2>
+    </h3>
   );
 }
 
@@ -82,7 +90,9 @@ function SubGroup({
 }) {
   return (
     <div>
-      <p className="mb-1.5 font-display text-xs font-semibold uppercase tracking-wide text-muted-2">
+      {/* Readout Grey, one step darker than the Dim-Grey row labels below —
+          the Label-Ramp Rule: same-colour parent and child read as one list */}
+      <p className="mb-1.5 font-display text-xs font-semibold uppercase tracking-wide text-muted">
         {label}
       </p>
       <div className="divide-y divide-border">{children}</div>
@@ -144,36 +154,77 @@ const PHOTO_ROW = [
   ["height", "order.itPhotoHeight"],
 ] as const;
 
-/** One measurement photo as a mini thumbnail opening the media lightbox. */
-function PhotoThumb({ label, dataUrl }: { label: string; dataUrl: string }) {
+/**
+ * The one media lightbox: a trigger (whatever `children` renders) opening the
+ * image as a centred modal at every size. The description is for screen
+ * readers only; the picture is the content.
+ */
+function ImageLightbox({
+  label,
+  dataUrl,
+  className,
+  children,
+}: {
+  label: string;
+  dataUrl: string;
+  className?: string;
+  children: React.ReactNode;
+}) {
   const t = useT();
   return (
     <Dialog>
-      <DialogTrigger
-        aria-label={`${t("order.viewFile")}: ${label}`}
-        className="h-10 w-12 shrink-0 overflow-hidden rounded-sm border border-border transition-colors hover:border-border-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/50"
-      >
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={dataUrl} alt="" aria-hidden className="size-full object-cover" />
+      <DialogTrigger aria-label={`${t("order.viewFile")}: ${label}`} className={className}>
+        {children}
       </DialogTrigger>
-      {/* media lightbox stays a centred modal at every size */}
       <DialogContent sheet={false} className="max-w-3xl p-0">
         <DialogHeader className="pb-4">
           <DialogTitle className="truncate pr-8 text-base font-medium sm:text-base">
             {label}
           </DialogTitle>
+          <DialogDescription className="sr-only">{t("order.lightboxDesc")}</DialogDescription>
         </DialogHeader>
         <div className="min-h-0 flex-1 overflow-auto bg-surface-2 p-4">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={dataUrl}
             alt={label}
-            className="mx-auto max-h-[72dvh] w-auto rounded-sm object-contain"
+            decoding="async"
+            className="mx-auto max-h-[72dvh] w-auto min-w-[min(16rem,100%)] rounded-sm object-contain"
           />
         </div>
       </DialogContent>
     </Dialog>
   );
+}
+
+/** One measurement photo as a mini thumbnail opening the media lightbox. */
+function PhotoThumb({ label, dataUrl }: { label: string; dataUrl: string }) {
+  return (
+    <ImageLightbox
+      label={label}
+      dataUrl={dataUrl}
+      // tap-row: real height to 44px on coarse pointers — the thumbs sit
+      // gap-1.5 apart, too tight for an invisible .tap-target overlay
+      className="tap-row h-10 w-12 shrink-0 overflow-hidden rounded-sm border border-border transition-colors hover:border-border-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/50"
+    >
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={dataUrl}
+        alt=""
+        aria-hidden
+        loading="lazy"
+        decoding="async"
+        className="size-full object-cover"
+      />
+    </ImageLightbox>
+  );
+}
+
+/** A stored "YYYY-MM-DD" as a local date, the dash when missing or malformed. */
+function formatIsoDay(fmt: Intl.DateTimeFormat, iso?: string): string {
+  if (!iso) return dash;
+  const d = new Date(`${iso}T00:00:00`);
+  return Number.isNaN(d.getTime()) ? dash : fmt.format(d);
 }
 
 /** Empty-string/null/undefined → en dash, otherwise the string form. */
@@ -256,9 +307,16 @@ export function OrderSummary({ order }: { order: Order }) {
           {/* the record is read-only, but a customer who spots a wrong address
               needs a door: the assistant, not a dead end */}
           {order.status !== "cancelled" && order.status !== "delivered" && (
-            <p className="max-w-prose text-xs leading-relaxed text-muted-2">
+            <p className="max-w-[60ch] text-xs leading-relaxed text-muted-2">
               {t("order.tdWrongPre")}{" "}
-              <a href={WA_URL} target="_blank" rel="noreferrer" className="link-mark">
+              {/* tap-row lifts the inline link to 44px on coarse pointers
+                  only — the one door out of a wrong address deserves a floor */}
+              <a
+                href={WA_URL}
+                target="_blank"
+                rel="noreferrer"
+                className="link-mark tap-row"
+              >
                 {t("order.tdWrongLink")}
               </a>{" "}
               {t("order.tdWrongPost")}
@@ -398,6 +456,15 @@ function ItemsCard({ order }: { order: Order }) {
     0,
   );
   const totalPrice = (order.selectedRate?.perKg ?? 0) * totalCw;
+  // whether ANY package carries data — the totals footer gates on this
+  const anyPackageData = packages.some(
+    (p) =>
+      Number(p?.weight) > 0 ||
+      Number(p?.length) > 0 ||
+      Number(p?.width) > 0 ||
+      Number(p?.height) > 0 ||
+      (p?.items ?? []).some((it) => (it?.name ?? "").trim()),
+  );
 
   // Collapse packages so a many-package shipment isn't a long read-only wall.
   // Auto default: one package opens, two or more collapse to their one-line
@@ -459,6 +526,7 @@ function ItemsCard({ order }: { order: Order }) {
                 <Button
                   variant="ghost"
                   size="sm"
+                  className="tap-row"
                   loading={previewBusy}
                   onClick={() => previewPdf(ciplInput())}
                 >
@@ -468,6 +536,7 @@ function ItemsCard({ order }: { order: Order }) {
                 <Button
                   variant="secondary"
                   size="sm"
+                  className="tap-row"
                   loading={pdfBusy}
                   onClick={() => downloadPdf(ciplInput())}
                 >
@@ -500,7 +569,7 @@ function ItemsCard({ order }: { order: Order }) {
           <button
             type="button"
             onClick={anyOpen ? collapseAll : expandAll}
-            className="-my-2 inline-flex items-center gap-1 rounded-sm py-2 text-xs text-muted transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/50"
+            className="tap-row -my-2 inline-flex items-center gap-1 rounded-sm py-2 text-xs text-muted transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/50"
           >
             {/* swap, never rotate — the shared disclosure idiom */}
             {anyOpen ? (
@@ -527,7 +596,10 @@ function ItemsCard({ order }: { order: Order }) {
           0,
         );
         const open = isOpen(i);
-        // one-line summary when collapsed (same shape as the order form)
+        // one-line summary when collapsed (same shape as the order form) —
+        // built as nodes, not a joined string: money is mono (Numbers-Are-
+        // Mono), and the dims speak the same formatNumber + "cm" convention
+        // as the expanded spec line five lines below
         const itemCount = items.filter((it) => (it?.name ?? "").trim()).length;
         const hasAny =
           dims.weight > 0 ||
@@ -535,25 +607,48 @@ function ItemsCard({ order }: { order: Order }) {
           dims.width > 0 ||
           dims.height > 0 ||
           itemCount > 0;
-        const summary = hasAny
-          ? [
-              dims.weight > 0 && `${formatNumber(dims.weight, 1, locale)}kg`,
-              (dims.length > 0 || dims.width > 0 || dims.height > 0) &&
-                `${dims.length} × ${dims.width} × ${dims.height}`,
-              itemCount > 0 &&
-                `${itemCount} ${t(itemCount === 1 ? "order.itItemWordOne" : "order.itItemsWord")}`,
-              pkgValue > 0 && formatCurrency(pkgValue, currency, locale),
-            ]
-              .filter(Boolean)
-              .join(" · ")
-          : t("order.itPackageEmpty");
+        const summaryParts: React.ReactNode[] = [
+          dims.weight > 0 && `${formatNumber(dims.weight, 1, locale)} kg`,
+          (dims.length > 0 || dims.width > 0 || dims.height > 0) &&
+            `${formatNumber(dims.length, 1, locale)} × ${formatNumber(dims.width, 1, locale)} × ${formatNumber(dims.height, 1, locale)} cm`,
+          itemCount > 0 &&
+            `${itemCount} ${t(itemCount === 1 ? "order.itItemWordOne" : "order.itItemsWord")}`,
+          pkgValue > 0 && (
+            <span key="value" className="font-mono">
+              {formatCurrency(pkgValue, currency, locale)}
+            </span>
+          ),
+        ].filter(Boolean);
+        const eyebrow = (
+          // the sub-group eyebrow tier (SENDER / RECEIVER / PAKET N): same
+          // voice as the form's package heads, Readout Grey per the
+          // Label-Ramp so it parents the Dim-Grey row labels below
+          <span className="shrink-0 font-display text-xs font-semibold uppercase tracking-wider text-muted">
+            {t("order.itPackageN")} {i + 1}
+          </span>
+        );
+        // an all-empty package has nothing to disclose: one quiet line, no
+        // chevron promising more, no duplicated "Belum diisi" in a body
+        if (!hasAny)
+          return (
+            <div key={i} className="flex items-center gap-2 py-2.5">
+              <span className="size-4 shrink-0" aria-hidden />
+              {eyebrow}
+              <span className="truncate text-xs text-muted">
+                {t("order.itPackageEmpty")}
+              </span>
+            </div>
+          );
         return (
           <div key={i} className="py-2.5">
             <button
               type="button"
               onClick={() => toggle(i)}
               aria-expanded={open}
-              className="-my-1 flex w-full items-center gap-2 rounded-sm py-1 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/50"
+              aria-controls={`pkg-body-${i}`}
+              aria-label={`${t("order.itPackageN")} ${i + 1}`}
+              aria-describedby={`pkg-summary-${i}`}
+              className="tap-row -my-1 flex w-full items-center gap-2 rounded-sm py-1 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/50"
             >
               {/* swap, never rotate — the shared disclosure idiom */}
               {open ? (
@@ -561,26 +656,23 @@ function ItemsCard({ order }: { order: Order }) {
               ) : (
                 <ChevronDown className="size-4 shrink-0 text-muted" />
               )}
-              {/* the sub-group eyebrow tier (SENDER / RECEIVER / PAKET N):
-                  same voice as the form's package heads, one step below the
-                  group head, so the ramp reads title → head → eyebrow → rows */}
-              <span className="shrink-0 font-display text-xs font-semibold uppercase tracking-wider text-muted-2">
-                {t("order.itPackageN")} {i + 1}
-              </span>
+              {eyebrow}
               {/* the one-line summary stays put when open, so the line you
                   scanned is the line you expanded; a step darker than its
                   eyebrow — it is data, the eyebrow is the label */}
-              <span className="truncate text-xs text-muted">{summary}</span>
+              <span id={`pkg-summary-${i}`} className="truncate text-xs text-muted">
+                {summaryParts.map((p, j) => (
+                  <React.Fragment key={j}>
+                    {j > 0 && " · "}
+                    {p}
+                  </React.Fragment>
+                ))}
+              </span>
             </button>
             {/* body stays mounted and collapses with the shared disclosure
                 motion (DESIGN.md, "The disclosure open") */}
-            <CollapseHeight open={open}>
+            <CollapseHeight open={open} id={`pkg-body-${i}`}>
               <div className="mt-1">
-                {/* an all-empty package is one muted line, not a stack of
-                    zero-value rows (this file's own EmptyLine doctrine) */}
-                {!hasAny ? (
-                  <EmptyLine />
-                ) : (
                 <>
                 {/* the package's physique reads itself — a packaging name, an
                     L×W×H in cm, a kg figure — so it goes label-less in one spec
@@ -646,8 +738,10 @@ function ItemsCard({ order }: { order: Order }) {
                   // a real table: columns align natively across header/body/
                   // footer (the old per-row grids sized independently and drift
                   // as soon as a number gets wider); numeric cells never wrap.
-                  // same ledger language as the rows above: hairlines, no box
-                  <div className="mt-1 border-t border-border">
+                  // same ledger language as the rows above: hairlines, no box.
+                  // overflow-x-auto is the fence: three nowrap mono columns
+                  // with big IDR values must scroll here, never the page
+                  <div className="mt-1.5 overflow-x-auto border-t border-border pt-1">
                     <table className="w-full border-collapse text-sm">
                       <thead>
                         <tr className="text-xs text-muted-2">
@@ -702,18 +796,17 @@ function ItemsCard({ order }: { order: Order }) {
                   </div>
                 )}
                 </>
-                )}
               </div>
             </CollapseHeight>
           </div>
         );
       })}
-      {packages.length > 0 && (
+      {packages.length > 0 && anyPackageData && (
         // totals footer: darker labels + heavier values so the shipment summary
-        // reads as the closing line of the ledger, not one more package row
-        // the closing line of the ledger: the figures a customer actually checks
-        // step up a size, and the estimate carries its own caveat right under it
-        <div className="!border-t-2 !border-t-foreground/80 divide-y divide-border pt-1">
+        // reads as the closing line of the ledger, not one more package row —
+        // and only when there is anything to sum: "0 kg / US$0,00" under the
+        // closing rule would assert figures for nothing
+        <div className="divide-y divide-border border-t-2 border-t-foreground/80 pt-1">
           <Row label={<span className="text-muted">{t("order.itTotalCw")}</span>}>
             <span className="text-base font-medium">
               {formatNumber(totalCw, 1, locale)} kg
@@ -738,7 +831,7 @@ function ItemsCard({ order }: { order: Order }) {
                     {formatIDR(totalPrice)}
                   </span>
                 </div>
-                <p className="mt-1 text-xs leading-relaxed text-muted-2 sm:text-right">
+                <p className="mt-1 max-w-[60ch] text-xs leading-relaxed text-muted-2 sm:ml-auto sm:text-right">
                   {t("order.tdEstimateSuperseded")}
                 </p>
               </div>
@@ -748,13 +841,15 @@ function ItemsCard({ order }: { order: Order }) {
                   <span className="shrink-0 text-xs font-medium text-foreground">
                     {t("order.itTotalPrice")}
                   </span>
-                  {/* the one lime mark in the record (Marker Rule: fill behind ink) —
-                      the figure a customer comes back to check */}
-                  <span className="hero-mark font-mono text-lg font-semibold tabular-nums">
+                  {/* the one lime mark in the record (Marker Rule: fill behind
+                      ink) — the figure a customer comes back to check. card-mark,
+                      not hero-mark: the hero's budget stays the hero's */}
+                  <span className="card-mark font-mono text-lg font-semibold tabular-nums">
                     {formatIDR(totalPrice)}
                   </span>
                 </div>
-                <p className="mt-1 text-xs leading-relaxed text-muted-2 sm:text-right">
+                {/* capped measure: at full width this caveat ran ~120ch */}
+                <p className="mt-1 max-w-[60ch] text-xs leading-relaxed text-muted-2 sm:ml-auto sm:text-right">
                   {t("order.itEstimateNote")}
                 </p>
               </div>
@@ -799,7 +894,7 @@ function DocTile({
   dataUrl,
   emptyWord,
   dueWord,
-  emptyTone = "warning",
+  emptyTone = "action",
 }: {
   label: string;
   fileName?: string | null;
@@ -808,9 +903,9 @@ function DocTile({
   emptyWord?: string;
   /** optional second line: when the missing doc is actually due */
   dueWord?: string;
-  /** warning while the missing doc is a live to-do; neutral once it's moot
-      (draft, the phase it served has passed, or the order ended) */
-  emptyTone?: "warning" | "neutral";
+  /** "your move" purple while the missing doc is a live to-do; neutral once
+      it's moot (draft, the phase it served has passed, or the order ended) */
+  emptyTone?: "action" | "neutral";
 }) {
   const t = useT();
   const isImage = !!dataUrl && dataUrl.startsWith("data:image/");
@@ -818,7 +913,7 @@ function DocTile({
     "grid aspect-[4/3] w-full place-items-center overflow-hidden rounded-md border";
   const interactive =
     "border-border bg-surface-2 transition-colors hover:border-border-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/50";
-  const warn = emptyTone === "warning";
+  const warn = emptyTone === "action";
 
   const caption = (
     <span className="mt-1.5 block">
@@ -827,9 +922,12 @@ function DocTile({
         <span className="block truncate font-mono text-xs text-muted-2">{fileName}</span>
       ) : (
         <>
-          {/* one state, one colour at a time: while a doc is due, every empty
-              slot speaks warning; once it's moot they all quiet down together */}
-          <span className={cn("block text-xs", warn ? "text-warning" : "text-muted-2")}>
+          {/* one state, one colour at a time — and the words wear the status
+              INK (Tint-15: the ink clears 4.5:1 where the raw hue doesn't);
+              the icon and the dashed "add" border keep the raw hue */}
+          <span
+            className={cn("block text-xs", warn ? "text-accent-ink" : "text-muted-2")}
+          >
             {emptyWord}
           </span>
           {dueWord && <span className="block text-xs text-muted-2">{dueWord}</span>}
@@ -846,7 +944,7 @@ function DocTile({
             frame,
             "border-dashed",
             warn
-              ? "border-warning/50 bg-warning/5 text-warning"
+              ? "border-accent/50 bg-accent/5 text-accent"
               : "border-border bg-surface-2 text-muted-2",
           )}
         >
@@ -859,31 +957,17 @@ function DocTile({
   if (isImage)
     return (
       <div className="min-w-0">
-        <Dialog>
-          <DialogTrigger
-            aria-label={`${t("order.viewFile")}: ${label}`}
-            className={cn(frame, interactive)}
-          >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={dataUrl!} alt="" aria-hidden className="size-full object-cover" />
-          </DialogTrigger>
-          {/* media lightbox stays a centred modal at every size */}
-          <DialogContent sheet={false} className="max-w-3xl p-0">
-            <DialogHeader className="pb-4">
-              <DialogTitle className="truncate pr-8 text-base font-medium sm:text-base">
-                {fileName}
-              </DialogTitle>
-            </DialogHeader>
-            <div className="min-h-0 flex-1 overflow-auto bg-surface-2 p-4">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={dataUrl!}
-                alt={fileName}
-                className="mx-auto max-h-[72dvh] w-auto rounded-sm object-contain"
-              />
-            </div>
-          </DialogContent>
-        </Dialog>
+        <ImageLightbox label={fileName} dataUrl={dataUrl!} className={cn(frame, interactive)}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={dataUrl!}
+            alt=""
+            aria-hidden
+            loading="lazy"
+            decoding="async"
+            className="size-full object-cover"
+          />
+        </ImageLightbox>
         {caption}
       </div>
     );
@@ -921,7 +1005,9 @@ function DocTile({
           </DialogHeader>
           <div className="flex flex-col items-center gap-3 p-6 text-center">
             <FileText className="size-8 text-muted-2" aria-hidden />
-            <p className="text-sm text-muted">{t("order.previewUnavailable")}</p>
+            <DialogDescription className="text-sm text-muted">
+              {t("order.previewUnavailable")}
+            </DialogDescription>
           </div>
         </DialogContent>
       </Dialog>
@@ -943,15 +1029,32 @@ const ACTIVE_PHASES = [
   "delivery",
 ] as const;
 
+/** The phase index each doc must exist by: pickup docs by pickup (2),
+ *  everything else by clearance (4). */
+const docDeadlineIdx = (noteKey: string | undefined) =>
+  noteKey === "order.coBeforePickup" ? 2 : 4;
+
 function docStillDue(noteKey: string | undefined, status: Order["status"]): boolean {
   const idx = (ACTIVE_PHASES as readonly string[]).indexOf(status);
   if (idx === -1) return false; // draft / delivered / cancelled
-  if (noteKey === "order.coBeforePickup") return idx <= 2; // …through pickup
-  return idx <= 4; // base + before-clearance docs matter through clearance
+  return idx <= docDeadlineIdx(noteKey);
 }
 
-/** How many compliance docs are still a live to-do (missing and due now) —
- *  the number OrderDetail surfaces in the status tier as a link down here. */
+/** Urgency follows proximity, not mere relevance: a missing doc speaks
+ *  "your move" purple only when its deadline phase is current or next. Before that the
+ *  words already say "menyusul" — amber four phases early made the colour
+ *  contradict them, and lit six alarms on day one. */
+function docUrgent(noteKey: string | undefined, status: Order["status"]): boolean {
+  const idx = (ACTIVE_PHASES as readonly string[]).indexOf(status);
+  if (idx === -1) return false;
+  const deadline = docDeadlineIdx(noteKey);
+  return idx >= deadline - 1 && idx <= deadline;
+}
+
+/** How many compliance docs are an URGENT to-do (missing, deadline current or
+ *  next) — the number OrderDetail surfaces in the status tier as a link down
+ *  here. Follows docUrgent, so the banner never reports six standing to-dos
+ *  on day one. */
 export function dueComplianceDocsCount(order: Order): number {
   const data = order.modules.compliance.data as
     | { docs?: Record<string, string> }
@@ -961,7 +1064,7 @@ export function dueComplianceDocsCount(order: Order): number {
   const specs = (isMa ? EXPORT_DOCS : BFG_DOCS).filter(
     (d) => !d.personalOnly || order.clearance === "personal",
   );
-  return specs.filter((d) => !docs[d.key] && docStillDue(d.noteKey, order.status))
+  return specs.filter((d) => !docs[d.key] && docUrgent(d.noteKey, order.status))
     .length;
 }
 
@@ -1020,7 +1123,10 @@ function ComplianceCard({ order }: { order: Order }) {
               // the timing hint helps while it's still ahead (draft included);
               // once the phase has passed it would just contradict the record
               dueWord={due || isDraft ? dueWord(spec) : undefined}
-              emptyTone={due ? "warning" : "neutral"}
+              // amber by proximity, not relevance: a doc due at clearance
+              // stays neutral (with its "menyusul" line) until the shipment
+              // is actually approaching clearance
+              emptyTone={docUrgent(spec.noteKey, order.status) ? "action" : "neutral"}
             />
           );
         })}
@@ -1033,7 +1139,8 @@ function ComplianceCard({ order }: { order: Order }) {
               fileName={d?.file || null}
               dataUrl={d?.fileData || null}
               emptyWord={t("order.tdMissingOptional")}
-              emptyTone={docStillDue(undefined, order.status) ? "warning" : "neutral"}
+              // the words say "optional", so the frame must not shout
+              emptyTone="neutral"
             />
           ))}
       </div>
@@ -1054,6 +1161,10 @@ function PickupCard({
   locale: "id" | "en";
 }) {
   const t = useT();
+  const dateFmt = React.useMemo(
+    () => new Intl.DateTimeFormat(locale, { day: "numeric", month: "short", year: "numeric" }),
+    [locale],
+  );
   const data = order.modules.pickup.data as
     | {
         picName?: string;
@@ -1072,13 +1183,7 @@ function PickupCard({
   const showAccessQs = !!data?.buildingType && data.buildingType !== "house";
   const yesNo = (v?: string) =>
     v === "yes" ? t("order.yes") : v === "no" ? t("order.no") : dash;
-  const date = data?.date
-    ? new Intl.DateTimeFormat(locale, {
-        day: "numeric",
-        month: "short",
-        year: "numeric",
-      }).format(new Date(`${data.date}T00:00:00`))
-    : dash;
+  const date = formatIsoDay(dateFmt, data?.date);
   const phone =
     data?.picPhoneCountry && data?.picPhone
       ? `${dialCodeFor(data.picPhoneCountry)} ${data.picPhone}`
@@ -1217,10 +1322,10 @@ function PendingCards({ order }: { order: Order }) {
             {/* the AWB's whole job is being pasted into the carrier's tracker —
                 hand over the link instead of making Alex build it */}
             <a
-              href={`https://www.fedex.com/fedextrack/?trknbr=${order.awb!.replace(/\D/g, "")}`}
+              href={fedexTrackUrl(order.awb!)}
               target="_blank"
               rel="noreferrer"
-              className="link-mark text-xs font-medium"
+              className="link-mark tap-row text-xs font-medium"
             >
               {t("order.tdAwbTrack")}
             </a>

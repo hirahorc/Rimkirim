@@ -45,7 +45,7 @@ export function OrderShell({ children }: { children: React.ReactNode }) {
 
   if (!hydrated || !authHydrated) {
     return (
-      <div className="flex min-h-[50vh] items-center justify-center text-muted">
+      <div data-field className="flex min-h-[50vh] items-center justify-center text-muted">
         <Loader2 className="size-5 animate-spin" />
       </div>
     );
@@ -58,6 +58,6 @@ export function OrderShell({ children }: { children: React.ReactNode }) {
   // page people actually return to — carries its own "N of 4 sections"
   // progress bar. Each page opens with its own heading instead.
   return (
-    <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6 sm:py-10">{children}</div>
+    <div data-field className="mx-auto max-w-3xl px-4 py-8 sm:px-6 sm:py-10">{children}</div>
   );
 }

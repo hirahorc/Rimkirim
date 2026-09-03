@@ -72,7 +72,7 @@ function StatusBadge({
       </Badge>
     );
   if (status === "in-progress")
-    return <Badge variant="warning">{t("order.statusInProgress")}</Badge>;
+    return <Badge variant="accent">{t("order.statusInProgress")}</Badge>;
   return <Badge variant="neutral">{t("order.statusNotStarted")}</Badge>;
 }
 
@@ -143,7 +143,7 @@ export function ModuleHub() {
         </h1>
         <p className="mt-2 text-sm text-muted">{t("order.confirmBody")}</p>
         {bookingNumber && (
-          <div className="mt-2 flex items-center justify-center gap-2 rounded-sm border border-border bg-surface-2/50 p-3 text-sm">
+          <div className="mt-2 flex items-center justify-center gap-2 rounded-sm bg-surface-2 p-3 text-sm">
             <span className="text-muted-2">{t("order.bookingNumberLabel")}:</span>
             <span className="font-mono font-semibold text-foreground">{bookingNumber}</span>
             <CopyButton value={bookingNumber} />
@@ -191,10 +191,27 @@ export function ModuleHub() {
         {/* progress in numbers only — the per-card badges already show it per
             section, so a filling bar would say the same thing a third time */}
         <div className="mt-4">
+          {/* the count is the fact: once anything is done it wears the
+              done-hue ink (Numbers-Are-Mono), the sentence stays in ink */}
           <p className="text-sm font-medium text-foreground">
             {t("order.hubProgress")
-              .replace("{n}", String(completeCount))
-              .replace("{total}", String(MODULE_META.length))}
+              .replace("{total}", String(MODULE_META.length))
+              .split("{n}")
+              .map((part, i, arr) => (
+                <React.Fragment key={i}>
+                  {part}
+                  {i < arr.length - 1 && (
+                    <span
+                      className={cn(
+                        "font-mono font-semibold tabular-nums",
+                        completeCount > 0 && "text-success-ink",
+                      )}
+                    >
+                      {completeCount}
+                    </span>
+                  )}
+                </React.Fragment>
+              ))}
           </p>
           {lastSavedAt && completeCount > 0 && (
             <p className="mt-1 text-xs text-muted-2">
@@ -295,11 +312,14 @@ export function ModuleHub() {
               <span
                 className={cn(
                   "grid size-11 shrink-0 place-items-center rounded-md transition-colors",
-                  // "done" is a status, so it speaks in the status hue (same as the
-                  // badge beside it); lime stays with the bar and the CTA
+                  // the tile and the badge beside it speak one hue: done is
+                  // green, half-filled is purple (it still waits on you), the
+                  // rest wait in grey; lime stays with the CTA
                   status === "complete"
                     ? "bg-success/15 text-success"
-                    : "bg-surface-3 text-muted",
+                    : status === "in-progress" && !locked
+                      ? "bg-accent/15 text-accent"
+                      : "bg-surface-3 text-muted",
                 )}
               >
                 <m.icon className="size-5" />
@@ -359,9 +379,11 @@ export function ModuleHub() {
 
       {/* all four complete: name the moment before asking for the booking */}
       {canSubmit && (
-        <p className="mt-6 flex items-center justify-center gap-1.5 text-sm font-medium text-foreground">
-          {/* success lives in the icon, per the Tint-15/25 rule: body text stays ink */}
-          <CheckCircle2 className="size-4 text-success" /> {t("order.hubAllDone")}
+        // the good news gets a surface of its own (a tint, no outline): the
+        // glyph in the raw hue, the words in its ink
+        <p className="mt-6 flex items-center justify-center gap-2 rounded-md bg-success/10 px-4 py-3 text-sm font-medium text-success-ink">
+          <CheckCircle2 className="size-4 shrink-0 text-success" aria-hidden />
+          {t("order.hubAllDone")}
         </p>
       )}
 

@@ -13,6 +13,7 @@ const id = {
     close: "Tutup",
     moreInfo: "Info selengkapnya",
     infoAbout: "Info: {label}",
+    loading: "Memuat…",
   },
   date: {
     field: "Tanggal",
@@ -748,9 +749,6 @@ const id = {
       "Cek tarif dulu, lalu buat order pertamamu. Tim kami mendampingi lewat WhatsApp sampai barang tiba.",
     ordersEmptyCta: "Mulai order baru",
     ordersCreatedAt: "Dibuat",
-    listNeedsAction: "Perlu tindakan kamu:",
-    listCancelledNote:
-      "Pesanan ini dibatalkan. Ada pertanyaan, atau mau mulai lagi? Tim kami siap bantu.",
     ordersRoute: "Rute",
     serviceLabel: "Layanan",
     serviceBfg: "Back For Good",
@@ -763,7 +761,7 @@ const id = {
     tdAttention: "Perlu perhatian",
     tdGoodNews: "Kabar baik",
     contactWa: "Hubungi tim Rimkirim",
-    // customs jargon, explained in place (AttentionBanner EXPLAIN map)
+    // customs jargon, explained in place (AttentionStrip EXPLAIN map)
     jargAwb:
       "AWB (Air Waybill) adalah nomor resi dari kurir untuk melacak paketmu. Beda dari Nomor Booking Rimkirim.",
     jargBarpin: "Barpin adalah portal Bea Cukai tempat data kirimanmu didaftarkan.",
@@ -806,48 +804,29 @@ const id = {
     tdClearancePending:
       "Proses clearance akan muncul setelah barang tiba di Indonesia. Proses normalnya 3–7 hari kerja.",
     tdCancelledNotice: "Pesanan ini dibatalkan.",
-    tdCancelledBody:
-      "Butuh tahu alasannya, atau mau mengatur pengiriman ulang? Tim kami siap membantu.",
+    tdCancelledBody: "Mau tahu alasannya, atau kirim ulang?",
     tdMaNote:
       "Tracking Moving Abroad disiapkan menyusul. Layanan ini masih dalam pengembangan.",
     // attention overlay presets (set by the ops simulator)
-    attQuotationReady:
-      "Quotation telah diterbitkan. Setujui di halaman order untuk melanjutkan.",
-    attRevision:
-      "Tim kami butuh revisi di salah satu bagian formulirmu. Lihat detail & tombol perbaiki di bawah.",
-    attPickupFailed:
-      "Pickup pertama gagal. Tim kami akan mengatur ulang penjemputan.",
-    attPickupFailCustomer:
-      "Pickup gagal: kurir belum berhasil mengambil barang di alamatmu. Pilih langkah berikutnya: pickup ulang atau drop-off.",
-    attPickupFailFedEx:
-      "Pickup gagal karena FedEx. Bukan salahmu: dispute internal, tanpa biaya. Pilih opsi untuk melanjutkan.",
-    attNeedsNewAwb:
-      "Pickup gagal 3× karena kendala di sisi kamu. Untuk melanjutkan, minta AWB baru: pilih jadwal & metode baru, tim kami yang mengurus sisanya.",
-    attAwbIssued: "AWB baru diterbitkan. Pickup dijadwalkan ulang.",
-    attPickupRescheduled:
-      "Pickup dijadwalkan ulang. Tim kami akan menjemput sesuai jadwal baru.",
-    attDropOffRequested:
-      "Drop-off diminta: antar paketmu ke lokasi FedEx dalam 2 hari.",
-    attAwbChanged:
-      "AWB diganti karena drop-off melewati batas 2 hari. Tim kami menjadwalkan ulang pickup. Kami kabari jadwal barunya.",
-    attClearanceReleased:
-      "Clearance selesai. Barang disetujui untuk dikeluarkan dari Bea Cukai.",
-    attClearanceReleasedExtra:
-      "Barang dikeluarkan (SPPBL) dengan dokumen tambahan dari Bea Cukai.",
-    attClearanceBlocked:
-      "Belum bisa masuk proses clearance: barang belum lengkap (parsial) atau pengiriman terhambat.",
-    attClearanceBarpin:
-      "Cek & konfirmasi data kirimanmu di portal Barpin agar clearance bisa lanjut.",
-    attClearanceBarpinRevision:
-      "Permintaan revisi data Barpin dikirim. Tim kami menyesuaikan berdasarkan dokumenmu.",
-    attNpd:
-      "Bea Cukai menerbitkan NPD (permintaan dokumen). Tim kami melengkapinya dan mengajukan ulang.",
-    attClearanceTax:
-      "Ada pajak impor yang perlu kamu bayar (SPTNP dari Bea Cukai). Setelah dibayar, barang langsung bisa keluar. Tim kami siap pandu lewat WhatsApp.",
-    attClearanceReject:
-      "Pengajuan ditolak Bea Cukai. Tim kami menyiapkan permohonan baru dan mengulang clearance dari awal. Tidak ada yang perlu kamu lakukan sekarang. Perlu diketahui: biaya warehouse tetap berjalan selama proses ini.",
-    attDelivered:
-      "Kirimanmu sudah sampai di tujuan. Terima kasih sudah pindah bersama Rimkirim!",
+    attQuotationReady: "Quotation terbit. Setujui untuk lanjut.",
+    attRevision: "Ada bagian formulir yang perlu direvisi.",
+    attPickupFailed: "Pickup pertama gagal. Kami atur ulang.",
+    attPickupFailCustomer: "Pickup gagal di alamatmu. Pilih langkahmu.",
+    attPickupFailFedEx: "Pickup gagal dari sisi FedEx. Pilih opsi.",
+    attNeedsNewAwb: "Pickup gagal 3×. Minta AWB baru.",
+    attAwbIssued: "AWB baru terbit. Pickup dijadwalkan ulang.",
+    attPickupRescheduled: "Pickup dijadwalkan ulang. Cek jadwalnya.",
+    attDropOffRequested: "Antar paketmu ke FedEx dalam 2 hari.",
+    attAwbChanged: "AWB diganti. Pickup dijadwalkan ulang.",
+    attClearanceReleased: "Clearance selesai. Barang siap keluar.",
+    attClearanceReleasedExtra: "Dikeluarkan (SPPBL) + dokumen ekstra.",
+    attClearanceBlocked: "Belum bisa masuk clearance.",
+    attClearanceBarpin: "Cek & konfirmasi data kirimanmu di Barpin.",
+    attClearanceBarpinRevision: "Revisi data Barpin sedang kami kerjakan.",
+    attNpd: "Bea Cukai minta dokumen tambahan (NPD).",
+    attClearanceTax: "Pajak impor (SPTNP) perlu kamu bayar.",
+    attClearanceReject: "Ditolak Bea Cukai. Kami ulang clearance.",
+    attDelivered: "Kirimanmu sudah sampai. Terima kasih!",
     // clearance sub-flow — spine labels (components/tracking/ClearancePanel)
     clSpinePre: "Pre-Clearance",
     clSpineBarpin: "Konfirmasi Barpin",
@@ -970,8 +949,7 @@ const id = {
     opsAwbRequested: "Customer minta AWB baru. Terbitkan untuk melanjutkan.",
     opsDroppedOff:
       "Customer sudah drop off. Konfirmasi untuk lanjut ke transit.",
-    attPickupScheduled:
-      "Pickup telah dijadwalkan. Tim kami akan menjemput di alamatmu.",
+    attPickupScheduled: "Pickup FedEx dijadwalkan di alamatmu.",
     evPickupFailCustomer: "Pickup gagal: barang belum bisa diambil di alamat.",
     evPickupFailFedEx:
       "Pickup gagal: kesalahan FedEx (dispute internal, tanpa biaya).",
@@ -1164,8 +1142,8 @@ const id = {
     itTotalPrice: "Total estimasi ongkir",
     itEstimateNote: "Estimasi dari tarif yang dipilih × chargeable weight. Angka final ada di quotation resmi.",
     tdEstimateSuperseded: "Digantikan oleh quotation resmi di atas.",
-    tdDocsTodoOne: "1 dokumen perlu diunggah. Lihat daftarnya",
-    tdDocsTodoMany: "{n} dokumen perlu diunggah. Lihat daftarnya",
+    tdDocsTodoOne: "1 dokumen belum diunggah",
+    tdDocsTodoMany: "{n} dokumen belum diunggah",
     itTotalValue: "Total nilai barang",
     itTotalCw: "Total chargeable weight",
     pkgBox: "Kardus corrugated",
@@ -1219,6 +1197,7 @@ const id = {
     upload: "Unggah file",
     uploadMax: "Maks. 5 MB",
     viewFile: "Lihat file",
+    lightboxDesc: "Pratinjau file yang kamu unggah. Tekan Esc untuk menutup.",
     previewUnavailable:
       "Pratinjau hanya tersedia untuk file yang baru kamu unggah di sesi ini.",
     // moving abroad entry
@@ -1369,6 +1348,7 @@ const en: Messages = {
     close: "Close",
     moreInfo: "More info",
     infoAbout: "Info: {label}",
+    loading: "Loading…",
   },
   date: {
     field: "Date",
@@ -2082,9 +2062,6 @@ const en: Messages = {
       "Check rates first, then start your first order. Our team stays with you on WhatsApp until your goods arrive.",
     ordersEmptyCta: "Start a new order",
     ordersCreatedAt: "Created",
-    listNeedsAction: "Action needed:",
-    listCancelledNote:
-      "This order was cancelled. Questions, or want to start again? Our team is ready to help.",
     ordersRoute: "Route",
     serviceLabel: "Service",
     serviceBfg: "Back For Good",
@@ -2097,7 +2074,7 @@ const en: Messages = {
     tdAttention: "Needs attention",
     tdGoodNews: "Good news",
     contactWa: "Chat the Rimkirim team",
-    // customs jargon, explained in place (AttentionBanner EXPLAIN map)
+    // customs jargon, explained in place (AttentionStrip EXPLAIN map)
     jargAwb:
       "The AWB (Air Waybill) is the courier's tracking number for your package. Separate from your Rimkirim booking number.",
     jargBarpin: "Barpin is the customs portal where your shipment data is registered.",
@@ -2140,48 +2117,29 @@ const en: Messages = {
     tdClearancePending:
       "Clearance status will appear once the goods arrive in Indonesia. The normal process takes 3–7 business days.",
     tdCancelledNotice: "This order was cancelled.",
-    tdCancelledBody:
-      "Need to know why, or want to arrange a re-shipment? Our team is ready to help.",
+    tdCancelledBody: "Need the reason, or a re-shipment?",
     tdMaNote:
       "Moving Abroad tracking is coming soon. This service is still in development.",
     // attention overlay presets (set by the ops simulator)
-    attQuotationReady:
-      "A quotation has been issued. Approve it on the order page to continue.",
-    attRevision:
-      "Our team needs a revision in one of your form sections. See the details & the Fix button below.",
-    attPickupFailed:
-      "The first pickup failed. Our team will reschedule the pickup.",
-    attPickupFailCustomer:
-      "Pickup failed: the courier couldn't collect at your address. Choose the next step: re-pickup or drop-off.",
-    attPickupFailFedEx:
-      "Pickup failed due to FedEx. Not your fault: internal dispute, no cost. Choose how to continue.",
-    attNeedsNewAwb:
-      "Pickup failed 3× due to issues on your side. To continue, request a new AWB: pick a new date & method and our team handles the rest.",
+    attQuotationReady: "Quotation issued. Approve to continue.",
+    attRevision: "One form section needs a revision.",
+    attPickupFailed: "First pickup failed. We'll reschedule.",
+    attPickupFailCustomer: "Pickup failed at your address. Choose one.",
+    attPickupFailFedEx: "FedEx missed the pickup. Pick an option.",
+    attNeedsNewAwb: "Pickup failed 3×. Request a new AWB.",
     attAwbIssued: "New AWB issued. Pickup rescheduled.",
-    attPickupRescheduled:
-      "Pickup rescheduled. Our team will collect on the new schedule.",
-    attDropOffRequested:
-      "Drop-off requested: bring your package to a FedEx location within 2 days.",
-    attAwbChanged:
-      "The AWB was changed because the drop-off missed the 2-day deadline. Our team is rescheduling the pickup. We'll share the new schedule.",
-    attClearanceReleased:
-      "Clearance complete. The goods were approved for release by Customs.",
-    attClearanceReleasedExtra:
-      "Goods released (SPPBL) with additional documents from Customs.",
-    attClearanceBlocked:
-      "Can't enter clearance yet: the goods aren't all here (partial) or the shipment is delayed.",
-    attClearanceBarpin:
-      "Review & confirm your shipment data on the Barpin portal so clearance can proceed.",
-    attClearanceBarpinRevision:
-      "Barpin data revision requested. Our team is adjusting it based on your documents.",
-    attNpd:
-      "Customs issued an NPD (document request). Our team completes it and resubmits.",
-    attClearanceTax:
-      "There is an import tax for you to pay (an SPTNP from Customs). Once paid, your goods can be released. Our team is ready to guide you on WhatsApp.",
-    attClearanceReject:
-      "Customs rejected the submission. Our team is preparing a new application and restarting clearance from the beginning. Nothing for you to do right now. Heads up: warehouse costs keep running during this process.",
-    attDelivered:
-      "Your shipment has arrived at its destination. Thank you for moving with Rimkirim!",
+    attPickupRescheduled: "Pickup rescheduled. See the new date.",
+    attDropOffRequested: "Bring your package to FedEx within 2 days.",
+    attAwbChanged: "AWB changed. Pickup is being rescheduled.",
+    attClearanceReleased: "Clearance complete. Goods released.",
+    attClearanceReleasedExtra: "Released (SPPBL) with extra documents.",
+    attClearanceBlocked: "Can't enter clearance yet.",
+    attClearanceBarpin: "Review & confirm your data on Barpin.",
+    attClearanceBarpinRevision: "Barpin revision requested. We're on it.",
+    attNpd: "Customs asked for more documents (NPD).",
+    attClearanceTax: "Import tax (SPTNP) for you to pay.",
+    attClearanceReject: "Customs rejected it. Clearance restarts.",
+    attDelivered: "Your shipment has arrived. Thank you!",
     // clearance sub-flow — spine labels (components/tracking/ClearancePanel)
     clSpinePre: "Pre-Clearance",
     clSpineBarpin: "Barpin confirm",
@@ -2305,8 +2263,7 @@ const en: Messages = {
       "Customer requested a new AWB. Issue it to continue.",
     opsDroppedOff:
       "Customer dropped off the package. Confirm to move to transit.",
-    attPickupScheduled:
-      "Pickup scheduled. Our team will collect at your address.",
+    attPickupScheduled: "FedEx pickup scheduled at your address.",
     evPickupFailCustomer:
       "Pickup failed: the package couldn't be collected at the address.",
     evPickupFailFedEx:
@@ -2493,8 +2450,8 @@ const en: Messages = {
     itTotalPrice: "Total estimated shipping",
     itEstimateNote: "Estimate from the selected rate × chargeable weight. The final figure is in the official quotation.",
     tdEstimateSuperseded: "Superseded by the official quotation above.",
-    tdDocsTodoOne: "1 document still needs uploading. See the list",
-    tdDocsTodoMany: "{n} documents still need uploading. See the list",
+    tdDocsTodoOne: "1 document still to upload",
+    tdDocsTodoMany: "{n} documents still to upload",
     itTotalValue: "Total declared value",
     itTotalCw: "Total chargeable weight",
     pkgBox: "Corrugated box",
@@ -2545,6 +2502,7 @@ const en: Messages = {
     upload: "Upload file",
     uploadMax: "Max 5 MB",
     viewFile: "View file",
+    lightboxDesc: "Preview of the file you uploaded. Press Esc to close.",
     previewUnavailable:
       "Preview is only available for files you uploaded in this session.",
     maComingSoon: "Moving Abroad order is coming soon",

@@ -27,35 +27,53 @@ const STEP_LABEL_KEYS: Record<OrderPhase, string> = {
   cancelled: "order.statusCancelled",
 };
 
-/**
- * Linear status stepper: completed steps check-marked, the current phase
- * highlighted, upcoming ones muted. `cancelled` renders every step dimmed with
- * a terminal marker — the order is no longer moving forward.
- */
-export function StatusStepper({ status }: { status: OrderPhase }) {
-  const t = useT();
-  const cancelled = status === "cancelled";
-  const currentIdx = cancelled ? -1 : PHASE_STEPS.indexOf(status);
+export type RailStep = { key: string; label: string };
 
+type StepRailProps = {
+  steps: RailStep[];
+  /** index of the live step; -1 when nothing is live (cancelled) */
+  currentIdx: number;
+  /** every node dimmed with a terminal marker: the journey stopped */
+  cancelled?: boolean;
+  /** the last node filled and its check drawn once: the journey finished */
+  arrived?: boolean;
+  /** `sm` for a rail living inside a card (the clearance spine) */
+  size?: "md" | "sm";
+};
+
+/**
+ * The one rail: completed nodes check-marked, the live one framed in ink with
+ * a lime core, upcoming ones muted. StatusStepper feeds it the order phases;
+ * ClearancePanel feeds it the customs spine, so both keep the same a11y
+ * contract (aria-current, sr-only "step n of m", labels that hide below sm).
+ */
+export function StepRail({
+  steps,
+  currentIdx,
+  cancelled = false,
+  arrived = false,
+  size = "md",
+}: StepRailProps) {
+  const t = useT();
+  const sm = size === "sm";
+  const last = steps.length - 1;
   return (
     <div className="flex items-start">
-      {PHASE_STEPS.map((phase, i) => {
+      {steps.map((step, i) => {
         const done = !cancelled && currentIdx > -1 && i < currentIdx;
         const current = i === currentIdx;
-        // the journey's last node fills like the done ones and draws its
-        // check once — the rail visibly finishes instead of idling
-        const arrived = status === "delivered" && phase === "delivered";
+        const finished = arrived && i === last;
         return (
           <div
-            key={phase}
+            key={step.key}
             aria-current={current ? "step" : undefined}
             className="flex flex-1 flex-col items-center"
           >
             <div className="flex w-full items-center">
-              {/* colour transitions on rail + node so a live phase advance
-                  (approving the quotation flips the store on this very page)
-                  reads as the rail lighting up, not a repaint — colour
-                  channel only, inert on plain page loads */}
+              {/* colour transitions on rail + node so a live advance (approving
+                  the quotation flips the store on this very page) reads as the
+                  rail lighting up, not a repaint — colour channel only, inert
+                  on plain page loads */}
               <span
                 className={cn(
                   "h-0.5 flex-1 transition-colors duration-300",
@@ -65,19 +83,20 @@ export function StatusStepper({ status }: { status: OrderPhase }) {
               />
               <span
                 className={cn(
-                  "grid size-6 shrink-0 place-items-center rounded-full border-2 transition-colors duration-300",
-                  (done || arrived) && "border-brand bg-brand text-brand-ink",
+                  "grid shrink-0 place-items-center rounded-full border-2 transition-colors duration-300",
+                  sm ? "size-5" : "size-6",
+                  (done || finished) && "border-brand bg-brand text-brand-ink",
                   // on daylight a lime hairline reads ~1.5:1, so the live step
                   // is framed in ink and marked with a lime core instead
-                  current && !arrived && "border-foreground bg-background text-brand-ink",
+                  current && !finished && "border-foreground bg-background text-brand-ink",
                   !done && !current && "border-border bg-surface-2 text-muted-2",
                   cancelled && "border-border bg-surface-2 text-muted-2",
                 )}
               >
-                {arrived ? (
+                {finished ? (
                   <svg
                     viewBox="0 0 24 24"
-                    className="size-3.5"
+                    className={sm ? "size-3" : "size-3.5"}
                     fill="none"
                     stroke="currentColor"
                     strokeWidth={3}
@@ -88,19 +107,18 @@ export function StatusStepper({ status }: { status: OrderPhase }) {
                     <path className="check-draw" d="M4 12.5l5 5L20 6.5" />
                   </svg>
                 ) : done ? (
-                  <Check className="size-3.5" strokeWidth={3} />
+                  <Check className={sm ? "size-3" : "size-3.5"} strokeWidth={3} />
                 ) : cancelled ? (
-                  <X className="size-3.5" />
+                  <X className={sm ? "size-3" : "size-3.5"} />
                 ) : current ? (
-                  <span className="size-2 rounded-full bg-brand" />
+                  <span className={cn("rounded-full bg-brand", sm ? "size-1.5" : "size-2")} />
                 ) : null}
               </span>
               <span
                 className={cn(
                   "h-0.5 flex-1 transition-colors duration-300",
-                  i === PHASE_STEPS.length - 1 && "bg-transparent",
-                  i < PHASE_STEPS.length - 1 &&
-                    (done || current ? "bg-brand" : "bg-border"),
+                  i === last && "bg-transparent",
+                  i < last && (done || current ? "bg-brand" : "bg-border"),
                 )}
               />
             </div>
@@ -110,7 +128,7 @@ export function StatusStepper({ status }: { status: OrderPhase }) {
                 // 12px is the smallest on-ramp step that clears the 11px
                 // legibility floor (DESIGN.md removed 11px as drift)
                 "mt-1.5 px-0.5 text-center font-display text-xs leading-tight",
-                // below sm seven labels have no room to breathe: only the live
+                // below sm the labels have no room to breathe: only the live
                 // step names itself; the rest stay for screen readers and
                 // return visually from sm up
                 !current && "max-sm:sr-only",
@@ -120,7 +138,7 @@ export function StatusStepper({ status }: { status: OrderPhase }) {
                 cancelled && "text-muted-2",
               )}
             >
-              {t(STEP_LABEL_KEYS[phase])}
+              {step.label}
               {/* no visible counter: the rail already shows the position; the
                   place in the journey is still announced to screen readers */}
               {current && (
@@ -128,7 +146,7 @@ export function StatusStepper({ status }: { status: OrderPhase }) {
                   {", "}
                   {t("order.stepOf")
                     .replace("{n}", String(i + 1))
-                    .replace("{total}", String(PHASE_STEPS.length))}
+                    .replace("{total}", String(steps.length))}
                 </span>
               )}
             </p>
@@ -136,5 +154,25 @@ export function StatusStepper({ status }: { status: OrderPhase }) {
         );
       })}
     </div>
+  );
+}
+
+/**
+ * Linear status stepper: completed steps check-marked, the current phase
+ * highlighted, upcoming ones muted. `cancelled` renders every step dimmed with
+ * a terminal marker — the order is no longer moving forward.
+ */
+export function StatusStepper({ status }: { status: OrderPhase }) {
+  const t = useT();
+  const cancelled = status === "cancelled";
+  return (
+    <StepRail
+      steps={PHASE_STEPS.map((phase) => ({ key: phase, label: t(STEP_LABEL_KEYS[phase]) }))}
+      currentIdx={cancelled ? -1 : PHASE_STEPS.indexOf(status)}
+      cancelled={cancelled}
+      // the journey's last node fills like the done ones and draws its check
+      // once — the rail visibly finishes instead of idling
+      arrived={status === "delivered"}
+    />
   );
 }

@@ -6,6 +6,7 @@ import { Logo } from "./Logo";
 import { SocialLinks } from "./SocialLinks";
 import { useT } from "@/lib/i18n/LanguageProvider";
 import { isBareRoute, isOrderFlowRoute } from "@/lib/utils/routes";
+import { WA_URL } from "@/lib/contact";
 
 export function AppFooter() {
   const t = useT();
@@ -47,7 +48,7 @@ export function AppFooter() {
             <FooterCol
               title={t("footer.colBantuan")}
               links={[
-                [t("footer.linkWa"), "https://wa.me/6281234567890"],
+                [t("footer.linkWa"), WA_URL],
                 [t("footer.linkFaq"), "/faq"],
                 [t("footer.linkLacak"), "#"],
               ]}

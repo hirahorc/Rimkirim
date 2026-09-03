@@ -19,6 +19,7 @@ import { ManualQuoteNotice } from "./ManualQuoteNotice";
 import { domesticCoverageGap } from "@/lib/data/domestic-coverage";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { WA_URL } from "@/lib/contact";
 
 function toQuoteInput(v: CalculatorValues): QuoteInput {
   return {
@@ -170,7 +171,7 @@ export function CheckRatesClient() {
       <p className="mt-8 text-center text-xs text-muted-2">
         {t("rates.footNote")}{" "}
         <a
-          href="https://wa.me/6281234567890"
+          href={WA_URL}
           className="link-mark"
           target="_blank"
           rel="noreferrer"
