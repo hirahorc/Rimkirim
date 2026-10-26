@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { Logo } from "./Logo";
-import { LanguageToggle } from "./LanguageToggle";
 import { SocialLinks } from "./SocialLinks";
 import { useT } from "@/lib/i18n/LanguageProvider";
 import { WA_URL } from "@/lib/contact";
@@ -13,8 +12,7 @@ const EMAIL = "hello@rimkirim.com";
  * The expat landing's footer: how to reach a person, and the one door back
  * to the main Rimkirim site, its two services. No account links and no site
  * map, so a visitor who came for a quote is never sent into flows built for
- * Indonesian customers. The language switch lives here too, because on
- * phones the bar has no room for it.
+ * Indonesian customers. No language switch: the page is English only.
  */
 export function ExpatFooter() {
   const t = useT();
@@ -25,9 +23,6 @@ export function ExpatFooter() {
           <div className="max-w-xs">
             <Logo href="/expat-relocation" ariaLabel={t("expat.headerHome")} height={32} />
             <p className="mt-3 text-sm text-muted">{t("expat.footer.tagline")}</p>
-            <div className="mt-5">
-              <LanguageToggle />
-            </div>
           </div>
 
           <div className="text-sm">

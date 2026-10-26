@@ -781,13 +781,14 @@ the active link is a Panel-2 pill instead. Same principle, inverted fill.
 footer for `ExpatHeader` / `ExpatFooter` (`isExpatRoute`), after the live rimkirim.com/relocation
 page: a plain full-width sticky bar (`bg-background/95`, hairline below; at the capsule's /85 the
 content ghosted through a bar this wide) holding the wordmark, a hairline divider and the service
-name in the `.nav-expat` gradient, the language toggle (`sm` and up) and one lime "Get a quote"
-that opens the relocation calculator, like every other quote button on the page. No site menu, no sign-in, no bell: expat orders run over WhatsApp, not the
+name in the `.nav-expat` gradient, and one lime "Get a quote" that opens the relocation
+calculator, like every other quote button on the page. The page is English only (LanguageProvider
+forces the locale on this route, whatever the visitor saved), so neither bar nor footer carries a
+language switch. No site menu, no sign-in, no bell: expat orders run over WhatsApp, not the
 account system. The logo stays on the page, so the only door back to the main site is the footer's
-two service links (Back For Good, Moving Abroad); the footer also carries contacts, legal and the
-language toggle that phones lose from the bar. Under 380px the divider and name drop out, because
-beside the Indonesian button ("Minta penawaran") they would clip; the hero eyebrow names the
-service right below.
+two service links (Back For Good, Moving Abroad); the footer also carries contacts and legal.
+Under 350px the divider and name drop out, because beside the button they would clip; the hero
+eyebrow names the service right below.
 
 ### Segmented control (signature)
 - A **`rounded-full`** Panel-2 track with a 1px border and `p-1`; the items are `rounded-full` too,

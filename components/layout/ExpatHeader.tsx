@@ -1,7 +1,6 @@
 "use client";
 
 import { Logo } from "./Logo";
-import { LanguageToggle } from "./LanguageToggle";
 import { Button } from "@/components/ui/button";
 import { EXPAT_QUOTE_URL } from "@/lib/data/expat";
 import { useT } from "@/lib/i18n/LanguageProvider";
@@ -27,12 +26,12 @@ export function ExpatHeader() {
         <div className="flex min-w-0 items-center gap-2.5 sm:gap-3">
           <Logo href="/expat-relocation" ariaLabel={t("expat.headerHome")} height={26} />
           {/* the service's name in its own voice: the gradient is the one
-              the nav link wears everywhere else (.nav-expat). Under 380px it
-              cannot sit beside the logo and the Indonesian button without
-              clipping, so the smallest phones keep logo and button only; the
-              hero's eyebrow names the service right below. The wrapper owns
-              the visibility because .nav-expat sets its own display. */}
-          <span className="hidden items-center gap-2.5 min-[380px]:flex sm:gap-3">
+              the nav link wears everywhere else (.nav-expat). Under 350px it
+              cannot sit beside the logo and the button without clipping, so
+              the smallest phones keep logo and button only; the hero's
+              eyebrow names the service right below. The wrapper owns the
+              visibility because .nav-expat sets its own display. */}
+          <span className="hidden items-center gap-2.5 min-[350px]:flex sm:gap-3">
             <span aria-hidden className="h-5 w-px shrink-0 bg-border-strong" />
             <span
               className="nav-expat whitespace-nowrap font-display text-xs font-semibold uppercase tracking-[0.04em] sm:text-sm"
@@ -42,16 +41,10 @@ export function ExpatHeader() {
             </span>
           </span>
         </div>
-        <div className="flex shrink-0 items-center gap-2">
-          {/* phones keep the bar to the brand and the button; the switch
-              moves to the footer there */}
-          <div className="hidden sm:block">
-            <LanguageToggle />
-          </div>
-          <Button asChild size="sm">
-            <a href={EXPAT_QUOTE_URL}>{t("expat.cta")}</a>
-          </Button>
-        </div>
+        {/* no language switch: the page is English only (LanguageProvider) */}
+        <Button asChild size="sm" className="shrink-0">
+          <a href={EXPAT_QUOTE_URL}>{t("expat.cta")}</a>
+        </Button>
       </div>
     </header>
   );

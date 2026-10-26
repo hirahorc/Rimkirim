@@ -8,17 +8,19 @@ const STORAGE_KEY = "rimkirim:lang";
 const DEFAULT_LOCALE: Locale = "id";
 
 /**
- * Pages whose audience reads English first. A visitor who lands on one with
- * no saved preference sees it in English straight away (an expat arriving
- * from a search should not meet Indonesian first); a saved choice still wins,
- * and moving here from another page keeps whatever language is already on.
+ * Pages that exist in one language only. They always render in it, whatever
+ * the visitor saved elsewhere, and carry no language switch (the expat page
+ * speaks to foreigners, so it is English only). Leaving one hands the site
+ * back to the visitor's saved choice; with none saved, the language they
+ * landed in carries on, so an expat who arrives here and clicks through to
+ * the main site keeps reading English.
  */
-const ROUTE_LOCALE: { prefix: string; locale: Locale }[] = [
+const ROUTE_ONLY_LOCALE: { prefix: string; locale: Locale }[] = [
   { prefix: "/expat-relocation", locale: "en" },
 ];
 
-function routeLocale(pathname: string | null): Locale {
-  return ROUTE_LOCALE.find((r) => pathname?.startsWith(r.prefix))?.locale ?? DEFAULT_LOCALE;
+function routeOnlyLocale(pathname: string | null): Locale | null {
+  return ROUTE_ONLY_LOCALE.find((r) => pathname?.startsWith(r.prefix))?.locale ?? null;
 }
 
 // the saved choice, read as an external store: the server snapshot is null,
@@ -67,13 +69,15 @@ function lookup(locale: Locale, path: string): string {
 }
 
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
-  // the landing route's default is taken once, so moving between pages keeps
-  // whatever language the visitor is already reading
+  // a one-language page wins outright; elsewhere the visitor's choice, then
+  // their saved one, then the language of the page they landed on (taken
+  // once, so moving between pages keeps what they are already reading)
   const pathname = usePathname();
-  const [routeDefault] = React.useState<Locale>(() => routeLocale(pathname));
+  const only = routeOnlyLocale(pathname);
+  const [landing] = React.useState<Locale>(() => only ?? DEFAULT_LOCALE);
   const stored = React.useSyncExternalStore(subscribeStored, readStored, () => null);
   const [chosen, setChosen] = React.useState<Locale | null>(null);
-  const locale = chosen ?? stored ?? routeDefault;
+  const locale = only ?? chosen ?? stored ?? landing;
 
   // <html lang> is fixed to "id" by the root layout; keep it truthful for
   // screen readers and translation tools whichever way the locale was set
