@@ -10,6 +10,11 @@ import type { CalculatorValues } from "@/lib/schemas/calculator";
 /** Cities whose domestic delivery price isn't in the system yet (dummy). */
 export const UNSERVICED_DOMESTIC_CITIES = ["makassar"];
 
+/** True when deliveries to this Indonesian city are arranged by hand. */
+export function isUnservicedCity(city: string | undefined): boolean {
+  return UNSERVICED_DOMESTIC_CITIES.includes((city ?? "").trim().toLowerCase());
+}
+
 /**
  * For Back For Good (import), the domestic leg delivers to the Indonesian
  * destination city. Returns the entered city when its price isn't available,
@@ -21,7 +26,5 @@ export function domesticCoverageGap(
   if (input.service !== "bfg") return null;
   const city = (input.destination.city ?? "").trim();
   if (!city) return null;
-  return UNSERVICED_DOMESTIC_CITIES.includes(city.toLowerCase())
-    ? { city }
-    : null;
+  return isUnservicedCity(city) ? { city } : null;
 }

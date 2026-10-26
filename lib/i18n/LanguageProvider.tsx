@@ -1,10 +1,41 @@
 "use client";
 
 import * as React from "react";
+import { usePathname } from "next/navigation";
 import { messages, type Locale } from "./messages";
 
 const STORAGE_KEY = "rimkirim:lang";
 const DEFAULT_LOCALE: Locale = "id";
+
+/**
+ * Pages whose audience reads English first. A visitor who lands on one with
+ * no saved preference sees it in English straight away (an expat arriving
+ * from a search should not meet Indonesian first); a saved choice still wins,
+ * and moving here from another page keeps whatever language is already on.
+ */
+const ROUTE_LOCALE: { prefix: string; locale: Locale }[] = [
+  { prefix: "/expat-relocation", locale: "en" },
+];
+
+function routeLocale(pathname: string | null): Locale {
+  return ROUTE_LOCALE.find((r) => pathname?.startsWith(r.prefix))?.locale ?? DEFAULT_LOCALE;
+}
+
+// the saved choice, read as an external store: the server snapshot is null,
+// so hydration renders the page's default and the saved language follows
+// right after (a brief flash only for users whose choice differs from it)
+const subscribeStored = (onChange: () => void) => {
+  window.addEventListener("storage", onChange);
+  return () => window.removeEventListener("storage", onChange);
+};
+function readStored(): Locale | null {
+  try {
+    const v = window.localStorage.getItem(STORAGE_KEY);
+    return v === "id" || v === "en" ? v : null;
+  } catch {
+    return null;
+  }
+}
 
 type Translator = (path: string) => string;
 
@@ -36,23 +67,27 @@ function lookup(locale: Locale, path: string): string {
 }
 
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
-  // Start with the default so server and first client render match; the stored
-  // preference is applied after mount (brief flash for non-default users only).
-  const [locale, setLocaleState] = React.useState<Locale>(DEFAULT_LOCALE);
+  // the landing route's default is taken once, so moving between pages keeps
+  // whatever language the visitor is already reading
+  const pathname = usePathname();
+  const [routeDefault] = React.useState<Locale>(() => routeLocale(pathname));
+  const stored = React.useSyncExternalStore(subscribeStored, readStored, () => null);
+  const [chosen, setChosen] = React.useState<Locale | null>(null);
+  const locale = chosen ?? stored ?? routeDefault;
 
+  // <html lang> is fixed to "id" by the root layout; keep it truthful for
+  // screen readers and translation tools whichever way the locale was set
   React.useEffect(() => {
-    const stored = window.localStorage.getItem(STORAGE_KEY);
-    if (stored === "id" || stored === "en") setLocaleState(stored);
-  }, []);
+    document.documentElement.lang = locale;
+  }, [locale]);
 
   const setLocale = React.useCallback((next: Locale) => {
-    setLocaleState(next);
+    setChosen(next);
     try {
       window.localStorage.setItem(STORAGE_KEY, next);
     } catch {
       /* ignore */
     }
-    document.documentElement.lang = next;
   }, []);
 
   const t = React.useCallback<Translator>((path) => lookup(locale, path), [locale]);

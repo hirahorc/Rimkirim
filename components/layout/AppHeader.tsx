@@ -13,7 +13,7 @@ import { useCurrentUser } from "@/lib/store/useAuthStore";
 import { useLoginModal } from "@/lib/store/useLoginModal";
 import { useT } from "@/lib/i18n/LanguageProvider";
 import { isBareRoute } from "@/lib/utils/routes";
-import { NAV_LINKS } from "@/lib/nav-links";
+import { NAV_LINKS, headerCta } from "@/lib/nav-links";
 import { cn } from "@/lib/utils/cn";
 
 export function AppHeader() {
@@ -21,6 +21,7 @@ export function AppHeader() {
   const pathname = usePathname();
   const user = useCurrentUser();
   const openLogin = useLoginModal((s) => s.openModal);
+  const cta = headerCta(pathname);
   // standalone pages (legal docs) render without the app chrome
   if (isBareRoute(pathname)) return null;
   return (
@@ -83,7 +84,7 @@ export function AppHeader() {
                   place a first-time visitor can reach the calculator without
                   opening the sheet first */}
               <Button asChild size="sm">
-                <Link href="/#kalkulator">{t("nav.cekTarif")}</Link>
+                <Link href={cta.href}>{t(cta.key)}</Link>
               </Button>
             </>
           )}
