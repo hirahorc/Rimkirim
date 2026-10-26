@@ -88,7 +88,11 @@ export function PhotoDeck({ className }: { className?: string }) {
                   alt=""
                   fill
                   sizes="(min-width: 1024px) 432px, 86vw"
-                  priority={i === 0}
+                  // the three cards in the pile at load are all on screen
+                  // (the two behind it peek), so none waits for lazy loading;
+                  // the top one goes first. `priority` is deprecated in Next 16
+                  loading={i < SHOWN ? "eager" : "lazy"}
+                  fetchPriority={i === 0 ? "high" : "auto"}
                   draggable={false}
                   className="object-cover"
                   style={{ objectPosition: p.position }}
