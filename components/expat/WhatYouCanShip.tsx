@@ -1,28 +1,31 @@
 "use client";
 
-import { BookOpen, CookingPot, Luggage, Package, Shirt, Sofa, Sparkles } from "lucide-react";
+import { BedDouble, BookOpen, CookingPot, Lamp, Puzzle, Shirt, Sofa } from "lucide-react";
 import { REVIEW_NOTES } from "@/lib/data/expat";
 import { useT } from "@/lib/i18n/LanguageProvider";
 import { SectionHead } from "./SectionHead";
 import { PhotoSlot } from "./PhotoSlot";
 import { ReviewNote } from "./ReviewNote";
 
-/** the brief's "common enquiries", each with the line that makes it concrete */
+/** the goods people send most, each with the line that makes it concrete;
+ *  the same names as the quote form's item chips */
 const ROWS = [
-  { icon: Package, name: "expat.items.boxes", note: "expat.ship.boxes" },
-  { icon: Luggage, name: "expat.items.suitcases", note: "expat.ship.suitcases" },
-  { icon: Shirt, name: "expat.items.clothes", note: "expat.ship.clothes" },
-  { icon: BookOpen, name: "expat.ship.books", note: "expat.ship.booksNote" },
-  { icon: CookingPot, name: "expat.items.kitchen", note: "expat.ship.kitchen" },
-  { icon: Sparkles, name: "expat.items.personal", note: "expat.ship.personal" },
+  { icon: Shirt, key: "clothes" },
+  { icon: BookOpen, key: "books" },
+  { icon: CookingPot, key: "kitchen" },
+  { icon: BedDouble, key: "bedding" },
+  { icon: Puzzle, key: "toys" },
+  { icon: Lamp, key: "personal" },
 ] as const;
 
 /**
  * Brief 03. Showing the right items lets the right visitors recognise the
- * service, and stops the wrong ones expecting a removal van. Set as a packing
- * list (hairline rows, one item each), Rimkirim's own artefact, rather than a
- * grid of cards; larger items get their own line so the screen-out reads as
- * "we check those separately", never as "no".
+ * service, and stops the wrong ones expecting a removal van. The list is the
+ * goods, never the packaging: boxes and suitcases are what the goods travel
+ * in, so they appear in the subtitle and the photo, not as rows. Set as a
+ * packing list (hairline rows, one item each), Rimkirim's own artefact,
+ * rather than a grid of cards; larger items get their own line so the
+ * screen-out reads as "we check those separately", never as "no".
  */
 export function WhatYouCanShip() {
   const t = useT();
@@ -35,12 +38,12 @@ export function WhatYouCanShip() {
             <SectionHead id="ship-heading" title={t("expat.ship.heading")} subtitle={t("expat.ship.subtitle")} />
 
             <ul className="mt-10 border-t border-border">
-              {ROWS.map(({ icon: Icon, name, note }) => (
-                <li key={name} className="flex items-start gap-4 border-b border-border py-4">
+              {ROWS.map(({ icon: Icon, key }) => (
+                <li key={key} className="flex items-start gap-4 border-b border-border py-4">
                   <Icon aria-hidden className="mt-0.5 size-5 shrink-0 text-muted" />
                   <div className="grid min-w-0 flex-1 gap-0.5 sm:grid-cols-[11rem_minmax(0,1fr)] sm:gap-6">
-                    <span className="font-medium">{t(name)}</span>
-                    <span className="text-sm text-muted">{t(note)}</span>
+                    <span className="font-medium">{t(`expat.items.${key}`)}</span>
+                    <span className="text-sm text-muted">{t(`expat.ship.${key}`)}</span>
                   </div>
                 </li>
               ))}

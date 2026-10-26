@@ -2,20 +2,23 @@ import { z } from "zod";
 
 // Validation messages are i18n keys, resolved by `t(...)` at render time.
 
-/** what an expat ships, in the order the form offers it; `large` is the one
- *  the service assesses separately rather than quoting straight away */
+/** what an expat ships, in the order the form offers it: the goods, never
+ *  the packaging. Boxes and suitcases are how the goods travel, so they live
+ *  in the quantity question, not here. `large` is the one the service
+ *  assesses separately rather than quoting straight away. */
 export const EXPAT_ITEMS = [
-  "boxes",
-  "suitcases",
   "clothes",
   "books",
   "kitchen",
+  "bedding",
+  "toys",
   "personal",
   "large",
 ] as const;
 export type ExpatItem = (typeof EXPAT_ITEMS)[number];
 
-/** rough piece counts: enough for sales to size the job, no tape measure yet */
+/** how many boxes or suitcases the goods fill: enough for sales to size the
+ *  job, no tape measure yet */
 export const EXPAT_QUANTITIES = ["1-3", "4-6", "7-10", "10+"] as const;
 export type ExpatQuantity = (typeof EXPAT_QUANTITIES)[number];
 

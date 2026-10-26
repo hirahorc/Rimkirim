@@ -126,7 +126,7 @@ export function QuoteForm({ id, className }: { id?: string; className?: string }
       `${t("expat.form.waFrom")}: ${countryName(sent.origin, locale)}`,
       `${t("expat.form.waTo")}: ${sent.city.trim()}`,
       `${t("expat.form.waItems")}: ${itemList(sent.items)}`,
-      `${t("expat.form.waQuantity")}: ${t("expat.form.waPieces").replace("{n}", rangeLabel(sent.quantity))}`,
+      `${t("expat.form.waQuantity")}: ${t("expat.form.pieces").replace("{n}", rangeLabel(sent.quantity))}`,
       `${t("expat.form.waName")}: ${sent.name.trim()}`,
     ];
     if (sent.notes.trim()) summary.push(`${t("expat.form.waNotes")}: ${sent.notes.trim()}`);
@@ -189,6 +189,7 @@ export function QuoteForm({ id, className }: { id?: string; className?: string }
             <p className="mt-1 text-xs text-muted">
               {t("expat.form.fitSummary")
                 .replace("{items}", itemList(draft.items))
+                .replace("{pieces}", t("expat.form.pieces").replace("{n}", rangeLabel(draft.quantity)))
                 .replace("{from}", countryName(draft.origin, locale))
                 .replace("{to}", draft.city.trim())}
             </p>

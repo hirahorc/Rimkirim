@@ -29,8 +29,8 @@ const FAQ: ExpatFaqSource[] = [
   {
     q: { id: "Barang apa saja yang bisa dikirim?", en: "What can I ship?" },
     a: {
-      id: "Kardus dan koper berisi barang pribadi: pakaian, sepatu, buku, peralatan dapur, dan barang sehari-hari lainnya. Koper wajib dikunci dan bisa kena biaya tambahan. Furnitur, elektronik rumah tangga, dan barang besar lainnya perlu dinilai terpisah, jadi sebutkan di permintaanmu.",
-      en: "Boxes and suitcases of personal belongings: clothes, shoes, books, kitchenware and other everyday things. Suitcases need to be locked and can carry an extra charge. Furniture, appliances and other bulky items need a separate assessment, so mention them in your enquiry.",
+      id: "Barang pribadi: pakaian dan sepatu, buku dan berkas, peralatan dapur, seprai dan handuk, mainan, dan barang sehari-hari lainnya, dikemas dalam kardus atau koper. Koper wajib dikunci dan bisa kena biaya tambahan. Furnitur, elektronik rumah tangga, dan barang yang tidak muat di kardus atau koper perlu dinilai terpisah, jadi sebutkan di permintaanmu.",
+      en: "Personal belongings: clothes and shoes, books and documents, kitchenware, bedding and linen, toys and other everyday things, packed in boxes or suitcases. Suitcases need to be locked and can carry an extra charge. Furniture, appliances and anything that won't fit in a box or suitcase need a separate assessment, so mention them in your enquiry.",
     },
   },
   {
@@ -113,7 +113,8 @@ export const EXPAT_HERO_REVIEW = {
 export interface ShipmentExample {
   /** ISO code of the origin country */
   origin: string;
-  /** what was sent, in the customer's terms, e.g. "6 boxes and 2 suitcases" */
+  /** what was sent and what it travelled in, in the customer's terms, e.g.
+   *  "clothes, books and kitchenware in 6 boxes and 2 suitcases" */
   sent: Txt;
   comment: Txt;
   customer: string;
@@ -132,7 +133,7 @@ export const REVIEW_NOTES = {
   form: "Prototype: permintaan belum terkirim ke mana pun. Putuskan tujuan lead (CRM/email) dan apakah nomor WhatsApp wajib. WA_URL di lib/contact.ts masih nomor placeholder.",
   reviews:
     "Ulasan Google asli, tapi dari WNI yang pulang, bukan expat. Brief: minta 2–3 ulasan dari expat, plus foto, screenshot ulasan, atau video singkat (dengan izin).",
-  ship: "Brief: konfirmasi daftar barang yang eligible sebelum dipublikasikan.",
+  ship: "Brief: konfirmasi daftar barang yang eligible sebelum dipublikasikan, termasuk kategori baru seprai & handuk dan mainan & perlengkapan hobi. Kardus dan koper diperlakukan sebagai kemasan, bukan jenis barang.",
   coordinate:
     "Konfirmasi pembagian tugas, terutama dokumen WNA. Konten repo bertentangan: artikel Belanda bilang fasilitas Pindahan mencakup WNA yang pindah kerja, panduan bea cukai bilang hanya WNI. Satu-satunya daftar dokumen WNA di repo: VITAS, ITAS, RPTKA.",
   pricing:

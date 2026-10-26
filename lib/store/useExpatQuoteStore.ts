@@ -3,7 +3,7 @@
 import * as React from "react";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import type { ExpatItem, ExpatQuantity } from "@/lib/schemas/expat-quote";
+import { EXPAT_ITEMS, type ExpatItem, type ExpatQuantity } from "@/lib/schemas/expat-quote";
 
 export interface ExpatQuoteDraft {
   origin: string;
@@ -73,6 +73,16 @@ export const useExpatQuoteStore = create<ExpatQuoteState>()(
     {
       name: "rimkirim:expat-quote",
       partialize: (s) => ({ draft: s.draft, step: s.step }),
+      // a saved draft can hold item ids the form no longer offers (boxes and
+      // suitcases were once items); drop them, or they would fail validation
+      // behind a chip the visitor can no longer untick
+      merge: (persisted, current) => {
+        const saved = (persisted ?? {}) as Partial<Pick<ExpatQuoteState, "draft" | "step">>;
+        const draft = { ...current.draft, ...saved.draft };
+        const known = new Set<string>(EXPAT_ITEMS);
+        draft.items = (draft.items ?? []).filter((i) => known.has(i));
+        return { ...current, ...saved, draft };
+      },
       skipHydration: true,
     },
   ),

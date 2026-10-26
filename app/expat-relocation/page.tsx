@@ -15,7 +15,7 @@ import { expatFaq } from "@/lib/data/expat";
 // ROUTE_LOCALE), so search engines and link previews read it in English too
 const TITLE = "Ship your belongings to Indonesia · Expat Relocation · Rimkirim";
 const DESCRIPTION =
-  "Moving to Indonesia? Ship boxes, suitcases and personal belongings by air. Rimkirim coordinates the pickup, the customs paperwork and the delivery. Get a quote.";
+  "Moving to Indonesia? Send your personal belongings by air, packed in boxes or suitcases. Rimkirim coordinates the pickup, the customs paperwork and the delivery. Get a quote.";
 
 export const metadata: Metadata = {
   title: TITLE,
@@ -43,9 +43,9 @@ function faqJsonLd() {
 /**
  * Expat relocation landing, built from the agency's CRO brief (sections 01 to
  * 09, in its order): a visitor from a search should know at once that this
- * ships boxes and suitcases to Indonesia, see who vouches for it, what fits,
- * who does what, what drives the price and how it runs, and find the quote
- * form at both ends of the page.
+ * ships personal belongings to Indonesia, packed in boxes and suitcases, see
+ * who vouches for it, what fits, who does what, what drives the price and how
+ * it runs, and find the quote form at both ends of the page.
  */
 export default function ExpatRelocationPage() {
   return (
