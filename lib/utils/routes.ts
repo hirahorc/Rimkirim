@@ -22,3 +22,13 @@ export function isBareRoute(pathname: string): boolean {
 export function isOrderFlowRoute(pathname: string): boolean {
   return pathname === "/pesan" || pathname.startsWith("/pesan/");
 }
+
+/**
+ * The expat relocation landing. It wears its own chrome (ExpatHeader /
+ * ExpatFooter): no site menu, no sign-in, because expat orders run over
+ * WhatsApp rather than through the account system, and the only way back to
+ * the main site is the footer's service links.
+ */
+export function isExpatRoute(pathname: string): boolean {
+  return pathname === "/expat-relocation" || pathname.startsWith("/expat-relocation/");
+}

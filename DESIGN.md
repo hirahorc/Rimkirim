@@ -777,6 +777,18 @@ track it sits in, never lime. On a Panel-2 track (segmented control, tabs, langu
 active item is white and lifts with `shadow-float`; inside the translucent white header capsule
 the active link is a Panel-2 pill instead. Same principle, inverted fill.
 
+**The expat landing wears its own chrome.** `/expat-relocation` swaps the capsule and the site
+footer for `ExpatHeader` / `ExpatFooter` (`isExpatRoute`), after the live rimkirim.com/relocation
+page: a plain full-width sticky bar (`bg-background/95`, hairline below; at the capsule's /85 the
+content ghosted through a bar this wide) holding the wordmark, a hairline divider and the service
+name in the `.nav-expat` gradient, the language toggle (`sm` and up) and one lime "Get a quote"
+that jumps to the form. No site menu, no sign-in, no bell: expat orders run over WhatsApp, not the
+account system. The logo stays on the page, so the only door back to the main site is the footer's
+two service links (Back For Good, Moving Abroad); the footer also carries contacts, legal and the
+language toggle that phones lose from the bar. Under 380px the divider and name drop out, because
+beside the Indonesian button ("Minta penawaran") they would clip; the hero eyebrow names the
+service right below.
+
 ### Segmented control (signature)
 - A **`rounded-full`** Panel-2 track with a 1px border and `p-1`; the items are `rounded-full` too,
   so a pill item sits concentrically inside a pill track (item radius = track radius − padding) and

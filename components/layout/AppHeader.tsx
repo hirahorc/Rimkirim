@@ -12,8 +12,9 @@ import { Button } from "@/components/ui/button";
 import { useCurrentUser } from "@/lib/store/useAuthStore";
 import { useLoginModal } from "@/lib/store/useLoginModal";
 import { useT } from "@/lib/i18n/LanguageProvider";
-import { isBareRoute } from "@/lib/utils/routes";
-import { NAV_LINKS, headerCta } from "@/lib/nav-links";
+import { isBareRoute, isExpatRoute } from "@/lib/utils/routes";
+import { ExpatHeader } from "./ExpatHeader";
+import { NAV_LINKS } from "@/lib/nav-links";
 import { cn } from "@/lib/utils/cn";
 
 export function AppHeader() {
@@ -21,9 +22,10 @@ export function AppHeader() {
   const pathname = usePathname();
   const user = useCurrentUser();
   const openLogin = useLoginModal((s) => s.openModal);
-  const cta = headerCta(pathname);
   // standalone pages (legal docs) render without the app chrome
   if (isBareRoute(pathname)) return null;
+  // the expat landing has its own bar: no menu, no sign-in (orders go to WA)
+  if (isExpatRoute(pathname)) return <ExpatHeader />;
   return (
     <header className="reveal-down sticky top-0 z-40 px-3 pb-1 pt-3 sm:px-6">
       {/* a capsule that floats clear of the page edge; the page scrolls behind
@@ -84,7 +86,7 @@ export function AppHeader() {
                   place a first-time visitor can reach the calculator without
                   opening the sheet first */}
               <Button asChild size="sm">
-                <Link href={cta.href}>{t(cta.key)}</Link>
+                <Link href="/#kalkulator">{t("nav.cekTarif")}</Link>
               </Button>
             </>
           )}

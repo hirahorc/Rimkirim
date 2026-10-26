@@ -5,7 +5,8 @@ import { usePathname } from "next/navigation";
 import { Logo } from "./Logo";
 import { SocialLinks } from "./SocialLinks";
 import { useT } from "@/lib/i18n/LanguageProvider";
-import { isBareRoute, isOrderFlowRoute } from "@/lib/utils/routes";
+import { isBareRoute, isExpatRoute, isOrderFlowRoute } from "@/lib/utils/routes";
+import { ExpatFooter } from "./ExpatFooter";
 import { WA_URL } from "@/lib/contact";
 
 export function AppFooter() {
@@ -14,6 +15,7 @@ export function AppFooter() {
   // the customer order flow (/pesan/*) has its own focused shell — no footer;
   // legal docs render bare so they can drop into other landing services
   if (isOrderFlowRoute(pathname) || isBareRoute(pathname)) return null;
+  if (isExpatRoute(pathname)) return <ExpatFooter />;
   return (
     <footer className="border-t border-border bg-background">
       <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6">

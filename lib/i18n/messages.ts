@@ -94,6 +94,12 @@ const id = {
   },
   expat: {
     headerCta: "Minta penawaran",
+    headerHome: "Expat Relocation, kembali ke atas",
+    footer: {
+      tagline: "Kirim barang pribadimu ke Indonesia, untuk kamu yang pindah ke sini.",
+      contacts: "Kontak",
+      legal: "Legal",
+    },
     hero: {
       eyebrow: "Relokasi expat & WNA ke Indonesia",
       title1: "Pindah ke Indonesia?",
@@ -1753,6 +1759,12 @@ const en: Messages = {
   },
   expat: {
     headerCta: "Get a quote",
+    headerHome: "Expat Relocation, back to top",
+    footer: {
+      tagline: "Shipping personal belongings to Indonesia, for people moving here.",
+      contacts: "Contacts",
+      legal: "Legal",
+    },
     hero: {
       eyebrow: "Expat relocation to Indonesia",
       title1: "Moving to Indonesia?",

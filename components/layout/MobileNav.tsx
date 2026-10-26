@@ -12,14 +12,13 @@ import { IconPillButton } from "@/components/ui/icon-pill-button";
 import { useAuthStore, useCurrentUser } from "@/lib/store/useAuthStore";
 import { useLoginModal } from "@/lib/store/useLoginModal";
 import { useT } from "@/lib/i18n/LanguageProvider";
-import { NAV_LINKS, headerCta } from "@/lib/nav-links";
+import { NAV_LINKS } from "@/lib/nav-links";
 import { cn } from "@/lib/utils/cn";
 
 /** Mobile-only hamburger that opens a right slide-over sheet with the nav. */
 export function MobileNav() {
   const t = useT();
   const pathname = usePathname();
-  const cta = headerCta(pathname);
   const router = useRouter();
   const user = useCurrentUser();
   const logOut = useAuthStore((s) => s.logOut);
@@ -149,8 +148,8 @@ export function MobileNav() {
                   {t("nav.masuk")}
                 </Button>
                 <Button asChild className="w-full">
-                  <Link href={cta.href} onClick={close}>
-                    {t(cta.key)}
+                  <Link href="/#kalkulator" onClick={close}>
+                    {t("nav.cekTarif")}
                   </Link>
                 </Button>
               </>
