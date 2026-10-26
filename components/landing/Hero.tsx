@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { ShieldCheck, DoorOpen, Truck } from "lucide-react";
+import { ShieldCheck, DoorOpen, Truck, ArrowDown } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useT } from "@/lib/i18n/LanguageProvider";
 import { testimonialAnchor } from "@/lib/data/testimonials";
@@ -180,6 +180,15 @@ export function Hero() {
             <Truck className="size-4 text-foreground" /> {t("hero.trustPickup")}
           </span>
         </div>
+        {/* the calculator right below is the primary step, so this stays
+            quiet: for the visitor who wants to know what they're signing up
+            for before they type anything */}
+        <a
+          href="#cara-kerja"
+          className="mt-6 inline-flex items-center gap-1.5 rounded-md px-2 py-1 font-display text-sm font-medium text-foreground underline decoration-border-strong underline-offset-4 transition-colors hover:decoration-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/40 sm:mt-7"
+        >
+          {t("hero.ctaHow")} <ArrowDown className="size-4" />
+        </a>
         </div>
       </div>
     </section>

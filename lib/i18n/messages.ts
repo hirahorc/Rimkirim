@@ -167,7 +167,8 @@ const id = {
     titleLine: "Pulang atau pindah,",
     titleHighlight: "tanpa drama.",
     subtitle:
-      "Rimkirim bantu kamu kirim barang lintas negara: dari luar negeri pulang ke Indonesia, atau dari Indonesia ke seluruh dunia.",
+      "Lihat harga lengkapnya di depan, pesan online, dan serahkan bea cukainya ke kami. Dari luar negeri pulang ke Indonesia, atau dari Indonesia ke seluruh dunia.",
+    ctaHow: "Lihat cara kerjanya",
     trustClearance: "Clearance ditangani penuh",
     trustDoorToDoor: "Door to door",
     trustPickup: "Pickup gratis",
@@ -193,6 +194,7 @@ const id = {
     maTo: "Luar Negeri",
     maBody:
       "Pindah ke luar negeri untuk kerja, studi, atau menetap? Kirim barang personal maupun household goods dengan penanganan yang pasti.",
+    cta: "Hitung tarif rute ini",
   },
   carrier: {
     eyebrow: "Dikirim bersama partner kurir tepercaya",
@@ -212,6 +214,7 @@ const id = {
     ratingLinkLabel: "lihat semua ulasan di Google",
     stripLabel: "ulasan pelanggan, geser untuk lihat lainnya",
     slideLabel: "Ulasan",
+    moves: "{n}+ kepindahan sejak {year}",
     origins: {
       bristol: "Bristol",
       adelaide: "Adelaide",
@@ -233,14 +236,63 @@ const id = {
     heading: "Kenapa Rimkirim",
     subtitle:
       "Empat hal yang bikin kamu nggak perlu ngurus kepindahan ini sendirian.",
-    r1Title: "Aman & terpercaya",
-    r1Body: "Barangmu ditangani dengan standar internasional dan asuransi opsional.",
-    r2Title: "Clearance beres",
-    r2Body: "Urusan bea cukai dan dokumen kami tangani penuh, kamu tinggal terima.",
-    r3Title: "Asisten yang hadir",
-    r3Body: "Tim kami mendampingi lewat WhatsApp dari awal sampai barang tiba.",
-    r4Title: "Harga transparan",
-    r4Body: "Breakdown tarif jelas: base rate, chargeable weight, sampai surcharge.",
+    r1Title: "Jalur bea cukai dipilihkan",
+    r1Body:
+      "Kami nilai kelayakanmu, pilih jalur yang tepat (Personal Belongings atau Passenger Goods), lalu urus sampai beres. Kamu tidak menyentuh dokumen.",
+    r2Title: "Harga dibuka di depan",
+    r2Body:
+      "Base rate, chargeable weight, dan surcharge terlihat sebelum kamu pesan, berdampingan antar kurir.",
+    r3Title: "Isi kiriman terdata",
+    r3Body:
+      "Barangmu dicatat dengan kode Rimkirim Packing List, jadi yang diperiksa bea cukai sama dengan yang kamu kemas.",
+    r4Title: "Tetap ada manusianya",
+    r4Body: "Tim kami mendampingi lewat WhatsApp dari awal sampai barang tiba.",
+  },
+  how: {
+    eyebrow: "Cara kerjanya",
+    heading: "Dari cek tarif sampai barang di rumah, semua di sini.",
+    subtitle:
+      "Tidak perlu chat bolak-balik untuk mulai. Order bisa kamu isi sedikit demi sedikit, draft-nya tersimpan.",
+    s1Title: "Cek tarif",
+    s1Body: "Pilih rute dan perkiraan berat. Harga keluar saat itu juga, lengkap dengan rinciannya.",
+    s2Title: "Isi order online",
+    s2Body:
+      "Data diri, daftar barang, dan alamat pickup. Untuk Back For Good, beberapa pertanyaan singkat menentukan jalur bea cukaimu.",
+    s3Title: "Setujui quotation",
+    s3Body: "Tim kami cek order-mu lalu kirim quotation resmi. Barang baru dijemput setelah kamu setuju.",
+    s4Title: "Pickup & clearance",
+    s4Body: "Kurir menjemput di alamatmu. Dokumen dan bea cukai kami yang urus.",
+    s5Title: "Lacak sampai tiba",
+    s5Body: "Status kiriman ter-update di akunmu, dari pickup sampai barang sampai rumah.",
+    cta: "Mulai dari cek tarif",
+    durationsTitle: "Rata-rata door to door",
+    durationDays: "{min}–{max} hari",
+  },
+  proof: {
+    eyebrow: "Contoh hitungan",
+    heading: "Ini yang kamu lihat sebelum pesan.",
+    subtitle:
+      "Rute {from} ke Indonesia, {boxes} kardus. Angka dihitung dari tarif yang sama dengan kalkulator di atas.",
+    chargeable: "Chargeable weight",
+    chargeableHint: "Yang lebih besar antara berat aktual ({actual} kg) dan volumetrik ({vol} kg).",
+    base: "Tarif dasar",
+    surcharge: "Surcharge",
+    noSurcharge: "Tanpa surcharge",
+    total: "Estimasi total",
+    via: "via {carrier}",
+    note: "Contoh, bukan penawaran. Angka resmi ada di quotation setelah order kamu dicek.",
+    cta: "Hitung kirimanmu",
+  },
+  landingFaq: {
+    heading: "Yang biasanya ditanyakan dulu",
+    more: "Lihat semua pertanyaan",
+    wa: "Masih ada yang mengganjal? Tanya kami di WhatsApp",
+  },
+  closing: {
+    heading: "Tahu harganya dulu, baru putuskan.",
+    body: "Pilih rute dan perkiraan berat, harga lengkap keluar saat itu juga. Order bisa kamu lanjutkan kapan saja.",
+    cta: "Cek tarif sekarang",
+    wa: "Masih ragu? Tanya tim kami di WhatsApp",
   },
   footer: {
     tagline: "International Moving Assistant",
@@ -1600,7 +1652,8 @@ const en: Messages = {
     titleLine: "Move home or abroad,",
     titleHighlight: "drama-free.",
     subtitle:
-      "Rimkirim helps you ship across borders: from overseas back home to Indonesia, or from Indonesia to the rest of the world.",
+      "See the full price up front, book online, and leave customs to us. From abroad back home to Indonesia, or from Indonesia to anywhere in the world.",
+    ctaHow: "See how it works",
     trustClearance: "Full clearance handling",
     trustDoorToDoor: "Door to door",
     trustPickup: "Free pickup",
@@ -1623,6 +1676,7 @@ const en: Messages = {
     maTo: "Overseas",
     maBody:
       "Relocating abroad for work, study, or to settle down? Ship personal items or household goods with dependable handling.",
+    cta: "Price this route",
   },
   carrier: {
     eyebrow: "Shipped with trusted carrier partners",
@@ -1642,6 +1696,7 @@ const en: Messages = {
     ratingLinkLabel: "see all reviews on Google",
     stripLabel: "customer reviews, swipe for more",
     slideLabel: "Review",
+    moves: "{n}+ moves since {year}",
     origins: {
       bristol: "Bristol",
       adelaide: "Adelaide",
@@ -1662,14 +1717,63 @@ const en: Messages = {
   why: {
     heading: "Why Rimkirim",
     subtitle: "Four reasons you won't be handling this move on your own.",
-    r1Title: "Safe & trusted",
-    r1Body: "Your goods are handled to international standards, with optional insurance.",
-    r2Title: "Clearance sorted",
-    r2Body: "We fully handle customs and paperwork. You just receive your goods.",
-    r3Title: "An assistant who's present",
-    r3Body: "Our team supports you via WhatsApp from start until your goods arrive.",
-    r4Title: "Transparent pricing",
-    r4Body: "A clear rate breakdown: base rate, chargeable weight, down to surcharges.",
+    r1Title: "Your customs route, chosen for you",
+    r1Body:
+      "We assess your eligibility, pick the right route (Personal Belongings or Passenger Goods), and see it through. You never touch the paperwork.",
+    r2Title: "The price, up front",
+    r2Body:
+      "Base rate, chargeable weight, and surcharges are visible before you book, side by side across carriers.",
+    r3Title: "Every item on record",
+    r3Body:
+      "Your goods are logged under a Rimkirim Packing List code, so what customs checks is exactly what you packed.",
+    r4Title: "Real people, still",
+    r4Body: "Our team supports you via WhatsApp from start until your goods arrive.",
+  },
+  how: {
+    eyebrow: "How it works",
+    heading: "From price check to your front door, all in one place.",
+    subtitle:
+      "No back-and-forth chat to get started. Fill in your order bit by bit; your draft is saved.",
+    s1Title: "Check the rate",
+    s1Body: "Pick your route and a rough weight. The price shows up right away, fully itemised.",
+    s2Title: "Fill in your order online",
+    s2Body:
+      "Your details, your items, and a pickup address. For Back For Good, a few quick questions decide your customs route.",
+    s3Title: "Approve the quotation",
+    s3Body: "Our team checks your order and sends an official quotation. Nothing is picked up until you approve.",
+    s4Title: "Pickup & clearance",
+    s4Body: "The courier collects from your address. We handle the paperwork and customs.",
+    s5Title: "Track it home",
+    s5Body: "Your shipment status updates in your account, from pickup until it reaches your door.",
+    cta: "Start with a rate check",
+    durationsTitle: "Average door to door",
+    durationDays: "{min}–{max} days",
+  },
+  proof: {
+    eyebrow: "A worked example",
+    heading: "This is what you see before you book.",
+    subtitle:
+      "{from} to Indonesia, {boxes} boxes. Priced from the same rates as the calculator above.",
+    chargeable: "Chargeable weight",
+    chargeableHint: "The larger of the actual weight ({actual} kg) and the volumetric weight ({vol} kg).",
+    base: "Base rate",
+    surcharge: "Surcharge",
+    noSurcharge: "No surcharge",
+    total: "Estimated total",
+    via: "via {carrier}",
+    note: "An example, not an offer. The official figure is on your quotation once we've checked your order.",
+    cta: "Price your shipment",
+  },
+  landingFaq: {
+    heading: "What people usually ask first",
+    more: "See all questions",
+    wa: "Still unsure about something? Ask us on WhatsApp",
+  },
+  closing: {
+    heading: "Know the price first, then decide.",
+    body: "Pick your route and a rough weight, and the full price shows up right away. You can finish your order whenever you're ready.",
+    cta: "Check rates now",
+    wa: "Not sure yet? Ask our team on WhatsApp",
   },
   footer: {
     tagline: "International Moving Assistant",

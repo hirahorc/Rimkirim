@@ -6,16 +6,58 @@ import {
   ShieldCheck,
   Headset,
   FileCheck2,
-  Package,
+  PackageCheck,
+  ArrowRight,
 } from "lucide-react";
-import { Card } from "@/components/ui/card";
 import { RouteArrow } from "@/components/ui/route-arrow";
 import {
   StackingCards,
   STACK_SKINS,
   STACK_MARK_INDEX,
 } from "@/components/landing/StackingCards";
+import { selectCalculatorService } from "@/components/landing/ShipmentCalculator";
 import { useT } from "@/lib/i18n/LanguageProvider";
+
+/** a whole service card is one button: it flips the calculator to its direction */
+function ServiceCard({
+  icon: Icon,
+  title,
+  from,
+  to,
+  body,
+  onSelect,
+}: {
+  icon: React.ComponentType<{ className?: string }>;
+  title: string;
+  from: string;
+  to: string;
+  body: string;
+  onSelect: () => void;
+}) {
+  const t = useT();
+  return (
+    <button
+      type="button"
+      onClick={onSelect}
+      className="group flex flex-col rounded-lg border border-border bg-surface px-6 py-7 text-left transition-[border-color,transform] duration-200 hover:border-border-strong motion-safe:active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/40"
+    >
+      <span className="grid size-11 place-items-center rounded-md bg-surface-3 text-foreground">
+        <Icon className="size-5" />
+      </span>
+      <h3 className="mt-4 font-display text-xl font-semibold tracking-tight">{title}</h3>
+      <p className="mt-1 inline-flex items-center gap-1.5 text-sm text-foreground">
+        {from}
+        <RouteArrow />
+        {to}
+      </p>
+      <p className="mt-3 text-sm text-muted">{body}</p>
+      <span className="mt-6 inline-flex items-center gap-1.5 font-display text-sm font-medium text-foreground">
+        {t("service.cta")}
+        <ArrowRight className="size-4" />
+      </span>
+    </button>
+  );
+}
 
 export function ServiceSection() {
   const t = useT();
@@ -28,37 +70,22 @@ export function ServiceSection() {
         <p className="mx-auto mt-3 max-w-xl text-muted">{t("service.subtitle")}</p>
       </div>
       <div className="grid gap-5 md:grid-cols-2">
-        {/* marketing cards keep the generous lg corner (Card default is md) */}
-        <Card className="relative overflow-hidden rounded-lg px-6 py-7">
-          <div className="relative">
-            <span className="grid size-11 place-items-center rounded-md bg-surface-3 text-foreground">
-              <Home className="size-5" />
-            </span>
-            <h3 className="mt-4 font-display text-xl font-semibold tracking-tight">
-              {t("service.bfgTitle")}
-            </h3>
-            <p className="mt-1 inline-flex items-center gap-1.5 text-sm text-foreground">
-              {t("service.bfgFrom")}
-              <RouteArrow />
-              {t("service.bfgTo")}
-            </p>
-            <p className="mt-3 text-sm text-muted">{t("service.bfgBody")}</p>
-          </div>
-        </Card>
-        <Card className="rounded-lg px-6 py-7">
-          <span className="grid size-11 place-items-center rounded-md bg-surface-3 text-foreground">
-            <Plane className="size-5" />
-          </span>
-          <h3 className="mt-4 font-display text-xl font-semibold tracking-tight">
-            {t("service.maTitle")}
-          </h3>
-          <p className="mt-1 inline-flex items-center gap-1.5 text-sm text-muted">
-            {t("service.maFrom")}
-            <RouteArrow />
-            {t("service.maTo")}
-          </p>
-          <p className="mt-3 text-sm text-muted">{t("service.maBody")}</p>
-        </Card>
+        <ServiceCard
+          icon={Home}
+          title={t("service.bfgTitle")}
+          from={t("service.bfgFrom")}
+          to={t("service.bfgTo")}
+          body={t("service.bfgBody")}
+          onSelect={() => selectCalculatorService("bfg")}
+        />
+        <ServiceCard
+          icon={Plane}
+          title={t("service.maTitle")}
+          from={t("service.maFrom")}
+          to={t("service.maTo")}
+          body={t("service.maBody")}
+          onSelect={() => selectCalculatorService("moving-abroad")}
+        />
       </div>
     </section>
   );
@@ -70,7 +97,7 @@ export function WhySection() {
     { icon: ShieldCheck, title: t("why.r1Title"), body: t("why.r1Body") },
     { icon: FileCheck2, title: t("why.r2Title"), body: t("why.r2Body") },
     { icon: Headset, title: t("why.r3Title"), body: t("why.r3Body") },
-    { icon: Package, title: t("why.r4Title"), body: t("why.r4Body") },
+    { icon: PackageCheck, title: t("why.r4Title"), body: t("why.r4Body") },
   ];
   return (
     <section id="kenapa" className="border-t border-border bg-surface/40">

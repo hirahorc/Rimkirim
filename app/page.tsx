@@ -6,6 +6,9 @@ import { TestimonialSection } from "@/components/landing/TestimonialSection";
 import { CarrierSection } from "@/components/landing/CarrierSection";
 import { FaqTeaser } from "@/components/landing/FaqTeaser";
 import { CookieConsent } from "@/components/landing/CookieConsent";
+import { HowItWorks } from "@/components/landing/HowItWorks";
+import { PriceProof } from "@/components/landing/PriceProof";
+import { ClosingCta } from "@/components/landing/ClosingCta";
 import { GuideSpotlight } from "@/components/landing/GuideSpotlight";
 import { getAllArticles } from "@/lib/articles";
 
@@ -34,12 +37,17 @@ export default function Home() {
           <ShipmentCalculator />
         </div>
       </section>
-      <ServiceSection />
-      <WhySection />
+      {/* cold → hot: what happens, what it costs, who vouches for it, why us,
+          which direction, the doubts, then one last way in */}
+      <HowItWorks />
+      <PriceProof />
       <TestimonialSection />
+      <WhySection />
+      <ServiceSection />
       <CarrierSection />
-      <GuideSpotlight articles={guides} />
       <FaqTeaser />
+      <GuideSpotlight articles={guides} />
+      <ClosingCta />
       <CookieConsent />
     </>
   );

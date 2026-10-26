@@ -14,13 +14,14 @@ import {
   testimonialAnchor,
   type Testimonial,
 } from "@/lib/data/testimonials";
+import { PROOF } from "@/lib/data/proof";
 
 /**
  * Google Reviews social proof. Quotes render verbatim (see lib/data/testimonials).
  * Stars are monochrome ink, not gold — the One-Voice system keeps lime for the
  * primary CTA, and a rating is carried by weight, not a second accent colour.
  */
-function Stars({
+export function Stars({
   value,
   starClass = "size-3.5",
 }: {
@@ -68,7 +69,7 @@ function Stars({
  * shorter overlap), so the visible text is byte-for-byte the verbatim quote —
  * only presentation changes.
  */
-function highlightQuote(quote: string, highlights?: string[]) {
+export function highlightQuote(quote: string, highlights?: string[]) {
   if (!highlights?.length) return quote;
   const ordered = [...highlights].sort((a, b) => b.length - a.length);
   const pattern = ordered
@@ -243,6 +244,14 @@ export function TestimonialSection() {
             <span className="text-sm text-muted">{t("testimonial.ratingLabel")}</span>
             <ArrowUpRight className="size-4 text-muted-2 motion-safe:transition-transform motion-safe:group-hover:-translate-y-px motion-safe:group-hover:translate-x-px motion-reduce:transition-colors motion-reduce:group-hover:text-foreground" />
           </a>
+          {/* lib/data/proof.ts: absent until the number is confirmed */}
+          {PROOF.movesCompleted && PROOF.since && (
+            <p className="mt-2 text-sm text-muted">
+              {t("testimonial.moves")
+                .replace("{n}", PROOF.movesCompleted.toLocaleString("id-ID"))
+                .replace("{year}", String(PROOF.since))}
+            </p>
+          )}
         </div>
 
         {/* sm+: the hook sits full-width above the masonry */}

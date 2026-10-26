@@ -54,6 +54,18 @@ const emptyPackage = {
   nonStackable: false,
 } as unknown as PackageField;
 
+/**
+ * Landing sections outside the form (the two service cards) pick a direction
+ * through this event instead of a URL, so the calculator keeps whatever the
+ * visitor already typed and only the direction flips.
+ */
+const SERVICE_EVENT = "rimkirim:calc-service";
+
+export function selectCalculatorService(service: CalculatorValues["service"]) {
+  window.dispatchEvent(new CustomEvent(SERVICE_EVENT, { detail: service }));
+  document.getElementById("kalkulator")?.scrollIntoView({ block: "start" });
+}
+
 export function ShipmentCalculator() {
   const router = useRouter();
   const t = useT();
@@ -125,6 +137,17 @@ export function ShipmentCalculator() {
     commit(next);
   };
 
+  // an effect event, so the listener always sees the current `service`
+  const onServiceEvent = React.useEffectEvent((e: Event) => {
+    const next = (e as CustomEvent<CalculatorValues["service"]>).detail;
+    handleServiceChange(next, (v) => setValue("service", v));
+  });
+  React.useEffect(() => {
+    const onSelect = (e: Event) => onServiceEvent(e);
+    window.addEventListener(SERVICE_EVENT, onSelect);
+    return () => window.removeEventListener(SERVICE_EVENT, onSelect);
+  }, []);
+
   // ensure Advance mode has at least one package row
   React.useEffect(() => {
     if (mode === "advance" && fields.length === 0) {
@@ -159,7 +182,7 @@ export function ShipmentCalculator() {
       <form
         onSubmit={handleSubmit(onSubmit, onInvalid)}
         id="kalkulator"
-        className="relative overflow-hidden rounded-md border border-border-strong bg-surface/90 shadow-overlay backdrop-blur"
+        className="relative scroll-mt-24 overflow-hidden rounded-md border border-border-strong bg-surface/90 shadow-overlay backdrop-blur"
       >
         <h2 className="sr-only">{t("calc.srHeading")}</h2>
 

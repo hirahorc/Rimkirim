@@ -145,8 +145,8 @@ const SOURCE: FaqTabSource[] = [
               en: "How do I book a shipment?",
             },
             a: {
-              id: "Hubungi customer support dan selesaikan booking minimal 3 hari sebelum tanggal jemput.",
-              en: "Contact customer support and complete your booking at least 3 days before the pickup date.",
+              id: "Langsung di website: cek tarif, pilih kurir, lalu isi order sampai jadwal pickup. Selesaikan minimal 3 hari sebelum tanggal jemput.",
+              en: "Right here on the website: check rates, pick a carrier, then fill in your order through to the pickup date. Finish at least 3 days before your pickup.",
             },
           },
           {
@@ -721,8 +721,8 @@ const SOURCE: FaqTabSource[] = [
               en: "How do I book an export shipment?",
             },
             a: {
-              id: "Hubungi customer support dan selesaikan booking minimal 3 hari sebelum tanggal jemput.",
-              en: "Contact customer support and complete your booking at least 3 days before the pickup date.",
+              id: "Langsung di website: cek tarif, pilih kurir, lalu isi order sampai jadwal pickup. Selesaikan minimal 3 hari sebelum tanggal jemput.",
+              en: "Right here on the website: check rates, pick a carrier, then fill in your order through to the pickup date. Finish at least 3 days before your pickup.",
             },
           },
           {

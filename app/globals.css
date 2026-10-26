@@ -635,6 +635,62 @@ body:has(main > [data-field]) {
       animation-timeline: view();
       animation-range: entry 0% entry 45%;
     }
+
+    /* How it works: the same rise, plus the hairline above each step drawing
+       left to right. Purpose is explanation: it is a sequence, so it arrives
+       as one. Each step owns a named timeline and its rail + body ride it as
+       two layers (the li itself never moves, so its own timeline is never
+       measured off a transformed box). `cover` rather than `entry`: a step is
+       only ~180px tall, and entry would finish the draw before the eye gets
+       there. The range shift by --i only matters where the five sit on one
+       row (lg); stacked, each step enters on its own and needs no offset. */
+    @keyframes how-rail-draw {
+      from { transform: scaleX(0); }
+      to { transform: scaleX(1); }
+    }
+    .how-step {
+      view-timeline-name: --how-step;
+      --how-shift: 0%;
+    }
+    .how-step-rail {
+      transform-origin: left center;
+      animation: how-rail-draw linear both;
+      animation-timeline: --how-step;
+      animation-range: cover calc(0% + var(--how-shift)) cover calc(20% + var(--how-shift));
+    }
+    .how-step-body {
+      animation: testi-rise linear both;
+      animation-timeline: --how-step;
+      animation-range: cover calc(5% + var(--how-shift)) cover calc(25% + var(--how-shift));
+    }
+    @media (min-width: 64rem) {
+      .how-step {
+        --how-shift: calc(var(--i, 0) * 3%);
+      }
+    }
+
+    /* Worked example: the rows arrive in the order the sum is built (weight,
+       base, surcharge, total), all on the card's one timeline so they stay
+       in step with each other. A 6px lift, smaller than a card's 10px, since
+       these are lines of text, not objects. */
+    @keyframes proof-row-in {
+      from {
+        opacity: 0;
+        transform: translateY(6px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    .proof-card {
+      view-timeline-name: --proof-card;
+    }
+    .proof-row {
+      animation: proof-row-in linear both;
+      animation-timeline: --proof-card;
+      animation-range: cover calc(5% + var(--i, 0) * 5%) cover calc(25% + var(--i, 0) * 5%);
+    }
   }
 }
 

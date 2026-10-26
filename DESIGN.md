@@ -476,6 +476,18 @@ one as drift.
   10px across `entry 0% → entry 45%`, so cards arrive as they enter rather than all at once on
   load. Same guards as the settle — `@supports (animation-timeline: view())` plus
   `prefers-reduced-motion: no-preference`.
+  The rise has two sanctioned relatives, both *explanation*, both on the same guards and the same
+  `view()` machinery, and neither licenses a third:
+  - **The step rail** (`.how-step`, landing "Cara kerjanya"): the hairline above each step draws
+    left→right (`scaleX`, origin left) and the step's text rises 10px under it, on the step's own
+    named timeline across `cover 0–25%`. On one row (`lg`) the range shifts 3% per step so 01→05
+    arrive in the order they happen; stacked, each step enters on its own and needs no offset.
+    Tuned so the last step is fully drawn before its row reaches mid-screen: text being read is
+    never half-faded.
+  - **The sum build** (`.proof-row`, landing worked example): the example quotation's rows lift
+    6px (lines of text, not objects, so less than a card's 10px) on the card's one timeline,
+    staggered 5% apart in the order the sum is built: chargeable weight, base, surcharge, total.
+  Without support or under reduced motion both are simply static: the hairline is already drawn.
 - **The disclosure open** (`Disclosure` in `components/ui` — the one accordion idiom, shared by
   the /faq page and the article FAQs so they cannot drift; its controlled sibling
   `CollapseHeight` carries the identical motion to every state-driven collapsible — the package
