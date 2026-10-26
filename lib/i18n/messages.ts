@@ -134,7 +134,10 @@ const id = {
       personal: "Dekorasi dan barang kecil yang bikin rumah terasa rumah",
       largeTitle: "Ada barang besar?",
       largeBody:
-        "Furnitur, elektronik rumah tangga, atau barang yang tidak muat di kardus atau koper perlu dinilai terpisah; tim kami mengeceknya bersamamu lewat WhatsApp.",
+        "Furnitur, elektronik rumah tangga, atau barang yang tidak muat di kardus atau koper perlu dinilai terpisah sebelum kami bisa memberi harga.",
+      largeCta: "Tanya soal barang besar di WhatsApp",
+      largeWa:
+        "Halo Rimkirim, saya pindah ke Indonesia dan punya beberapa barang besar yang mau dikirim, seperti furnitur atau elektronik rumah tangga. Bisa dicek bersama? Saya bisa kirim foto dan perkiraan ukurannya.",
       banned: "Beberapa barang tidak bisa dikirim, seperti alkohol, vape, uang tunai, dan tanaman.",
       bannedLink: "Lihat daftar lengkapnya",
     },
@@ -1762,7 +1765,10 @@ const en: Messages = {
       personal: "Decor and the small things that make a home",
       largeTitle: "Larger items?",
       largeBody:
-        "Furniture, appliances or anything that won't fit in a box or suitcase needs a separate assessment; our team checks it with you on WhatsApp.",
+        "Furniture, appliances or anything that won't fit in a box or suitcase needs a separate assessment before we can quote it.",
+      largeCta: "Ask about larger items on WhatsApp",
+      largeWa:
+        "Hi Rimkirim, I'm moving to Indonesia and have some larger items to ship, like furniture or appliances. Could you check them with me? I can send photos and rough sizes.",
       banned: "Some things can't be shipped, like alcohol, vapes, cash and plants.",
       bannedLink: "See the full list",
     },

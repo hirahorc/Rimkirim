@@ -1,7 +1,8 @@
 "use client";
 
-import { BedDouble, BookOpen, CookingPot, Lamp, Puzzle, Shirt, Sofa } from "lucide-react";
+import { BedDouble, BookOpen, CookingPot, Lamp, MessageCircle, Puzzle, Shirt, Sofa } from "lucide-react";
 import { REVIEW_NOTES } from "@/lib/data/expat";
+import { waLink } from "@/lib/contact";
 import { useT } from "@/lib/i18n/LanguageProvider";
 import { SectionHead } from "./SectionHead";
 import { PhotoSlot } from "./PhotoSlot";
@@ -59,6 +60,19 @@ export function WhatYouCanShip() {
               <div>
                 <p className="font-medium">{t("expat.ship.largeTitle")}</p>
                 <p className="mt-0.5 text-sm text-muted">{t("expat.ship.largeBody")}</p>
+                {/* the assessment happens with a person: the message arrives
+                    already saying what it's about and asking for photos and
+                    sizes, so sales starts where the visitor is. A link, not a
+                    button: the lime is the header's "Get a quote" */}
+                <a
+                  href={waLink(t("expat.ship.largeWa"))}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="link-mark tap-row relative mt-2 inline-flex items-start gap-1.5 text-sm font-medium"
+                >
+                  {/* on the first line, should the label wrap on a narrow phone */}
+                  <MessageCircle aria-hidden className="mt-0.5 size-4 shrink-0" /> {t("expat.ship.largeCta")}
+                </a>
               </div>
             </div>
 
