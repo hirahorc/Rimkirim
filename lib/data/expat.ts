@@ -27,10 +27,17 @@ export interface ExpatFaq {
 
 const FAQ: ExpatFaqSource[] = [
   {
+    q: { id: "Bagaimana cara minta penawaran?", en: "How do I get a quote?" },
+    a: {
+      id: "Mulai dari kalkulator untuk estimasi instan, jawab beberapa pertanyaan untuk cek kelayakan, lalu isi data dirimu. Setelah itu tim kami lanjut bersamamu lewat WhatsApp untuk memastikan harga dan langkah berikutnya.",
+      en: "Start with the calculator for an instant estimate, answer a few questions to check you're eligible, then add your details. Our team then picks it up with you on WhatsApp to confirm the price and the next steps.",
+    },
+  },
+  {
     q: { id: "Barang apa saja yang bisa dikirim?", en: "What can I ship?" },
     a: {
-      id: "Barang pribadi: pakaian dan sepatu, buku dan berkas, peralatan dapur, seprai dan handuk, mainan, dan barang sehari-hari lainnya, dikemas dalam kardus atau koper. Koper wajib dikunci dan bisa kena biaya tambahan. Furnitur, elektronik rumah tangga, dan barang yang tidak muat di kardus atau koper perlu dinilai terpisah, jadi sebutkan di permintaanmu.",
-      en: "Personal belongings: clothes and shoes, books and documents, kitchenware, bedding and linen, toys and other everyday things, packed in boxes or suitcases. Suitcases need to be locked and can carry an extra charge. Furniture, appliances and anything that won't fit in a box or suitcase need a separate assessment, so mention them in your enquiry.",
+      id: "Barang pribadi: pakaian dan sepatu, buku dan berkas, peralatan dapur, seprai dan handuk, mainan, dan barang sehari-hari lainnya, dikemas dalam kardus atau koper. Koper wajib dikunci dan bisa kena biaya tambahan. Furnitur, elektronik rumah tangga, dan barang yang tidak muat di kardus atau koper perlu dinilai terpisah; tim kami mengeceknya bersamamu lewat WhatsApp.",
+      en: "Personal belongings: clothes and shoes, books and documents, kitchenware, bedding and linen, toys and other everyday things, packed in boxes or suitcases. Suitcases need to be locked and can carry an extra charge. Furniture, appliances and anything that won't fit in a box or suitcase need a separate assessment; our team checks those with you on WhatsApp.",
     },
   },
   {
@@ -87,6 +94,14 @@ const FAQ: ExpatFaqSource[] = [
   },
 ];
 
+/**
+ * Where every "Get a quote" on the expat page goes: the live relocation
+ * calculator, which runs the expat flow end to end (instant estimate, then
+ * eligibility, then personal details, then WhatsApp). This prototype has no
+ * expat calculator of its own; point this at the new route once it does.
+ */
+export const EXPAT_QUOTE_URL = "https://rimkirim.com/relocation/rates";
+
 export function expatFaq(locale: Locale): ExpatFaq[] {
   return FAQ.map((f) => ({ q: f.q[locale], a: f.a[locale] }));
 }
@@ -130,7 +145,7 @@ export const SHIPMENT_EXAMPLES: ShipmentExample[] = [];
  */
 export const REVIEW_NOTES = {
   hero: "Pastikan klaim 'by air', pickup dari pintu, dan antar sampai pintu berlaku untuk semua negara asal expat.",
-  form: "Prototype: permintaan belum terkirim ke mana pun. Putuskan tujuan lead (CRM/email) dan apakah nomor WhatsApp wajib. WA_URL di lib/contact.ts masih nomor placeholder.",
+  cta: "Semua 'Get a quote' mengarah ke kalkulator relocation yang live (rimkirim.com/relocation/rates): estimasi, cek kelayakan, data diri, lalu WhatsApp. Ganti EXPAT_QUOTE_URL di lib/data/expat.ts kalau kalkulatornya dibangun di situs ini. WA_URL di lib/contact.ts masih nomor placeholder.",
   reviews:
     "Ulasan Google asli, tapi dari WNI yang pulang, bukan expat. Brief: minta 2–3 ulasan dari expat, plus foto, screenshot ulasan, atau video singkat (dengan izin).",
   ship: "Brief: konfirmasi daftar barang yang eligible sebelum dipublikasikan, termasuk kategori baru seprai & handuk dan mainan & perlengkapan hobi. Kardus dan koper diperlakukan sebagai kemasan, bukan jenis barang.",

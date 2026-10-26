@@ -1,12 +1,12 @@
 "use client";
 
-import { ArrowDown, PackageCheck } from "lucide-react";
+import { ArrowDown, ArrowRight, PackageCheck } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Stars } from "@/components/landing/TestimonialSection";
 import { RATING_SCORE, TESTIMONIALS } from "@/lib/data/testimonials";
-import { EXPAT_HERO_REVIEW, REVIEW_NOTES } from "@/lib/data/expat";
+import { EXPAT_HERO_REVIEW, EXPAT_QUOTE_URL, REVIEW_NOTES } from "@/lib/data/expat";
 import { useT } from "@/lib/i18n/LanguageProvider";
-import { QuoteForm } from "./QuoteForm";
 import { PhotoSlot } from "./PhotoSlot";
 import { ReviewNote } from "./ReviewNote";
 
@@ -14,10 +14,13 @@ import { ReviewNote } from "./ReviewNote";
  * Brief 01. Someone arriving from a search has to know within seconds that
  * this ships belongings to Indonesia, and what kind: the headline says where,
  * the subtitle says what and who does the hard parts, and the fit line
- * screens out full-house moves without sounding like a refusal. The quote
- * form sits beside it, not below a scroll, and one verbatim review stands in
- * for the trust a stranger has not given us yet (brief 02: "a short, genuine
- * review just below the hero").
+ * screens out full-house moves without sounding like a refusal. The one
+ * action is "Get a quote", which opens the relocation calculator (estimate,
+ * eligibility, details, then WhatsApp); "see how it works" serves whoever
+ * wants the steps first. One verbatim review stands in for the trust a
+ * stranger has not given us yet (brief 02: "a short, genuine review just
+ * below the hero"), and the photo takes the right-hand column, as on the
+ * live page.
  */
 export function ExpatHero() {
   const t = useT();
@@ -27,8 +30,8 @@ export function ExpatHero() {
       <div aria-hidden className="grid-backdrop reveal-bg pointer-events-none absolute inset-0" />
       <div className="relative mx-auto max-w-6xl px-4 pb-16 pt-10 sm:px-6 sm:pt-14 lg:pb-20 lg:pt-16">
         <ReviewNote note={REVIEW_NOTES.hero} className="mb-3" />
-        <ReviewNote note={REVIEW_NOTES.form} className="mb-6" />
-        <div className="grid items-start gap-10 lg:grid-cols-[minmax(0,1fr)_26rem] lg:gap-14">
+        <ReviewNote note={REVIEW_NOTES.cta} className="mb-6" />
+        <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,26rem)] lg:gap-14">
           <div className="reveal-stagger">
             <Badge variant="neutral">{t("expat.hero.eyebrow")}</Badge>
             {/* looser than the home hero's 1.05: here the mark runs over two
@@ -45,8 +48,22 @@ export function ExpatHero() {
               {t("expat.hero.fit")}
             </p>
 
+            <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-4">
+              <Button asChild size="lg">
+                <a href={EXPAT_QUOTE_URL}>
+                  {t("expat.cta")} <ArrowRight />
+                </a>
+              </Button>
+              <a
+                href="#how-it-works"
+                className="inline-flex items-center gap-1.5 rounded-md py-1 font-display text-sm font-medium text-foreground underline decoration-border-strong underline-offset-4 transition-colors hover:decoration-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/40"
+              >
+                {t("expat.hero.how")} <ArrowDown aria-hidden className="size-4" />
+              </a>
+            </div>
+
             {review && (
-              <figure className="mt-8 max-w-xl border-l border-border-strong pl-4">
+              <figure className="mt-10 max-w-xl border-l border-border-strong pl-4">
                 <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
                   <Stars value={RATING_SCORE} />
                   <span className="font-display text-sm font-semibold">{t("testimonial.ratingScore")}</span>
@@ -68,22 +85,12 @@ export function ExpatHero() {
                 </figcaption>
               </figure>
             )}
-
-            <PhotoSlot
-              shot={t("expat.photo.heroShot")}
-              avoid={t("expat.photo.heroAvoid")}
-              className="mt-10 hidden min-h-56 lg:flex"
-            />
-          </div>
-
-          <div className="reveal-pop" style={{ animationDelay: "0.3s" }}>
-            <QuoteForm id="quote" />
           </div>
 
           <PhotoSlot
             shot={t("expat.photo.heroShot")}
             avoid={t("expat.photo.heroAvoid")}
-            className="min-h-56 lg:hidden"
+            className="reveal-pop min-h-72 lg:min-h-0"
           />
         </div>
       </div>

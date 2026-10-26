@@ -782,7 +782,7 @@ footer for `ExpatHeader` / `ExpatFooter` (`isExpatRoute`), after the live rimkir
 page: a plain full-width sticky bar (`bg-background/95`, hairline below; at the capsule's /85 the
 content ghosted through a bar this wide) holding the wordmark, a hairline divider and the service
 name in the `.nav-expat` gradient, the language toggle (`sm` and up) and one lime "Get a quote"
-that jumps to the form. No site menu, no sign-in, no bell: expat orders run over WhatsApp, not the
+that opens the relocation calculator, like every other quote button on the page. No site menu, no sign-in, no bell: expat orders run over WhatsApp, not the
 account system. The logo stays on the page, so the only door back to the main site is the footer's
 two service links (Back For Good, Moving Abroad); the footer also carries contacts, legal and the
 language toggle that phones lose from the bar. Under 380px the divider and name drop out, because

@@ -45,7 +45,8 @@ function faqJsonLd() {
  * 09, in its order): a visitor from a search should know at once that this
  * ships personal belongings to Indonesia, packed in boxes and suitcases, see
  * who vouches for it, what fits, who does what, what drives the price and how
- * it runs, and find the quote form at both ends of the page.
+ * it runs. Every "Get a quote" opens the relocation calculator, where the
+ * expat flow runs: estimate, eligibility, personal details, then WhatsApp.
  */
 export default function ExpatRelocationPage() {
   return (

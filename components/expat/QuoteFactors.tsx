@@ -1,9 +1,9 @@
 "use client";
 
-import { ArrowUp, Ruler } from "lucide-react";
+import { ArrowRight, Ruler } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { REVIEW_NOTES } from "@/lib/data/expat";
+import { EXPAT_QUOTE_URL, REVIEW_NOTES } from "@/lib/data/expat";
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
 import { formatNumber } from "@/lib/utils/currency";
 import { SectionHead } from "./SectionHead";
@@ -70,7 +70,8 @@ function Piece({ draw }: { draw: (typeof PIECES)[number]["draw"] }) {
  * Brief 05. People hesitate when a bulky piece is quoted high, so the cost
  * drivers come before the enquiry, in plain words: route, weight, size, type.
  * The one idea that surprises everyone, that a light box can cost like a heavy
- * one, gets a drawing instead of jargon. No published rates: the price is
+ * one, gets a drawing instead of jargon. No published rates here: the
+ * calculator behind "Get a quote" gives the estimate, and the final price is
  * only ever confirmed against the real shipment.
  */
 export function QuoteFactors() {
@@ -96,8 +97,8 @@ export function QuoteFactors() {
             </dl>
             <p className="mt-6 max-w-lg font-medium">{t("expat.pricing.promise")}</p>
             <Button asChild variant="secondary" className="mt-5">
-              <a href="#quote">
-                {t("expat.pricing.cta")} <ArrowUp />
+              <a href={EXPAT_QUOTE_URL}>
+                {t("expat.cta")} <ArrowRight />
               </a>
             </Button>
           </div>

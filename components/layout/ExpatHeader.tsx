@@ -3,14 +3,16 @@
 import { Logo } from "./Logo";
 import { LanguageToggle } from "./LanguageToggle";
 import { Button } from "@/components/ui/button";
+import { EXPAT_QUOTE_URL } from "@/lib/data/expat";
 import { useT } from "@/lib/i18n/LanguageProvider";
 
 /**
  * The expat landing's own bar, after the live rimkirim.com/relocation page:
- * the wordmark, the service name in the expat gradient, one way forward. No
- * site menu, no sign-in (expat orders run over WhatsApp, not the account
- * system), and the logo stays on this page; the way back to the main site
- * is the footer's service links. A plain sticky bar rather than the site's
+ * the wordmark, the service name in the expat gradient, one way forward
+ * ("Get a quote", into the relocation calculator). No site menu, no sign-in
+ * (expat orders run over WhatsApp, not the account system), and the logo
+ * stays on this page; the way back to the main site is the footer's service
+ * links. A plain sticky bar rather than the site's
  * floating capsule, so the page reads as its own service at a glance; the
  * translucency is the same functional one as the capsule's (DESIGN.md, The
  * No-Gradient Rule).
@@ -47,7 +49,7 @@ export function ExpatHeader() {
             <LanguageToggle />
           </div>
           <Button asChild size="sm">
-            <a href="#quote">{t("expat.headerCta")}</a>
+            <a href={EXPAT_QUOTE_URL}>{t("expat.cta")}</a>
           </Button>
         </div>
       </div>

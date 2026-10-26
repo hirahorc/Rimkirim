@@ -1,9 +1,9 @@
 "use client";
 
-import { ArrowUp } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { StepRail } from "@/components/landing/StepRail";
-import { REVIEW_NOTES } from "@/lib/data/expat";
+import { EXPAT_QUOTE_URL, REVIEW_NOTES } from "@/lib/data/expat";
 import { useT } from "@/lib/i18n/LanguageProvider";
 import { SectionHead } from "./SectionHead";
 import { ReviewNote } from "./ReviewNote";
@@ -31,8 +31,8 @@ export function ExpatSteps() {
           className="mt-12 sm:grid-cols-2 lg:grid-cols-4"
         />
         <Button asChild variant="secondary" className="mt-12">
-          <a href="#quote">
-            {t("expat.steps.cta")} <ArrowUp />
+          <a href={EXPAT_QUOTE_URL}>
+            {t("expat.cta")} <ArrowRight />
           </a>
         </Button>
       </div>
