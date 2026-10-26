@@ -4,13 +4,14 @@ import type * as React from "react";
 import { ArrowRight, Ruler } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { SurchargeInfoDialog } from "@/components/rates/SurchargeInfoDialog";
 import { EXPAT_QUOTE_URL, REVIEW_NOTES } from "@/lib/data/expat";
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
 import { formatNumber } from "@/lib/utils/currency";
 import { SectionHead } from "./SectionHead";
 import { ReviewNote } from "./ReviewNote";
 
-const FACTORS = ["route", "weight", "size", "type"] as const;
+const FACTORS = ["route", "weight", "size", "surcharge"] as const;
 
 /** three everyday pieces, front view, with their size weight worked out */
 const PIECES = [
@@ -75,7 +76,9 @@ function Piece({ draw }: { draw: (typeof PIECES)[number]["draw"] }) {
  * Brief 05. People hesitate when a bulky piece is quoted high, so the cost
  * drivers come before the enquiry, in plain words: route, weight, size, type.
  * The one idea that surprises everyone, that a light box can cost like a heavy
- * one, gets a drawing instead of jargon. No published rates here: the
+ * one, gets a drawing instead of jargon, and surcharges are named in plain
+ * words (suitcases included, since they aren't cardboard) with the full
+ * Surcharge Information modal one tap away. No per-kilo rates here: the
  * calculator behind "Get a quote" gives the estimate, and the final price is
  * only ever confirmed against the real shipment.
  */
@@ -97,7 +100,19 @@ export function QuoteFactors() {
               {FACTORS.map((f) => (
                 <div key={f} className="grid gap-1 border-b border-border py-4 sm:grid-cols-[8rem_minmax(0,1fr)] sm:gap-6">
                   <dt className="font-medium">{t(`expat.pricing.${f}Title`)}</dt>
-                  <dd className="text-sm text-muted">{t(`expat.pricing.${f}Body`)}</dd>
+                  <dd className="text-sm text-muted">
+                    {t(`expat.pricing.${f}Body`)}
+                    {/* the full breakdown, the same modal the main site's
+                        calculator opens: per-carrier handling surcharges,
+                        then the other logistic costs */}
+                    {f === "surcharge" && (
+                      <SurchargeInfoDialog>
+                        <button type="button" className="link-mark mt-1.5 block text-left">
+                          {t("expat.pricing.surchargeCta")}
+                        </button>
+                      </SurchargeInfoDialog>
+                    )}
+                  </dd>
                 </div>
               ))}
             </dl>

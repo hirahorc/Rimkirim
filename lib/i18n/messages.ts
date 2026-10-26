@@ -177,8 +177,10 @@ const id = {
       weightBody: "Berat asli tiap kardus atau koper yang sudah terisi.",
       sizeTitle: "Ukuran",
       sizeBody: "Barang besar tapi ringan dihitung dari ukurannya.",
-      typeTitle: "Jenis barang",
-      typeBody: "Barang berat, terlalu besar, atau bentuknya tidak biasa bisa kena biaya penanganan tambahan.",
+      surchargeTitle: "Surcharge",
+      surchargeBody:
+        "Barang yang sangat berat atau terlalu besar, dan yang tidak dikemas dalam kardus (termasuk koper), kena surcharge penanganan. Hanya yang tertinggi yang berlaku untuk tiap barang.",
+      surchargeCta: "Lihat informasi surcharge",
       promise: "Kalkulator memberi estimasi instan. Harga finalnya dipastikan setelah kirimanmu kami cek.",
       guideTitle: "Cara ukuran jadi berat",
       guideBody:
@@ -187,7 +189,7 @@ const id = {
       box: "Kardus pindahan",
       large: "Koper besar",
       bySize: "{kg} kg menurut ukuran",
-      tip: "Jaga tiap barang di bawah 25 kg dan sisi terpanjangnya di bawah sekitar 120 cm untuk menghindari sebagian besar biaya tambahan.",
+      tip: "Jaga tiap barang di bawah 25 kg dan sisi terpanjangnya di bawah sekitar 120 cm untuk menghindari sebagian besar surcharge.",
     },
     steps: {
       heading: "Cara kirim dengan Rimkirim",
@@ -1808,8 +1810,10 @@ const en: Messages = {
       weightBody: "What each packed box or suitcase actually weighs.",
       sizeTitle: "Size",
       sizeBody: "Big but light pieces are priced by their size.",
-      typeTitle: "Item type",
-      typeBody: "Heavy, oversized or odd-shaped pieces can carry an extra handling charge.",
+      surchargeTitle: "Surcharges",
+      surchargeBody:
+        "Very heavy or oversized pieces, and anything not packed in a cardboard box (suitcases included), add a handling surcharge. Only the highest one applies to each piece.",
+      surchargeCta: "See surcharge information",
       promise: "The calculator gives you an instant estimate. Your final price is confirmed once we've checked your shipment.",
       guideTitle: "How size turns into weight",
       guideBody:
@@ -1818,7 +1822,7 @@ const en: Messages = {
       box: "Moving box",
       large: "Large suitcase",
       bySize: "{kg} kg by size",
-      tip: "Keeping each piece under 25 kg and under about 120 cm on its longest side avoids most extra charges.",
+      tip: "Keeping each piece under 25 kg and under about 120 cm on its longest side avoids most surcharges.",
     },
     steps: {
       heading: "How shipping with Rimkirim works",

@@ -180,7 +180,7 @@ export const REVIEW_NOTES = {
   coordinate:
     "Konfirmasi pembagian tugas, terutama dokumen WNA. Konten repo bertentangan: artikel Belanda bilang fasilitas Pindahan mencakup WNA yang pindah kerja, panduan bea cukai bilang hanya WNI. Satu-satunya daftar dokumen WNA di repo: VITAS, ITAS, RPTKA.",
   pricing:
-    "Ambang 25 kg dan ±120 cm diambil dari engine surcharge (dokumen carrier). Konfirmasi berlaku untuk rute expat.",
+    "Ambang 25 kg dan ±120 cm diambil dari engine surcharge (dokumen carrier). Modal Surcharge Information sama dengan di situs utama (FedEx/DHL/UPS + biaya logistik lain). Konfirmasi semuanya berlaku untuk rute expat, terutama surcharge packaging untuk koper yang kini disebut di copy.",
   steps: "Brief: Rimkirim konfirmasi urutan langkah yang sebenarnya.",
   examples:
     "Section 07 (contoh pengiriman nyata) disembunyikan sampai ada contoh asli: asal, jenis barang, komentar, foto. Isi SHIPMENT_EXAMPLES di lib/data/expat.ts.",
