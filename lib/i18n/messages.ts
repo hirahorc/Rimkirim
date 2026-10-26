@@ -106,7 +106,6 @@ const id = {
       title2: "Bawa barang-barangmu.",
       subtitle:
         "Kirim barang pribadimu ke Indonesia lewat udara, dikemas dalam kardus atau koper. Kami atur pickup, dokumen bea cukai, sampai pengantaran ke pintumu.",
-      fit: "Dibuat untuk barang pribadi yang muat di kardus atau koper. Barang besar dicek terpisah.",
       onGoogle: "di Google",
       readReviews: "Baca ulasan",
       how: "Lihat cara kerjanya",
@@ -124,6 +123,7 @@ const id = {
       subtitle: "Dari orang-orang yang sudah mengirim barangnya ke Indonesia.",
     },
     ship: {
+      eyebrow: "Barang yang bisa dikirim",
       heading: "Mau kirim barang pribadimu ke Indonesia?",
       subtitle:
         "Ini barang yang paling sering dikirim lewat kami. Kemas dalam kardus atau koper, sisanya kami yang urus.",
@@ -140,6 +140,7 @@ const id = {
       bannedLink: "Lihat daftar lengkapnya",
     },
     coordinate: {
+      eyebrow: "Kenapa Rimkirim",
       heading: "Dibantu sampai ke detail pengiriman ke Indonesia",
       subtitle: "Ini yang Rimkirim urus, dan yang perlu kamu siapkan, sebelum kamu memesan.",
       usTitle: "Yang kami urus",
@@ -163,10 +164,9 @@ const id = {
       you2Body: "Biasanya paspor dan izin tinggal di Indonesia. Daftar pastinya kami konfirmasi bersama penawaran.",
       you3Title: "Ada di lokasi saat pickup",
       you3Body: "Atau titipkan ke seseorang, dan pastikan ada tempat parkir untuk kurir.",
-      you4Title: "Membayar bea atau pajak impor, kalau ada",
-      you4Body: "Dibayar ke bea cukai, terpisah dari harga kami. Kami beri tahu sebelum barang dikirim.",
     },
     pricing: {
+      eyebrow: "Harga",
       heading: "Apa saja yang memengaruhi harga?",
       subtitle: "Harga tergantung dari mana barang dikirim dan apa yang kamu kirim.",
       routeTitle: "Rute",
@@ -204,6 +204,7 @@ const id = {
       subtitle: "Beberapa contoh nyata pengiriman ke Indonesia.",
     },
     faq: {
+      eyebrow: "FAQ",
       heading: "Pertanyaan umum sebelum mengirim",
       wa: "Masih ada pertanyaan? Tanya kami di WhatsApp",
     },
@@ -215,11 +216,23 @@ const id = {
       next2: "Jawab beberapa pertanyaan untuk cek kelayakan",
       next3: "Isi data dirimu, lalu lanjut dengan tim kami di WhatsApp",
     },
+    photos: {
+      label: "Foto kiriman asli",
+      caption: "Kiriman sungguhan dengan Rimkirim",
+      prev: "Foto sebelumnya",
+      next: "Foto berikutnya",
+      position: "Foto {n} dari {total}",
+      suitcases: "Dua koper dan satu kotak kain, sudah berlabel kirim dan siap dijemput",
+      livingRoom: "Empat kardus pindahan tersegel di ruang tamu, siap berangkat",
+      van: "Kardus pindahan berlabel dimuat ke van kurir FedEx",
+      thisWayUp: "Kardus pindahan bertanda this way up, masing-masing dengan label kirim",
+      taped: "Empat kardus berlakban rapat dengan label kirim di atasnya",
+      winter: "Kardus pindahan di van kurir, salah satunya berisi baju musim dingin",
+      large: "Puluhan kardus berlabel dan barang terbungkus bubble wrap, siap dikirim",
+    },
     photo: {
       label: "Foto menyusul",
       avoid: "Hindari",
-      heroShot: "Barang yang sudah dikemas dalam kardus dan koper, siap dijemput, di rumah sungguhan.",
-      heroAvoid: "furnitur, truk pindahan, kontainer",
       shipShot: "Barang sehari-hari yang masuk ke kardus pindahan, di samping koper yang sudah terisi, supaya ukurannya langsung terbayang.",
       shipAvoid: "furnitur besar, pindahan satu rumah",
       teamShot: "Tim kami saat pickup sungguhan, atau kardus yang ditangani dengan hati-hati.",
@@ -1720,7 +1733,6 @@ const en: Messages = {
       title2: "Bring your belongings with you.",
       subtitle:
         "Send your personal belongings to Indonesia by air, packed in boxes or suitcases. We coordinate the pickup, the customs paperwork and the delivery to your door.",
-      fit: "Made for personal belongings that fit in a box or suitcase. Larger items get a separate check.",
       onGoogle: "on Google",
       readReviews: "Read reviews",
       how: "See how it works",
@@ -1738,6 +1750,7 @@ const en: Messages = {
       subtitle: "From people who have already sent their belongings to Indonesia.",
     },
     ship: {
+      eyebrow: "What you can ship",
       heading: "Shipping your personal belongings to Indonesia?",
       subtitle:
         "These are the things people send with us most often. Pack them in boxes or suitcases and we take it from there.",
@@ -1754,6 +1767,7 @@ const en: Messages = {
       bannedLink: "See the full list",
     },
     coordinate: {
+      eyebrow: "Why Rimkirim",
       heading: "Help with the details of shipping to Indonesia",
       subtitle: "Here's what Rimkirim coordinates, and what's yours to do, before you book.",
       usTitle: "We take care of",
@@ -1777,10 +1791,9 @@ const en: Messages = {
       you2Body: "Usually your passport and Indonesian stay permit. We'll confirm the exact list with your quote.",
       you3Title: "Be around on pickup day",
       you3Body: "Or have someone there, with a spot where the courier can park.",
-      you4Title: "Pay import duty or tax, if any",
-      you4Body: "It's paid to customs, separate from our price. We'll tell you before anything ships.",
     },
     pricing: {
+      eyebrow: "Pricing",
       heading: "What affects your shipping quote?",
       subtitle: "The price depends on where you're shipping from and what you're sending.",
       routeTitle: "Route",
@@ -1818,6 +1831,7 @@ const en: Messages = {
       subtitle: "A few real examples of shipments to Indonesia.",
     },
     faq: {
+      eyebrow: "FAQ",
       heading: "Common questions before you ship",
       wa: "Still have a question? Ask us on WhatsApp",
     },
@@ -1829,11 +1843,23 @@ const en: Messages = {
       next2: "Answer a few questions to check you're eligible",
       next3: "Add your details and continue with our team on WhatsApp",
     },
+    photos: {
+      label: "Photos of real shipments",
+      caption: "Real shipments sent with Rimkirim",
+      prev: "Previous photo",
+      next: "Next photo",
+      position: "Photo {n} of {total}",
+      suitcases: "Two suitcases and a fabric storage box, labelled and ready for pickup",
+      livingRoom: "Four sealed moving boxes in a living room, ready to go",
+      van: "Labelled moving boxes loaded into a FedEx courier van",
+      thisWayUp: "Moving boxes marked this way up, each with a shipping label",
+      taped: "Four well-taped boxes with shipping labels on top",
+      winter: "Moving boxes in the courier's van, one of them full of winter clothes",
+      large: "Dozens of labelled boxes and bubble-wrapped pieces ready to ship",
+    },
     photo: {
       label: "Photo to add",
       avoid: "Avoid",
-      heroShot: "Belongings packed into boxes and suitcases, ready for pickup, in a real home.",
-      heroAvoid: "furniture, moving trucks, containers",
       shipShot: "Everyday things going into a moving box next to a packed suitcase, so the sizes read at a glance.",
       shipAvoid: "large furniture, full-house moves",
       teamShot: "Our team at a real pickup, or your boxes being handled with care.",

@@ -114,6 +114,24 @@ export function expatFaq(locale: Locale): ExpatFaq[] {
  */
 export const EXPAT_REVIEW_NAMES = ["Ratna sari", "Nurul", "Elita Nuraeny"];
 
+/**
+ * The hero's photo deck: real shipments with Rimkirim's FedEx labels. Every
+ * frame is cropped to the deck's 5:4, so `position` keeps the boxes, not the
+ * floor, in the crop. Ordered so near-identical shots never sit next to each
+ * other, opening on the one the brief describes (boxes and suitcases ready to
+ * ship) and closing on the large shipment, which could read as a house move.
+ * `alt` is a key under `expat.photos`.
+ */
+export const EXPAT_HERO_PHOTOS = [
+  { src: "/expat/hero/01-suitcases.jpg", alt: "suitcases", position: "50% 55%" },
+  { src: "/expat/hero/02-boxes-living-room.jpg", alt: "livingRoom", position: "50% 58%" },
+  { src: "/expat/hero/03-courier-van.jpg", alt: "van", position: "50% 60%" },
+  { src: "/expat/hero/04-this-way-up.jpg", alt: "thisWayUp", position: "50% 45%" },
+  { src: "/expat/hero/05-taped-boxes.jpg", alt: "taped", position: "50% 62%" },
+  { src: "/expat/hero/06-winter-clothes.jpg", alt: "winter", position: "50% 62%" },
+  { src: "/expat/hero/07-large-shipment.jpg", alt: "large", position: "50% 48%" },
+] as const;
+
 /** the hero's one-line proof: a verbatim excerpt of this review */
 export const EXPAT_HERO_REVIEW = {
   name: "daelyn",
@@ -144,7 +162,7 @@ export const SHIPMENT_EXAMPLES: ShipmentExample[] = [];
  * visitors.
  */
 export const REVIEW_NOTES = {
-  hero: "Pastikan klaim 'by air', pickup dari pintu, dan antar sampai pintu berlaku untuk semua negara asal expat.",
+  hero: "Pastikan klaim 'by air', pickup dari pintu, dan antar sampai pintu berlaku untuk semua negara asal expat. Foto hero adalah kiriman asli: pastikan ada izin customer, dan label FedEx yang memuat nama dan alamat sebaiknya diburamkan sebelum live.",
   cta: "Semua 'Get a quote' mengarah ke kalkulator relocation yang live (rimkirim.com/relocation/rates): estimasi, cek kelayakan, data diri, lalu WhatsApp. Ganti EXPAT_QUOTE_URL di lib/data/expat.ts kalau kalkulatornya dibangun di situs ini. WA_URL di lib/contact.ts masih nomor placeholder.",
   reviews:
     "Ulasan Google asli, tapi dari WNI yang pulang, bukan expat. Brief: minta 2–3 ulasan dari expat, plus foto, screenshot ulasan, atau video singkat (dengan izin).",

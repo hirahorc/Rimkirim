@@ -35,7 +35,12 @@ export function WhatYouCanShip() {
         <ReviewNote note={REVIEW_NOTES.ship} className="mb-8" />
         <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,26rem)] lg:gap-14">
           <div>
-            <SectionHead id="ship-heading" title={t("expat.ship.heading")} subtitle={t("expat.ship.subtitle")} />
+            <SectionHead
+              id="ship-heading"
+              eyebrow={t("expat.ship.eyebrow")}
+              title={t("expat.ship.heading")}
+              subtitle={t("expat.ship.subtitle")}
+            />
 
             <ul className="mt-10 border-t border-border">
               {ROWS.map(({ icon: Icon, key }) => (

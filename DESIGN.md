@@ -557,6 +557,17 @@ one as drift.
   as the rating link. The drift keyframe ends in `visibility: hidden` so the faded-out word stops
   being a clickable ghost under the calculator's whitespace.
 
+- **The photo deck** (`.photo-deck`, expat hero): real shipment photos as a pile of prints, one
+  5:4 card on top and two peeking behind it (rotated ±3–4°, offsets in % of the card so the pile
+  keeps its shape at every width; the same 5:4 on phone and desktop). Click or tap sends the top
+  card to the back and a swipe goes either way: transform and opacity transitions, 360ms on
+  `--ease-out-soft`, so a quick second click retargets mid-flight instead of restarting. The
+  prev/next buttons are the keyboard and screen-reader way in, and a keyboard press swaps
+  instantly. **Hover fans the pile open** (±7°): the second written-down exception to "hover moves
+  colour, not geometry", after the rating arrow, kept because it is how a mouse discovers there is
+  more to see. Gated to fine pointers, so a tap never leaves it open, and off under reduced motion,
+  where swaps are instant as well.
+
 **The Never-Delay-The-Calculator Rule.** The landing exists to get someone into the rate
 calculator, which sits immediately below the fold. Motion may decorate that journey but must
 never lengthen it: no pinned/sticky hero, no scroll-jacking, no reveal that has to finish before

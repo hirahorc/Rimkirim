@@ -874,3 +874,60 @@ body:has(main > [data-field]) {
     background-position: 100% 50%;
   }
 }
+
+/* ------------------------------------------------------------------ */
+/*  Expat hero: the photo deck                                         */
+/* ------------------------------------------------------------------ */
+/* Real shipment photos as a pile of prints (components/expat/PhotoDeck).
+   Each card's place comes from data-depth; offsets are in % of the card
+   itself, so the pile keeps its shape at every width. Transitions, not
+   keyframes: a quick second click retargets mid-flight instead of
+   restarting. The top card straightens and grows forward, the one it
+   replaces sinks to the back and fades. */
+.deck-card {
+  transform-origin: 50% 85%;
+  transition:
+    transform 360ms var(--ease-out-soft),
+    opacity 240ms var(--ease-out-soft);
+}
+.deck-card[data-depth="0"] {
+  z-index: 4;
+}
+.deck-card[data-depth="1"] {
+  z-index: 3;
+  transform: translate(4%, -3%) rotate(3.5deg) scale(0.96);
+}
+.deck-card[data-depth="2"] {
+  z-index: 2;
+  transform: translate(-4%, -5%) rotate(-3deg) scale(0.92);
+}
+.deck-card[data-depth="rest"] {
+  z-index: 1;
+  transform: translateY(-6%) scale(0.88);
+  opacity: 0;
+}
+.deck-card img {
+  -webkit-user-drag: none;
+}
+/* Hover fans the pile open, so a mouse finds out there is more to see
+   before it clicks. Geometry on hover is outside the usual vocabulary;
+   this is a written-down exception (DESIGN.md, Motion), gated to fine
+   pointers so a tap never leaves the pile stuck open, and off entirely
+   under reduced motion. */
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .photo-deck:hover .deck-card[data-depth="1"] {
+    transform: translate(10%, -4%) rotate(7deg) scale(0.96);
+  }
+  .photo-deck:hover .deck-card[data-depth="2"] {
+    transform: translate(-10%, -6%) rotate(-6deg) scale(0.92);
+  }
+}
+/* a keyboard press swaps the photo without motion (PRODUCT.md) */
+.photo-deck[data-instant] .deck-card {
+  transition: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .deck-card {
+    transition: none;
+  }
+}

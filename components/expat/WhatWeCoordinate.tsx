@@ -8,11 +8,11 @@ import { PhotoSlot } from "./PhotoSlot";
 import { ReviewNote } from "./ReviewNote";
 
 const OURS = ["us1", "us2", "us3", "us4", "us5", "us6"] as const;
-const YOURS = ["you1", "you2", "you3", "you4"] as const;
+const YOURS = ["you1", "you2", "you3"] as const;
 
 /**
  * Brief 04, "Why Rimkirim", answered as a division of labour instead of a
- * promise that shipping is easy: what we do, and the four things that stay
+ * promise that shipping is easy: what we do, and the three things that stay
  * with the customer. Someone comparing providers can assess that, and sales
  * stops answering the same basic questions. Two de-boxed lists, not cards;
  * ours are ticked, theirs are numbered because they are a to-do.
@@ -25,6 +25,7 @@ export function WhatWeCoordinate() {
         <ReviewNote note={REVIEW_NOTES.coordinate} className="mb-8" />
         <SectionHead
           id="coordinate-heading"
+          eyebrow={t("expat.coordinate.eyebrow")}
           title={t("expat.coordinate.heading")}
           subtitle={t("expat.coordinate.subtitle")}
         />

@@ -19,7 +19,7 @@ export function ExpatFaq() {
     <section id="faq" aria-labelledby="faq-heading" className="scroll-mt-24 border-t border-border">
       <div className="mx-auto max-w-3xl px-4 py-20 sm:px-6">
         <ReviewNote note={REVIEW_NOTES.faq} className="mb-8" />
-        <SectionHead id="faq-heading" title={t("expat.faq.heading")} />
+        <SectionHead id="faq-heading" eyebrow={t("expat.faq.eyebrow")} title={t("expat.faq.heading")} />
         <div className="mt-10 border-t border-border">
           {expatFaq(locale).map((f) => (
             <Disclosure key={f.q} question={f.q}>
