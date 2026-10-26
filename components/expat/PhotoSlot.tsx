@@ -24,7 +24,9 @@ export function PhotoSlot({
   return (
     <figure
       className={cn(
-        "relative flex flex-col justify-between overflow-hidden rounded-lg border border-dashed border-border-strong bg-surface-2 px-6 py-7",
+        // md, one step under the lg media frame: a tighter corner reads as a
+        // photo's edge rather than a card's (requested 2026-10-26)
+        "relative flex flex-col justify-between overflow-hidden rounded-md border border-dashed border-border-strong bg-surface-2 px-6 py-7",
         className,
       )}
     >
