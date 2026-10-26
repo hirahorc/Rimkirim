@@ -104,8 +104,7 @@ const id = {
       eyebrow: "Relokasi expat & WNA ke Indonesia",
       title1: "Pindah ke Indonesia?",
       title2: "Bawa barang-barangmu.",
-      subtitle:
-        "Kirim barang pribadimu ke Indonesia lewat udara, dikemas dalam kardus atau koper. Kami atur pickup, dokumen bea cukai, sampai pengantaran ke pintumu.",
+      subtitle: "Kirim kardus, koper, dan barang pribadi ke Indonesia, dengan bantuan mengatur perjalanannya.",
       readReviews: "Baca ulasan",
       how: "Lihat cara kerjanya",
     },
@@ -119,7 +118,7 @@ const id = {
     },
     reviews: {
       heading: "Kata pelanggan yang sudah kirim dengan Rimkirim",
-      subtitle: "Dari orang-orang yang sudah mengirim barangnya ke Indonesia.",
+      subtitle: "Pengalaman dari orang-orang yang sudah mengirim barangnya ke Indonesia.",
     },
     ship: {
       eyebrow: "Barang yang bisa dikirim",
@@ -1737,8 +1736,7 @@ const en: Messages = {
       eyebrow: "Expat relocation to Indonesia",
       title1: "Moving to Indonesia?",
       title2: "Bring your belongings with you.",
-      subtitle:
-        "Send your personal belongings to Indonesia by air, packed in boxes or suitcases. We coordinate the pickup, the customs paperwork and the delivery to your door.",
+      subtitle: "Ship boxes, luggage and personal belongings to Indonesia, with help coordinating the journey.",
       readReviews: "Read reviews",
       how: "See how it works",
     },
@@ -1752,7 +1750,7 @@ const en: Messages = {
     },
     reviews: {
       heading: "What customers say about shipping with Rimkirim",
-      subtitle: "From people who have already sent their belongings to Indonesia.",
+      subtitle: "Experiences from people who have sent their belongings to Indonesia.",
     },
     ship: {
       eyebrow: "What you can ship",

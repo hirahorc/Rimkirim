@@ -12,8 +12,8 @@ import { ReviewNote } from "./ReviewNote";
 /**
  * Brief 01. Someone arriving from a search has to know within seconds that
  * this ships belongings to Indonesia, and what kind: the headline says where,
- * and the subtitle says what (belongings, packed in boxes or suitcases) and
- * who does the hard parts. The one
+ * and the subtitle, the brief's own line, says what ships and that we help
+ * coordinate the journey. The one
  * action is "Get a quote", which opens the relocation calculator (estimate,
  * eligibility, details, then WhatsApp); "see how it works" serves whoever
  * wants the steps first. One verbatim review stands in for the trust a
