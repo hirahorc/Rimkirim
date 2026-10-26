@@ -106,7 +106,6 @@ const id = {
       title2: "Bawa barang-barangmu.",
       subtitle:
         "Kirim barang pribadimu ke Indonesia lewat udara, dikemas dalam kardus atau koper. Kami atur pickup, dokumen bea cukai, sampai pengantaran ke pintumu.",
-      onGoogle: "di Google",
       readReviews: "Baca ulasan",
       how: "Lihat cara kerjanya",
     },
@@ -237,6 +236,8 @@ const id = {
       shipAvoid: "furnitur besar, pindahan satu rumah",
       teamShot: "Tim kami saat pickup sungguhan, atau kardus yang ditangani dengan hati-hati.",
       teamAvoid: "foto gudang stok",
+      customerShot: "Foto asli customer ini bersama kirimannya, dibagikan dengan izinnya.",
+      customerAvoid: "foto stok, model",
     },
   },
   auth: {
@@ -1733,7 +1734,6 @@ const en: Messages = {
       title2: "Bring your belongings with you.",
       subtitle:
         "Send your personal belongings to Indonesia by air, packed in boxes or suitcases. We coordinate the pickup, the customs paperwork and the delivery to your door.",
-      onGoogle: "on Google",
       readReviews: "Read reviews",
       how: "See how it works",
     },
@@ -1864,6 +1864,8 @@ const en: Messages = {
       shipAvoid: "large furniture, full-house moves",
       teamShot: "Our team at a real pickup, or your boxes being handled with care.",
       teamAvoid: "stock warehouse photos",
+      customerShot: "A real photo of this customer with their shipment, shared with their permission.",
+      customerAvoid: "stock photos, models",
     },
   },
   auth: {

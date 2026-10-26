@@ -107,12 +107,22 @@ export function expatFaq(locale: Locale): ExpatFaq[] {
 }
 
 /**
- * Reviews for the expat page, by `name` in lib/data/testimonials.ts (quoted
- * verbatim from Google). All English-language and all from Europe or
- * Australia, the corridors the brief cares about. They are Indonesians who
- * moved home, not expats, which is why the copy never calls them expats.
+ * PLACEHOLDER reviews for the expat page, by `name` in lib/data/testimonials.ts
+ * (verbatim, English-language, Europe and Australia routes). They are
+ * Indonesians who moved home, not expats, so the copy never calls them
+ * expats, and the page shows no Google rating: no expat has reviewed us there
+ * yet. Replace with real reviews from the expat customers being approached.
  */
-export const EXPAT_REVIEW_NAMES = ["Ratna sari", "Nurul", "Elita Nuraeny"];
+export const EXPAT_REVIEWS: {
+  name: string;
+  /** a customer photo for this review: `null` asks for one (a placeholder
+   *  shows until there is a real, consented photo), a path shows it */
+  photo?: string | null;
+}[] = [
+  { name: "Ratna sari", photo: null },
+  { name: "Nurul" },
+  { name: "Elita Nuraeny" },
+];
 
 /**
  * The hero's photo deck: real shipments with Rimkirim's FedEx labels. Every
@@ -165,7 +175,7 @@ export const REVIEW_NOTES = {
   hero: "Pastikan klaim 'by air', pickup dari pintu, dan antar sampai pintu berlaku untuk semua negara asal expat. Foto hero adalah kiriman asli: pastikan ada izin customer, dan label FedEx yang memuat nama dan alamat sebaiknya diburamkan sebelum live.",
   cta: "Semua 'Get a quote' mengarah ke kalkulator relocation yang live (rimkirim.com/relocation/rates): estimasi, cek kelayakan, data diri, lalu WhatsApp. Ganti EXPAT_QUOTE_URL di lib/data/expat.ts kalau kalkulatornya dibangun di situs ini. WA_URL di lib/contact.ts masih nomor placeholder.",
   reviews:
-    "Ulasan Google asli, tapi dari WNI yang pulang, bukan expat. Brief: minta 2–3 ulasan dari expat, plus foto, screenshot ulasan, atau video singkat (dengan izin).",
+    "Placeholder: ulasan ini dari WNI yang pulang, bukan expat, dan akan diganti ulasan asli dari customer expat yang sedang di-approach (EXPAT_REVIEWS di lib/data/expat.ts, juga kutipan di hero). Kartu pertama menunggu foto asli customer: isi `photo` dengan path fotonya (dengan izin). Rating bintang dan link Google sengaja dihapus karena belum ada ulasan expat di Google.",
   ship: "Brief: konfirmasi daftar barang yang eligible sebelum dipublikasikan, termasuk kategori baru seprai & handuk dan mainan & perlengkapan hobi. Kardus dan koper diperlakukan sebagai kemasan, bukan jenis barang.",
   coordinate:
     "Konfirmasi pembagian tugas, terutama dokumen WNA. Konten repo bertentangan: artikel Belanda bilang fasilitas Pindahan mencakup WNA yang pindah kerja, panduan bea cukai bilang hanya WNI. Satu-satunya daftar dokumen WNA di repo: VITAS, ITAS, RPTKA.",

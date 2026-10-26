@@ -3,8 +3,7 @@
 import { ArrowDown, ArrowRight } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Stars } from "@/components/landing/TestimonialSection";
-import { RATING_SCORE, TESTIMONIALS } from "@/lib/data/testimonials";
+import { TESTIMONIALS } from "@/lib/data/testimonials";
 import { EXPAT_HERO_REVIEW, EXPAT_QUOTE_URL, REVIEW_NOTES } from "@/lib/data/expat";
 import { useT } from "@/lib/i18n/LanguageProvider";
 import { PhotoDeck } from "./PhotoDeck";
@@ -61,15 +60,12 @@ export function ExpatHero() {
             </div>
 
             {review && (
+              // no star rating: there are no expat reviews on Google yet, and
+              // the main site's 4.9 is not this page's to claim
               <figure className="mt-10 max-w-xl border-l border-border-strong pl-4">
-                <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-                  <Stars value={RATING_SCORE} />
-                  <span className="font-display text-sm font-semibold">{t("testimonial.ratingScore")}</span>
-                  <span className="text-sm text-muted">{t("expat.hero.onGoogle")}</span>
-                </div>
                 {/* verbatim, lowercase and all: the customer's words are the
                     evidence (lib/data/testimonials.ts) */}
-                <blockquote className="mt-2 text-sm text-foreground">
+                <blockquote className="text-sm text-foreground">
                   “…{EXPAT_HERO_REVIEW.excerpt}”
                 </blockquote>
                 <figcaption className="mt-1 flex flex-wrap items-center gap-x-3 text-xs text-muted-2">
