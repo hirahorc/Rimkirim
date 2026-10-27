@@ -63,11 +63,11 @@ export function PriceProof() {
 
         {/* phones read the numbers before the button; lg tucks the button
             under the copy, beside the card */}
-        <Card className="proof-card rounded-lg p-6 sm:p-7 lg:col-start-2 lg:row-span-2 lg:row-start-1">
+        <Card className="build-seq rounded-lg p-6 sm:p-7 lg:col-start-2 lg:row-span-2 lg:row-start-1">
           {/* rows arrive in the order the sum is built: weight, base, surcharge,
-              total (globals.css, .proof-row) */}
+              total (globals.css, .build-row) */}
           <dl className="space-y-4 text-sm">
-            <div className="proof-row" style={{ "--i": 0 } as React.CSSProperties}>
+            <div className="build-row" style={{ "--i": 0 } as React.CSSProperties}>
               <div className="flex items-baseline justify-between gap-3">
                 <dt className="text-muted">{t("proof.chargeable")}</dt>
                 <dd className="shrink-0 font-medium">{kg(chargeable)} kg</dd>
@@ -78,7 +78,7 @@ export function PriceProof() {
                   .replace("{vol}", kg(volumetric))}
               </p>
             </div>
-            <div className="proof-row flex items-baseline justify-between gap-3" style={{ "--i": 1 } as React.CSSProperties}>
+            <div className="build-row flex items-baseline justify-between gap-3" style={{ "--i": 1 } as React.CSSProperties}>
               <dt className="text-muted">
                 {t("proof.base")}{" "}
                 <span className="text-muted-2">
@@ -87,7 +87,7 @@ export function PriceProof() {
               </dt>
               <dd className="shrink-0 font-mono font-medium tabular-nums">{formatIDR(quote.baseRate)}</dd>
             </div>
-            <div className="proof-row flex items-baseline justify-between gap-3" style={{ "--i": 2 } as React.CSSProperties}>
+            <div className="build-row flex items-baseline justify-between gap-3" style={{ "--i": 2 } as React.CSSProperties}>
               <dt className="text-muted">{t("proof.surcharge")}</dt>
               <dd className="shrink-0 text-muted-2">
                 {quote.surchargeTotal > 0 ? (
@@ -97,7 +97,7 @@ export function PriceProof() {
                 )}
               </dd>
             </div>
-            <div className="proof-row flex items-baseline justify-between gap-3 border-t border-border pt-4" style={{ "--i": 3 } as React.CSSProperties}>
+            <div className="build-row flex items-baseline justify-between gap-3 border-t border-border pt-4" style={{ "--i": 3 } as React.CSSProperties}>
               <dt className="font-semibold">
                 {t("proof.total")}
                 <span className="block text-xs font-normal text-muted-2">

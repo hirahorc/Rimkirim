@@ -457,12 +457,13 @@ review card, and the card answers with one box-shadow ring flash (`:target`, 1.2
 only) then goes quiet; under reduced motion the flash becomes a still ring while targeted.
 0.3–0.5s (the flash, at 1.2s, is the slow end of earned), `--ease-out-soft`, always guarded by
 `prefers-reduced-motion`.
-The system holds **exactly one** looping animation, named and bounded below; treat any second
-one as drift.
+The system holds **exactly one looping animation per landing**, each named and bounded below: the
+home hero's floating verdicts and the expat hero's departure board. Treat any other loop as drift.
 
 - **Entrance** (time-based, on load): the header drops in, hero children cascade up on a
   0.05s-per-item stagger, the headline arrives word by word, and the calculator pops in last.
-  Under ~0.7s total.
+  Under ~0.7s total. The expat hero arrives the same way (`Words` is shared with it), with its
+  photo deck popping in where the calculator would.
 - **The hero settle** (scroll-linked): across the first 35vh the hero text drifts up 56px at
   full ink, the grid backdrop trails 32px behind it, and the calculator closes a 52px gap —
   a short parallax that reads as depth without costing the page a single pixel of extra scroll.
@@ -478,15 +479,19 @@ one as drift.
   `prefers-reduced-motion: no-preference`.
   The rise has two sanctioned relatives, both *explanation*, both on the same guards and the same
   `view()` machinery, and neither licenses a third:
-  - **The step rail** (`.how-step`, landing "Cara kerjanya"): the hairline above each step draws
+  - **The step rail** (`.how-step`, landing "Cara kerjanya", and on the expat page both "How it
+    works" (via `StepRail`) and the closing "What happens next"): the hairline above each step draws
     left→right (`scaleX`, origin left) and the step's text rises 10px under it, on the step's own
     named timeline across `cover 0–25%`. On one row (`lg`) the range shifts 3% per step so 01→05
     arrive in the order they happen; stacked, each step enters on its own and needs no offset.
     Tuned so the last step is fully drawn before its row reaches mid-screen: text being read is
     never half-faded.
-  - **The sum build** (`.proof-row`, landing worked example): the example quotation's rows lift
-    6px (lines of text, not objects, so less than a card's 10px) on the card's one timeline,
-    staggered 5% apart in the order the sum is built: chargeable weight, base, surcharge, total.
+  - **The build** (`.build-seq` on the container, `.build-row` + `--i` on each item; formerly
+    `.proof-row`): rows lift 6px (lines and small pieces, not objects, so less than a card's
+    10px) on their container's one timeline, staggered 5% apart in the order a thing is put
+    together. The home page's worked example builds its sum (chargeable weight, base, surcharge,
+    total); the expat pricing builds a quote from its inputs (route, weight, size, surcharges)
+    and lines the size guide's pieces up left to right, its tip last.
   Without support or under reduced motion both are simply static: the hairline is already drawn.
 - **The disclosure open** (`Disclosure` in `components/ui` — the one accordion idiom, shared by
   the /faq page and the article FAQs so they cannot drift; its controlled sibling
@@ -540,10 +545,10 @@ one as drift.
   too narrow to hold a word) and drift ±9px on a 7s/8.5s/10s cycle, phase-shifted by negative
   delays so no two words are ever at the same point of their arc. Three different durations, so
   they never pulse in unison; a synchronised set would read as one blinking block rather than three
-  separate marks. **This is the system's only looping animation and the only decoration of idle UI.**
-  It is granted because the float *is* the idea — static, the three words are just more labels — and
-  it is kept survivable by how small it is: 9px over eight seconds is slower than the eye tracks.
-  A second loop anywhere is drift, not precedent.
+  separate marks. **This is the home page's only looping animation and its only decoration of idle
+  UI.** It is granted because the float *is* the idea — static, the three words are just more
+  labels — and it is kept survivable by how small it is: 9px over eight seconds is slower than the
+  eye tracks. A second loop on the page is drift, not precedent.
   The words themselves are hollow display type (see Typography), and each carries its own
   scroll-linked travel: `.hero-verdict-drift` reads `--verdict-travel` (14/30/46px, set inline per
   word) against the hero text's 56px, so the three words read as three sheets of glass at different
@@ -557,6 +562,20 @@ one as drift.
   as the rating link. The drift keyframe ends in `visibility: hidden` so the faded-out word stops
   being a clickable ghost under the calculator's whitespace.
 
+- **The departure board** (`RouteBoard`, `.board-*`, the expat hero's eyebrow; the expat page's one
+  loop): the eyebrow is an airport departures row, `[flag] GBR ─✈─ IDN [flag]`, in split-flap
+  tiles (24×32 ink tiles, 2xs corner, Geist Mono white, a lighter upper leaf and a dark seam that
+  cuts the letter). Every 3.6s the origin flips to the next country (GBR, NLD, DEU, AUS, USA, FRA,
+  JPN, SGP): the three tiles flip in on `rotateX`, 50ms apart, 320ms each on `--ease-out-soft` (the
+  headline words' own move), the flag crossfades, then the dashed route redraws left to right
+  (`clip-path`) with the plane at its tip, 900ms on `--ease-in-out-strong`, a token added for
+  things that travel across the screen rather than enter it. The plane's horizontal travel is one
+  keyframe interval on the line's curve, so its nose always leads the line's tip; its 3px lift
+  rides a wrapper of its own. It is granted for the same reason as the verdicts: the cycling *is*
+  the idea ("from wherever you are moving, to Indonesia, by air"), said without copy. It runs only
+  while on screen and while the tab is visible, never under reduced motion (the first route stands,
+  drawn, its plane landed), and assistive tech hears one sentence, "Expat relocation to
+  Indonesia", not a ticker.
 - **The photo deck** (`.photo-deck`, expat hero): real shipment photos as a pile of prints, one
   5:4 card on top and two peeking behind it (rotated ±3–4°, offsets in % of the card so the pile
   keeps its shape at every width; the same 5:4 on phone and desktop). Click or tap sends the top

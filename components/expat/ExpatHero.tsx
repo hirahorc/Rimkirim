@@ -1,12 +1,13 @@
 "use client";
 
 import { ArrowDown, ArrowRight } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Words } from "@/components/landing/Hero";
 import { TESTIMONIALS } from "@/lib/data/testimonials";
 import { EXPAT_HERO_REVIEW, EXPAT_QUOTE_URL, REVIEW_NOTES } from "@/lib/data/expat";
 import { useT } from "@/lib/i18n/LanguageProvider";
 import { PhotoDeck } from "./PhotoDeck";
+import { RouteBoard } from "./RouteBoard";
 import { ReviewNote } from "./ReviewNote";
 
 /**
@@ -23,6 +24,7 @@ import { ReviewNote } from "./ReviewNote";
  */
 export function ExpatHero() {
   const t = useT();
+  const title1 = t("expat.hero.title1");
   const review = TESTIMONIALS.find((r) => r.name === EXPAT_HERO_REVIEW.name);
   return (
     <section className="relative overflow-hidden">
@@ -32,14 +34,27 @@ export function ExpatHero() {
         <ReviewNote note={REVIEW_NOTES.cta} className="mb-6" />
         <div className="grid items-center gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,30rem)] lg:gap-14">
           <div className="reveal-stagger">
-            <Badge variant="neutral">{t("expat.hero.eyebrow")}</Badge>
+            {/* the eyebrow is a departures board, origin flipping to IDN;
+                the label beside it says how the route is travelled */}
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+              <RouteBoard />
+              <span className="font-display text-xs font-medium uppercase tracking-[0.14em] text-muted">
+                {t("expat.hero.boardLabel")}
+              </span>
+            </div>
             {/* looser than the home hero's 1.05: here the mark runs over two
                 lines, and at 1.05 its fill swallowed the descenders above it.
                 Capped at 52px so, beside the 30rem photo deck, the headline
-                stays three lines and the button stays above the fold */}
-            <h1 className="mt-5 text-balance font-display text-[clamp(2.25rem,4.6vw,3.25rem)] font-medium leading-[1.18] tracking-[-0.02em]">
-              <span className="block">{t("expat.hero.title1")}</span>
-              <span className="hero-mark">{t("expat.hero.title2")}</span>
+                stays three lines and the button stays above the fold. Words
+                arrive one by one, the brand's hero entrance (as on the home
+                page), while the lime mark sits ready behind them */}
+            <h1 className="hero-headline mt-5 text-balance font-display text-[clamp(2.25rem,4.6vw,3.25rem)] font-medium leading-[1.18] tracking-[-0.02em]">
+              <span className="block">
+                <Words text={title1} startIndex={0} />
+              </span>
+              <span className="hero-mark">
+                <Words text={t("expat.hero.title2")} startIndex={title1.split(" ").length} />
+              </span>
             </h1>
             <p className="mt-5 max-w-xl text-base leading-relaxed text-muted sm:text-lg">
               {t("expat.hero.subtitle")}

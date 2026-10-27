@@ -102,6 +102,7 @@ const id = {
     },
     hero: {
       eyebrow: "Relokasi expat & WNA ke Indonesia",
+      boardLabel: "Pintu ke pintu, lewat udara",
       title1: "Pindah ke Indonesia?",
       title2: "Bawa barang-barangmu.",
       subtitle: "Kirim kardus, koper, dan barang pribadi ke Indonesia, dengan bantuan mengatur perjalanannya.",
@@ -1734,6 +1735,7 @@ const en: Messages = {
     },
     hero: {
       eyebrow: "Expat relocation to Indonesia",
+      boardLabel: "Door to door, by air",
       title1: "Moving to Indonesia?",
       title2: "Bring your belongings with you.",
       subtitle: "Ship boxes, luggage and personal belongings to Indonesia, with help coordinating the journey.",

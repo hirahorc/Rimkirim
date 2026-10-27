@@ -10,8 +10,12 @@ import { testimonialAnchor } from "@/lib/data/testimonials";
 const WORD_BASE = 0.12;
 const WORD_STEP = 0.07;
 
-/** Render a phrase as individually-animated words, continuing from `startIndex`. */
-function Words({ text, startIndex }: { text: string; startIndex: number }) {
+/**
+ * Render a phrase as individually-animated words, continuing from `startIndex`.
+ * Shared with the expat hero, so both landings arrive the same way; the h1
+ * around it carries `.hero-headline` to cancel its own block reveal.
+ */
+export function Words({ text, startIndex }: { text: string; startIndex: number }) {
   return (
     <>
       {text.split(" ").map((word, i) => (

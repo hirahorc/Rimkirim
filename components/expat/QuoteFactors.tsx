@@ -96,9 +96,15 @@ export function QuoteFactors() {
               title={t("expat.pricing.heading")}
               subtitle={t("expat.pricing.subtitle")}
             />
-            <dl className="mt-10 border-t border-border">
-              {FACTORS.map((f) => (
-                <div key={f} className="grid gap-1 border-b border-border py-4 sm:grid-cols-[8rem_minmax(0,1fr)] sm:gap-6">
+            {/* the quote builds from its inputs, so they arrive in that
+                order (globals.css, the build) */}
+            <dl className="build-seq mt-10 border-t border-border">
+              {FACTORS.map((f, i) => (
+                <div
+                  key={f}
+                  className="build-row grid gap-1 border-b border-border py-4 sm:grid-cols-[8rem_minmax(0,1fr)] sm:gap-6"
+                  style={{ "--i": i } as React.CSSProperties}
+                >
                   <dt className="font-medium">{t(`expat.pricing.${f}Title`)}</dt>
                   <dd className="text-sm text-muted">
                     {t(`expat.pricing.${f}Body`)}
@@ -124,7 +130,8 @@ export function QuoteFactors() {
             </Button>
           </div>
 
-          <Card className="self-start rounded-lg px-6 py-7">
+          {/* the pieces line up left to right for comparison, the tip last */}
+          <Card className="build-seq self-start rounded-lg px-6 py-7">
             <h3 className="font-display text-xl font-semibold tracking-tight">{t("expat.pricing.guideTitle")}</h3>
             <p className="mt-2 text-sm leading-relaxed text-muted">{t("expat.pricing.guideBody")}</p>
 
@@ -134,10 +141,14 @@ export function QuoteFactors() {
             {/* 1.5px per cm; 1.2 on the narrowest phones, where three
                 pieces at full scale would be wider than the card */}
             <ul className="mt-8 flex items-start justify-between gap-2 [--cm:1.2px] min-[360px]:gap-3 min-[360px]:[--cm:1.5px] sm:gap-4">
-              {PIECES.map((p) => (
+              {PIECES.map((p, i) => (
                 // never narrower than its own drawing: on a tight phone the
                 // labels wrap, the pieces keep their true scale
-                <li key={p.key} className="flex flex-col" style={{ minWidth: `calc(var(--cm) * ${p.face + 2})` }}>
+                <li
+                  key={p.key}
+                  className="build-row flex flex-col"
+                  style={{ minWidth: `calc(var(--cm) * ${p.face + 2})`, "--i": i } as React.CSSProperties}
+                >
                   {/* one shared baseline, so heights compare honestly */}
                   <div className="flex items-end text-foreground" style={{ height: "calc(var(--cm) * 92)" }}>
                     <Piece draw={p.draw} />
@@ -159,7 +170,10 @@ export function QuoteFactors() {
               ))}
             </ul>
 
-            <p className="mt-7 flex items-start gap-2.5 rounded-md bg-surface-2 px-4 py-3 text-sm leading-relaxed">
+            <p
+              className="build-row mt-7 flex items-start gap-2.5 rounded-md bg-surface-2 px-4 py-3 text-sm leading-relaxed"
+              style={{ "--i": PIECES.length } as React.CSSProperties}
+            >
               <Ruler aria-hidden className="mt-0.5 size-4 shrink-0 text-muted" />
               {t("expat.pricing.tip")}
             </p>

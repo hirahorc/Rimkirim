@@ -1,5 +1,6 @@
 "use client";
 
+import type * as React from "react";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { EXPAT_QUOTE_URL } from "@/lib/data/expat";
@@ -39,13 +40,18 @@ export function ExpatClosing() {
         <h3 className="mt-12 font-display text-xs font-medium uppercase tracking-[0.04em] text-muted">
           {t("expat.closing.nextTitle")}
         </h3>
+        {/* a sequence, so it rides the step rail like "How it works": the
+            hairline draws and the step rises under it (globals.css) */}
         <ol className="mt-4 grid gap-4 sm:grid-cols-3">
           {NEXT.map((k, i) => (
-            <li key={k} className="flex items-start gap-3 border-t border-border-strong pt-4">
-              <span className="grid size-6 shrink-0 place-items-center rounded-full bg-surface-3 text-xs font-medium tabular-nums">
-                {i + 1}
-              </span>
-              <span className="leading-snug">{t(`expat.closing.${k}`)}</span>
+            <li key={k} className="how-step relative pt-4" style={{ "--i": i } as React.CSSProperties}>
+              <span aria-hidden className="how-step-rail absolute inset-x-0 top-0 h-px bg-border-strong" />
+              <div className="how-step-body flex items-start gap-3">
+                <span className="grid size-6 shrink-0 place-items-center rounded-full bg-surface-3 text-xs font-medium tabular-nums">
+                  {i + 1}
+                </span>
+                <span className="leading-snug">{t(`expat.closing.${k}`)}</span>
+              </div>
             </li>
           ))}
         </ol>

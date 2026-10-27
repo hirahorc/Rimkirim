@@ -34,6 +34,7 @@
   --accent: #9c26f5;
   --accent-ink: color-mix(in srgb, var(--accent) 80%, black);
 
+
   /* status — aligned to Sonner's richColors light palette (text hues) so
      toasts and in-app status surfaces share one palette. Warning is the one
      departure: Sonner's amber went brown once tinted and inked, so it sits
@@ -276,6 +277,9 @@ body:has(main > [data-field]) {
 }
 :root {
   --ease-out-soft: cubic-bezier(0.2, 0.7, 0.2, 1);
+  /* for something travelling across the screen, not entering it (the expat
+     departure board's plane): strong in, strong out */
+  --ease-in-out-strong: cubic-bezier(0.77, 0, 0.175, 1);
 }
 
 .reveal {
@@ -669,11 +673,13 @@ body:has(main > [data-field]) {
       }
     }
 
-    /* Worked example: the rows arrive in the order the sum is built (weight,
-       base, surcharge, total), all on the card's one timeline so they stay
-       in step with each other. A 6px lift, smaller than a card's 10px, since
-       these are lines of text, not objects. */
-    @keyframes proof-row-in {
+    /* The build: rows arrive in the order a thing is put together, all on
+       their container's one timeline so they stay in step with each other.
+       The worked example builds its sum (weight, base, surcharge, total);
+       the expat pricing builds a quote from its inputs, and its size guide
+       lines the pieces up for comparison. A 6px lift, smaller than a card's
+       10px, since these are lines and small pieces, not objects. */
+    @keyframes build-row-in {
       from {
         opacity: 0;
         transform: translateY(6px);
@@ -683,12 +689,12 @@ body:has(main > [data-field]) {
         transform: translateY(0);
       }
     }
-    .proof-card {
-      view-timeline-name: --proof-card;
+    .build-seq {
+      view-timeline-name: --build-seq;
     }
-    .proof-row {
-      animation: proof-row-in linear both;
-      animation-timeline: --proof-card;
+    .build-row {
+      animation: build-row-in linear both;
+      animation-timeline: --build-seq;
       animation-range: cover calc(5% + var(--i, 0) * 5%) cover calc(25% + var(--i, 0) * 5%);
     }
   }
@@ -928,6 +934,124 @@ body:has(main > [data-field]) {
 }
 @media (prefers-reduced-motion: reduce) {
   .deck-card {
+    transition: none;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/*  Expat hero: the departure board                                    */
+/* ------------------------------------------------------------------ */
+/* The eyebrow as an airport departures board (components/expat/RouteBoard):
+   split-flap tiles spell the route, origin to IDN. A tile flips in on mount,
+   in the headline words' rotateX move; the board remounts the origin row to
+   flip the next country in. The route then redraws left to right with the
+   plane at its tip. The page's one loop; see DESIGN.md, "The departure
+   board". */
+@keyframes board-flip {
+  from {
+    opacity: 0;
+    transform: perspective(400px) rotateX(-90deg);
+  }
+  to {
+    opacity: 1;
+    transform: perspective(400px) rotateX(0deg);
+  }
+}
+@keyframes board-route-draw {
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+/* 100% in translateX() is the plane's own width, so it lands flush with the
+   track's end. Horizontal travel is ONE keyframe interval on the line's own
+   curve: timing functions apply per interval, and a midpoint keyframe made
+   the plane ease to a stop mid-route while the line overtook it. The 3px
+   lift that reads as flight rides a wrapper of its own (.board-lift). */
+@keyframes board-fly {
+  0% {
+    opacity: 0;
+    transform: translateX(0);
+  }
+  15% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(calc(var(--board-track) - 100%));
+  }
+}
+@keyframes board-lift {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-3px);
+  }
+}
+.board-tile {
+  animation: board-flip 320ms var(--ease-out-soft) both;
+}
+/* the split-flap: a lighter upper leaf and the seam the letter is cut by,
+   both drawn from the palette (the seam darkens ink the way the status inks
+   do, by mixing toward black) */
+.board-tile::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 50% 0;
+  border-radius: var(--radius-2xs) var(--radius-2xs) 0 0;
+  background: color-mix(in srgb, var(--background) 8%, transparent);
+  pointer-events: none;
+}
+.board-tile::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 1px;
+  background: color-mix(in srgb, var(--foreground) 50%, black);
+  pointer-events: none;
+}
+.board-track {
+  --board-track: 4rem;
+  width: var(--board-track);
+}
+/* the narrowest phones (a 288px column) shorten the route, not the tiles */
+@media (max-width: 359px) {
+  .board-track {
+    --board-track: 3rem;
+  }
+}
+.board-line {
+  animation: board-route-draw 900ms var(--ease-in-out-strong) both;
+}
+.board-plane {
+  animation: board-fly 900ms var(--ease-in-out-strong) both;
+}
+.board-lift {
+  animation: board-lift 900ms var(--ease-in-out-strong) both;
+  animation-delay: inherit;
+}
+.board-flag {
+  transition: opacity 250ms var(--ease-out-soft);
+}
+/* reduced motion: no flips, no flight, no cycling (RouteBoard stops its
+   timer too); the first route simply stands, drawn, its plane landed */
+@media (prefers-reduced-motion: reduce) {
+  .board-tile,
+  .board-line,
+  .board-plane,
+  .board-lift {
+    animation: none;
+  }
+  .board-plane {
+    transform: translateX(calc(var(--board-track) - 100%));
+  }
+  .board-flag {
     transition: none;
   }
 }
