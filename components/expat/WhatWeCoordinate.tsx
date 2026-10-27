@@ -1,6 +1,7 @@
 "use client";
 
 import { Check } from "lucide-react";
+import { CarrierLogos } from "@/components/landing/CarrierSection";
 import { REVIEW_NOTES } from "@/lib/data/expat";
 import { useT } from "@/lib/i18n/LanguageProvider";
 import { SectionHead } from "./SectionHead";
@@ -15,12 +16,14 @@ const YOURS = ["you1", "you2", "you3"] as const;
  * promise that shipping is easy: what we do, and the three things that stay
  * with the customer. Someone comparing providers can assess that, and sales
  * stops answering the same basic questions. Two de-boxed lists, not cards;
- * ours are ticked, theirs are numbered because they are a to-do.
+ * ours are ticked, theirs are numbered because they are a to-do. The
+ * carriers who fly it close the band: proof for "Air shipping" above, where
+ * as a section of their own they read as one more stripe of the page.
  */
 export function WhatWeCoordinate() {
   const t = useT();
   return (
-    <section aria-labelledby="coordinate-heading" className="border-t border-border bg-surface/40">
+    <section aria-labelledby="coordinate-heading" data-tone="violet" className="band">
       <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6">
         <ReviewNote note={REVIEW_NOTES.coordinate} className="mb-8" />
         <SectionHead
@@ -38,7 +41,7 @@ export function WhatWeCoordinate() {
             <ul className="mt-4 space-y-5">
               {OURS.map((k) => (
                 <li key={k} className="flex gap-3">
-                  <span className="mt-0.5 grid size-5 shrink-0 place-items-center rounded-full bg-foreground text-background">
+                  <span className="mt-0.5 grid size-5 shrink-0 place-items-center rounded-full bg-tone-ink text-background">
                     <Check aria-hidden className="size-3" strokeWidth={3} />
                   </span>
                   <div>
@@ -69,11 +72,20 @@ export function WhatWeCoordinate() {
             </ol>
           </div>
 
+          {/* white on the band, so the slot reads as a print laid on the
+              sheet rather than a hole in it */}
           <PhotoSlot
             shot={t("expat.photo.teamShot")}
             avoid={t("expat.photo.teamAvoid")}
-            className="min-h-64 lg:min-h-0"
+            className="min-h-64 bg-background lg:min-h-0"
           />
+        </div>
+
+        <div className="mt-16 border-t border-border-strong pt-12">
+          <h3 className="text-center font-display text-xs font-medium uppercase tracking-[0.14em] text-muted">
+            {t("carrier.eyebrow")}
+          </h3>
+          <CarrierLogos className="mt-9" />
         </div>
       </div>
     </section>

@@ -27,7 +27,7 @@ export function ExpatHero() {
   const title1 = t("expat.hero.title1");
   const review = TESTIMONIALS.find((r) => r.name === EXPAT_HERO_REVIEW.name);
   return (
-    <section className="relative overflow-hidden">
+    <section data-tone="sky" className="relative overflow-hidden">
       <div aria-hidden className="grid-backdrop reveal-bg pointer-events-none absolute inset-0" />
       <div className="relative mx-auto max-w-6xl px-4 pb-16 pt-10 sm:px-6 sm:pt-14 lg:pb-20 lg:pt-16">
         <ReviewNote note={REVIEW_NOTES.hero} className="mb-3" />
@@ -38,7 +38,7 @@ export function ExpatHero() {
                 the label beside it says how the route is travelled */}
             <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
               <RouteBoard />
-              <span className="font-display text-xs font-medium uppercase tracking-[0.14em] text-muted">
+              <span className="font-display text-xs font-medium uppercase tracking-[0.14em] text-tone-ink">
                 {t("expat.hero.boardLabel")}
               </span>
             </div>

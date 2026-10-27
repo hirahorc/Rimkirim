@@ -32,11 +32,7 @@ export function ExpatReviews() {
     return review ? [{ ...review, photo }] : [];
   });
   return (
-    <section
-      id="reviews"
-      aria-labelledby="reviews-heading"
-      className="scroll-mt-24 border-t border-border bg-surface/40"
-    >
+    <section id="reviews" aria-labelledby="reviews-heading" data-tone="sky" className="band scroll-mt-24">
       <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6">
         <ReviewNote note={REVIEW_NOTES.reviews} className="mb-8" />
         <SectionHead
@@ -65,12 +61,16 @@ export function ExpatReviews() {
                   brief it grows instead of clipping, and from sm the tall card
                   hands any height the stacked pair adds to the photo (flex-1),
                   never to a gap between the quote and its name */}
+              {/* white like its card: at the slot's own Panel 2 it melted into
+                  the band and the card lost its top edge. The dashed foot is
+                  the slot's "not here yet" mark, where its border would be;
+                  px-6 puts its words on the quote's left edge */}
               {photo === null && (
                 <PhotoSlot
                   bleed
                   shot={t("expat.photo.customerShot")}
                   avoid={t("expat.photo.customerAvoid")}
-                  className="aspect-[4/3] w-full shrink-0 sm:aspect-[16/10] sm:flex-1"
+                  className="aspect-[4/3] w-full shrink-0 border-b border-dashed border-border-strong bg-background px-6 sm:aspect-[16/10] sm:flex-1"
                 />
               )}
               {photo && (

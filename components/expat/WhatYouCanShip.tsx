@@ -31,7 +31,7 @@ const ROWS = [
 export function WhatYouCanShip() {
   const t = useT();
   return (
-    <section aria-labelledby="ship-heading" className="border-t border-border">
+    <section aria-labelledby="ship-heading" data-tone="sky">
       <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6">
         <ReviewNote note={REVIEW_NOTES.ship} className="mb-8" />
         <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,26rem)] lg:gap-14">
@@ -46,7 +46,7 @@ export function WhatYouCanShip() {
             <ul className="mt-10 border-t border-border">
               {ROWS.map(({ icon: Icon, key }) => (
                 <li key={key} className="flex items-start gap-4 border-b border-border py-4">
-                  <Icon aria-hidden className="mt-0.5 size-5 shrink-0 text-muted" />
+                  <Icon aria-hidden className="mt-0.5 size-5 shrink-0 text-tone-ink" />
                   <div className="grid min-w-0 flex-1 gap-0.5 sm:grid-cols-[11rem_minmax(0,1fr)] sm:gap-6">
                     <span className="font-medium">{t(`expat.items.${key}`)}</span>
                     <span className="text-sm text-muted">{t(`expat.ship.${key}`)}</span>

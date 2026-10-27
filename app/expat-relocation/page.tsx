@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { CarrierSection } from "@/components/landing/CarrierSection";
 import { ExpatHero } from "@/components/expat/ExpatHero";
 import { ExpatReviews } from "@/components/expat/ExpatReviews";
 import { WhatYouCanShip } from "@/components/expat/WhatYouCanShip";
@@ -47,6 +46,9 @@ function faqJsonLd() {
  * who vouches for it, what fits, who does what, what drives the price and how
  * it runs. Every "Get a quote" opens the relocation calculator, where the
  * expat flow runs: estimate, eligibility, personal details, then WhatsApp.
+ * Sections alternate between the open desk and bands (globals.css, .band),
+ * so the page reads as distinct sheets, and walk the expat identity's hues
+ * as chapters (data-tone: sky, violet, magenta) to end on the dusk ticket.
  */
 export default function ExpatRelocationPage() {
   return (
@@ -59,7 +61,6 @@ export default function ExpatRelocationPage() {
       <ExpatReviews />
       <WhatYouCanShip />
       <WhatWeCoordinate />
-      <CarrierSection />
       <QuoteFactors />
       <ExpatSteps />
       <ShipmentExamples />

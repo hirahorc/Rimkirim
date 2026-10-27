@@ -85,7 +85,7 @@ function Piece({ draw }: { draw: (typeof PIECES)[number]["draw"] }) {
 export function QuoteFactors() {
   const { t, locale } = useLanguage();
   return (
-    <section aria-labelledby="pricing-heading" className="border-t border-border">
+    <section aria-labelledby="pricing-heading" data-tone="violet">
       <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6">
         <ReviewNote note={REVIEW_NOTES.pricing} className="mb-8" />
         <div className="grid grid-cols-1 gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,30rem)] lg:gap-14">

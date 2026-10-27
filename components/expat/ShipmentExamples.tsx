@@ -13,7 +13,9 @@ const countryName = (code: string, locale: string) =>
  * Brief 07, optional: real shipments with a route, what was sent and a short
  * comment. The brief keeps it "only if there is proof worth showing", so with
  * no approved examples the section does not exist; in review mode its slot
- * says so instead of disappearing silently.
+ * says so instead of disappearing silently. Once it has proof it is a band,
+ * a sheet of its own after the steps' (globals.css, .band + .band), so the
+ * FAQ after it still opens on the desk.
  */
 export function ShipmentExamples() {
   const { t, locale } = useLanguage();
@@ -26,7 +28,7 @@ export function ShipmentExamples() {
     ) : null;
   }
   return (
-    <section aria-labelledby="examples-heading" className="border-t border-border">
+    <section aria-labelledby="examples-heading" data-tone="magenta" className="band">
       <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6">
         <SectionHead
           id="examples-heading"

@@ -2,6 +2,7 @@
 
 import { useT } from "@/lib/i18n/LanguageProvider";
 import { CARRIER_LOGOS } from "@/lib/data/carriers";
+import { cn } from "@/lib/utils/cn";
 
 /**
  * Carrier partners logo cloud.
@@ -46,6 +47,35 @@ const heightFor = (aspect: number) => Math.round(RAMP.k / aspect ** RAMP.p);
 // cards); insertion order there is this strip's display order
 const CARRIERS = Object.entries(CARRIER_LOGOS).map(([name, l]) => ({ name, ...l }));
 
+/** the logo row alone, for a host that brings its own label: the expat
+ *  page wears it as the foot of its "Why Rimkirim" band */
+export function CarrierLogos({ className }: { className?: string }) {
+  return (
+    <ul
+      className={cn(
+        "mx-auto flex max-w-[340px] flex-wrap items-center justify-center gap-x-4 gap-y-6 [--logo-scale:0.78] md:max-w-none md:flex-nowrap md:justify-between md:gap-x-0 md:gap-y-0 md:[--logo-scale:0.9] lg:[--logo-scale:1]",
+        className,
+      )}
+    >
+      {CARRIERS.map(({ name, src, aspect, capScale = 1 }) => (
+        <li key={name} className="flex items-center justify-center">
+          {/* eslint-disable-next-line @next/next/no-img-element -- logo dims
+              come from the file; height is set per aspect, width stays natural */}
+          <img
+            src={src}
+            alt={name}
+            loading="lazy"
+            className="w-auto max-w-[200px] shrink-0 object-contain opacity-60 grayscale transition duration-300 hover:opacity-100 hover:grayscale-0"
+            style={{
+              height: `calc(${Math.round(heightFor(aspect) * capScale)}px * var(--logo-scale))`,
+            }}
+          />
+        </li>
+      ))}
+    </ul>
+  );
+}
+
 export function CarrierSection() {
   const t = useT();
   return (
@@ -61,23 +91,7 @@ export function CarrierSection() {
         >
           {t("carrier.eyebrow")}
         </p>
-        <ul className="mx-auto mt-9 flex max-w-[340px] flex-wrap items-center justify-center gap-x-4 gap-y-6 [--logo-scale:0.78] md:max-w-none md:flex-nowrap md:justify-between md:gap-x-0 md:gap-y-0 md:[--logo-scale:0.9] lg:[--logo-scale:1]">
-          {CARRIERS.map(({ name, src, aspect, capScale = 1 }) => (
-            <li key={name} className="flex items-center justify-center">
-              {/* eslint-disable-next-line @next/next/no-img-element -- logo dims
-                  come from the file; height is set per aspect, width stays natural */}
-              <img
-                src={src}
-                alt={name}
-                loading="lazy"
-                className="w-auto max-w-[200px] shrink-0 object-contain opacity-60 grayscale transition duration-300 hover:opacity-100 hover:grayscale-0"
-                style={{
-                  height: `calc(${Math.round(heightFor(aspect) * capScale)}px * var(--logo-scale))`,
-                }}
-              />
-            </li>
-          ))}
-        </ul>
+        <CarrierLogos className="mt-9" />
       </div>
     </section>
   );

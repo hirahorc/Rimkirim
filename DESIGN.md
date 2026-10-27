@@ -21,6 +21,11 @@ colors:
   info: "hsl(210 92% 45%)" # ≈ #0973dc
   accent: "#9c26f5" # Move Purple: "your move" surfaces, inline links, the Expat nav
   accent-ink: "color-mix(in srgb, #9c26f5 80%, black)"
+  # expat chapter tones (data-tone): hue / wash / tone-ink, see The Chapter Rule
+  expat-sky: "#21b1ec" # wash #c8e8fb, ink #0e668a
+  expat-violet: "#7a66e9" # wash #dfdefd, ink #5c4db3
+  expat-magenta: "#d41ce6" # wash #fadafc, ink #a213b0
+  dusk: "#4a1e67" # the expat ticket; dusk-soft #ead6fc for its secondary words
 typography:
   display:
     fontFamily: "Space Grotesk, Geist, sans-serif"
@@ -173,7 +178,8 @@ glassmorphism. Depth is built the honest way: white panels on soft grey, separat
 borders, with exactly one soft shadow reserved for chrome that genuinely floats.
 
 **Key Characteristics:**
-- Light-mode only, white canvas, high-contrast dark ink.
+- Light-mode only, white canvas, high-contrast dark ink. The expat landing alone walks its own
+  identity hues as chapter tints (Expat chapters).
 - Live Lime as a rare, single accent — **fill only, never text**.
 - Monospaced tabular figures for all codes and money; sans for everything else.
 - Generous rounding (16px controls, 28px cards, full pills) and hairline borders.
@@ -215,6 +221,42 @@ A daylight field with one electric accent and a small, disciplined status set.
   the docs-to-upload strip, the quotation-pending chip, the in-progress module tile. It is also
   the inline link hue and the Expat nav gradient's far end, so the two jobs share one family.
   Ink at 80% toward black (`--accent-ink`) for words on its own tint.
+
+### Expat chapters (the expat landing only)
+The expat landing walks its own identity, the `.nav-expat` gradient (sky `#21b1ec` to magenta
+`#d41ce6`), down the page as solid stops, never as a gradient fill:
+
+| Chapter | Hue | Sections | Wash (band) | Tone ink |
+| --- | --- | --- | --- | --- |
+| Sky | `#21b1ec` | hero, reviews, what you can ship | `#c8e8fb` | `#0e668a` |
+| Violet (the gradient's midpoint) | `#7a66e9` | why Rimkirim, pricing | `#dfdefd` | `#5c4db3` |
+| Magenta | `#d41ce6` | how it works, FAQ | `#fadafc` | `#a213b0` |
+| Dusk | `#4a1e67` | the closing ticket | — | `#ead6fc` (soft) |
+
+Departure in daylight blue, arrival at dusk: the page reads as the trip it sells.
+
+**The Chapter Rule.** A section joins a chapter with `data-tone`, and the chapter **re-points the
+neutrals** rather than painting components one by one. Inside it:
+
+- `--muted` and `--muted-2` become greys tinted from the hue, never a washed-out generic grey.
+- The hairlines and the Panel 1–3 ladder take the hue, in a desk pair and a band pair, each
+  pitched at the old hairline's step from its own ground (about 1.25 and 1.45:1).
+- A band's ground is the chapter's wash.
+
+`--tone-ink` (`text-tone-ink`, `bg-tone-ink`) is the hue deep enough to carry 12px words. It is
+for the few marks that should speak the chapter: eyebrows, the item icons, the "we take care of"
+ticks, the hero board's label. Outside a chapter it falls back to Readout Grey, so a shared
+component reads right anywhere.
+
+Every value is an oklab mix of the hue with white, black or the old neutral, and every text pair
+is checked on its real ground. An in-browser audit of all 37 distinct pairs on the page passes
+AA, and the lowest is the blue link on the sky panel, at 4.98:1. Ink stays the heading and body
+colour.
+
+**No tone is lime, so no tone competes with the door.** The One-Voice Rule holds: lime is still
+the only "press this" on every chapter, and it reads loudest on dusk, violet's near-complement.
+The tones are atmosphere and wayfinding, never state, so the app's status meanings are
+untouched. The rest of the product stays on daylight neutrals.
 
 ### Named Rules
 **The One-Voice Rule.** Live Lime appears on ≤10% of any given screen — the primary CTA, the one
@@ -290,7 +332,7 @@ wrap their content in `data-field`, which drops the page canvas to **Panel 2** (
 turns every `Card` into a **white plane with no outline** — separation comes from the tone step,
 not a hairline. The header capsule and footer stay white chrome. Marketing and reading pages
 keep the daylight canvas with Panel-1 cards and hairlines: there, cards are few and the line is
-cheap. `Card` reads its surface through `--card-surface` / `--card-border` so a tinted caller
+cheap. A landing's bands borrow the field's card treatment for their own sheet (The Band Rule). `Card` reads its surface through `--card-surface` / `--card-border` so a tinted caller
 (`bg-accent/10`, `border-transparent`) still wins the class merge inside the field.
 
 **The Attached-Strip Rule.** *Information or an action that belongs to a card is worn by that
@@ -403,6 +445,37 @@ layouts keep their density. Two utilities, and picking the wrong one is a bug:
   visual size. Only for **isolated** icon buttons with clear space around them (the bell, the
   hamburger, copy). The host must already be positioned.
 
+**The Band Rule.** A long landing must never read as one long section, and on daylight a hairline
+alone cannot stop the eye: the old alternate band, `bg-surface/40`, measured about `#fdfdfd`,
+which is white. So a landing alternates two grounds:
+
+- **The open desk:** white and de-boxed, with no container and no hairline at its edges.
+- **The band** (`.band`): the section laid on its own sheet with the `lg` card corner. The sheet
+  is its chapter's wash (The Chapter Rule), or Panel 2 on a page without chapters. On phones it
+  runs full bleed, because measure is scarce and the corners alone say "sheet". From `sm` it
+  sits 12px in from the viewport, so the desk shows around it.
+
+Inside a band, a `Card` is a white plane with no outline, as in the field (The Field). Anything
+that would itself sit at the sheet's own tone, such as a photo slot, steps up to white so it
+never melts into the sheet.
+
+The tone step is the whole separator. There is no hairline on either side, no shadow, and no
+entrance animation: every section arriving the same way reads as a template and makes the reader
+wait for the words. Two bands in a row stay two sheets, with a 12px strip of desk between them.
+A thin strip that is not a section, like the carrier logos, never becomes a stripe of its own: it
+closes the band it proves.
+
+The expat page runs:
+
+1. Hero (desk, sky)
+2. Reviews (band, sky)
+3. What you can ship (desk, sky)
+4. Why Rimkirim, closed by the carriers (band, violet)
+5. Pricing (desk, violet)
+6. How it works (band, magenta)
+7. FAQ (desk, magenta)
+8. The dusk ticket (see Components)
+
 ## Elevation & Depth
 
 **Flat by default, depth through tonal layering and hairlines.** A surface reads as "closer"
@@ -485,7 +558,9 @@ home hero's floating verdicts and the expat hero's departure board. Treat any ot
     named timeline across `cover 0–25%`. On one row (`lg`) the range shifts 3% per step so 01→05
     arrive in the order they happen; stacked, each step enters on its own and needs no offset.
     Tuned so the last step is fully drawn before its row reaches mid-screen: text being read is
-    never half-faded.
+    never half-faded. The expat ticket's tear line is the same rail, dashed (`.ticket-tear`). It
+    draws by `clip-path` on the departure board's route keyframes, because `scaleX` would
+    stretch the dashes, and in the rails' own range, so it lands just before the stub's steps.
   - **The build** (`.build-seq` on the container, `.build-row` + `--i` on each item; formerly
     `.proof-row`): rows lift 6px (lines and small pieces, not objects, so less than a card's
     10px) on their container's one timeline, staggered 5% apart in the order a thing is put
@@ -862,6 +937,27 @@ eyebrow names the service right below.
   arrow, soft shadow, `max-width: 16rem`, above by default and shifted/flipped off the viewport
   edge. Motion 100ms in (lift + 0.95 scale) / 100ms out; opens on hover, focus, and tap.
 
+### The dusk ticket (signature)
+The expat landing ends on a ticket, the page's one dark surface. It is `bg-dusk` (`#4a1e67`)
+with white words and the `lg` corner, and it sits inside the text column.
+
+- **Above the tear line, the ask:** the closing headline at up to 48px, one line under it in
+  `text-dusk-soft`, and the lime "Get a quote", which is at its loudest on dusk.
+- **The tear line:** a dashed hairline at white 25%, inset to the text, with a 24px notch punched
+  out of each edge where the desk shows through. The notches are white circles, so the ticket
+  must sit on the white desk.
+- **Below it, the stub:** what happens next, on the step rail in white at 20%.
+
+Dusk is the deep end of the route the page walks from sky through violet to magenta, so
+arriving here reads as landing. It is dark because the last ask should not look like one more
+section.
+
+**One per landing, and only for the closing ask.** It is not a dark theme and does not license
+dark sections. The home landing's ink testimonial hook card is the only other dark surface.
+
+On dusk, the focus ring turns over (a white ring with a dusk gap). Secondary words are the soft
+lavender (9.3:1), never grey; white is 12.5:1 and the lime door 10.5:1.
+
 ### De-boxed record (signature)
 The read-only counterpart to the card. A long reference record — the order summary, the FAQ — is
 **not** a stack of Panel-1 cards; it is one continuous document divided by space and hairlines. Each
@@ -943,7 +1039,10 @@ same order, permanently).
   not a surface.
 - **Don't** put prose in the mono font, or set a data figure in the sans display font.
 - **Don't** reintroduce a dark theme — light-mode-only is a committed product decision, so guard
-  text contrast in the one theme.
+  text contrast in the one theme. A dark surface is not a theme: there are exactly two, the
+  testimonial hook card and the expat dusk ticket, each once on its page.
+- **Don't** let a landing's sections run together on hairlines and near-white tints; alternate
+  the open desk with bands (The Band Rule).
 - **Don't** let Move Purple compete with Live Lime for "the answer"; purple says *whose move*,
   lime says *press here*. A purple button, or a lime banner, is a category error.
 - **Don't** float an attention notice as its own card above the card it explains — attach it as

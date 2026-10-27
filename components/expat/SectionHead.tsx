@@ -23,7 +23,7 @@ export function SectionHead({
   return (
     <div className={cn("max-w-2xl", className)}>
       {eyebrow && (
-        <p className="mb-3 font-display text-xs font-medium uppercase tracking-[0.14em] text-muted">
+        <p className="mb-3 font-display text-xs font-medium uppercase tracking-[0.14em] text-tone-ink">
           {eyebrow}
         </p>
       )}
