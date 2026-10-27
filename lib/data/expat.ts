@@ -125,7 +125,9 @@ export const EXPAT_REVIEWS: {
 ];
 
 /**
- * The hero's photo deck: real shipments with Rimkirim's FedEx labels. Every
+ * The hero's photo deck: real shipments with Rimkirim's FedEx labels, each
+ * label (name, address, AWB) and a name written on a box covered by a mosaic
+ * that follows its shape, since the repo and the page are public. Every
  * frame is cropped to the deck's 5:4, so `position` keeps the boxes, not the
  * floor, in the crop. Ordered so near-identical shots never sit next to each
  * other, opening on the one the brief describes (boxes and suitcases ready to
@@ -172,7 +174,7 @@ export const SHIPMENT_EXAMPLES: ShipmentExample[] = [];
  * visitors.
  */
 export const REVIEW_NOTES = {
-  hero: "Pastikan klaim 'by air', pickup dari pintu, dan antar sampai pintu berlaku untuk semua negara asal expat. Papan keberangkatan di eyebrow menampilkan negara asal GBR, NLD, DEU, AUS, USA, FRA, JPN, SGP: konfirmasi daftarnya (RouteBoard.tsx). Foto hero adalah kiriman asli: pastikan ada izin customer, dan label FedEx yang memuat nama dan alamat sebaiknya diburamkan sebelum live.",
+  hero: "Pastikan klaim 'by air', pickup dari pintu, dan antar sampai pintu berlaku untuk semua negara asal expat. Papan keberangkatan di eyebrow menampilkan negara asal GBR, NLD, DEU, AUS, USA, FRA, JPN, SGP: konfirmasi daftarnya (RouteBoard.tsx). Foto hero adalah kiriman asli: pastikan ada izin customer. Label FedEx (nama, alamat, nomor AWB) dan nama yang ditulis di kardus sudah disensor mosaik.",
   cta: "Semua 'Get a quote' mengarah ke kalkulator relocation yang live (rimkirim.com/relocation/rates): estimasi, cek kelayakan, data diri, lalu WhatsApp. Ganti EXPAT_QUOTE_URL di lib/data/expat.ts kalau kalkulatornya dibangun di situs ini. Semua link WhatsApp sudah ke nomor live (+62 817 1717 7008).",
   reviews:
     "Placeholder: ulasan ini dari WNI yang pulang, bukan expat, dan akan diganti ulasan asli dari customer expat yang sedang di-approach (EXPAT_REVIEWS di lib/data/expat.ts, juga kutipan di hero). Kartu pertama menunggu foto asli customer: isi `photo` dengan path fotonya (dengan izin). Rating bintang dan link Google sengaja dihapus karena belum ada ulasan expat di Google.",
