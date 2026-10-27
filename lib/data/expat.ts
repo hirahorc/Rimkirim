@@ -144,6 +144,23 @@ export const EXPAT_HERO_PHOTOS = [
   { src: "/expat/hero/07-large-shipment.jpg", alt: "large", position: "50% 48%" },
 ] as const;
 
+/**
+ * "Why Rimkirim": couriers collecting Rimkirim customers' shipments, from the
+ * team (2026-10-27). Every frame is cropped to the same 4:5 at the same
+ * 960×1200, so a layout can treat them as equals; the couriers' faces,
+ * number plates and shipping labels (AWB) wear the hero's mosaic. Opens at
+ * the door, then alternates people and boxes. `alt` is a key under
+ * `expat.pickups`.
+ */
+export const EXPAT_PICKUP_PHOTOS = [
+  { src: "/expat/pickups/01-doorstep-scan.jpg", alt: "doorstep" },
+  { src: "/expat/pickups/02-trolley.jpg", alt: "trolley" },
+  { src: "/expat/pickups/03-pallet-jack.jpg", alt: "pallet" },
+  { src: "/expat/pickups/04-stroller-box.jpg", alt: "stroller" },
+  { src: "/expat/pickups/05-truck-load.jpg", alt: "truck" },
+  { src: "/expat/pickups/06-tall-box.jpg", alt: "tallBox" },
+] as const;
+
 /** the hero's one-line proof: a verbatim excerpt of this review */
 export const EXPAT_HERO_REVIEW = {
   name: "daelyn",
@@ -180,7 +197,7 @@ export const REVIEW_NOTES = {
     "Placeholder: ulasan ini dari WNI yang pulang, bukan expat, dan akan diganti ulasan asli dari customer expat yang sedang di-approach (EXPAT_REVIEWS di lib/data/expat.ts, juga kutipan di hero). Kartu pertama menunggu foto asli customer: isi `photo` dengan path fotonya (dengan izin). Rating bintang dan link Google sengaja dihapus karena belum ada ulasan expat di Google.",
   ship: "Brief: konfirmasi daftar barang yang eligible sebelum dipublikasikan, termasuk kategori baru seprai & handuk dan mainan & perlengkapan hobi. Kardus dan koper diperlakukan sebagai kemasan, bukan jenis barang.",
   coordinate:
-    "Konfirmasi pembagian tugas, terutama dokumen WNA. Konten repo bertentangan: artikel Belanda bilang fasilitas Pindahan mencakup WNA yang pindah kerja, panduan bea cukai bilang hanya WNI. Satu-satunya daftar dokumen WNA di repo: VITAS, ITAS, RPTKA.",
+    "Konfirmasi pembagian tugas, terutama dokumen WNA. Konten repo bertentangan: artikel Belanda bilang fasilitas Pindahan mencakup WNA yang pindah kerja, panduan bea cukai bilang hanya WNI. Satu-satunya daftar dokumen WNA di repo: VITAS, ITAS, RPTKA. Foto pickup adalah kiriman customer asli: pastikan ada izin customer. Wajah kurir, plat nomor, dan label AWB sudah disensor mosaik.",
   pricing:
     "Ambang 25 kg dan ±120 cm diambil dari engine surcharge (dokumen carrier). Modal Surcharge Information sama dengan di situs utama (FedEx/DHL/UPS + biaya logistik lain). Konfirmasi semuanya berlaku untuk rute expat, terutama surcharge packaging untuk koper yang kini disebut di copy.",
   steps: "Brief: Rimkirim konfirmasi urutan langkah yang sebenarnya.",

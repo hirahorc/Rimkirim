@@ -1058,6 +1058,84 @@ body:has(main > [data-field]) {
 }
 
 /* ------------------------------------------------------------------ */
+/*  Why Rimkirim: the pickup photos                                    */
+/* ------------------------------------------------------------------ */
+/* Three layouts on offer (components/expat/PickupPhotos); the two not
+   picked go, with their rules here.
+
+   B, the reel, runs the band's full width: the first print starts on the
+   content's left edge (the max-w-6xl column and its padding) and the row
+   runs off the band's right edge, so the cut print says there is more. */
+.pickup-reel {
+  --reel-inset: max(1rem, calc((100% - 72rem) / 2 + 1rem));
+  padding-inline: var(--reel-inset) 1rem;
+  scroll-padding-inline: var(--reel-inset) 1rem;
+}
+@media (min-width: 40rem) {
+  .pickup-reel {
+    --reel-inset: max(1.5rem, calc((100% - 72rem) / 2 + 1.5rem));
+    padding-inline: var(--reel-inset) 1.5rem;
+    scroll-padding-inline: var(--reel-inset) 1.5rem;
+  }
+}
+/* while a mouse drags it, the reel follows the pointer instead of snapping */
+.pickup-reel[data-dragging] {
+  scroll-snap-type: none;
+  cursor: grabbing;
+  user-select: none;
+}
+
+/* C, the slices: the open print takes its full 4:5 of the row's height and
+   the others share what is left, so the row always fills its width. As a
+   print opens, flex-basis and flex-grow trade places between it and the one
+   closing, which holds the row's total constant mid-flight. Transitions, so
+   a quick sweep retargets instead of restarting; on the strong in-out
+   curve, since the prints move across the screen rather than enter it. */
+.pickup-slices {
+  --slice-h: 22rem;
+  height: var(--slice-h);
+  gap: 0.5rem;
+}
+@media (min-width: 64rem) {
+  .pickup-slices {
+    --slice-h: 26rem;
+  }
+}
+.pickup-slice {
+  flex: 1 1 0%;
+  min-width: 0;
+  transition: flex 560ms var(--ease-in-out-strong);
+}
+.pickup-slice[data-open] {
+  flex: 0 0 calc(var(--slice-h) * 0.8);
+}
+/* the caption is a label stuck on the open print: it waits for the print
+   to open, and leaves at once when it closes. It hugs its words up to the
+   open print's width, a measure that never changes, so the text never
+   rewraps while the print grows under it */
+.pickup-slice-label {
+  width: max-content;
+  max-width: calc(var(--slice-h) * 0.8 - 1.5rem);
+  opacity: 0;
+  transition: opacity 120ms ease-out;
+}
+.pickup-slice[data-open] .pickup-slice-label {
+  opacity: 1;
+  transition: opacity 240ms var(--ease-out-soft) 300ms;
+}
+/* a keyboard press opens a print without motion (PRODUCT.md) */
+.pickup-slices[data-instant] .pickup-slice,
+.pickup-slices[data-instant] .pickup-slice-label {
+  transition: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .pickup-slice,
+  .pickup-slice-label {
+    transition: none;
+  }
+}
+
+/* ------------------------------------------------------------------ */
 /*  Expat hero: the departure board                                    */
 /* ------------------------------------------------------------------ */
 /* The eyebrow as an airport departures board (components/expat/RouteBoard):
