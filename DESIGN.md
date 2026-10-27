@@ -258,6 +258,11 @@ the only "press this" on every chapter, and it reads loudest on dusk, violet's n
 The tones are atmosphere and wayfinding, never state, so the app's status meanings are
 untouched. The rest of the product stays on daylight neutrals.
 
+**Every "Get a quote" is the primary button.** The hero's lime `lg` with its arrow appears in the hero,
+under pricing, under the steps and on the ticket. The bar keeps the `sm` size its height allows.
+It is one door, repeated wherever a reader might decide, so a second lime "Get a quote" never
+splits the voice. A different action never takes lime.
+
 ### Named Rules
 **The One-Voice Rule.** Live Lime appears on ≤10% of any given screen — the primary CTA, the one
 marked phrase, the checked state. Its rarity is the signal; if two things are lime, neither reads

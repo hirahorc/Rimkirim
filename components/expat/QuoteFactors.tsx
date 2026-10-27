@@ -123,7 +123,7 @@ export function QuoteFactors() {
               ))}
             </dl>
             <p className="mt-6 max-w-lg font-medium">{t("expat.pricing.promise")}</p>
-            <Button asChild variant="secondary" className="mt-5">
+            <Button asChild size="lg" className="mt-5">
               <a href={EXPAT_QUOTE_URL}>
                 {t("expat.cta")} <ArrowRight />
               </a>

@@ -26,7 +26,7 @@ export function ExpatSteps() {
           steps={STEPS.map((s) => ({ title: t(`expat.steps.${s}Title`), body: t(`expat.steps.${s}Body`) }))}
           className="mt-12 sm:grid-cols-2 lg:grid-cols-4"
         />
-        <Button asChild variant="secondary" className="mt-12">
+        <Button asChild size="lg" className="mt-12">
           <a href={EXPAT_QUOTE_URL}>
             {t("expat.cta")} <ArrowRight />
           </a>
