@@ -126,21 +126,22 @@ export const EXPAT_REVIEWS: {
 
 /**
  * The hero's photo deck: real shipments with Rimkirim's FedEx labels, each
- * label (name, address, AWB) and a name written on a box covered by a mosaic
- * that follows its shape, since the repo and the page are public. Every
+ * label (name, address, AWB) and any name on a box covered by a mosaic that
+ * follows its shape, since the repo and the page are public. Mostly big
+ * shipments, as proof that Rimkirim moves a whole household's worth of
+ * boxes; one suitcase shot stays as proof that suitcases ship too. Every
  * frame is cropped to the deck's 5:4, so `position` keeps the boxes, not the
  * floor, in the crop. Ordered so near-identical shots never sit next to each
- * other, opening on the one the brief describes (boxes and suitcases ready to
- * ship) and closing on the large shipment, which could read as a house move.
- * `alt` is a key under `expat.photos`.
+ * other, opening on boxes and suitcases together (what the brief describes)
+ * and closing on the large shipment. `alt` is a key under `expat.photos`.
  */
 export const EXPAT_HERO_PHOTOS = [
-  { src: "/expat/hero/01-suitcases.jpg", alt: "suitcases", position: "50% 55%" },
-  { src: "/expat/hero/02-boxes-living-room.jpg", alt: "livingRoom", position: "50% 58%" },
-  { src: "/expat/hero/03-courier-van.jpg", alt: "van", position: "50% 60%" },
+  { src: "/expat/hero/01-boxes-and-suitcases.jpg", alt: "hall", position: "58% 50%" },
+  { src: "/expat/hero/02-suitcases.jpg", alt: "suitcases", position: "50% 55%" },
+  { src: "/expat/hero/03-moving-boxes-trolley.jpg", alt: "trolley", position: "50% 60%" },
   { src: "/expat/hero/04-this-way-up.jpg", alt: "thisWayUp", position: "50% 45%" },
-  { src: "/expat/hero/05-taped-boxes.jpg", alt: "taped", position: "50% 62%" },
-  { src: "/expat/hero/06-winter-clothes.jpg", alt: "winter", position: "50% 62%" },
+  { src: "/expat/hero/05-ten-boxes.jpg", alt: "tenBoxes", position: "50% 50%" },
+  { src: "/expat/hero/06-direct-boxes.jpg", alt: "direct", position: "50% 50%" },
   { src: "/expat/hero/07-large-shipment.jpg", alt: "large", position: "50% 48%" },
 ] as const;
 
