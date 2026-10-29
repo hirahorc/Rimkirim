@@ -479,6 +479,14 @@ body:has(main > [data-field]) {
   color: color-mix(in srgb, var(--info) 80%, black);
   text-decoration-color: currentColor;
 }
+/* on a band's tinted wash the desk blue drops to about 4.1:1; one step
+   darker clears AA on every chapter's wash (5.1:1 and up) */
+.band .link-mark {
+  color: color-mix(in srgb, var(--info) 80%, black);
+}
+.band .link-mark:hover {
+  color: color-mix(in srgb, var(--info) 70%, black);
+}
 
 /* The highlighter: the one phrase we mark. Lime is a FILL behind dark ink —
    never a text colour (on daylight it would be illegible). box-decoration-break

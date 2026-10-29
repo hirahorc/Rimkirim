@@ -479,8 +479,8 @@ The expat page runs:
 4. Who does what, closed by the pickups and the carriers (band, violet)
 5. Why Rimkirim, the comparison table (desk, violet)
 6. Pricing (band, violet)
-7. How it works (band, magenta)
-8. FAQ (desk, magenta)
+7. How it works (desk, magenta)
+8. FAQ (band, magenta)
 9. The dusk ticket (see Components)
 
 ## Elevation & Depth
@@ -949,7 +949,8 @@ eyebrow names the service right below.
   budgets never borrow from each other. This is how lime reaches a card without becoming its
   surface.
 - **`.link-mark`** — inline links: conventional link blue (`--info`, mixed 8% toward black so it
-  clears 4.5:1 on `--surface`) with a soft underline that darkens on hover. Lime is never used
+  clears 4.5:1 on `--surface`; 20% inside a band, whose tinted wash would drop it to about 4.1:1)
+  with a soft underline that darkens on hover. Lime is never used
   to mark a link. On touch, a link that stands alone on its line also wears `.tap-row`.
 - **Tooltip (`InfoTip`)** — an 18px help-circle trigger (muted, 70% → 100% on hover/focus,
   28px hit target on mouse and 44px on touch, `cursor: help`) opening an Ink bubble: white 14px text, 6px radius, small

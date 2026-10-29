@@ -18,7 +18,7 @@ const STEPS = ["s1", "s2", "s3", "s4"] as const;
 export function ExpatSteps() {
   const t = useT();
   return (
-    <section id="how-it-works" aria-labelledby="steps-heading" data-tone="magenta" className="band scroll-mt-24">
+    <section id="how-it-works" aria-labelledby="steps-heading" data-tone="magenta" className="scroll-mt-24">
       <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6">
         <ReviewNote note={REVIEW_NOTES.steps} className="mb-8" />
         <SectionHead id="steps-heading" title={t("expat.steps.heading")} subtitle={t("expat.steps.subtitle")} />

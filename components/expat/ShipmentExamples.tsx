@@ -13,9 +13,9 @@ const countryName = (code: string, locale: string) =>
  * Brief 07, optional: real shipments with a route, what was sent and a short
  * comment. The brief keeps it "only if there is proof worth showing", so with
  * no approved examples the section does not exist; in review mode its slot
- * says so instead of disappearing silently. Once it has proof it is a band,
- * a sheet of its own after the steps' (globals.css, .band + .band), so the
- * FAQ after it still opens on the desk.
+ * says so instead of disappearing silently. Once it has proof it is a band
+ * after the steps' desk; the FAQ after it is a band too, so when this ships
+ * the page's desk/band order needs one more pass (DESIGN.md, The Band Rule).
  */
 export function ShipmentExamples() {
   const { t, locale } = useLanguage();

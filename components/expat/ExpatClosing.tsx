@@ -25,8 +25,9 @@ const NEXT = ["next1", "next2", "next3"] as const;
 export function ExpatClosing() {
   const t = useT();
   return (
-    // no top padding: the FAQ's own bottom space already parts the two
-    <section aria-labelledby="closing-heading" className="mx-auto max-w-6xl px-3 pb-16 sm:px-6 sm:pb-20">
+    // on the desk after the FAQ's band, with the same space above as below,
+    // so the ticket stands on its own
+    <section aria-labelledby="closing-heading" className="mx-auto max-w-6xl px-3 py-16 sm:px-6 sm:py-20">
       <div className="rounded-lg bg-dusk text-background">
         <div className="flex flex-col gap-8 px-5 pb-10 pt-10 sm:px-10 sm:pt-12 lg:flex-row lg:items-end lg:justify-between lg:px-14 lg:pt-14">
           <div className="max-w-2xl">
