@@ -45,7 +45,7 @@ export function ExpatHero() {
             {/* looser than the home hero's 1.05: here the mark runs over two
                 lines, and at 1.05 its fill swallowed the descenders above it.
                 Capped at 52px so, beside the 30rem photo deck, the headline
-                stays three lines and the button stays above the fold. Words
+                stays within four lines and the button stays above the fold. Words
                 arrive one by one, the brand's hero entrance (as on the home
                 page), while the lime mark sits ready behind them */}
             <h1 className="hero-headline mt-5 text-balance font-display text-[clamp(2.25rem,4.6vw,3.25rem)] font-medium leading-[1.18] tracking-[-0.02em]">

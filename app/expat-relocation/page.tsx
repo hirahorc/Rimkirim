@@ -15,7 +15,7 @@ import { expatFaq } from "@/lib/data/expat";
 // ROUTE_LOCALE), so search engines and link previews read it in English too
 const TITLE = "Ship your belongings to Indonesia · Expat Relocation · Rimkirim";
 const DESCRIPTION =
-  "Moving to Indonesia? Send your personal belongings by air, packed in boxes or suitcases. Rimkirim coordinates the pickup, the customs paperwork and the delivery. Get a quote.";
+  "Relocating to Indonesia? Send your personal belongings by air, packed in boxes or suitcases. Rimkirim coordinates the pickup, the customs paperwork and the delivery. Get a quote.";
 
 export const metadata: Metadata = {
   title: TITLE,
