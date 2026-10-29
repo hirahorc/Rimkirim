@@ -3,6 +3,7 @@ import { ExpatHero } from "@/components/expat/ExpatHero";
 import { ExpatReviews } from "@/components/expat/ExpatReviews";
 import { WhatYouCanShip } from "@/components/expat/WhatYouCanShip";
 import { WhatWeCoordinate } from "@/components/expat/WhatWeCoordinate";
+import { WhyRimkirim } from "@/components/expat/WhyRimkirim";
 import { QuoteFactors } from "@/components/expat/QuoteFactors";
 import { ExpatSteps } from "@/components/expat/ExpatSteps";
 import { ShipmentExamples } from "@/components/expat/ShipmentExamples";
@@ -43,8 +44,8 @@ function faqJsonLd() {
  * Expat relocation landing, built from the agency's CRO brief (sections 01 to
  * 09, in its order): a visitor from a search should know at once that this
  * ships personal belongings to Indonesia, packed in boxes and suitcases, see
- * who vouches for it, what fits, who does what, what drives the price and how
- * it runs. Every "Get a quote" opens the relocation calculator, where the
+ * who vouches for it, what fits, who does what, how it compares, what drives
+ * the price and how it runs. Every "Get a quote" opens the relocation calculator, where the
  * expat flow runs: estimate, eligibility, personal details, then WhatsApp.
  * Sections alternate between the open desk and bands (globals.css, .band),
  * so the page reads as distinct sheets, and walk the expat identity's hues
@@ -61,6 +62,7 @@ export default function ExpatRelocationPage() {
       <ExpatReviews />
       <WhatYouCanShip />
       <WhatWeCoordinate />
+      <WhyRimkirim />
       <QuoteFactors />
       <ExpatSteps />
       <ShipmentExamples />

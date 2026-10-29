@@ -229,7 +229,7 @@ The expat landing walks its own identity, the `.nav-expat` gradient (sky `#21b1e
 | Chapter | Hue | Sections | Wash (band) | Tone ink |
 | --- | --- | --- | --- | --- |
 | Sky | `#21b1ec` | hero, reviews, what you can ship | `#c8e8fb` | `#0e668a` |
-| Violet (the gradient's midpoint) | `#7a66e9` | why Rimkirim, pricing | `#dfdefd` | `#5c4db3` |
+| Violet (the gradient's midpoint) | `#7a66e9` | who does what, why Rimkirim, pricing | `#dfdefd` | `#5c4db3` |
 | Magenta | `#d41ce6` | how it works, FAQ | `#fadafc` | `#a213b0` |
 | Dusk | `#4a1e67` | the closing ticket | — | `#ead6fc` (soft) |
 
@@ -259,9 +259,10 @@ The tones are atmosphere and wayfinding, never state, so the app's status meanin
 untouched. The rest of the product stays on daylight neutrals.
 
 **Every "Get a quote" is the primary button.** The hero's lime `lg` with its arrow appears in the hero,
-under pricing, under the steps and on the ticket. The bar keeps the `sm` size its height allows.
-It is one door, repeated wherever a reader might decide, so a second lime "Get a quote" never
-splits the voice. A different action never takes lime.
+under the comparison (worded "Get your estimate", as its brief asks), under pricing, under the
+steps and on the ticket. The bar keeps the `sm` size its height allows. It is one door, the quote
+calculator, repeated wherever a reader might decide, so a second lime button into it never splits
+the voice. A different action never takes lime.
 
 ### Named Rules
 **The One-Voice Rule.** Live Lime appears on ≤10% of any given screen — the primary CTA, the one
@@ -475,11 +476,12 @@ The expat page runs:
 1. Hero (desk, sky)
 2. Reviews (band, sky)
 3. What you can ship (desk, sky)
-4. Why Rimkirim, closed by the carriers (band, violet)
-5. Pricing (desk, violet)
-6. How it works (band, magenta)
-7. FAQ (desk, magenta)
-8. The dusk ticket (see Components)
+4. Who does what, closed by the pickups and the carriers (band, violet)
+5. Why Rimkirim, the comparison table (desk, violet)
+6. Pricing (band, violet)
+7. How it works (band, magenta)
+8. FAQ (desk, magenta)
+9. The dusk ticket (see Components)
 
 ## Elevation & Depth
 

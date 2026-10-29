@@ -13,7 +13,8 @@ const OURS = ["us1", "us2", "us3", "us4", "us5", "us6"] as const;
 const YOURS = ["you1", "you2", "you3"] as const;
 
 /**
- * Brief 04, "Why Rimkirim", answered as a division of labour instead of a
+ * Brief 04, "Who does what" ("Why Rimkirim" in the brief, now the
+ * comparison after it), answered as a division of labour instead of a
  * promise that shipping is easy: what we do, and the three things that stay
  * with the customer. Someone comparing providers can assess that, and sales
  * stops answering the same basic questions. Two de-boxed lists, not cards;

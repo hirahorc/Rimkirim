@@ -196,7 +196,8 @@ body:has(main > [data-field]) {
 /* Chapter tones: the expat landing walks the expat identity, the
    .nav-expat gradient (sky #21b1ec to magenta #d41ce6), down the page as
    solid stops, never as a gradient fill: sky for the hero, reviews and what
-   ships; violet (the gradient's midpoint) for why Rimkirim and pricing;
+   ships; violet (the gradient's midpoint) for who does what, why
+   Rimkirim and pricing;
    magenta for how it works and the FAQ; then the dusk ticket. A chapter
    re-points the neutrals rather than painting components one by one, so
    every grey inside takes its hue: the band's wash, the muted words
@@ -1058,7 +1059,7 @@ body:has(main > [data-field]) {
 }
 
 /* ------------------------------------------------------------------ */
-/*  Why Rimkirim: the pickup photos                                    */
+/*  Who does what: the pickup photos                                   */
 /* ------------------------------------------------------------------ */
 /* Three layouts on offer (components/expat/PickupPhotos); the two not
    picked go, with their rules here.
