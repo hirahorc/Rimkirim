@@ -195,7 +195,6 @@ const id = {
       supportTypical: "Koordinator khusus biasanya datang dengan harga layanan penuh",
       supportOurs: "Pendampingan personal dan responsif dari pickup sampai antar, berapa pun besar kirimanmu",
       footnote: "Harga Rimkirim adalah estimasi sampai kirimanmu kami cek. Opsi umum berbeda-beda di tiap penyedia jasa.",
-      cta: "Lihat estimasimu",
     },
     pricing: {
       eyebrow: "Harga",
@@ -1865,7 +1864,6 @@ const en: Messages = {
       supportTypical: "A dedicated coordinator usually comes with a full-service price",
       supportOurs: "Personal, responsive guidance from pickup to delivery, whatever the size of your move",
       footnote: "Rimkirim prices are estimates until we've checked your shipment. Typical options vary from one provider to the next.",
-      cta: "Get your estimate",
     },
     pricing: {
       eyebrow: "Pricing",

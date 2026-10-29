@@ -202,7 +202,7 @@ export const REVIEW_NOTES = {
   coordinate:
     "Konfirmasi pembagian tugas, terutama dokumen WNA. Konten repo bertentangan: artikel Belanda bilang fasilitas Pindahan mencakup WNA yang pindah kerja, panduan bea cukai bilang hanya WNI. Satu-satunya daftar dokumen WNA di repo: VITAS, ITAS, RPTKA. Foto pickup adalah kiriman customer asli: pastikan ada izin customer. Wajah kurir, plat nomor, dan label AWB sudah disensor mosaik.",
   compare:
-    "Usulan agency (04b), copy menunggu verifikasi ops: terutama 'estimasi dengan rincian biaya sebelum memesan', 'kabar status di setiap tahap, termasuk clearance', dan pendampingan personal. Kompetitor tidak disebut, dan packing sengaja tidak dibandingkan (dibahas di How it works). Tombolnya 'Get your estimate' sesuai brief, ke kalkulator yang sama dengan 'Get a quote'.",
+    "Usulan agency (04b), copy menunggu verifikasi ops: terutama 'estimasi dengan rincian biaya sebelum memesan', 'kabar status di setiap tahap, termasuk clearance', dan pendampingan personal. Kompetitor tidak disebut, dan packing sengaja tidak dibandingkan (dibahas di How it works).",
   pricing:
     "Ambang 25 kg dan ±120 cm diambil dari engine surcharge (dokumen carrier). Modal Surcharge Information sama dengan di situs utama (FedEx/DHL/UPS + biaya logistik lain). Konfirmasi semuanya berlaku untuk rute expat, terutama surcharge packaging untuk koper yang kini disebut di copy.",
   steps: "Brief: Rimkirim konfirmasi urutan langkah yang sebenarnya.",

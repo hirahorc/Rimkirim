@@ -259,10 +259,10 @@ The tones are atmosphere and wayfinding, never state, so the app's status meanin
 untouched. The rest of the product stays on daylight neutrals.
 
 **Every "Get a quote" is the primary button.** The hero's lime `lg` with its arrow appears in the hero,
-under the comparison (worded "Get your estimate", as its brief asks), under pricing, under the
-steps and on the ticket. The bar keeps the `sm` size its height allows. It is one door, the quote
-calculator, repeated wherever a reader might decide, so a second lime button into it never splits
-the voice. A different action never takes lime.
+under the comparison, under pricing, under the steps and on the ticket, always worded "Get a
+quote". The bar keeps the `sm` size its height allows. It is one door, the quote calculator,
+repeated wherever a reader might decide, so a second lime "Get a quote" never splits the voice. A
+different action never takes lime.
 
 ### Named Rules
 **The One-Voice Rule.** Live Lime appears on ≤10% of any given screen — the primary CTA, the one

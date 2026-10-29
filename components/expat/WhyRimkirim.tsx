@@ -90,7 +90,7 @@ export function WhyRimkirim() {
         <p className="mt-6 max-w-2xl text-xs leading-relaxed text-muted-2">{t("expat.compare.footnote")}</p>
         <Button asChild size="lg" className="mt-8">
           <a href={EXPAT_QUOTE_URL}>
-            {t("expat.compare.cta")} <ArrowRight />
+            {t("expat.cta")} <ArrowRight />
           </a>
         </Button>
       </div>
