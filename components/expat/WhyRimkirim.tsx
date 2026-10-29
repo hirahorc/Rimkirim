@@ -24,6 +24,19 @@ const CELL = "px-3 py-4 align-top md:px-6 md:py-5";
  * "typical options" covers both ends without naming anyone, and there are
  * no crosses or ticks to exaggerate the gap (the brief rules them out).
  * Copy is pending ops verification (`?review=1`).
+ *
+ * "Typical options" summarises what these providers publish, read on
+ * 2026-10-29 (named here only, never on the page):
+ * - https://www.excessluggage.co.uk/shipping-personal-effects-to-indonesia/
+ *   and https://www.excessluggage.co.uk/: UK export customs handled, import
+ *   clearance "the importer's own responsibility", air delivered to the
+ *   arrival airport, the valued packing list the customer's, no furniture.
+ * - https://www.sevenseasworldwide.com/en-us/: online itemised quote,
+ *   boxes and bags to whole homes, a tracker for MoveCube only.
+ * - https://www.dehaan.nl/en/moving-to-indonesia/ (with /quote/ and
+ *   /services/customs-formalities/): a quote after a home or video survey,
+ *   whole or part households, customs guided with partners, sometimes
+ *   with the customer present.
  */
 export function WhyRimkirim() {
   const t = useT();

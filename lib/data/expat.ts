@@ -71,8 +71,8 @@ const FAQ: ExpatFaqSource[] = [
   {
     q: { id: "Berapa lama pengirimannya?", en: "How long does it take?" },
     a: {
-      id: "Lewat udara dari Eropa, biasanya sekitar 4–8 hari perjalanan, ditambah sekitar 4–10 hari kerja untuk clearance di Indonesia. Estimasi untuk rutemu kami berikan bersama penawaran.",
-      en: "By air from Europe, usually around 4–8 days in transit, plus about 4–10 working days for customs clearance in Indonesia. We'll give you an estimate for your route with your quote.",
+      id: "Lewat udara dari Eropa, biasanya sekitar 4–8 hari perjalanan, ditambah sekitar 4–10 hari kerja untuk clearance di Indonesia. Jauh lebih cepat daripada kargo laut, yang biasanya butuh lima sampai enam minggu di laut saja. Estimasi untuk rutemu kami berikan bersama penawaran.",
+      en: "By air from Europe, usually around 4–8 days in transit, plus about 4–10 working days for customs clearance in Indonesia. That's much faster than sea freight, which usually spends five to six weeks at sea alone. We'll give you an estimate for your route with your quote.",
     },
   },
   {
@@ -202,7 +202,7 @@ export const REVIEW_NOTES = {
   coordinate:
     "Konfirmasi pembagian tugas, terutama dokumen WNA. Konten repo bertentangan: artikel Belanda bilang fasilitas Pindahan mencakup WNA yang pindah kerja, panduan bea cukai bilang hanya WNI. Satu-satunya daftar dokumen WNA di repo: VITAS, ITAS, RPTKA. Foto pickup adalah kiriman customer asli: pastikan ada izin customer. Wajah kurir, plat nomor, dan label AWB sudah disensor mosaik.",
   compare:
-    "Usulan agency (04b), copy menunggu verifikasi ops: terutama 'estimasi dengan rincian biaya sebelum memesan', 'kabar status di setiap tahap, termasuk clearance', dan pendampingan personal. Kompetitor tidak disebut, dan packing sengaja tidak dibandingkan (dibahas di How it works).",
+    "Usulan agency (04b), copy menunggu verifikasi ops: terutama 'estimasi dengan rincian biaya sebelum memesan', 'kabar status di setiap tahap, termasuk clearance', dan pendampingan personal. Kompetitor tidak disebut, dan packing sengaja tidak dibandingkan (dibahas di How it works). Kolom 'opsi umum' diriset dari halaman publik jasa kirim bagasi dan perusahaan pindahan internasional (2026-10-29). Klaim Rimkirim yang perlu dikonfirmasi: antar sampai pintu di semua kota tujuan (termasuk kota yang belum terlayani domestik seperti Makassar), customer tidak perlu datang ke bea cukai, dan kabar status lewat WhatsApp di setiap tahap.",
   pricing:
     "Ambang 25 kg dan ±120 cm diambil dari engine surcharge (dokumen carrier). Modal Surcharge Information sama dengan di situs utama (FedEx/DHL/UPS + biaya logistik lain). Konfirmasi semuanya berlaku untuk rute expat, terutama surcharge packaging untuk koper yang kini disebut di copy.",
   steps: "Brief: Rimkirim konfirmasi urutan langkah yang sebenarnya.",
