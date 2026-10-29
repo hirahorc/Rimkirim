@@ -266,8 +266,6 @@ const id = {
     },
     pickups: {
       label: "Pickup asli untuk customer Rimkirim",
-      open: "Perbesar foto",
-      viewerHint: "Pakai tombol panah untuk foto lainnya. Tekan Esc untuk menutup.",
       doorstep: "Kurir memindai label tiga kardus di depan pintu customer",
       trolley: "Setumpuk kardus didorong ke truk kurir",
       pallet: "Dua kardus besar diangkut dengan hand pallet",
@@ -1938,8 +1936,6 @@ const en: Messages = {
     },
     pickups: {
       label: "Real pickups for Rimkirim customers",
-      open: "Enlarge photo",
-      viewerHint: "Use the arrow keys for the other photos. Press Esc to close.",
       doorstep: "A courier scans the labels on three boxes at the customer's door",
       trolley: "A stack of boxes wheeled out to the courier's truck",
       pallet: "Two large boxes moved on a pallet jack",

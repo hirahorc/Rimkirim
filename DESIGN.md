@@ -668,6 +668,18 @@ home hero's floating verdicts and the expat hero's departure board. Treat any ot
   colour, not geometry", after the rating arrow, kept because it is how a mouse discovers there is
   more to see. Gated to fine pointers, so a tap never leaves it open, and off under reduced motion,
   where swaps are instant as well.
+- **The pickup slices** (`.pickup-slices`, expat "Who does what"): six real pickup photos in one
+  row, one open at its full 4:5 and the rest slivers sharing what is left, so the row always fills
+  its width. The open print wears its route as an ink label (the departure board's tile), flat
+  flag and country to flat flag and Indonesia, fading in once the print has opened; ink, because a
+  flat flag with a white field vanishes into a white label; the photos are never narrated, and what each
+  shows is alt text for screen readers. Resting a mouse on a sliver for 90ms opens it, and so do click, tap and Enter: a
+  `flex` transition, 560ms on `--ease-in-out-strong`, which retargets on a quick sweep. **Hover
+  opening a print** is the third written-down exception to "hover moves colour, not geometry",
+  kept because the row is built to be swept, and a mouse finds the next photo by pointing at it.
+  Mouse only, after the intent delay, so a pass across the row on the way elsewhere does not
+  ripple it. A keyboard press opens instantly, and reduced motion drops the transition. Below
+  `sm` six slivers have no room, so phones get the house scroll strip with its position row.
 
 **The Never-Delay-The-Calculator Rule.** The landing exists to get someone into the rate
 calculator, which sits immediately below the fold. Motion may decorate that journey but must

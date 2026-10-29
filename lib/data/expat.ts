@@ -148,18 +148,20 @@ export const EXPAT_HERO_PHOTOS = [
 /**
  * "Why Rimkirim": couriers collecting Rimkirim customers' shipments, from the
  * team (2026-10-27). Every frame is cropped to the same 4:5 at the same
- * 960×1200, so a layout can treat them as equals; the couriers' faces,
+ * 960×1200, so the slices can treat them as equals; the couriers' faces,
  * number plates and shipping labels (AWB) wear the hero's mosaic. Opens at
- * the door, then alternates people and boxes. `alt` is a key under
- * `expat.pickups`.
+ * the door, then alternates people and boxes. On the page each photo says
+ * only its route: `from`, the ISO country it was collected in (confirmed by
+ * the team, 2026-10-29), to Indonesia. `alt` is a key under `expat.pickups`,
+ * the photo described for screen readers.
  */
 export const EXPAT_PICKUP_PHOTOS = [
-  { src: "/expat/pickups/01-doorstep-scan.jpg", alt: "doorstep" },
-  { src: "/expat/pickups/02-trolley.jpg", alt: "trolley" },
-  { src: "/expat/pickups/03-pallet-jack.jpg", alt: "pallet" },
-  { src: "/expat/pickups/04-stroller-box.jpg", alt: "stroller" },
-  { src: "/expat/pickups/05-truck-load.jpg", alt: "truck" },
-  { src: "/expat/pickups/06-tall-box.jpg", alt: "tallBox" },
+  { src: "/expat/pickups/01-doorstep-scan.jpg", alt: "doorstep", from: "GB" },
+  { src: "/expat/pickups/02-trolley.jpg", alt: "trolley", from: "JP" },
+  { src: "/expat/pickups/03-pallet-jack.jpg", alt: "pallet", from: "DE" },
+  { src: "/expat/pickups/04-stroller-box.jpg", alt: "stroller", from: "GB" },
+  { src: "/expat/pickups/05-truck-load.jpg", alt: "truck", from: "GB" },
+  { src: "/expat/pickups/06-tall-box.jpg", alt: "tallBox", from: "GB" },
 ] as const;
 
 /** the hero's one-line proof: a verbatim excerpt of this review */
