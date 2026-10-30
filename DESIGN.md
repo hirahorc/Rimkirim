@@ -957,6 +957,24 @@ eyebrow names the service right below.
   arrow, soft shadow, `max-width: 16rem`, above by default and shifted/flipped off the viewport
   edge. Motion 100ms in (lift + 0.95 scale) / 100ms out; opens on hover, focus, and tap.
 
+### The comparison lane (signature)
+The expat "Why Rimkirim" table, Rimkirim against the typical options. It stays a real table at
+every width, and Rimkirim is a **lane laid across a ruled sheet**: one continuous card in the
+chapter's wash with the `lg` corner, rising above the header rule and running below the last row.
+
+- **The head:** `tone-ink` with the white wordmark and the page's "Door to door, by air" in a
+  brand badge, the section's one lime mark (lime is at its loudest on violet). Phones keep the
+  wordmark only.
+- **The cells:** each answer leads with a short headline in the display face, so the lane reads as
+  the pitch on its own, then the sentence in the chapter's muted ink. Row hairlines turn white
+  inside the lane, so the rows read through it without ruling it.
+- **The foot:** "Get a quote" lives at the bottom of the lane from `md`; a phone, whose lane is too
+  narrow for the button, keeps it under the table.
+- **The typical column** sits plain on the desk, smaller and in `muted-2`, under a note on what it
+  summarises. No ticks, no crosses, no names: the lane does the highlighting, not a verdict.
+- Under a fine pointer a row lights up across the table in the colour channel (label and headline
+  to `tone-ink`, the typical answer to ink), so the eye can follow one aspect across the width.
+
 ### The dusk ticket (signature)
 The expat landing ends on a ticket, the page's one dark surface. It is `bg-dusk` (`#4a1e67`)
 with white words and the `lg` corner, and it sits inside the text column.
