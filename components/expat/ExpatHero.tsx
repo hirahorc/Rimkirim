@@ -28,7 +28,6 @@ export function ExpatHero() {
   const review = TESTIMONIALS.find((r) => r.name === EXPAT_HERO_REVIEW.name);
   return (
     <section data-tone="sky" className="relative overflow-hidden">
-      <div aria-hidden className="grid-backdrop reveal-bg pointer-events-none absolute inset-0" />
       <div className="relative mx-auto max-w-6xl px-4 pb-16 pt-10 sm:px-6 sm:pt-14 lg:pb-20 lg:pt-16">
         <ReviewNote note={REVIEW_NOTES.hero} className="mb-3" />
         <ReviewNote note={REVIEW_NOTES.cta} className="mb-6" />

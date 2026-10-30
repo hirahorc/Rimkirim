@@ -258,7 +258,7 @@ body:has(main > [data-field]) {
   --border: #f5befa;
   --border-strong: #f0a5f7;
 }
-/* the hero's and the photo slots' grid speaks the chapter's hue too */
+/* the photo slots' grid speaks the chapter's hue too */
 [data-tone] {
   --grid-line: color-mix(in srgb, var(--tone) 16%, transparent);
 }
