@@ -25,6 +25,7 @@ export function SceneStage({
   tone,
   buildWith,
   delay = 0,
+  glint = false,
   className,
   sceneClassName,
   children,
@@ -40,6 +41,9 @@ export function SceneStage({
   buildWith?: string;
   /** ms added to every piece's start, to stagger a set */
   delay?: number;
+  /** answer a mouse as x.ai's product cards do: the scene leans in and one
+   *  glint of light crosses the card (globals.css, .scene-glint) */
+  glint?: boolean;
   className?: string;
   sceneClassName?: string;
   children: React.ReactNode;
@@ -75,6 +79,7 @@ export function SceneStage({
       className={cn(
         "@container relative isolate overflow-hidden",
         ground === "day" && "rounded-lg bg-(--tone-wash)",
+        glint && "scene-glint",
         className,
       )}
     >
@@ -87,6 +92,7 @@ export function SceneStage({
       <div className={cn("jr-scene absolute inset-0", sceneClassName)} data-built={built ? "" : undefined}>
         {children}
       </div>
+      {glint && <div className="scene-glint-band absolute inset-0" />}
     </div>
   );
 }

@@ -306,9 +306,11 @@ point of use.
   cardboard box is the brown of cardboard.
   The section scenes (below, Motion) stand on the same ground, still: `.scene-day` is the
   chapter's wash a step deeper than its band (so a stage reads as a stage on a band as well as
-  on the desk) with the trip's two ends as blooms, sky top left and magenta bottom right. Same
-  job, same limits: illustration only, every word on a white card. This extends the exception
-  to the page's illustrations; it does not license a gradient anywhere else.
+  on the desk) with the trip's two ends as blooms, sky top left and magenta bottom right. On the
+  closing ticket the ticket is the ground. Same job, same limits: illustration only, every word
+  on a white card. This
+  extends the exception to the page's illustrations; it does not license a gradient anywhere
+  else.
 
 **The Tint-15 Rule.** *Status* chips use the colour at 15% opacity for the fill (banners and
 strips step down to 10%), full strength for the icon, and the **status ink** (`--*-ink`: the
@@ -597,10 +599,7 @@ home hero's floating verdicts and the expat hero's departure board. Treat any ot
     10px) on their container's one timeline, staggered 5% apart in the order a thing is put
     together. The home page's worked example builds its sum (chargeable weight, base, surcharge,
     total); the expat pricing builds a quote from its inputs (route, weight, size, surcharges)
-    and lines the size guide's pieces up left to right, its tip last; what you can ship builds
-    its list of goods, clothes to personal items, the order of the CIPL beside it, then what is
-    not in it (larger items, the can't-ship line) on a build of its own, since one container
-    that tall would leave its rows still fading mid-screen on a phone.
+    (the size guide beside it is the calculator scene, below).
   Without support or under reduced motion both are simply static: the hairline is already drawn.
 - **The disclosure open** (`Disclosure` in `components/ui` — the one accordion idiom, shared by
   the /faq page and the article FAQs so they cannot drift; its controlled sibling
@@ -773,12 +772,15 @@ home hero's floating verdicts and the expat hero's departure board. Treat any ot
   is a button laid over it so the title stays a heading. Under reduced motion nothing reveals,
   plays or glides: step 01 stands, built, and a click switches instantly; without script every
   scene stands built.
-- **The section scenes** (`SceneStage` + `SectionScenes`, so far expat what you can ship): a
-  section that describes a screen the visitor never sees shows it, framed and built as the
-  journey's scenes are, from the same pieces (`SceneParts`: the filler line, the flag, the
-  parcel, the chat card) on the same ground, so the page's illustrations are one figure
-  language. One hero surface a gutter from the top and sides, off the bottom, at most one
-  satellite.
+- **The section scenes** (`SceneStage` + `SectionScenes`, expat pricing, what you can ship, who
+  does what, and the closing stub): each section that describes a screen the visitor never sees
+  shows it, framed and built as the journey's scenes are, from the same pieces (`SceneParts`:
+  the filler line, the flag, the parcel, the chat card) on the same ground, so the page's
+  illustrations are one figure language. One hero surface a gutter from the top and sides, off the
+  bottom, at most one satellite. Pricing is the calculator's own package rows (the real
+  calculator's readout: real, by size, charged), a box charged by its size beside a suitcase
+  charged by its weight, then the charged weight, the one big number; it replaced the line
+  drawings of the size guide, whose rule and tip are now the caption under it.
   What you can ship is the commercial invoice and packing list (CIPL) for the last of eight boxes
   ("Box 8 of 8"), alone on its ground, the other seven's sheets under it a degree askew each way
   so a pile shows at rest, the section's six goods with the section's icons printed bare, signed
@@ -790,10 +792,38 @@ home hero's floating verdicts and the expat hero's departure board. Treat any ot
   of a pixel ragged and thin in places, set on each piece so its grain travels with the piece as
   it rises); only what a hand adds to the printout keeps a colour, the chapter's ink: the
   signature, a pen line, and the stamp, rubber-patchy by its own filter, a little askew.
+  Who does what is the team on WhatsApp walking a customer through the three to-dos (the
+  documents, the packing list they fill in together, the pickup day), on the customer's phone: the
+  stageshow kit's iPhone 18 Pro (`IPhone`, its `pro` frame ported, the screen at true points,
+  status bar, island and home indicator the phone's own), pinned a gutter from the stage's top and
+  running off its foot, so the crop falls on the chat's empty wallpaper (WhatsApp sets a short
+  chat from the top). Inside the screen it is WhatsApp's own light theme: the chat's wallpaper
+  colour without its doodles, white and WhatsApp-green bubbles with the iOS tail, the time in the
+  bubble, the blue read ticks, the packing list as a document message; the one stretch of the page
+  in another product's colours, because it is that product on a phone, and only inside the screen.
+  It ends on "Pickup booked". The phone is four fifths of a wide stage and nearly all of a compact
+  one, so its 17pt type reads at 12 to 15px; the stage is portrait (8/9, 4/5 on a phone), beside
+  the two lists, stacked, and held still as they scroll (`lg:sticky`), as the CIPL is.
+  What you can ship and Who does what each reveal once as the journey does (`.jr-reveal`,
+  `useSectionReveal`): the head, the illustration, then the section's lists piece by piece (What
+  you can ship's six goods, its larger items and its can't-ship line; Who does what's two lists),
+  each rising 1rem on a 70ms stagger, when the section's top is 30% up the viewport, since a band
+  as tall as Who does what (the pickups and the carriers follow its lists) would leave its head on
+  screen and unseen waiting for 30% of it to show.
+  The closing stub gives each step its screen, white cards straight on the ticket (the ticket is
+  their ground, so no stage of their own), their column's width, fading out at the foot over their
+  empty end on an eased mask (`.scene-fade`, square at the foot, since a dissolving edge has no
+  corner to round): the estimate, whose big number is the charged weight its price is worked from,
+  because no price here can be the visitor's; an eligibility question answered; the handoff on
+  WhatsApp. Three in a row from `lg`, a row each beside its words on a tablet, the house scroll
+  strip on a phone.
   Each **builds once** when 40% in view (a hero rises from the crop, rows lift in reading order,
-  values rise, the CIPL's signature is written last, `jr-ring` on its one stroke, then its stamp
-  comes down, `stamp-press`, the build's last beat), then stands still: no loop, no player, no
-  control, because none runs past about three seconds.
+  fields type, values rise, the CIPL's signature is written last, `jr-ring` on its one stroke,
+  then its stamp comes down, `stamp-press`, the build's last beat,
+  a pressed answer's fill comes up under its one label, `jr-press` and `jr-ink`), then stands still: no loop, no player, no control,
+  because none runs past about three seconds. The closing stub's three build as one set, 150ms
+  apart, when the stub comes into view, so on a phone the slide peeking from the strip is
+  already built.
   Scenes are `aria-hidden`; the section's words carry the meaning. Each scene names its compact
   container query, where the gutter tightens and its type stays at 10px or more. Under reduced
   motion, and without script, every scene stands built.
@@ -805,9 +835,11 @@ clock, so the page feels made by one hand: arriving `--dur-hover` (300ms), leavi
 settles soft). Today: the hero's door arrow (`DoorButton` reads the tokens), the photo pile's
 fan and swaps, the pickup slices, the review cards, the CIPL's card (`.cipl-stack`: the other
 boxes' sheets, a degree askew under it, fan out further from the foot, one each way, to about
-3°, and the top sheet lifts). A new one joins the scale, never its own numbers. Colour-only
-hovers keep the system's 0.2s; entrances, builds and the journey keep
-their own, longer, timing, because they are read, not answered.
+3°, and the top sheet lifts), the WhatsApp phone's card (`SceneStage glint`, after x.ai's
+product cards: the scene leans in to 1.02 and one glint of light crosses the card, over the
+phone's glass, on the way in only; the lean on `--dur-hover`/`--dur-hover-out`, the glint, which
+crosses rather than settles, on `--dur-follow`). A new one joins the scale, never its own numbers. Colour-only hovers keep the system's 0.2s; entrances,
+builds and the journey keep their own, longer, timing, because they are read, not answered.
 
 **The Never-Delay-The-Calculator Rule.** The landing exists to get someone into the rate
 calculator, which sits immediately below the fold. Motion may decorate that journey but must
@@ -1144,7 +1176,10 @@ with white words and the `lg` corner, and it sits inside the text column.
 - **The tear line:** a dashed hairline at white 25%, inset to the text, with a 24px notch punched
   out of each edge where the desk shows through. The notches are white circles, so the ticket
   must sit on the white desk.
-- **Below it, the stub:** what happens next, on the step rail in white at 20%.
+- **Below it, the stub:** what happens next, on the step rail in white at 20%, each step with its
+  screen above its words (The section scenes, Motion): white cards straight on the dusk, fading
+  out at the foot, the chapter's magenta for their accents. On a phone the stub is the house scroll strip,
+  so it stays one row tall under the ask.
 
 Dusk is the deep end of the route the page walks from sky through violet to magenta, so
 arriving here reads as landing. It is dark because the last ask should not look like one more

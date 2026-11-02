@@ -1463,12 +1463,127 @@ body:has(main > [data-field]) {
 /* The section scenes' grounds (SceneStage): the same recipe, still. Day is
    the chapter's wash a step deeper than its band, so the stage reads as a
    stage on a band as well as on the desk, with the trip's two ends as
-   blooms, sky in the top left and magenta in the bottom right. */
+   blooms, sky in the top left and magenta in the bottom right. (On the
+   closing ticket the ticket is the ground, so its scenes have none.) */
 .scene-day {
   background:
     radial-gradient(80% 75% at 6% 0%, rgb(33 177 236 / 0.26), transparent 70%),
     radial-gradient(75% 70% at 100% 100%, rgb(212 28 230 / 0.16), transparent 72%),
     color-mix(in oklab, var(--tone-wash), var(--tone) 14%);
+}
+/* A card that fades out at its foot instead of being cut (the closing
+   stub's): solid over its content, then an eased fall to nothing across
+   its last 42%, smoothstep stops so the fade has no visible start or end */
+.scene-fade {
+  --scene-fade: linear-gradient(
+    to bottom,
+    #000 58%,
+    rgb(0 0 0 / 0.9) 66%,
+    rgb(0 0 0 / 0.65) 75%,
+    rgb(0 0 0 / 0.35) 83%,
+    rgb(0 0 0 / 0.1) 92%,
+    transparent
+  );
+  -webkit-mask-image: var(--scene-fade);
+  mask-image: var(--scene-fade);
+}
+/* The iPhone 18 Pro (IPhone.tsx, after the stageshow kit's Phone): the
+   status bar laid out exactly as Apple's iOS 27 UI kit does (the time
+   centred in the first 138.5pt, its 22pt line from y 21.5; signal, wifi and
+   battery from x 285.25, 8 apart), the island and the home indicator.
+   Inside the screen 1px is 1pt; the screen is scaled as a whole */
+.iphone {
+  position: relative;
+  flex-shrink: 0;
+  box-shadow:
+    0 calc(var(--ps) * 40) calc(var(--ps) * 80) calc(var(--ps) * -16) rgb(50 50 93 / 0.25),
+    0 calc(var(--ps) * 24) calc(var(--ps) * 48) calc(var(--ps) * -24) rgb(0 0 0 / 0.3);
+}
+.iphone__bands {
+  position: absolute;
+  inset: 0;
+  overflow: visible;
+  pointer-events: none;
+}
+.iphone__window {
+  position: relative;
+  overflow: hidden;
+  /* keeps the scaled screen clipped to the corners in Safari */
+  isolation: isolate;
+}
+.iphone__screen {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  color: #000;
+  font-family: -apple-system, system-ui, sans-serif;
+  font-size: 15px;
+  letter-spacing: -0.015em;
+  transform-origin: 0 0;
+  -webkit-font-smoothing: antialiased;
+}
+.iphone__status {
+  position: absolute;
+  inset: 0 0 auto;
+  z-index: 2;
+  height: 62px;
+}
+/* the system font only, never a named or hosted SF (Apple's license keeps
+   its files to design mock-ups); on an Apple device that is SF already, and
+   a variable system font is asked for its text optics */
+.iphone__time {
+  position: absolute;
+  top: 21.5px;
+  left: 0;
+  width: 138.5px;
+  font-family: -apple-system, system-ui, sans-serif;
+  font-variation-settings: "opsz" 17;
+  font-size: 17.67px;
+  font-weight: 590;
+  line-height: 22px;
+  letter-spacing: 0;
+  text-align: center;
+}
+.iphone__glyphs {
+  position: absolute;
+  top: 25.33px;
+  left: 285.25px;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+.iphone__island {
+  position: absolute;
+  top: 14px;
+  left: 50%;
+  z-index: 3;
+  width: 95px;
+  height: 37px;
+  border-radius: 18.5px;
+  background: #000;
+  transform: translateX(-50%);
+}
+.iphone__content {
+  position: relative;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+  padding-top: 62px;
+}
+.iphone__home {
+  position: absolute;
+  bottom: 8px;
+  left: 50%;
+  z-index: 2;
+  width: 144px;
+  height: 5px;
+  border-radius: 2.5px;
+  background: currentColor;
+  transform: translateX(-50%);
 }
 /* the CIPL's stack (PackingScene, on the stage marked .cipl-stack): the
    other boxes' sheets lie under it a degree or so askew, one each way, so
@@ -1507,6 +1622,40 @@ body:has(main > [data-field]) {
   .cipl-stack:hover .cipl-under[data-side="right"] {
     translate: 0.3em 0;
     rotate: 3deg;
+  }
+}
+/* a scene card that answers a mouse the way x.ai's product cards do (the
+   WhatsApp phone's, SceneStage `glint`): the scene leans in a touch and one
+   glint of light crosses the card, over the phone's glass, on the way in
+   only. Leaving, the scene settles back and the glint is simply gone, back
+   off the card's left edge where it waits unseen. On the hover scale
+   (DESIGN.md, Motion): the lean arrives on --dur-hover and leaves on
+   --dur-hover-out; the glint, which crosses rather than settles, travels on
+   --dur-follow, fast off the left edge and slowing as it leaves the right
+   one. Fine pointers only, and not under reduced motion */
+.scene-glint .jr-scene {
+  transition: scale var(--dur-hover-out) var(--ease-hover);
+}
+.scene-glint-band {
+  pointer-events: none;
+  background: linear-gradient(
+    120deg,
+    transparent 40%,
+    rgb(255 255 255 / 0.35) 47%,
+    rgb(255 255 255 / 0.6) 50%,
+    rgb(255 255 255 / 0.35) 53%,
+    transparent 60%
+  );
+  translate: -105% 0;
+}
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .scene-glint:hover .jr-scene {
+    scale: 1.02;
+    transition-duration: var(--dur-hover);
+  }
+  .scene-glint:hover .scene-glint-band {
+    translate: 105% 0;
+    transition: translate var(--dur-follow) var(--ease-hover);
   }
 }
 /* the CIPL's stamp (PackingScene): Rimkirim's "Checked" on the last box's
@@ -1619,8 +1768,10 @@ body:has(main > [data-field]) {
   .jr-tile {
     animation: board-flip 320ms var(--ease-out-soft) both;
   }
-  /* the section reveals itself once, as it comes into view */
-  [data-journey-ready]:not([data-revealed]) .jr-reveal {
+  /* the section reveals itself once, as it comes into view (the journey,
+     and "What you can ship" and "Who does what", which reveal as the
+     journey does: useSectionReveal) */
+  :is([data-journey-ready], [data-reveal-ready]):not([data-revealed]) .jr-reveal {
     opacity: 0;
   }
   [data-revealed] .jr-reveal {
@@ -1707,6 +1858,31 @@ body:has(main > [data-field]) {
     box-shadow: inset 0 0 0 1.5px var(--border-strong);
   }
 }
+/* a parcel set down: it comes down a short way into place, decelerating,
+   opaque early in the move (a box never fades through) */
+@keyframes jr-land {
+  from {
+    transform: translateY(-1.2em);
+    opacity: 0;
+  }
+  30% {
+    opacity: 1;
+  }
+}
+/* a pressed control's label turns with its fill */
+@keyframes jr-ink {
+  from {
+    color: var(--foreground);
+  }
+}
+/* a control pressed: its chosen state comes up over the plain one, a
+   touch small first, the way a press gives */
+@keyframes jr-press {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+}
 @keyframes jr-fly {
   from {
     offset-distance: 0%;
@@ -1735,6 +1911,9 @@ body:has(main > [data-field]) {
   .jr-scene[data-built] .jr-flip { animation-name: board-flip; animation-duration: 320ms; animation-timing-function: var(--ease-out-soft); }
   .jr-scene[data-built] .jr-grow { animation-name: jr-grow; animation-duration: 800ms; }
   .jr-scene[data-built] .jr-fill { animation-name: jr-fill; animation-duration: 200ms; }
+  .jr-scene[data-built] .jr-press { animation-name: jr-press; animation-duration: 260ms; }
+  .jr-scene[data-built] .jr-land { animation-name: jr-land; animation-duration: 700ms; }
+  .jr-scene[data-built] .jr-ink { animation-name: jr-ink; animation-duration: 260ms; }
   .jr-scene[data-built] .jr-check { animation-name: check-draw; animation-duration: 320ms; }
   .jr-scene[data-built] .jr-type { animation-name: jr-type; animation-duration: 520ms; animation-timing-function: linear; }
   .jr-scene[data-built] .jr-ring { animation-name: jr-ring; animation-duration: 1100ms; }
@@ -1748,7 +1927,7 @@ body:has(main > [data-field]) {
 
   /* until its step comes up, a scene's pieces wait out of sight (only
      once the page is live, so without script every scene stands built) */
-  :is([data-journey-ready], [data-scene-ready]) .jr-scene:not([data-built]) :is(.jr-arrive, .jr-lift, .jr-rise, .jr-drop, .jr-flip, .jr-fly) {
+  :is([data-journey-ready], [data-scene-ready]) .jr-scene:not([data-built]) :is(.jr-arrive, .jr-lift, .jr-rise, .jr-drop, .jr-flip, .jr-fly, .jr-press, .jr-land) {
     opacity: 0;
   }
   :is([data-journey-ready], [data-scene-ready]) .jr-scene:not([data-built]) :is(.jr-type, .jr-draw) {

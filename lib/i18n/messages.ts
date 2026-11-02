@@ -227,10 +227,6 @@ const id = {
       guideTitle: "Cara ukuran jadi berat",
       guideBody:
         "Yang dihitung adalah yang lebih besar: berat asli, atau berat menurut ukuran (panjang × lebar × tinggi ÷ 5000).",
-      cabin: "Koper kabin",
-      box: "Kardus pindahan",
-      large: "Koper besar",
-      bySize: "{kg} kg menurut ukuran",
       tip: "Jaga tiap barang di bawah 25 kg dan sisi terpanjangnya di bawah sekitar 120 cm untuk menghindari sebagian besar surcharge.",
     },
     steps: {
@@ -298,6 +294,15 @@ const id = {
     // the words inside the section illustrations (decorative, hidden from
     // assistive tech; the sections' own text carries the meaning)
     scenes: {
+      size: {
+        title: "Barangmu",
+        box: "Kardus",
+        suitcase: "Koper",
+        real: "Asli",
+        bySize: "Ukuran",
+        charged: "Dihitung",
+        total: "Berat yang dihitung",
+      },
       packing: {
         title: "Commercial Invoice / Packing List",
         box: "Kardus 8 dari 8",
@@ -313,6 +318,29 @@ const id = {
         total: "Total nilai",
         signed: "Tanda tangan pengirim",
         stamp: "Diperiksa",
+      },
+      thread: {
+        today: "Hari ini",
+        msg1: "Untuk bea cukai, siapkan paspor dan izin tinggal Indonesia ya. Ini packing list yang kita isi bersama.",
+        file: "Packing list.pdf",
+        pages: "1 halaman · PDF",
+        msg2: "Makasih! Kurirnya bisa datang hari Selasa?",
+        msg3: "Kurir datang hari Selasa, antara 09.00 dan 12.00.",
+        booked: "Pickup terjadwal",
+      },
+      next: {
+        estimate: "Estimasimu",
+        instant: "Instan",
+        origin: "Inggris Raya",
+        dest: "Indonesia",
+        contents: "8 kardus, 2 koper",
+        total: "Berat yang dihitung",
+        progress: "1 dari 3 terjawab",
+        question: "Apakah kamu mengirim barang pribadi ke Indonesia?",
+        yes: "Ya",
+        no: "Tidak",
+        hello: "Halo! Saya mau kirim 8 kardus dan 2 koper dari Inggris.",
+        reply: "Siap, kita pastikan penawaranmu di sini.",
       },
     },
     photos: {
@@ -1965,10 +1993,6 @@ const en: Messages = {
       guideTitle: "How size turns into weight",
       guideBody:
         "We charge whichever is higher: the real weight, or the size weight (length × width × height ÷ 5000).",
-      cabin: "Cabin suitcase",
-      box: "Relocation box",
-      large: "Large suitcase",
-      bySize: "{kg} kg by size",
       tip: "Keeping each piece under 25 kg and under about 120 cm on its longest side avoids most surcharges.",
     },
     steps: {
@@ -2034,6 +2058,15 @@ const en: Messages = {
       next3: "Add your details and continue with our team on WhatsApp",
     },
     scenes: {
+      size: {
+        title: "Your pieces",
+        box: "Box",
+        suitcase: "Suitcase",
+        real: "Real",
+        bySize: "By size",
+        charged: "Charged",
+        total: "Charged weight",
+      },
       packing: {
         title: "Commercial Invoice / Packing List",
         box: "Box 8 of 8",
@@ -2049,6 +2082,29 @@ const en: Messages = {
         total: "Total value",
         signed: "Shipper's signature",
         stamp: "Checked",
+      },
+      thread: {
+        today: "Today",
+        msg1: "For customs, please have your passport and Indonesian stay permit ready. Here's the packing list we'll fill in together.",
+        file: "Packing list.pdf",
+        pages: "1 page · PDF",
+        msg2: "Thanks! Could the courier come on Tuesday?",
+        msg3: "The courier comes on Tuesday, between 9:00 and 12:00.",
+        booked: "Pickup booked",
+      },
+      next: {
+        estimate: "Your estimate",
+        instant: "Instant",
+        origin: "United Kingdom",
+        dest: "Indonesia",
+        contents: "8 boxes, 2 suitcases",
+        total: "Charged weight",
+        progress: "1 of 3 answered",
+        question: "Are you shipping personal belongings to Indonesia?",
+        yes: "Yes",
+        no: "No",
+        hello: "Hi! I'd like to ship 8 boxes and 2 suitcases from the UK.",
+        reply: "Great, let's confirm your quote here.",
       },
     },
     photos: {

@@ -4,6 +4,7 @@ import * as React from "react";
 import { Check, Plane, ShieldCheck, Truck } from "lucide-react";
 import { useT } from "@/lib/i18n/LanguageProvider";
 import { cn } from "@/lib/utils/cn";
+import { at, Bar, Bubble, ChatHead, Parcel, SceneFlag, SceneTitle } from "./SceneParts";
 
 /**
  * The four illustrations of the expat "How it works", one per step, built
@@ -23,9 +24,6 @@ import { cn } from "@/lib/utils/cn";
  * when it starts once its scene comes up (globals.css, "The journey").
  */
 
-/** when a piece starts, in ms after its scene comes up */
-const at = (ms: number) => ({ "--d": `${ms}ms` }) as React.CSSProperties;
-
 function useScene() {
   const t = useT();
   return (key: string) => t(`expat.steps.scene.${key}`);
@@ -35,23 +33,6 @@ function useScene() {
  *  control at the top, and off the bottom */
 const HERO =
   "jr jr-arrive absolute inset-x-[3.2em] top-[4em] h-[30em] rounded-[1.1em] bg-background p-[1.4em] shadow-float @max-[30rem]:inset-x-[1.6em] @max-[30rem]:p-[1.15em]";
-
-/** filler: the product's quiet lines where words would not help */
-function Bar({ w, className }: { w: string; className?: string }) {
-  return <span className={cn("block h-[0.5em] shrink-0 rounded-full bg-surface-3", className)} style={{ width: w }} />;
-}
-
-/** a flat flag, sized in em so it scales with the scene */
-function SceneFlag({ code }: { code: string }) {
-  return (
-    // eslint-disable-next-line @next/next/no-img-element -- tiny static SVG, as in Flag
-    <img src={`/flags/4x3/${code}.svg`} alt="" className="h-[0.8em] w-[1.07em] shrink-0 object-cover" />
-  );
-}
-
-function SceneTitle({ children }: { children: React.ReactNode }) {
-  return <span className="font-display text-[1.05em] font-semibold tracking-tight">{children}</span>;
-}
 
 /** a labelled field of the quote form; without a label it is filler */
 function Field({ label, ms, children }: { label?: string; ms: number; children?: React.ReactNode }) {
@@ -353,36 +334,6 @@ export function FlightScene() {
 }
 
 /**
- * A parcel in three-quarter view: kraft board (its one colour outside the
- * palette, because a cardboard box is the brown of cardboard), each face
- * its own tone, the tape over the lid and down the front, the shipping
- * label, and the contact shadow it sits on.
- */
-function Parcel({ className, style }: { className?: string; style?: React.CSSProperties }) {
-  return (
-    <span className={cn("jr jr-drop absolute block", className)} style={style}>
-      <svg viewBox="0 0 38 33" className="block size-full overflow-visible" aria-hidden>
-        <ellipse cx="18" cy="32.4" rx="20" ry="1.6" fill="#000" opacity="0.12" />
-        <path d="M0 10 L10 3.5 H38 L28 10 Z" fill="#ebc99c" />
-        <path d="M28 10 L38 3.5 V25.5 L28 32 Z" fill="#c08954" />
-        <rect x="0" y="10" width="28" height="22" fill="#d8a76e" />
-        {/* the lid's fold, catching the light */}
-        <path d="M0 10 H28 L38 3.5" fill="none" stroke="#f6dcb6" strokeWidth="0.5" />
-        {/* tape: over the lid, then down the front */}
-        <path d="M12.6 10 L22.6 3.5 H25.4 L15.4 10 Z" fill="#c9965c" opacity="0.9" />
-        <rect x="12.6" y="10" width="2.8" height="8" fill="#c9965c" opacity="0.9" />
-        {/* the label, with its barcode */}
-        <rect x="16.8" y="17.6" width="9" height="11" rx="0.6" fill="#fff" />
-        <rect x="18" y="19.2" width="6.6" height="1.1" rx="0.3" className="fill-muted-2" />
-        {[0, 1.1, 1.8, 3, 3.7, 4.9, 5.7].map((x) => (
-          <rect key={x} x={18 + x} y="21.7" width="0.55" height="5" className="fill-foreground" />
-        ))}
-      </svg>
-    </span>
-  );
-}
-
-/**
  * The front door: a panelled door in the chapter's ink with sunk, bevelled
  * panels, its white casing with the house number, a letter plate and a
  * handle.
@@ -463,30 +414,16 @@ export function DoorScene() {
         className="jr jr-arrive absolute right-[3.2em] top-[4em] w-[14.6em] rounded-[1.1em] bg-background pb-[0.3em] shadow-float @max-[30rem]:inset-x-[1.6em] @max-[30rem]:w-auto"
         style={at(0)}
       >
-        <div className="flex items-center gap-[0.55em] border-b border-border px-[1em] py-[0.75em]">
-          {/* Rimkirim's own mark, its app icon, as its WhatsApp picture */}
-          {/* eslint-disable-next-line @next/next/no-img-element -- a 96px still, as in SceneFlag */}
-          <img src="/expat/journey/rimkirim-avatar.png" alt="" className="size-[1.75em] shrink-0 rounded-full" />
-          <span className="min-w-0">
-            <span className="block truncate text-[0.82em] font-semibold leading-tight">Rimkirim</span>
-            <span className="block truncate text-[0.66em] leading-tight text-muted-2">WhatsApp</span>
-          </span>
-        </div>
+        <ChatHead />
         <div className="flex flex-col gap-[0.5em] px-[0.8em] py-[0.9em]">
-          <p
-            className="jr jr-drop mr-[1em] w-fit text-pretty rounded-[0.9em] rounded-tl-[0.25em] bg-surface-2 px-[0.75em] py-[0.5em] text-[0.78em] leading-snug"
-            style={at(400)}
-          >
+          <Bubble from="them" ms={400}>
             {k("msgIn")}
-          </p>
-          <p
-            className="jr jr-drop ml-auto w-fit rounded-[0.9em] rounded-tr-[0.25em] bg-tone-ink px-[0.75em] py-[0.5em] text-[0.78em] leading-snug text-background"
-            style={at(1000)}
-          >
+          </Bubble>
+          <Bubble from="me" ms={1000}>
             {k("msgOut")}
-          </p>
+          </Bubble>
           <p
-            className="jr jr-drop mt-[0.2em] flex w-fit items-center gap-[0.4em] self-center rounded-full bg-(--tone-wash) px-[0.75em] py-[0.3em] text-[0.72em] font-semibold text-tone-ink"
+            className="jr jr-drop mt-[0.2em] flex w-fit items-center gap-[0.4em] self-center rounded-full bg-tone-ink px-[0.75em] py-[0.3em] text-[0.72em] font-semibold text-background"
             style={at(2000)}
           >
             <Check className="size-[1.1em]" strokeWidth={2.5} />

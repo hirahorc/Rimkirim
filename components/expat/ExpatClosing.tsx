@@ -3,10 +3,17 @@
 import type * as React from "react";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { EXPAT_QUOTE_URL } from "@/lib/data/expat";
+import { EXPAT_QUOTE_URL, REVIEW_NOTES } from "@/lib/data/expat";
 import { useT } from "@/lib/i18n/LanguageProvider";
+import { ReviewNote } from "./ReviewNote";
+import { SceneStage } from "./SceneStage";
+import { EligibleScene, EstimateScene, HandoffScene } from "./SectionScenes";
 
-const NEXT = ["next1", "next2", "next3"] as const;
+const NEXT = [
+  { key: "next1", Scene: EstimateScene },
+  { key: "next2", Scene: EligibleScene },
+  { key: "next3", Scene: HandoffScene },
+] as const;
 
 /**
  * Brief 09. After reading this far nobody should have to scroll back up for
@@ -20,7 +27,12 @@ const NEXT = ["next1", "next2", "next3"] as const;
  * the deep end of the route the page walks from sky through violet to
  * magenta, so arriving here reads as landing; and dark because the last ask
  * should not look like one more section. Lime, violet's near-complement, is
- * at its loudest on it.
+ * at its loudest on it. Each step on the stub shows its screen, built once
+ * in view (SectionScenes): the estimate, the eligibility question answered,
+ * the team picking it up on WhatsApp. White cards straight on the ticket,
+ * fading out at their foot, three in a row on a wide screen, a row each beside their
+ * words on a tablet, and on a phone the house scroll strip, so the stub
+ * stays one row tall.
  */
 export function ExpatClosing() {
   const t = useT();
@@ -28,6 +40,7 @@ export function ExpatClosing() {
     // on the desk after the FAQ's band, with the same space above as below,
     // so the ticket stands on its own
     <section aria-labelledby="closing-heading" className="mx-auto max-w-6xl px-3 py-16 sm:px-6 sm:py-20">
+      <ReviewNote note={REVIEW_NOTES.closing} className="mb-8" />
       <div className="rounded-lg bg-dusk text-background">
         <div className="flex flex-col gap-8 px-5 pb-10 pt-10 sm:px-10 sm:pt-12 lg:flex-row lg:items-end lg:justify-between lg:px-14 lg:pt-14">
           <div className="max-w-2xl">
@@ -67,20 +80,44 @@ export function ExpatClosing() {
             {t("expat.closing.nextTitle")}
           </h3>
           {/* a sequence, so it rides the step rail like "How it works": the
-              hairline draws and the step rises under it (globals.css) */}
-          <ol className="mt-4 grid gap-4 sm:grid-cols-3">
-            {NEXT.map((k, i) => (
-              <li key={k} className="how-step relative pt-4" style={{ "--i": i } as React.CSSProperties}>
-                <span aria-hidden className="how-step-rail absolute inset-x-0 top-0 h-px bg-background/20" />
-                <div className="how-step-body flex items-start gap-3">
-                  <span className="grid size-6 shrink-0 place-items-center rounded-full bg-background/10 text-xs font-medium tabular-nums">
-                    {i + 1}
-                  </span>
-                  <span className="leading-snug text-background/90">{t(`expat.closing.${k}`)}</span>
-                </div>
-              </li>
-            ))}
-          </ol>
+              hairline draws and the step rises under it (globals.css). On a
+              phone the steps are the scroll strip (DESIGN.md, Card grid →
+              scroll strip), bleeding to the ticket's edge, the next one
+              peeking */}
+          <div
+            role="group"
+            aria-label={t("expat.closing.nextTitle")}
+            tabIndex={0}
+            className="scroll-strip -mx-5 mt-4 snap-x snap-mandatory scroll-px-5 overflow-x-auto px-5 sm:mx-0 sm:snap-none sm:overflow-visible sm:px-0"
+          >
+            <ol className="flex gap-4 sm:grid sm:gap-6 lg:grid-cols-3 lg:gap-4">
+              {NEXT.map(({ key, Scene }, i) => (
+                <li
+                  key={key}
+                  className="how-step relative w-[82%] shrink-0 snap-start pt-5 sm:grid sm:w-auto sm:grid-cols-[18rem_minmax(0,1fr)] sm:items-center sm:gap-x-6 lg:block"
+                  style={{ "--i": i } as React.CSSProperties}
+                >
+                  <span aria-hidden className="how-step-rail absolute inset-x-0 top-0 h-px bg-background/20" />
+                  <SceneStage
+                    ground="none"
+                    tone="magenta"
+                    buildWith="[role=group]"
+                    delay={i * 150}
+                    className="aspect-square sm:aspect-[4/3]"
+                    sceneClassName="text-[length:4.6cqw] @max-[18rem]:text-[length:5.4cqw]"
+                  >
+                    <Scene />
+                  </SceneStage>
+                  <div className="how-step-body mt-4 flex items-start gap-3 sm:mt-0 lg:mt-4">
+                    <span className="grid size-6 shrink-0 place-items-center rounded-full bg-background/10 text-xs font-medium tabular-nums">
+                      {i + 1}
+                    </span>
+                    <span className="leading-snug text-background/90">{t(`expat.closing.${key}`)}</span>
+                  </div>
+                </li>
+              ))}
+            </ol>
+          </div>
         </div>
       </div>
     </section>
