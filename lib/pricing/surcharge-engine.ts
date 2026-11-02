@@ -6,7 +6,12 @@
  * then the relevant Additional Handling Surcharges are applied.
  *
  * Girth (standard carrier definition): 2 × (second-longest side + shortest side).
- * The single longest side is excluded from girth.
+ * The single longest side is excluded from girth; the overdimension rule adds
+ * it back (length + girth, "P + 2L + 2T").
+ *
+ * The Parcels/Express amounts and conditions follow the updated AHS sheet of
+ * November 2026, the same one the Surcharge Information modal shows
+ * (components/rates/SurchargeInfoDialog.tsx): keep the two in step.
  *
  * Surcharges are per-package; the caller multiplies by quantity.
  */
@@ -42,7 +47,10 @@ export interface PackageAssessment {
 
 /** Optional, condition-based flags that cannot be derived from dimensions. */
 export interface SurchargeFlags {
-  /** outer packaging not corrugated cardboard / fully taped / wrapped */
+  /**
+   * packed in a suitcase or bag, wrapped in bubble or plastic wrap, or a box
+   * taped all over: the sheet's three packaging cases, one fee each
+   */
   nonStandardPackaging?: boolean;
   /** package cannot be stacked */
   nonStackable?: boolean;
@@ -51,10 +59,10 @@ export interface SurchargeFlags {
 // --- Surcharge amounts (IDR) ---------------------------------------------
 export const SURCHARGE = {
   // Parcels / Express
-  OVERSIZE: 1_072_000,
-  OVERDIMENSION: 495_000,
-  OVERWEIGHT: 495_000,
-  PACKAGING: 495_000,
+  OVERSIZE: 1_200_000,
+  OVERDIMENSION: 600_000,
+  OVERWEIGHT: 600_000,
+  PACKAGING: 600_000,
   // Large
   FREIGHT: 2_944_000,
   NON_STACKABLE: 3_700_000,
@@ -103,15 +111,15 @@ export function assessPackage(p: PackageDims, flags: SurchargeFlags = {}): Packa
         amount: SURCHARGE.OVERSIZE,
       });
     }
-    // 2. Overdimension
-    if (girth > 266 || longest > 121 || secondLongest > 76 || volume > 169_901) {
+    // 2. Overdimension: longest side, second-longest side, or length + girth
+    if (longest > 121 || secondLongest > 76 || longest + girth > 266) {
       surcharges.push({
         code: "OVERDIMENSION",
         label: "Additional Handling: Overdimension",
         amount: SURCHARGE.OVERDIMENSION,
       });
     }
-    // 3. Overweight
+    // 3. Overweight, per box: 25 kg split across two boxes is not charged
     if (p.weight > 25) {
       surcharges.push({
         code: "OVERWEIGHT",
