@@ -295,6 +295,26 @@ const id = {
       next2: "Jawab beberapa pertanyaan untuk cek kelayakan",
       next3: "Isi data dirimu, lalu lanjut dengan tim kami di WhatsApp",
     },
+    // the words inside the section illustrations (decorative, hidden from
+    // assistive tech; the sections' own text carries the meaning)
+    scenes: {
+      packing: {
+        title: "Commercial Invoice / Packing List",
+        box: "Kardus 8 dari 8",
+        item: "Barang",
+        qty: "Jml",
+        value: "Nilai",
+        coats: "Mantel musim dingin",
+        books: "Buku",
+        pans: "Panci",
+        sheets: "Seprai",
+        games: "Board game",
+        lamp: "Lampu meja",
+        total: "Total nilai",
+        signed: "Tanda tangan pengirim",
+        stamp: "Diperiksa",
+      },
+    },
     photos: {
       label: "Foto kiriman asli",
       caption: "Kiriman sungguhan dengan Rimkirim",
@@ -321,8 +341,6 @@ const id = {
     photo: {
       label: "Foto menyusul",
       avoid: "Hindari",
-      shipShot: "Barang sehari-hari yang masuk ke kardus pindahan, di samping koper yang sudah terisi, supaya ukurannya langsung terbayang.",
-      shipAvoid: "furnitur besar, relokasi satu rumah",
       customerShot: "Foto asli customer ini bersama kirimannya, dibagikan dengan izinnya.",
       customerAvoid: "foto stok, model",
     },
@@ -2015,6 +2033,24 @@ const en: Messages = {
       next2: "Answer a few questions to check you're eligible",
       next3: "Add your details and continue with our team on WhatsApp",
     },
+    scenes: {
+      packing: {
+        title: "Commercial Invoice / Packing List",
+        box: "Box 8 of 8",
+        item: "Item",
+        qty: "Qty",
+        value: "Value",
+        coats: "Winter coats",
+        books: "Books",
+        pans: "Saucepans",
+        sheets: "Bed sheets",
+        games: "Board games",
+        lamp: "Table lamp",
+        total: "Total value",
+        signed: "Shipper's signature",
+        stamp: "Checked",
+      },
+    },
     photos: {
       label: "Photos of real shipments",
       caption: "Real shipments sent with Rimkirim",
@@ -2041,8 +2077,6 @@ const en: Messages = {
     photo: {
       label: "Photo to add",
       avoid: "Avoid",
-      shipShot: "Everyday things going into a relocation box next to a packed suitcase, so the sizes read at a glance.",
-      shipAvoid: "large furniture, full-house relocations",
       customerShot: "A real photo of this customer with their shipment, shared with their permission.",
       customerAvoid: "stock photos, models",
     },

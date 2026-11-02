@@ -304,6 +304,11 @@ point of use.
   behind text; every word on it sits on a white card except the chat's small label. The
   parcels on its doorstep are kraft brown, the one colour outside the palette, because a
   cardboard box is the brown of cardboard.
+  The section scenes (below, Motion) stand on the same ground, still: `.scene-day` is the
+  chapter's wash a step deeper than its band (so a stage reads as a stage on a band as well as
+  on the desk) with the trip's two ends as blooms, sky top left and magenta bottom right. Same
+  job, same limits: illustration only, every word on a white card. This extends the exception
+  to the page's illustrations; it does not license a gradient anywhere else.
 
 **The Tint-15 Rule.** *Status* chips use the colour at 15% opacity for the fill (banners and
 strips step down to 10%), full strength for the icon, and the **status ink** (`--*-ink`: the
@@ -592,7 +597,10 @@ home hero's floating verdicts and the expat hero's departure board. Treat any ot
     10px) on their container's one timeline, staggered 5% apart in the order a thing is put
     together. The home page's worked example builds its sum (chargeable weight, base, surcharge,
     total); the expat pricing builds a quote from its inputs (route, weight, size, surcharges)
-    and lines the size guide's pieces up left to right, its tip last.
+    and lines the size guide's pieces up left to right, its tip last; what you can ship builds
+    its list of goods, clothes to personal items, the order of the CIPL beside it, then what is
+    not in it (larger items, the can't-ship line) on a build of its own, since one container
+    that tall would leave its rows still fading mid-screen on a phone.
   Without support or under reduced motion both are simply static: the hairline is already drawn.
 - **The disclosure open** (`Disclosure` in `components/ui` — the one accordion idiom, shared by
   the /faq page and the article FAQs so they cannot drift; its controlled sibling
@@ -765,14 +773,40 @@ home hero's floating verdicts and the expat hero's departure board. Treat any ot
   is a button laid over it so the title stays a heading. Under reduced motion nothing reveals,
   plays or glides: step 01 stands, built, and a click switches instantly; without script every
   scene stands built.
+- **The section scenes** (`SceneStage` + `SectionScenes`, so far expat what you can ship): a
+  section that describes a screen the visitor never sees shows it, framed and built as the
+  journey's scenes are, from the same pieces (`SceneParts`: the filler line, the flag, the
+  parcel, the chat card) on the same ground, so the page's illustrations are one figure
+  language. One hero surface a gutter from the top and sides, off the bottom, at most one
+  satellite.
+  What you can ship is the commercial invoice and packing list (CIPL) for the last of eight boxes
+  ("Box 8 of 8"), alone on its ground, the other seven's sheets under it a degree askew each way
+  so a pile shows at rest, the section's six goods with the section's icons printed bare, signed
+  at the foot by the shipper and stamped "Checked" by Rimkirim beside the signature: every box
+  reviewed. It is held still beside the list on a wide screen (`lg:sticky`) so the list scrolls
+  past it, and centred under the list below `lg`. It is paper, not a screen, so it is the one
+  surface on the page with no rounded corner, inside or out, and everything on it is printed in
+  black and white (`.print-ink`: an SVG filter in the scene, every colour a grey, toner a fraction
+  of a pixel ragged and thin in places, set on each piece so its grain travels with the piece as
+  it rises); only what a hand adds to the printout keeps a colour, the chapter's ink: the
+  signature, a pen line, and the stamp, rubber-patchy by its own filter, a little askew.
+  Each **builds once** when 40% in view (a hero rises from the crop, rows lift in reading order,
+  values rise, the CIPL's signature is written last, `jr-ring` on its one stroke, then its stamp
+  comes down, `stamp-press`, the build's last beat), then stands still: no loop, no player, no
+  control, because none runs past about three seconds.
+  Scenes are `aria-hidden`; the section's words carry the meaning. Each scene names its compact
+  container query, where the gutter tightens and its type stays at 10px or more. Under reduced
+  motion, and without script, every scene stands built.
 
 **The hover scale.** Every microinteraction that *moves* something under a mouse answers on one
 clock, so the page feels made by one hand: arriving `--dur-hover` (300ms), leaving
 `--dur-hover-out` (240ms), anything trailing the pointer `--dur-follow` (450ms), all on
 `--ease-hover` (`cubic-bezier(0.23, 1, 0.32, 1)`, a strong ease-out: a move starts at speed and
 settles soft). Today: the hero's door arrow (`DoorButton` reads the tokens), the photo pile's
-fan and swaps, the pickup slices, the review cards. A new one joins the scale, never its own
-numbers. Colour-only hovers keep the system's 0.2s; entrances, builds and the journey keep
+fan and swaps, the pickup slices, the review cards, the CIPL's card (`.cipl-stack`: the other
+boxes' sheets, a degree askew under it, fan out further from the foot, one each way, to about
+3°, and the top sheet lifts). A new one joins the scale, never its own numbers. Colour-only
+hovers keep the system's 0.2s; entrances, builds and the journey keep
 their own, longer, timing, because they are read, not answered.
 
 **The Never-Delay-The-Calculator Rule.** The landing exists to get someone into the rate
@@ -1075,7 +1109,8 @@ eyebrow names the service right below.
   surface.
 - **`.link-mark`** — inline links: conventional link blue (`--info`, mixed 8% toward black so it
   clears 4.5:1 on `--surface`; 20% inside a band, whose tinted wash would drop it to about 4.1:1)
-  with a soft underline that darkens on hover. Lime is never used
+  with a soft underline that darkens on hover; keyboard focus wears the buttons' ink ring as an
+  outline (2px, ink at 60%, 2px off the text). Lime is never used
   to mark a link. On touch, a link that stands alone on its line also wears `.tap-row`.
 - **Tooltip (`InfoTip`)** — an 18px help-circle trigger (muted, 70% → 100% on hover/focus,
   28px hit target on mouse and 44px on touch, `cursor: help`) opening an Ink bubble: white 14px text, 6px radius, small

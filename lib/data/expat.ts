@@ -16,11 +16,14 @@ interface Txt {
 }
 
 interface ExpatFaqSource {
+  /** the question's anchor, for a question the page links to */
+  slug?: string;
   q: Txt;
   a: Txt;
 }
 
 export interface ExpatFaq {
+  slug?: string;
   q: string;
   a: string;
 }
@@ -41,6 +44,8 @@ const FAQ: ExpatFaqSource[] = [
     },
   },
   {
+    // "What you can ship" links here for the full list
+    slug: "faq-cant-ship",
     q: { id: "Barang apa yang tidak boleh dikirim?", en: "What can't I ship?" },
     a: {
       id: "Alkohol, rokok dan vape, senjata, bahan peledak, uang tunai, perhiasan, dan tanaman. Kurir juga tidak menerbangkan cairan atau parfum, perangkat dengan baterai yang tidak bisa dilepas, atau barang mudah terbakar. Ragu soal sesuatu? Tanya kami sebelum dikemas.",
@@ -103,7 +108,7 @@ const FAQ: ExpatFaqSource[] = [
 export const EXPAT_QUOTE_URL = "https://rimkirim.com/relocation/rates";
 
 export function expatFaq(locale: Locale): ExpatFaq[] {
-  return FAQ.map((f) => ({ q: f.q[locale], a: f.a[locale] }));
+  return FAQ.map((f) => ({ slug: f.slug, q: f.q[locale], a: f.a[locale] }));
 }
 
 /**
@@ -197,7 +202,7 @@ export const REVIEW_NOTES = {
   cta: "Semua 'Get a quote' mengarah ke kalkulator relocation yang live (rimkirim.com/relocation/rates): estimasi, cek kelayakan, data diri, lalu WhatsApp. Ganti EXPAT_QUOTE_URL di lib/data/expat.ts kalau kalkulatornya dibangun di situs ini. Semua link WhatsApp sudah ke nomor live (+62 817 1717 7008).",
   reviews:
     "Ulasan Leticia Marina Bevilaqua (Inggris Raya ke Indonesia) adalah ulasan expat asli pertama. Ulasan ditampilkan utuh atas permintaan customer, dan dipotong dengan tombol 'Read more' di kartunya. Leticia tidak ingin memakai foto, jadi kartunya tanpa foto. Tiga ulasan lainnya masih placeholder dari WNI yang pulang, bukan expat, dan akan diganti ulasan asli dari customer expat yang sedang di-approach (EXPAT_REVIEWS di lib/data/expat.ts). Kartu pertama menunggu foto asli customer: isi `photo` dengan path fotonya (dengan izin). Selama belum ada foto, slot 'Photo to add' hanya tampil di mode review ini; pengunjung melihat empat kartu teks 2×2. Rating bintang dan link Google sengaja dihapus karena belum ada ulasan expat di Google.",
-  ship: "Brief: konfirmasi daftar barang yang eligible sebelum dipublikasikan, termasuk kategori baru seprai & handuk dan mainan & perlengkapan hobi. Kardus dan koper diperlakukan sebagai kemasan, bukan jenis barang.",
+  ship: "Brief: konfirmasi daftar barang yang eligible sebelum dipublikasikan, termasuk kategori baru seprai & handuk dan mainan & perlengkapan hobi. Kardus dan koper diperlakukan sebagai kemasan, bukan jenis barang. Slot foto di samping daftar sekarang ilustrasi Commercial Invoice / Packing List (CIPL) untuk kardus terakhir dari delapan, lengkap dengan tanda tangan pengirim dan cap 'Checked' Rimkirim (contoh, bukan data asli). Cap itu klaim: konfirmasi tim memang memeriksa CIPL tiap kardus sebelum berangkat: konfirmasi bahwa customer expat memang mengisi packing list dengan jumlah dan nilai per barang dalam mata uang negara asal (contoh memakai £). Kalau foto asli 'barang masuk kardus di samping koper' sudah ada, ilustrasi bisa diganti foto lagi.",
   coordinate:
     "Konfirmasi pembagian tugas, terutama dokumen WNA. Konten repo bertentangan: artikel Belanda bilang fasilitas Pindahan mencakup WNA yang pindah kerja, panduan bea cukai bilang hanya WNI. Satu-satunya daftar dokumen WNA di repo: VITAS, ITAS, RPTKA. Foto pickup adalah kiriman customer asli: pastikan ada izin customer. Wajah kurir, plat nomor, dan label AWB sudah disensor mosaik.",
   compare:

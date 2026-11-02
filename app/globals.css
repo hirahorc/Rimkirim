@@ -491,6 +491,13 @@ body:has(main > [data-field]) {
   color: color-mix(in srgb, var(--info) 80%, black);
   text-decoration-color: currentColor;
 }
+/* keyboard focus wears the buttons' ring (ink at 60%, 2px, a 2px gap), not
+   the browser's, which hugs the glyphs and any icon in the link */
+.link-mark:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--foreground) 60%, transparent);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
 /* on a band's tinted wash the desk blue drops to about 4.1:1; one step
    darker clears AA on every chapter's wash (5.1:1 and up) */
 .band .link-mark {
@@ -1453,6 +1460,90 @@ body:has(main > [data-field]) {
   }
 }
 
+/* The section scenes' grounds (SceneStage): the same recipe, still. Day is
+   the chapter's wash a step deeper than its band, so the stage reads as a
+   stage on a band as well as on the desk, with the trip's two ends as
+   blooms, sky in the top left and magenta in the bottom right. */
+.scene-day {
+  background:
+    radial-gradient(80% 75% at 6% 0%, rgb(33 177 236 / 0.26), transparent 70%),
+    radial-gradient(75% 70% at 100% 100%, rgb(212 28 230 / 0.16), transparent 72%),
+    color-mix(in oklab, var(--tone-wash), var(--tone) 14%);
+}
+/* the CIPL's stack (PackingScene, on the stage marked .cipl-stack): the
+   other boxes' sheets lie under it a degree or so askew, one each way, so
+   at rest a pile shows behind the last box's sheet; a mouse on the card
+   fans them further from the foot and the top sheet lifts, the way a hand
+   riffles a pile of paper. On the hover scale (DESIGN.md, Motion): out on
+   --dur-hover, back on --dur-hover-out. It moves rotate and translate,
+   never transform, which the sheets' entrance holds. The fan is for fine
+   pointers only, and not under reduced motion */
+.cipl-under {
+  transform-origin: 50% 75%;
+}
+.cipl-under[data-side="left"] {
+  rotate: -1deg;
+}
+.cipl-under[data-side="right"] {
+  rotate: 0.8deg;
+}
+.cipl-sheet,
+.cipl-under {
+  transition:
+    translate var(--dur-hover-out) var(--ease-hover),
+    rotate var(--dur-hover-out) var(--ease-hover);
+}
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .cipl-stack:hover :is(.cipl-sheet, .cipl-under) {
+    transition-duration: var(--dur-hover);
+  }
+  .cipl-stack:hover .cipl-sheet {
+    translate: 0 -0.15em;
+  }
+  .cipl-stack:hover .cipl-under[data-side="left"] {
+    translate: -0.25em -0.1em;
+    rotate: -2.6deg;
+  }
+  .cipl-stack:hover .cipl-under[data-side="right"] {
+    translate: 0.3em 0;
+    rotate: 3deg;
+  }
+}
+/* the CIPL's stamp (PackingScene): Rimkirim's "Checked" on the last box's
+   sheet, in the chapter's ink like the signature (only what a hand puts on
+   the printout keeps a colour), rubber-patchy by its own filter, a little
+   askew. It is the build's last beat, after the signature: it comes down
+   from just above, opaque early, and lands. Under reduced motion, and
+   without script, it is simply there */
+.cipl-stamp {
+  rotate: -7deg;
+  filter: url(#stamp-ink);
+}
+@keyframes stamp-press {
+  from {
+    opacity: 0;
+    scale: 1.35;
+  }
+  45% {
+    opacity: 1;
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  [data-scene-ready] .jr-scene:not([data-built]) .cipl-stamp {
+    opacity: 0;
+  }
+  .jr-scene[data-built] .cipl-stamp {
+    /* as the signature's pen lifts (it starts at 1750ms and runs 1100ms) */
+    animation: stamp-press var(--dur-hover) var(--ease-hover) 2750ms both;
+  }
+}
+/* printed, not rendered: black and white toner on paper, ragged a
+   fraction of a pixel and thin in places (the filter is drawn in
+   PackingScene, the CIPL) */
+.print-ink {
+  filter: url(#print-ink);
+}
+
 /* The stage moves like a conveyor: the scene that is done travels up and
    out, the next builds itself in its place (its hero rising from the crop
    below); stepping back, the later scene sinks away instead. */
@@ -1634,7 +1725,8 @@ body:has(main > [data-field]) {
     animation-duration: 700ms;
     animation-timing-function: var(--jr-arrive);
     animation-fill-mode: both;
-    animation-delay: var(--d, 0ms);
+    /* --d0 staggers a set of stages that build as one (SceneStage) */
+    animation-delay: calc(var(--d0, 0ms) + var(--d, 0ms));
   }
   .jr-scene[data-built] .jr-arrive { animation-name: jr-arrive; animation-duration: 900ms; animation-timing-function: var(--jr-travel); }
   .jr-scene[data-built] .jr-lift { animation-name: jr-lift; animation-duration: 900ms; animation-timing-function: var(--jr-travel); }
@@ -1656,22 +1748,22 @@ body:has(main > [data-field]) {
 
   /* until its step comes up, a scene's pieces wait out of sight (only
      once the page is live, so without script every scene stands built) */
-  [data-journey-ready] .jr-scene:not([data-built]) :is(.jr-arrive, .jr-lift, .jr-rise, .jr-drop, .jr-flip, .jr-fly) {
+  :is([data-journey-ready], [data-scene-ready]) .jr-scene:not([data-built]) :is(.jr-arrive, .jr-lift, .jr-rise, .jr-drop, .jr-flip, .jr-fly) {
     opacity: 0;
   }
-  [data-journey-ready] .jr-scene:not([data-built]) :is(.jr-type, .jr-draw) {
+  :is([data-journey-ready], [data-scene-ready]) .jr-scene:not([data-built]) :is(.jr-type, .jr-draw) {
     clip-path: inset(0 100% 0 0);
   }
-  [data-journey-ready] .jr-scene:not([data-built]) .jr-grow {
+  :is([data-journey-ready], [data-scene-ready]) .jr-scene:not([data-built]) .jr-grow {
     transform: scaleX(0);
   }
-  [data-journey-ready] .jr-scene:not([data-built]) .jr-check {
+  :is([data-journey-ready], [data-scene-ready]) .jr-scene:not([data-built]) .jr-check {
     stroke-dashoffset: 24;
   }
-  [data-journey-ready] .jr-scene:not([data-built]) .jr-ring {
+  :is([data-journey-ready], [data-scene-ready]) .jr-scene:not([data-built]) .jr-ring {
     stroke-dashoffset: 100;
   }
-  [data-journey-ready] .jr-scene:not([data-built]) .jr-fill {
+  :is([data-journey-ready], [data-scene-ready]) .jr-scene:not([data-built]) .jr-fill {
     background-color: transparent;
     box-shadow: inset 0 0 0 1.5px var(--border-strong);
   }
