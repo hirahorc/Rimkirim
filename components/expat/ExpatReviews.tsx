@@ -10,7 +10,7 @@ import { useT } from "@/lib/i18n/LanguageProvider";
 import { cn } from "@/lib/utils/cn";
 import { SectionHead } from "./SectionHead";
 import { PhotoSlot } from "./PhotoSlot";
-import { ReviewNote, useReviewMode } from "./ReviewNote";
+import { ReviewNote } from "./ReviewNote";
 
 /** past this many characters a quote opens folded, behind "Read more" */
 const LONG = 600;
@@ -113,9 +113,10 @@ function avatarFor(name: string) {
  * since no expat has reviewed us on Google yet. Name and route only, no
  * invented affiliations. The first review carries the customer's own photo
  * and, from sm, stands as a tall card beside the other three stacked. Until
- * a consented photo exists, only the team sees the slot asking for it
- * (?review=1); a visitor gets four text cards, two by two. The photo takes up whatever
- * height the stack has at rest, so the two columns end level; once a review
+ * a consented photo exists, the slot asking for it stands in its place, for
+ * every visitor: the tall photo card is part of the design, and the slot
+ * keeps it. The photo takes up whatever height the stack has at rest, so the
+ * two columns end level; once a review
  * unfolds, the photo keeps the height it had folded and its card stops
  * stretching (globals.css, .reviews-grid), so the frame and its crop never
  * change and the unfolded card simply grows. On phones the cards become the house swipe
@@ -126,20 +127,14 @@ export function ExpatReviews() {
   const t = useT();
   const gridRef = React.useRef<HTMLDivElement>(null);
 
-  const reviewMode = useReviewMode();
   const reviews = EXPAT_REVIEWS.flatMap(({ name, photo }) => {
     const review = TESTIMONIALS.find((r) => r.name === name);
-    // a photo still to come is asked for only in the team's review mode
-    // (?review=1); a visitor never sees the brief, just the review as a text
-    // card, until a real, consented photo exists
-    const shown = photo === null && !reviewMode ? undefined : photo;
-    return review ? [{ ...review, photo: shown }] : [];
+    return review ? [{ ...review, photo }] : [];
   });
   const hasPhoto = reviews.some((r) => r.photo !== undefined);
 
   // the photo's height while every review is folded: what it keeps once one
-  // unfolds (a frozen frame, not a stretched one). Re-run when a photo frame
-  // appears, since review mode is only known after hydration
+  // unfolds (a frozen frame, not a stretched one)
   React.useEffect(() => {
     const grid = gridRef.current;
     const frame = grid?.querySelector<HTMLElement>(".review-photo");
@@ -202,8 +197,8 @@ export function ExpatReviews() {
               {/* 16:10 at every width, so on a phone the photo card is not a
                   screen taller than its neighbours; from sm the tall card
                   hands the height the stack has to the photo (flex-1). The
-                  slot asking for a photo (the team's view only) keeps 4:3 on
-                  a phone, room for its brief */}
+                  slot asking for a photo keeps 4:3 on a phone, room for its
+                  brief */}
               {/* the photo sits inside its card like a print, inset 12px
                   (16px from sm) on every side but the one facing the quote,
                   its corner the card's 28px less the inset (16px, then 12px)
