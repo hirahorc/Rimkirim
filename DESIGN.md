@@ -550,8 +550,19 @@ home hero's floating verdicts and the expat hero's departure board. Treat any ot
 
 - **Entrance** (time-based, on load): the header drops in, hero children cascade up on a
   0.05s-per-item stagger, the headline arrives word by word, and the calculator pops in last.
-  Under ~0.7s total. The expat hero arrives the same way (`Words` is shared with it), with its
-  photo deck popping in where the calculator would.
+  Under ~0.7s total. The expat hero, which has more to say and a pile of photos beside it,
+  arrives **in tiers** instead, each starting as the one before it settles, so the eye is led
+  rather than hit with everything at once (`ExpatHero`, `TIERS`; `.hero-in` with its start in
+  `--at`): the message first (the board, then the headline word by word, `Words` at its own
+  pace), the marked phrase taped on as its words land (`TapeMark`: each line's strip pulled
+  across left to right, 460ms, 170ms apart, as WAAPI on the words' own clock so it lands with
+  them however late the page hydrates),
+  the subtitle, the way in (the lime "Get a quote", then the secondary "See how it works"), and
+  last the proof: the photo pile dealt in back to front (`.deck-deal`, on `translate` and
+  opacity so it never fights the cards' own `transform`, each print opaque a quarter of the way
+  in so the pile never ghosts), then its satellite dropping onto it (`.hero-drop`). About 1.8s from the first word to the
+  last print; the door is up within a second. The tiers fill `backwards` only,
+  so a risen button's press scale still works. Under reduced motion all of it simply stands.
 - **The hero settle** (scroll-linked): across the first 35vh the hero text drifts up 56px at
   full ink, the grid backdrop trails 32px behind it, and the calculator closes a 52px gap —
   a short parallax that reads as depth without costing the page a single pixel of extra scroll.
@@ -660,12 +671,24 @@ home hero's floating verdicts and the expat hero's departure board. Treat any ot
   headline words' own move), the flag crossfades, then the dashed route redraws left to right
   (`clip-path`) with the plane at its tip, 900ms on `--ease-in-out-strong`, a token added for
   things that travel across the screen rather than enter it. The plane's horizontal travel is one
-  keyframe interval on the line's curve, so its nose always leads the line's tip; its 3px lift
-  rides a wrapper of its own. It is granted for the same reason as the verdicts: the cycling *is*
+  keyframe interval on the line's curve, so its nose always leads the line's tip, and the flight
+  is level: the route is straight dashes, and a plane lifting off them read as leaving its own
+  route behind. It is granted for the same reason as the verdicts: the cycling *is*
   the idea ("from wherever you are moving, to Indonesia, by air"), said without copy. It runs only
   while on screen and while the tab is visible, never under reduced motion (the first route stands,
   drawn, its plane landed), and assistive tech hears one sentence, "Expat relocation to
   Indonesia", not a ticker.
+- **The deck's satellite** (`ClearedNotice`, expat hero): the stageshow framing for an
+  image-led hero, the real photo pile as the hero object and one satellite, a WhatsApp message
+  from Rimkirim at a notification's true scale (the page's chat card in small: the app icon,
+  the name, "WhatsApp · now", one line of news), saying "your boxes" have cleared customs and
+  the next stop is your door. The photos are the trip's start, boxes ready for pickup; the
+  message is its end, so the pair tells door to door without a word of copy. It speaks to the
+  visitor, never about the shipment in a photo, so no claim rides on a real picture. From `lg`
+  it hangs off the top print's top-left corner, a little under half outside, over the gap to
+  the copy; below `lg`, where the pile fills the column, it sits inside the top print like a
+  banner on a lock screen. `shadow-overlay`, white, no pointer events: decorative, and it never
+  takes a click from the pile. It drops in last (Entrance) and then holds.
 - **The photo deck** (`.photo-deck`, expat hero): real shipment photos as a pile of prints, one
   5:4 card on top and two peeking behind it (rotated ±3–4°, offsets in % of the card so the pile
   keeps its shape at every width; the same 5:4 on phone and desktop). Click or tap sends the top
@@ -676,6 +699,21 @@ home hero's floating verdicts and the expat hero's departure board. Treat any ot
   colour, not geometry", after the rating arrow, kept because it is how a mouse discovers there is
   more to see. Gated to fine pointers, so a tap never leaves it open, and off under reduced motion,
   where swaps are instant as well.
+- **The door's arrow** (`DoorButton` + `.door-shaft`, the expat hero's "Get a quote"): the
+  button is the house lime and steps to Live Lime Dim under a mouse like any other; only its
+  arrow answers, taking one step forward the way an inchworm walks. The head moves on first,
+  so the shaft stretches behind it, then the tail catches up and the arrow stands 4 units
+  (about 2.7px) on: 300ms, split 40/60. Leaving, it steps back, tail first: 240ms, split
+  45/55. Snappy both ways: every phase is a strong ease-out (`cubic-bezier(0.23, 1, 0.32, 1)`),
+  and each move is its own WAAPI animation started from wherever the arrow is, so a pointer
+  that leaves mid-step turns it round without a jump (a reversed timeline would start the
+  return on its slow end). At rest it is lucide's
+  arrow exactly, as on every other button. **The fourth written-down exception** to "hover
+  moves colour, not geometry", after the rating arrow, the photo deck's fan and the pickup
+  slices, and the smallest: it moves a glyph, never the button. Fine pointers only; on touch,
+  from the keyboard and under reduced motion it stays still, and every press is the house 0.98.
+  Only on the hero: the page's other "Get a quote" buttons stay plain, so it stays a moment
+  rather than a habit.
 - **The pickup slices** (`.pickup-slices`, expat "Who does what"): six real pickup photos in one
   row, one open at its full 4:5 and the rest slivers sharing what is left, so the row always fills
   its width. The open print wears its route as an ink label (the departure board's tile), flat
@@ -833,6 +871,10 @@ like an accident.
 **The One-Role-One-Variant Rule.** Five variants, no overlap: one lime voice per screen (brand),
 one bordered alternative (secondary), one quiet tertiary (ghost), one dashed "add" affordance,
 one destructive tint (danger). A new button style must replace one of these, not join them.
+One written-down adjustment, not a sixth variant: on the expat hero, the secondary beside the
+lime door ("See how it works") drops the chapter's tinted panel for a transparent fill and an
+Ink hairline (hover: Ink at 5%), because next to lime a sky-tinted panel read as a second colour;
+in ink it stays neutral and lime stays the one colour in the action row.
 
 ### Chips / Badges
 - **Style:** full pill, `px-3 py-[0.3125rem]`, Space Grotesk `text-xs font-medium` (The
@@ -989,7 +1031,16 @@ eyebrow names the service right below.
 ### Marked text (signature)
 - **`.hero-mark`** — the highlighter: Soft Lime fill behind Ink-on-Lime, `0.12em` radius, with
   `box-decoration-break: clone` so the mark survives a line wrap. Reserved for the single hero
-  phrase.
+  phrase. The expat hero does not use it: its marked phrase is taped on (below).
+- **The tape (`TapeMark`, `.tape-strip`)** — the expat hero's marked phrase, so the two landings
+  never share a highlight: a strip of Soft Lime packing tape behind each line the phrase wraps
+  to, serrated at both ends where it was torn off the roll (a zig-zag mask, teeth 0.16em apart),
+  a plastic sheen along its top edge, each strip a degree or so askew (-1.4°, 0.9°, -0.6°) while
+  the words stay level, with a sliver of page between one line's tape and the next. The tape is
+  what seals every box the page is about. Lines are measured from the phrase's own line boxes
+  (re-read on resize), so a strip follows whatever wrap the viewport makes. On load each strip
+  is pulled across left to right, one line after the other (Motion, Entrance). Words on the tape
+  are Ink-on-Lime, as on the highlighter. Reserved for the expat hero's one phrase.
 - **`.card-mark`** — the same highlighter stroke, for the one marked title inside a card rhythm.
   Identical treatment, kept as its own class precisely so `.hero-mark` stays reserved: the hero
   gets one marked phrase per page, a card section gets one marked title per section, and the two

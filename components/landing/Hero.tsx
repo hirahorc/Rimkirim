@@ -15,14 +15,26 @@ const WORD_STEP = 0.07;
  * Shared with the expat hero, so both landings arrive the same way; the h1
  * around it carries `.hero-headline` to cancel its own block reveal.
  */
-export function Words({ text, startIndex }: { text: string; startIndex: number }) {
+export function Words({
+  text,
+  startIndex,
+  base = WORD_BASE,
+  step = WORD_STEP,
+}: {
+  text: string;
+  startIndex: number;
+  /** when the first word starts and how far apart the words are (seconds);
+   *  the expat hero sets its own, as the first tier of a longer entrance */
+  base?: number;
+  step?: number;
+}) {
   return (
     <>
       {text.split(" ").map((word, i) => (
         <React.Fragment key={`${word}-${i}`}>
           <span
             className="hero-word"
-            style={{ animationDelay: `${WORD_BASE + (startIndex + i) * WORD_STEP}s` }}
+            style={{ animationDelay: `${base + (startIndex + i) * step}s` }}
           >
             {word}
           </span>{" "}

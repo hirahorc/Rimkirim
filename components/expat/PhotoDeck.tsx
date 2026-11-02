@@ -21,9 +21,19 @@ const SWIPE = 40;
  * readers. Each card's place in the pile is its `data-depth`; the motion is
  * CSS transitions in globals.css (.photo-deck), so a quick second click
  * retargets instead of restarting, and a keyboard press swaps instantly
- * (PRODUCT.md: keyboard-triggered actions never animate).
+ * (PRODUCT.md: keyboard-triggered actions never animate). With `dealAt`
+ * the pile is dealt in on load, back to front, on `translate` and opacity so
+ * it never fights the cards' own `transform` (globals.css, .deck-deal).
  */
-export function PhotoDeck({ className }: { className?: string }) {
+export function PhotoDeck({
+  dealAt,
+  className,
+}: {
+  /** on load, deal the pile in from this time (seconds): the back print
+   *  first and the top one last, then the caption row */
+  dealAt?: number;
+  className?: string;
+}) {
   const t = useT();
   const n = EXPAT_HERO_PHOTOS.length;
   const [active, setActive] = React.useState(0);
@@ -80,7 +90,13 @@ export function PhotoDeck({ className }: { className?: string }) {
               key={p.src}
               aria-hidden
               data-depth={depth < SHOWN ? depth : "rest"}
-              className="deck-card absolute inset-[5%] rounded-md bg-background p-1.5 shadow-float"
+              className={cn(
+                "deck-card absolute inset-[5%] rounded-md bg-background p-1.5 shadow-float",
+                dealAt !== undefined && i < SHOWN && "deck-deal",
+              )}
+              // fixed by the card's place at load, never its current depth,
+              // so a click during the deal cannot retime it
+              style={dealAt !== undefined ? ({ "--at": `${dealAt + (SHOWN - 1 - i) * 0.1}s` } as React.CSSProperties) : undefined}
             >
               <div className="relative size-full overflow-hidden rounded-sm bg-surface-2">
                 <Image
@@ -108,7 +124,10 @@ export function PhotoDeck({ className }: { className?: string }) {
         {position}: {t(`expat.photos.${current.alt}`)}
       </p>
 
-      <div className="mt-3 flex items-center justify-between gap-3 px-[5%]">
+      <div
+        className={cn("mt-3 flex items-center justify-between gap-3 px-[5%]", dealAt !== undefined && "hero-in")}
+        style={dealAt !== undefined ? ({ "--at": `${dealAt + 0.45}s` } as React.CSSProperties) : undefined}
+      >
         <span className="text-xs text-muted-2">{t("expat.photos.caption")}</span>
         <div className="flex items-center gap-1">
           <Button

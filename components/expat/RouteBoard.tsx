@@ -66,7 +66,7 @@ function Tiles({ code, delayMs }: { code: string; delayMs: number }) {
  * under reduced motion, where the first route simply stands. The tiles are
  * decoration for sighted readers; assistive tech gets one plain sentence.
  */
-export function RouteBoard({ className }: { className?: string }) {
+export function RouteBoard({ className, style }: { className?: string; style?: React.CSSProperties }) {
   const t = useT();
   const ref = React.useRef<HTMLDivElement>(null);
   const [turn, setTurn] = React.useState(0);
@@ -102,7 +102,7 @@ export function RouteBoard({ className }: { className?: string }) {
   const flightDelay = entrance ? destDelay + 3 * FLIP_STEP_MS + 120 : 3 * FLIP_STEP_MS + 120;
 
   return (
-    <div ref={ref} className={className}>
+    <div ref={ref} className={className} style={style}>
       <p className="sr-only">{t("expat.hero.eyebrow")}</p>
       <div aria-hidden className="route-board flex items-center">
         {/* all origin flags are stacked and crossfade, so a swap never
@@ -127,12 +127,11 @@ export function RouteBoard({ className }: { className?: string }) {
             className="board-line absolute inset-x-0 top-1/2 border-t border-dashed border-muted-2"
             style={{ animationDelay: `${flightDelay}ms` }}
           />
-          {/* three layers, three jobs: travel (x), lift (y), heading (the
-              glyph points north-east, so it turns 45deg to fly east) */}
+          {/* level flight along the line it draws (a lift would leave the
+              straight dashes behind); the glyph points north-east, so it
+              turns 45deg to fly east */}
           <span key={`p-${turn}`} className="board-plane absolute left-0 top-0" style={{ animationDelay: `${flightDelay}ms` }}>
-            <span className="board-lift block">
-              <Plane className="size-4 rotate-45 fill-foreground text-foreground" strokeWidth={1.5} />
-            </span>
+            <Plane className="block size-4 rotate-45 fill-foreground text-foreground" strokeWidth={1.5} />
           </span>
         </span>
 

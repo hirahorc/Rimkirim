@@ -105,9 +105,12 @@ const id = {
       boardLabel: "Pintu ke pintu, lewat udara",
       title1: "Relokasi ke Indonesia?",
       title2: "Bawa barang-barangmu.",
-      subtitle: "Kirim kardus, koper, dan barang pribadi ke Indonesia, dengan bantuan mengatur perjalanannya.",
-      readReviews: "Baca ulasan",
+      subtitle: "Kirim kardus, koper, dan barang pribadi ke Indonesia, dari pintu ke pintu lewat udara, dengan bantuan mengatur perjalanannya.",
       how: "Lihat cara kerjanya",
+      // the notification beside the photos (decorative, hidden from
+      // assistive tech)
+      noticeMeta: "WhatsApp · sekarang",
+      noticeBody: "Barangmu sudah lolos bea cukai di Indonesia. Berikutnya: pintu rumahmu.",
     },
     items: {
       clothes: "Pakaian & sepatu",
@@ -1822,9 +1825,10 @@ const en: Messages = {
       boardLabel: "Door to door, by air",
       title1: "Relocating to Indonesia?",
       title2: "Bring your belongings with you.",
-      subtitle: "Ship boxes, luggage and personal belongings to Indonesia, with help coordinating the journey.",
-      readReviews: "Read reviews",
+      subtitle: "Ship boxes, luggage and personal belongings to Indonesia, door to door and by air, with help coordinating the journey.",
       how: "See how it works",
+      noticeMeta: "WhatsApp · now",
+      noticeBody: "Your boxes have cleared customs in Indonesia. Next stop: your door.",
     },
     items: {
       clothes: "Clothes & shoes",
