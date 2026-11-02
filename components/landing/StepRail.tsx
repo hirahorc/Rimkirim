@@ -5,8 +5,8 @@ import { cn } from "@/lib/utils/cn";
  * A sequence told as one rail, not a row of cards: a hairline above each step
  * that draws in as the step enters, the text rising under it (`.how-step` in
  * globals.css, DESIGN.md "The step rail"). `--i` offsets the scroll range so
- * on one row the steps arrive in the order they happen. Shared by the home
- * page's "Cara kerjanya" and the expat page's "How it works".
+ * on one row the steps arrive in the order they happen. The home page's
+ * "Cara kerjanya"; the expat "How it works" is the journey (JourneySteps).
  */
 export function StepRail({
   steps,

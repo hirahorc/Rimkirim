@@ -1238,3 +1238,277 @@ body:has(main > [data-field]) {
     transition: none;
   }
 }
+
+/* ------------------------------------------------------------------ */
+/*  The journey (expat "How it works"; DESIGN.md, Motion)              */
+/*  The section reveals itself, then plays its steps 1 to 4, once; a    */
+/*  click takes over. Each scene builds piece by piece when it comes    */
+/*  up: each piece names its entrance (.jr-arrive, .jr-rise, ...) and   */
+/*  its start (--d).                                                    */
+/* ------------------------------------------------------------------ */
+
+:root {
+  /* the illustrations' two curves (the stageshow pace): one for things
+     arriving from nowhere, one for things travelling across the stage */
+  --jr-arrive: cubic-bezier(0.25, 0.8, 0.25, 1);
+  --jr-travel: cubic-bezier(0.45, 0, 0.1, 1);
+}
+
+/* The stage's ground: the page's own trip, daylight sky to dusk magenta
+   (the chapter hues, DESIGN.md "Expat chapters"), as two soft washes over
+   the chapter's wash. The dusk one comes up as the steps play, so the stage
+   travels from departure to arrival with them, and a fine grain keeps the
+   colour from reading as a flat digital fill. The third written-down
+   gradient exception (DESIGN.md, The No-Gradient Rule): a stage for
+   illustration, like the scrim's photography, never a panel. */
+.jr-sky {
+  background:
+    radial-gradient(85% 80% at 8% 0%, rgb(33 177 236 / 0.32), transparent 72%),
+    radial-gradient(70% 75% at 100% 100%, rgb(122 102 233 / 0.22), transparent 72%),
+    var(--tone-wash);
+}
+.jr-dusk {
+  background:
+    radial-gradient(85% 80% at 92% 0%, rgb(212 28 230 / 0.28), transparent 72%),
+    radial-gradient(75% 75% at 0% 100%, rgb(122 102 233 / 0.26), transparent 72%),
+    var(--tone-wash);
+  transition: opacity 900ms var(--ease-in-out-strong);
+}
+.jr-grain {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.15' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1.6 -0.55'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  opacity: 0.11;
+  mix-blend-mode: multiply;
+  pointer-events: none;
+}
+
+/* The stage moves like a conveyor: the scene that is done travels up and
+   out, the next builds itself in its place (its hero rising from the crop
+   below); stepping back, the later scene sinks away instead. */
+.jr-slot {
+  transition:
+    opacity 520ms var(--jr-travel),
+    transform 620ms var(--jr-travel),
+    visibility 0s linear 620ms;
+}
+.jr-slot[data-place="after"] {
+  opacity: 0;
+  transform: translateY(-2.5rem);
+  visibility: hidden;
+}
+.jr-slot[data-place="before"] {
+  opacity: 0;
+  transform: translateY(2.5rem);
+  visibility: hidden;
+}
+.jr-slot[data-place="shown"] {
+  transition-delay: 0s;
+}
+/* the highlight glides from step to step, and the rail fills behind it */
+.jr-glide {
+  transition:
+    transform 560ms var(--ease-in-out-strong),
+    height 560ms var(--ease-in-out-strong);
+}
+.jr-rail-fill {
+  transition: transform 560ms var(--ease-in-out-strong);
+}
+/* while a step holds, its timer ring and the rail toward the next step run
+   down together; the ring's end moves the steps on (JourneySteps) */
+@keyframes jr-hold {
+  from {
+    stroke-dashoffset: 100;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes jr-rail-run {
+  from {
+    transform: scaleY(0);
+  }
+  to {
+    transform: scaleY(1);
+  }
+}
+.jr-timer {
+  stroke-dasharray: 100;
+  animation: jr-hold var(--dwell) linear both;
+}
+.jr-rail-run {
+  animation: jr-rail-run var(--dwell) linear both;
+}
+.jr-root:is([data-hold], [data-paused]) :is(.jr-timer, .jr-rail-run) {
+  animation-play-state: paused;
+}
+/* a mouse resting on the stage is someone looking at the scene */
+@media (hover: hover) and (pointer: fine) {
+  .jr-root:has(.jr-stage:hover) :is(.jr-timer, .jr-rail-run) {
+    animation-play-state: paused;
+  }
+}
+@keyframes jr-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(1rem);
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .jr-tile {
+    animation: board-flip 320ms var(--ease-out-soft) both;
+  }
+  /* the section reveals itself once, as it comes into view */
+  [data-journey-ready]:not([data-revealed]) .jr-reveal {
+    opacity: 0;
+  }
+  [data-revealed] .jr-reveal {
+    animation: jr-reveal 640ms var(--ease-out-soft) both;
+    animation-delay: calc(var(--i, 0) * 70ms);
+  }
+}
+
+/* built states, which is all a reader without motion or script sees */
+.jr-check {
+  stroke-dasharray: 24;
+}
+.jr-ring {
+  stroke-dasharray: 100;
+}
+/* the plane rides its arc nose first (lucide's glyph points up and right,
+   so it turns an eighth less than the path's tangent); it waits unseen
+   until JourneyScenes has measured the arc */
+.jr-fly {
+  offset-distance: 100%;
+  offset-rotate: auto 45deg;
+}
+.jr-fly:not([data-arc]) {
+  visibility: hidden;
+}
+
+/* entrances. Solid things arrive by moving, opaque almost at once, never
+   fading through: a hero rises from the crop below, a chip or a bubble
+   lands from just above, a row lifts a little into place */
+@keyframes jr-arrive {
+  from {
+    transform: translateY(3.5em);
+    opacity: 0;
+  }
+  20% {
+    opacity: 1;
+  }
+}
+@keyframes jr-lift {
+  from {
+    transform: translateY(4em);
+    opacity: 0;
+  }
+  25% {
+    opacity: 1;
+  }
+}
+@keyframes jr-rise {
+  from {
+    opacity: 0;
+    transform: translateY(0.6em);
+  }
+}
+@keyframes jr-drop {
+  from {
+    opacity: 0;
+    transform: translateY(-0.5em);
+  }
+}
+@keyframes jr-type {
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+@keyframes jr-grow {
+  from {
+    transform: scaleX(0);
+  }
+}
+@keyframes jr-ring {
+  from {
+    stroke-dashoffset: 100;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes jr-fill {
+  from {
+    background-color: transparent;
+    box-shadow: inset 0 0 0 1.5px var(--border-strong);
+  }
+}
+@keyframes jr-fly {
+  from {
+    offset-distance: 0%;
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  to {
+    offset-distance: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .jr-scene[data-built] .jr {
+    animation-duration: 700ms;
+    animation-timing-function: var(--jr-arrive);
+    animation-fill-mode: both;
+    animation-delay: var(--d, 0ms);
+  }
+  .jr-scene[data-built] .jr-arrive { animation-name: jr-arrive; animation-duration: 900ms; animation-timing-function: var(--jr-travel); }
+  .jr-scene[data-built] .jr-lift { animation-name: jr-lift; animation-duration: 900ms; animation-timing-function: var(--jr-travel); }
+  .jr-scene[data-built] .jr-rise { animation-name: jr-rise; }
+  .jr-scene[data-built] .jr-drop { animation-name: jr-drop; animation-duration: 600ms; }
+  .jr-scene[data-built] .jr-flip { animation-name: board-flip; animation-duration: 320ms; animation-timing-function: var(--ease-out-soft); }
+  .jr-scene[data-built] .jr-grow { animation-name: jr-grow; animation-duration: 800ms; }
+  .jr-scene[data-built] .jr-fill { animation-name: jr-fill; animation-duration: 200ms; }
+  .jr-scene[data-built] .jr-check { animation-name: check-draw; animation-duration: 320ms; }
+  .jr-scene[data-built] .jr-type { animation-name: jr-type; animation-duration: 520ms; animation-timing-function: linear; }
+  .jr-scene[data-built] .jr-ring { animation-name: jr-ring; animation-duration: 1100ms; }
+  /* the route and its plane travel together, on the board's curve */
+  .jr-scene[data-built] :is(.jr-draw, .jr-fly) {
+    animation-duration: 1500ms;
+    animation-timing-function: var(--ease-in-out-strong);
+  }
+  .jr-scene[data-built] .jr-draw { animation-name: jr-type; }
+  .jr-scene[data-built] .jr-fly { animation-name: jr-fly; }
+
+  /* until its step comes up, a scene's pieces wait out of sight (only
+     once the page is live, so without script every scene stands built) */
+  [data-journey-ready] .jr-scene:not([data-built]) :is(.jr-arrive, .jr-lift, .jr-rise, .jr-drop, .jr-flip, .jr-fly) {
+    opacity: 0;
+  }
+  [data-journey-ready] .jr-scene:not([data-built]) :is(.jr-type, .jr-draw) {
+    clip-path: inset(0 100% 0 0);
+  }
+  [data-journey-ready] .jr-scene:not([data-built]) .jr-grow {
+    transform: scaleX(0);
+  }
+  [data-journey-ready] .jr-scene:not([data-built]) .jr-check {
+    stroke-dashoffset: 24;
+  }
+  [data-journey-ready] .jr-scene:not([data-built]) .jr-ring {
+    stroke-dashoffset: 100;
+  }
+  [data-journey-ready] .jr-scene:not([data-built]) .jr-fill {
+    background-color: transparent;
+    box-shadow: inset 0 0 0 1.5px var(--border-strong);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .jr-slot,
+  .jr-glide,
+  .jr-rail-fill,
+  .jr-dusk {
+    transition: none;
+  }
+}

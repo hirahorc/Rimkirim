@@ -1,0 +1,337 @@
+"use client";
+
+import * as React from "react";
+import { Pause, Play, RotateCcw } from "lucide-react";
+import { useT } from "@/lib/i18n/LanguageProvider";
+import { cn } from "@/lib/utils/cn";
+import { DetailsScene, DoorScene, FlightScene, QuoteScene } from "./JourneyScenes";
+
+const SCENES = [DetailsScene, QuoteScene, FlightScene, DoorScene];
+
+/** how long each step holds before the next, while the steps play: the
+ *  scene builds in about two seconds, and the rest is reading time */
+const DWELL_MS = 5200;
+/** how long a scene leaving the stage takes to travel out (the .jr-slot transition) */
+const LEAVE_MS = 650;
+
+/**
+ * idle: not on screen yet · auto: playing 1 to 4 · paused: by the button ·
+ * manual: a step was chosen, so the reader leads · done: played through
+ */
+type Mode = "idle" | "auto" | "paused" | "manual" | "done";
+
+/** a scene in its frame: the frame is the size query, and the scene's em is
+ *  a share of the frame's width, so the whole illustration scales as one */
+function Frame({ className, style, children }: { className?: string; style?: React.CSSProperties; children: React.ReactNode }) {
+  return (
+    <div aria-hidden className={cn("@container relative overflow-hidden rounded-lg bg-(--tone-wash)", className)} style={style}>
+      {children}
+    </div>
+  );
+}
+
+const order = (i: number) => ({ "--i": i }) as React.CSSProperties;
+
+/**
+ * The expat "How it works" as the trip it describes. When the section
+ * scrolls into view it reveals itself, then the steps play from 1 to 4 on
+ * their own: the active step's tile fills and flips like the hero's
+ * departure board, a highlight glides down to it, the rail fills to it and
+ * runs on toward the next step while it holds, and the stage cross-fades to
+ * its scene, which builds itself piece by piece. One pass, then it rests
+ * on the doorstep.
+ *
+ * A click (or Enter) on a step takes over: that step comes up and the
+ * playing stops. The round control on the stage pauses, resumes and
+ * replays, and the playing also holds while a mouse rests on the stage
+ * (only the stage: the section fills the screen, so a pointer parked
+ * anywhere on it would stop the playing for good), while the section is off
+ * screen and while the tab is hidden. Under
+ * reduced motion nothing plays or moves: the first step stands, built, and
+ * a click switches instantly. DESIGN.md, Motion: "The journey".
+ */
+export function JourneySteps({
+  steps,
+  head,
+  footer,
+}: {
+  steps: { title: string; body: string }[];
+  head: React.ReactNode;
+  footer: React.ReactNode;
+}) {
+  const t = useT();
+  const rootRef = React.useRef<HTMLDivElement>(null);
+  const listRef = React.useRef<HTMLOListElement>(null);
+  const [mode, setMode] = React.useState<Mode>("idle");
+  const [active, setActive] = React.useState(-1);
+  /** the scenes built right now: the shown one, and the one leaving */
+  const [built, setBuilt] = React.useState<number[]>([]);
+  /** restarts the hold timer when a step is replayed or resumed from manual */
+  const [run, setRun] = React.useState(0);
+  const [layout, setLayout] = React.useState<{ tiles: number[]; rows: { top: number; height: number }[] } | null>(null);
+  const leaveRef = React.useRef(0);
+  const activeRef = React.useRef(-1);
+
+  const go = React.useCallback((i: number) => {
+    const prev = activeRef.current;
+    activeRef.current = i;
+    setActive(i);
+    setBuilt(prev >= 0 && prev !== i ? [prev, i] : [i]);
+    window.clearTimeout(leaveRef.current);
+    leaveRef.current = window.setTimeout(() => setBuilt([i]), LEAVE_MS);
+  }, []);
+
+  React.useEffect(() => {
+    const root = rootRef.current;
+    const list = listRef.current;
+    if (!root || !list) return;
+    root.dataset.journeyReady = "";
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    let started = false;
+    let startTimer = 0;
+    const hold = { view: true, tab: document.hidden };
+    const applyHold = () => {
+      if (hold.view || hold.tab) root.dataset.hold = "";
+      else delete root.dataset.hold;
+    };
+    const io = new IntersectionObserver(
+      ([e]) => {
+        hold.view = !e.isIntersecting;
+        applyHold();
+        if (!started && e.intersectionRatio >= 0.3) {
+          started = true;
+          root.dataset.revealed = "";
+          if (reduce) {
+            go(0);
+            setMode("manual");
+          } else {
+            // let the reveal land before the first step plays
+            startTimer = window.setTimeout(() => {
+              go(0);
+              setMode((m) => (m === "idle" ? "auto" : m));
+            }, 650);
+          }
+        }
+      },
+      { threshold: [0, 0.3] },
+    );
+    io.observe(root);
+    const onVisibility = () => {
+      hold.tab = document.hidden;
+      applyHold();
+    };
+    document.addEventListener("visibilitychange", onVisibility);
+    const ro = new ResizeObserver(() => {
+      const top = list.getBoundingClientRect().top;
+      const rows = (Array.from(list.children) as HTMLElement[]).filter((el) => el.tagName === "LI");
+      setLayout({
+        tiles: rows.map((li) => {
+          const r = li.querySelector<HTMLElement>("[data-tile]")!.getBoundingClientRect();
+          return r.top + r.height / 2 - top;
+        }),
+        rows: rows.map((li) => ({ top: li.offsetTop, height: li.offsetHeight })),
+      });
+    });
+    ro.observe(list);
+    return () => {
+      io.disconnect();
+      ro.disconnect();
+      document.removeEventListener("visibilitychange", onVisibility);
+      window.clearTimeout(startTimer);
+      window.clearTimeout(leaveRef.current);
+    };
+  }, [go]);
+
+  /** the hold ran out: on to the next step, or rest after the last */
+  const next = () => {
+    if (active < steps.length - 1) go(active + 1);
+    else setMode("done");
+  };
+  const choose = (i: number) => {
+    go(i);
+    setMode("manual");
+  };
+  const control = () => {
+    if (mode === "auto") setMode("paused");
+    else if (mode === "paused") setMode("auto");
+    else {
+      if (mode === "done" || active < 0) go(0);
+      setRun((r) => r + 1);
+      setMode("auto");
+    }
+  };
+
+  const timing = mode === "auto" || mode === "paused";
+  const last = steps.length - 1;
+  const railTop = layout?.tiles[0] ?? 0;
+  const railSpan = layout ? layout.tiles[last] - railTop : 0;
+  const at = (i: number) => (layout && railSpan > 0 ? (layout.tiles[i] - railTop) / railSpan : 0);
+  const shown = Math.max(active, 0);
+  const row = layout && active >= 0 ? layout.rows[active] : null;
+
+  return (
+    <div
+      ref={rootRef}
+      className="jr-root"
+      data-timing={timing || undefined}
+      data-paused={mode === "paused" || undefined}
+      style={{ "--dwell": `${DWELL_MS}ms` } as React.CSSProperties}
+    >
+      <div className="jr-reveal" style={order(0)}>
+        {head}
+      </div>
+
+      <div className="mt-10 grid gap-8 lg:mt-12 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:items-center lg:gap-16">
+        {/* the stage: on top on a phone, beside the steps from lg */}
+        <div className="jr-stage jr-reveal relative lg:col-start-2 lg:row-start-1" style={order(1)}>
+          {/* portrait on a phone, where the scenes take their compact layout */}
+          <Frame className="aspect-[4/5] sm:aspect-[4/3] lg:aspect-[5/4]">
+            {/* the ground travels with the steps: daylight at 01, dusk by 04 */}
+            <div className="jr-sky absolute inset-0" />
+            <div className="jr-dusk absolute inset-0" style={{ opacity: shown / last }} />
+            <div className="jr-grain absolute inset-0" />
+            <div className="relative grid size-full">
+              {SCENES.map((Illustration, i) => (
+                <div
+                  key={i}
+                  className="jr-slot relative [grid-area:1/1]"
+                  data-place={i === shown ? "shown" : i < shown ? "after" : "before"}
+                >
+                  {/* the scene's em is a share of the stage's width, so it
+                      scales as one picture; a compact stage gets a bigger
+                      share and a compact layout, so its type stays legible */}
+                  <div
+                    className="jr-scene absolute inset-0 text-[length:2.85cqw] @max-[30rem]:text-[length:3.9cqw]"
+                    data-built={built.includes(i) || undefined}
+                  >
+                    <Illustration />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </Frame>
+          {/* pause, play, replay; its ring is the active step's hold running out */}
+          {mode !== "idle" && (
+            <button
+              type="button"
+              onClick={control}
+              aria-label={t(mode === "auto" ? "expat.steps.pause" : mode === "done" ? "expat.steps.replay" : "expat.steps.play")}
+              className="jr-control absolute right-3 top-3 grid size-9 place-items-center rounded-full sm:size-10 bg-background text-foreground transition-colors hover:text-tone-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/40 sm:right-4 sm:top-4"
+            >
+              <svg viewBox="0 0 40 40" className="absolute inset-0 -rotate-90" aria-hidden>
+                <circle cx="20" cy="20" r="18.5" fill="none" stroke="var(--border)" strokeWidth="2" />
+                {timing && (
+                  <circle
+                    key={`${run}-${active}`}
+                    className="jr-timer"
+                    cx="20"
+                    cy="20"
+                    r="18.5"
+                    fill="none"
+                    stroke="var(--tone-ink)"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    pathLength={100}
+                    onAnimationEnd={next}
+                  />
+                )}
+              </svg>
+              {mode === "auto" ? (
+                <Pause className="size-3.5 fill-current" />
+              ) : mode === "done" ? (
+                <RotateCcw className="size-4" />
+              ) : (
+                <Play className="ml-0.5 size-3.5 fill-current" />
+              )}
+            </button>
+          )}
+        </div>
+
+        <ol ref={listRef} className="relative -mx-3 lg:col-start-1 lg:row-start-1">
+          {/* the highlight, gliding to the active step */}
+          {row && (
+            <span
+              aria-hidden
+              className="jr-glide pointer-events-none absolute inset-x-0 top-0 rounded-md bg-surface-2"
+              style={{ transform: `translateY(${row.top}px)`, height: row.height }}
+            />
+          )}
+          {/* the rail: filled to the active step, and running on toward the
+              next while the step holds */}
+          {layout && (
+            <span
+              aria-hidden
+              className="pointer-events-none absolute left-[calc(1.625rem-0.5px)] w-px bg-border-strong"
+              style={{ top: railTop, height: railSpan }}
+            >
+              <span
+                className="jr-rail-fill absolute inset-0 origin-top bg-tone-ink"
+                style={{ transform: `scaleY(${active >= 0 ? at(active) : 0})` }}
+              />
+              {timing && active >= 0 && active < last && (
+                <span
+                  key={`${run}-${active}`}
+                  className="jr-rail-run absolute inset-x-0 origin-top bg-tone-ink"
+                  style={{ top: `${at(active) * 100}%`, height: `${(at(active + 1) - at(active)) * 100}%` }}
+                />
+              )}
+            </span>
+          )}
+          {steps.map((s, i) => {
+            const isActive = i === active;
+            return (
+              <li
+                key={s.title}
+                className="jr-reveal group/step relative grid grid-cols-[1.75rem_minmax(0,1fr)] gap-x-4 p-3"
+                style={order(2 + i)}
+              >
+                {/* the whole row is the button, laid over it, so the title
+                    stays a heading */}
+                <button
+                  type="button"
+                  onClick={() => choose(i)}
+                  aria-current={isActive ? "step" : undefined}
+                  aria-label={s.title}
+                  className="absolute inset-0 z-20 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/40 pointer-fine:cursor-pointer"
+                />
+                {/* remounted when its step turns active, so it flips in on
+                      the departure board's move (without the board's seam,
+                      which reads as a strike-through at this size) */}
+                  <span
+                    key={isActive ? "on" : "off"}
+                    data-tile
+                    aria-hidden
+                    className={cn(
+                      "relative z-10 grid h-8 w-7 place-items-center rounded-2xs font-mono text-sm font-medium tabular-nums transition-colors duration-300",
+                      isActive
+                        ? "jr-tile bg-tone-ink text-background"
+                        : i < active
+                          ? "bg-background text-tone-ink shadow-[inset_0_0_0_1px_var(--tone-ink)]"
+                          : "bg-background text-muted-2 shadow-[inset_0_0_0_1px_var(--border-strong)]",
+                    )}
+                  >
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                <div className="relative z-10 min-w-0">
+                  <h3
+                    className={cn(
+                      "font-display text-lg font-semibold leading-8 tracking-tight transition-colors duration-200",
+                      isActive ? "text-tone-ink" : "pointer-fine:group-hover/step:text-tone-ink",
+                    )}
+                  >
+                    {s.title}
+                  </h3>
+                  <p className="mt-1 max-w-md text-sm leading-relaxed text-muted">{s.body}</p>
+                </div>
+              </li>
+            );
+          })}
+        </ol>
+      </div>
+
+      <div className="jr-reveal mt-10" style={order(6)}>
+        {footer}
+      </div>
+    </div>
+  );
+}

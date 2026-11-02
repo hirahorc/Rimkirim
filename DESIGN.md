@@ -283,8 +283,8 @@ The one sanctioned translucency is functional: sticky chrome (the header capsule
 `bg-background/85` + `backdrop-blur-xl` so the page reads legibly as it scrolls underneath — an
 effect doing a specific job, not a texture.
 
-There are exactly **two standing exceptions**, both narrow, both doing a job no solid fill can do.
-Neither licenses a third: a new gradient has to earn its place the same way, in writing, at the
+There are exactly **three standing exceptions**, each narrow, each doing a job no solid fill can do.
+None licenses a fourth: a new gradient has to earn its place the same way, in writing, at the
 point of use.
 - **Scrim over photography.** Where text sits on an image — the testimonial hook card's name and
   attribution — a `from-foreground/95 via-foreground/70 to-transparent` ramp buys legibility
@@ -296,6 +296,14 @@ point of use.
   its hover width up front so neighbours never nudge. While hovered the gradient keeps flowing
   (1.8s alternate loop) — a deliberate exception to the one-loop rule, kept because it runs only
   under the pointer, never on idle UI, and stops the moment the hover ends.
+- **The journey's stage** (`.jr-sky`, `.jr-dusk`, `.jr-grain`, expat "How it works"): the ground
+  the step illustrations stand on is the page's own trip, two soft radial washes in the chapter
+  hues over the magenta wash, daylight sky (`#21b1ec`) top left at step 01, dusk magenta
+  (`#d41ce6`) top right by 04, cross-fading as the steps play, under a fine SVG grain at 11%
+  multiply. It is a stage for illustration, the way the scrim serves photography, never a panel
+  behind text; every word on it sits on a white card except the chat's small label. The
+  parcels on its doorstep are kraft brown, the one colour outside the palette, because a
+  cardboard box is the brown of cardboard.
 
 **The Tint-15 Rule.** *Status* chips use the colour at 15% opacity for the fill (banners and
 strips step down to 10%), full strength for the icon, and the **status ink** (`--*-ink`: the
@@ -559,8 +567,8 @@ home hero's floating verdicts and the expat hero's departure board. Treat any ot
   `prefers-reduced-motion: no-preference`.
   The rise has two sanctioned relatives, both *explanation*, both on the same guards and the same
   `view()` machinery, and neither licenses a third:
-  - **The step rail** (`.how-step`, landing "Cara kerjanya", and on the expat page both "How it
-    works" (via `StepRail`) and the closing "What happens next"): the hairline above each step draws
+  - **The step rail** (`.how-step`, landing "Cara kerjanya", and on the expat page the closing
+    "What happens next"; the expat "How it works" is the journey, below): the hairline above each step draws
     left→right (`scaleX`, origin left) and the step's text rises 10px under it, on the step's own
     named timeline across `cover 0–25%`. On one row (`lg`) the range shifts 3% per step so 01→05
     arrive in the order they happen; stacked, each step enters on its own and needs no offset.
@@ -680,6 +688,45 @@ home hero's floating verdicts and the expat hero's departure board. Treat any ot
   Mouse only, after the intent delay, so a pass across the row on the way elsewhere does not
   ripple it. A keyboard press opens instantly, and reduced motion drops the transition. Below
   `sm` six slivers have no room, so phones get the house scroll strip with its position row.
+- **The journey** (`JourneySteps` + `JourneyScenes`, `.jr-*`, expat "How it works"): the four steps
+  as the trip they describe, each illustrated by its moment built from the site's own pieces and
+  framed as a product shot, not a screenshot in a box (the stageshow rules, installed as the
+  `stageshow` skill): one hero surface inset a gutter from the top and sides of the stage and
+  running off its bottom, so only filler is cropped, and at most one satellite. 01 is the quote
+  form filling itself in, with "About 2 min" as a chip on its corner; 02 is two cards at one
+  width, the quote over the documents checklist rising from the crop and ticking off; 03 is
+  the tracking card, GBR to IDN on the departure board's tiles with the plane flying the route
+  (its ends on the tiles' centre line, a steep climb and a long shallow landing, dashes drawn
+  behind the plane, which is lucide's, filled white so it covers the landing dot) over the legs'
+  timeline; 04 is the doorstep, a panelled front door nearly the stage's height with two kraft
+  parcels landing at its foot, and the WhatsApp thread as the satellite, its avatar Rimkirim's
+  own app icon (the one lime in the illustrations: it is the brand's mark, not a "press this").
+  Every size is in em, a share of the stage's width (2.85cqw), so a scene scales as one
+  picture; below 30rem the stage turns portrait (4:5) and the scenes take a compact layout at
+  3.9cqw, never squeezed, so their type stays at 10px or more. Things arrive by moving (a hero
+  rises from the crop on the travel curve, chips and bubbles land from just above), and the
+  stage changes scene like a conveyor: the done scene travels up and out while the next builds
+  in its place, the other way round when stepping back. The scenes share one stage, beside the
+  steps from `lg` and above them on a phone, on the travelling ground described under The
+  No-Gradient Rule.
+  When the section is 30% in view it **reveals** once (head, stage, steps, button rising 1rem
+  on a 70ms stagger), then **plays the steps 1 to 4, once**: the active step's tile fills with
+  tone ink and flips in on the board's move (`board-flip`, without the seam, which strikes
+  through a 28px tile), a highlight **glides** to it (`transform` + `height`, 560ms
+  `--ease-in-out-strong`), the rail fills to it, the stage cross-fades (420ms) and its scene
+  **builds** piece by piece (each piece names its entrance and its start). Each step holds
+  5.2s; the round control on the stage wears the hold as a ring, and the rail runs on toward
+  the next step in step with it, so the reader can see the next move coming. After 04 it rests
+  on the doorstep. A scene rebuilds each time it comes up.
+  **A click (or Enter) on a step takes over**: that step comes up and the playing stops; the
+  control pauses, resumes and replays (WCAG 2.2.2: content that moves on its own for more than
+  five seconds must be pausable). The playing holds while a mouse rests on the stage (only
+  the stage: the section fills the screen, so a pointer parked anywhere on it would stop it
+  for good), while the section is off screen and while the tab is hidden. It is not a loop: one
+  pass, then still. Scenes are `aria-hidden`; the steps' words carry the meaning, and each row
+  is a button laid over it so the title stays a heading. Under reduced motion nothing reveals,
+  plays or glides: step 01 stands, built, and a click switches instantly; without script every
+  scene stands built.
 
 **The Never-Delay-The-Calculator Rule.** The landing exists to get someone into the rate
 calculator, which sits immediately below the fold. Motion may decorate that journey but must
