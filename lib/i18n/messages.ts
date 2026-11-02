@@ -453,6 +453,8 @@ const id = {
       uk: "Inggris Raya",
       germany: "Jerman",
       newYork: "New York",
+      australia: "Australia",
+      usa: "Amerika Serikat",
     },
     affiliations: {
       bristol: "Alumni University of Bristol",
@@ -2168,6 +2170,8 @@ const en: Messages = {
       uk: "United Kingdom",
       germany: "Germany",
       newYork: "New York",
+      australia: "Australia",
+      usa: "United States",
     },
     affiliations: {
       bristol: "University of Bristol alumnus",

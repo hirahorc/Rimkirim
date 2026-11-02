@@ -387,6 +387,18 @@ body:has(main > [data-field]) {
   /* for something travelling across the screen, not entering it (the expat
      departure board's plane): strong in, strong out */
   --ease-in-out-strong: cubic-bezier(0.77, 0, 0.175, 1);
+  /* The hover scale (DESIGN.md, Motion): every microinteraction that moves
+     something under a mouse answers on one clock, so the page feels like
+     one hand made it. Arriving takes --dur-hover, leaving a touch less, and
+     anything trailing the pointer --dur-follow; all on a strong ease-out,
+     so a move starts at speed and settles soft. Used by the hero's door
+     arrow (DoorButton reads these), the photo pile's fan, the pickup
+     slices and the review cards. Colour-only hovers keep the system's
+     0.2s; entrances and scenes keep their own, longer, timing. */
+  --dur-hover: 300ms;
+  --dur-hover-out: 240ms;
+  --dur-follow: 450ms;
+  --ease-hover: cubic-bezier(0.23, 1, 0.32, 1);
 }
 
 .reveal {
@@ -1109,8 +1121,8 @@ body:has(main > [data-field]) {
 .deck-card {
   transform-origin: 50% 85%;
   transition:
-    transform 360ms var(--ease-out-soft),
-    opacity 240ms var(--ease-out-soft);
+    transform var(--dur-hover) var(--ease-hover),
+    opacity var(--dur-hover-out) var(--ease-hover);
 }
 .deck-card[data-depth="0"] {
   z-index: 4;
@@ -1162,9 +1174,9 @@ body:has(main > [data-field]) {
    row always fills its width. As a print opens, flex-basis and flex-grow
    trade places between it and the one closing, which holds the row's total
    constant mid-flight. Transitions, so a quick sweep retargets instead of
-   restarting; on the strong in-out curve, since the prints move across the
-   screen rather than enter it. Hover opening a print is a written
-   exception to "hover moves colour" (DESIGN.md, the pickup slices). */
+   restarting; on the hover scale (--dur-hover, --ease-hover), since a
+   mouse opens most of them. Hover opening a print is a written exception
+   to "hover moves colour" (DESIGN.md, the pickup slices). */
 .pickup-slices {
   --slice-h: 22rem;
   height: var(--slice-h);
@@ -1178,7 +1190,7 @@ body:has(main > [data-field]) {
 .pickup-slice {
   flex: 1 1 0%;
   min-width: 0;
-  transition: flex 560ms var(--ease-in-out-strong);
+  transition: flex var(--dur-hover) var(--ease-hover);
 }
 .pickup-slice[data-open] {
   flex: 0 0 calc(var(--slice-h) * 0.8);
@@ -1195,7 +1207,7 @@ body:has(main > [data-field]) {
 }
 .pickup-slice[data-open] .pickup-slice-label {
   opacity: 1;
-  transition: opacity 240ms var(--ease-out-soft) 300ms;
+  transition: opacity var(--dur-hover-out) var(--ease-out-soft) var(--dur-hover);
 }
 /* a keyboard press opens a print without motion (PRODUCT.md) */
 .pickup-slices[data-instant] .pickup-slice,
@@ -1354,6 +1366,91 @@ body:has(main > [data-field]) {
   opacity: 0.11;
   mix-blend-mode: multiply;
   pointer-events: none;
+}
+
+/* Expat review cards (ExpatReviews), after stripe.com's bento cards: the
+   card paints nothing itself. Its white face and a 1px edge behind it are
+   layers a few pixels larger than the card, clipped back to the card's own
+   box at rest. Under a mouse both clips open (the card grows 6px up and
+   down, 5px to the sides, nothing inside it scaled or moved), and the edge
+   lights up: the band's hairline with a soft light of the expat colours,
+   sky into magenta, centred where the pointer is and following it a beat
+   behind, so the ring glows nearest the hand. On the hover scale: opening
+   at --dur-hover, closing at --dur-hover-out, the light trailing at
+   --dur-follow. From sm, fine pointers only, never under reduced motion
+   (DESIGN.md, Cards, the expat review card). */
+.review-card {
+  --grow-x: 5px;
+  --grow-y: 6px;
+  --mouse-x: 0px;
+  --mouse-y: 0px;
+}
+.review-face {
+  position: absolute;
+  inset: calc(-1 * var(--grow-y)) calc(-1 * var(--grow-x));
+  background: var(--card-surface, var(--background));
+  clip-path: inset(var(--grow-y) var(--grow-x) round var(--radius-lg));
+}
+.review-edge {
+  position: absolute;
+  inset: calc(-1 * var(--grow-y) - 1px) calc(-1 * var(--grow-x) - 1px);
+  overflow: hidden;
+  background: var(--border);
+  opacity: 0;
+  clip-path: inset(var(--grow-y) var(--grow-x) round calc(var(--radius-lg) + 1px));
+}
+.review-glow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  height: 90%;
+  aspect-ratio: 1;
+  translate: -50% -50%;
+  opacity: 0.7;
+  background: radial-gradient(circle, var(--tone), #d41ce6 35%, transparent 68%);
+  transform: translate3d(var(--mouse-x), var(--mouse-y), 0);
+}
+@media (min-width: 40rem) and (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .review-face {
+    transition: clip-path var(--dur-hover-out) var(--ease-hover);
+  }
+  .review-edge {
+    transition:
+      clip-path var(--dur-hover-out) var(--ease-hover),
+      opacity var(--dur-hover-out) var(--ease-hover);
+  }
+  .review-glow {
+    transition: transform var(--dur-follow) var(--ease-hover);
+  }
+  .review-card:hover .review-face {
+    clip-path: inset(0 round var(--radius-lg));
+    transition-duration: var(--dur-hover);
+  }
+  .review-card:hover .review-edge {
+    clip-path: inset(0 round calc(var(--radius-lg) + 1px));
+    opacity: 1;
+    transition-duration: var(--dur-hover);
+  }
+}
+
+/* Expat reviews (ExpatReviews): from sm the photo card fills the stack's
+   height at rest, so the columns end level. Once any review unfolds, the
+   photo keeps the height it had folded (--photo-rest, recorded while every
+   review is folded) and its card stops stretching: the frame, and the crop
+   of the customer in it, never change; the unfolded card grows alone, and
+   the photo card rides alongside it (sticky). */
+@media (min-width: 40rem) {
+  /* and it travels with the reader down the unfolded review, held just
+     under the header, so its column never stands empty beside the words */
+  .reviews-grid:has([aria-expanded="true"]) .review-photo-card {
+    align-self: start;
+    position: sticky;
+    top: 5.5rem;
+  }
+  .reviews-grid:has([aria-expanded="true"]) .review-photo {
+    flex: none;
+    height: var(--photo-rest);
+  }
 }
 
 /* The stage moves like a conveyor: the scene that is done travels up and

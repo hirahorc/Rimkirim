@@ -692,8 +692,8 @@ home hero's floating verdicts and the expat hero's departure board. Treat any ot
 - **The photo deck** (`.photo-deck`, expat hero): real shipment photos as a pile of prints, one
   5:4 card on top and two peeking behind it (rotated ±3–4°, offsets in % of the card so the pile
   keeps its shape at every width; the same 5:4 on phone and desktop). Click or tap sends the top
-  card to the back and a swipe goes either way: transform and opacity transitions, 360ms on
-  `--ease-out-soft`, so a quick second click retargets mid-flight instead of restarting. The
+  card to the back and a swipe goes either way: transform and opacity transitions on the hover
+  scale (below), so a quick second click retargets mid-flight instead of restarting. The
   prev/next buttons are the keyboard and screen-reader way in, and a keyboard press swaps
   instantly. **Hover fans the pile open** (±7°): the second written-down exception to "hover moves
   colour, not geometry", after the rating arrow, kept because it is how a mouse discovers there is
@@ -703,8 +703,8 @@ home hero's floating verdicts and the expat hero's departure board. Treat any ot
   button is the house lime and steps to Live Lime Dim under a mouse like any other; only its
   arrow answers, taking one step forward the way an inchworm walks. The head moves on first,
   so the shaft stretches behind it, then the tail catches up and the arrow stands 4 units
-  (about 2.7px) on: 300ms, split 40/60. Leaving, it steps back, tail first: 240ms, split
-  45/55. Snappy both ways: every phase is a strong ease-out (`cubic-bezier(0.23, 1, 0.32, 1)`),
+  (about 2.7px) on, split 40/60. Leaving, it steps back, tail first, split 45/55. On the hover
+  scale (below), read from its tokens: 300ms on, 240ms back, every phase on `--ease-hover`,
   and each move is its own WAAPI animation started from wherever the arrow is, so a pointer
   that leaves mid-step turns it round without a jump (a reversed timeline would start the
   return on its slow end). At rest it is lucide's
@@ -720,7 +720,7 @@ home hero's floating verdicts and the expat hero's departure board. Treat any ot
   flag and country to flat flag and Indonesia, fading in once the print has opened; ink, because a
   flat flag with a white field vanishes into a white label; the photos are never narrated, and what each
   shows is alt text for screen readers. Resting a mouse on a sliver for 90ms opens it, and so do click, tap and Enter: a
-  `flex` transition, 560ms on `--ease-in-out-strong`, which retargets on a quick sweep. **Hover
+  `flex` transition on the hover scale (below), which retargets on a quick sweep. **Hover
   opening a print** is the third written-down exception to "hover moves colour, not geometry",
   kept because the row is built to be swept, and a mouse finds the next photo by pointing at it.
   Mouse only, after the intent delay, so a pass across the row on the way elsewhere does not
@@ -765,6 +765,15 @@ home hero's floating verdicts and the expat hero's departure board. Treat any ot
   is a button laid over it so the title stays a heading. Under reduced motion nothing reveals,
   plays or glides: step 01 stands, built, and a click switches instantly; without script every
   scene stands built.
+
+**The hover scale.** Every microinteraction that *moves* something under a mouse answers on one
+clock, so the page feels made by one hand: arriving `--dur-hover` (300ms), leaving
+`--dur-hover-out` (240ms), anything trailing the pointer `--dur-follow` (450ms), all on
+`--ease-hover` (`cubic-bezier(0.23, 1, 0.32, 1)`, a strong ease-out: a move starts at speed and
+settles soft). Today: the hero's door arrow (`DoorButton` reads the tokens), the photo pile's
+fan and swaps, the pickup slices, the review cards. A new one joins the scale, never its own
+numbers. Colour-only hovers keep the system's 0.2s; entrances, builds and the journey keep
+their own, longer, timing, because they are read, not answered.
 
 **The Never-Delay-The-Calculator Rule.** The landing exists to get someone into the rate
 calculator, which sits immediately below the fold. Motion may decorate that journey but must
@@ -922,6 +931,21 @@ in ink it stays neutral and lime stays the one colour in the action row.
   to `rounded-md` (16px); at `lg` the 28px sweep crowded the carrier logo in the top corner.
   Inside such a card everything shares **one left rail**: a selection control never indents the
   title (the clearance picker's radio sits right of its title for exactly this reason).
+- **The expat review card** (`ExpatReviews`, `.review-card`): the band's white plane, as any
+  card in a band. The reviewer's avatar is a coin: their own colour (by name, from the page's
+  palette, never lime or a status colour), a white rim, and their origin's flag tucked on its
+  corner, so the route reads before the words do. Under a mouse it answers the way
+  stripe.com's bento cards do: the card paints nothing itself, its white face and a 1px edge
+  behind it are layers a few pixels larger than the card, clipped back to its box at rest, and
+  both clips open, so the card grows 6px up and down and 5px to the sides with nothing inside it
+  scaled or moved; the edge fades up as the band's hairline lit by a soft light of the expat
+  colours, sky into magenta, centred where the pointer is and following it a beat behind, so the
+  ring glows nearest the hand. On the hover scale (Motion): opening at `--dur-hover`, closing at
+  `--dur-hover-out`, the light trailing at `--dur-follow` (Stripe's own run at 800ms and 1s; on
+  this page that read slow beside the hero).
+  **Two written-down exceptions**: geometry on hover (the face grows, its words stay put), and
+  a gradient, kept to a 1px ring under the pointer only, the expat identity's own sweep (as in
+  `.nav-expat`). From `sm`, fine pointers only, never under reduced motion.
 
 ### Card grid → scroll strip (signature)
 A multi-card row collapses into a horizontal, snapping strip below `sm` instead of stacking into a
@@ -943,7 +967,10 @@ by an `IntersectionObserver` rooted on the strip.
 **Cards in a strip share one height.** Unlike the `sm+` masonry, where a card sizes to its own
 content, slides stretch to the tallest so the deck reads as one object under the thumb. The slack
 is spent at the foot — attribution pinned with `mt-auto` — never by re-centring each card, which
-lands the first line at a different height on every swipe.
+lands the first line at a different height on every swipe. **One written-down exception:** the
+expat reviews, which run from two lines to a customer photo and a page of words, so one shared
+height left the short ones with a hollow taller than their quote. There each slide keeps its own
+height, top-aligned, so every first line still lands at the same height on every swipe.
 
 **Use it only when the cards are supporting content.** Four "why us" reasons are a good strip: they
 reward compactness and nobody has to read all of them. A two-card row offering a *choice* — Back For

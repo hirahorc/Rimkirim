@@ -51,3 +51,7 @@ next-env.d.ts
 
 # design verification screenshots (headless captures, not part of the app)
 /screenshots/
+
+# local preview stand-ins (dummy photos, faces), never published: the repo
+# is public. Pointed at from .env.local (see lib/data/expat.ts)
+/public/**/_dummy*
