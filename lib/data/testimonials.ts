@@ -40,6 +40,11 @@ export interface Testimonial {
    * a non-human placeholder.
    */
   photo?: string;
+  /**
+   * A review given to us for the expat landing only. The home section, whose
+   * rating links to Google, leaves it out.
+   */
+  expatOnly?: boolean;
 }
 
 export const TESTIMONIALS: Testimonial[] = [
@@ -95,6 +100,15 @@ export const TESTIMONIALS: Testimonial[] = [
     origin: "newYork",
     affiliation: "kbri",
     highlights: ["No Fussy, No drama"],
+  },
+  {
+    name: "Leticia Marina Bevilaqua",
+    // in full, as the customer asked; the expat card folds it behind "Read more"
+    quote:
+      "The team responsiveness was exceptional, with answers sometimes coming within minutes. Communication throughout the process was always forthcoming.\n\nThe most challenging part for me was getting clear instructions on what could or couldn’t be packed. With each revision, different items would be flagged as not okay, including items previously approved, meaning I had to unpack and repack about 5x.\n\nWhen I had a problem with some items arriving damaged, the team tried to claim with FedEx. Although the claim was rejected, they proactively asked management to refund me on the item's declared amount, which I was very thankful!\n\nMoving countries (like UK to Indonesia) is not easy, but the team tried their best to help.\n\nI also recommend getting EXTRA SUPER sturdy boxes, not IKEA moving boxes! Mine arrived completely torn apart, and I was shocked nothing was missing (luckily).",
+    origin: "uk",
+    highlights: ["answers sometimes coming within minutes"],
+    expatOnly: true,
   },
 ];
 

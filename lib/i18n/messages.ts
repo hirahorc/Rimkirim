@@ -120,6 +120,8 @@ const id = {
     reviews: {
       heading: "Kata pelanggan yang sudah kirim dengan Rimkirim",
       subtitle: "Pengalaman dari orang-orang yang sudah mengirim barangnya ke Indonesia.",
+      more: "Baca selengkapnya",
+      less: "Tampilkan lebih sedikit",
     },
     ship: {
       eyebrow: "Barang yang bisa dikirim",
@@ -412,6 +414,7 @@ const id = {
       adelaide: "Adelaide",
       czechia: "Ceko",
       england: "Inggris",
+      uk: "Inggris Raya",
       germany: "Jerman",
       newYork: "New York",
     },
@@ -1797,6 +1800,8 @@ const en: Messages = {
     reviews: {
       heading: "What customers say about shipping with Rimkirim",
       subtitle: "Experiences from people who have sent their belongings to Indonesia.",
+      more: "Read more",
+      less: "Show less",
     },
     ship: {
       eyebrow: "What you can ship",
@@ -2086,6 +2091,7 @@ const en: Messages = {
       adelaide: "Adelaide",
       czechia: "Czechia",
       england: "England",
+      uk: "United Kingdom",
       germany: "Germany",
       newYork: "New York",
     },

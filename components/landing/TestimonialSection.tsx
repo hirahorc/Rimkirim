@@ -163,15 +163,18 @@ function FeaturedTestimonial({
   );
 }
 
+/** the Google reviews; reviews given for the expat page stay there */
+const HOME_TESTIMONIALS = TESTIMONIALS.filter((x) => !x.expatOnly);
+
 export function TestimonialSection() {
   const t = useT();
-  const featured = TESTIMONIALS.find((x) => x.featured) ?? TESTIMONIALS[0];
+  const featured = HOME_TESTIMONIALS.find((x) => x.featured) ?? HOME_TESTIMONIALS[0];
   // longest quote first: source order was arbitrary, and the substantial
   // reviews (the one carrying a dated customs timeline) were landing last —
   // on mobile that meant behind ~1300px of horizontal scroll
   const rest = React.useMemo(
     () =>
-      TESTIMONIALS.filter((x) => x !== featured).sort(
+      HOME_TESTIMONIALS.filter((x) => x !== featured).sort(
         (a, b) => b.quote.length - a.quote.length,
       ),
     [featured],
