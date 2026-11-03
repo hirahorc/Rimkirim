@@ -598,8 +598,7 @@ home hero's floating verdicts and the expat hero's departure board. Treat any ot
     `.proof-row`): rows lift 6px (lines and small pieces, not objects, so less than a card's
     10px) on their container's one timeline, staggered 5% apart in the order a thing is put
     together. The home page's worked example builds its sum (chargeable weight, base, surcharge,
-    total); the expat pricing builds a quote from its inputs (route, weight, size, surcharges)
-    (the size guide beside it is the calculator scene, below).
+    total).
   Without support or under reduced motion both are simply static: the hairline is already drawn.
 - **The disclosure open** (`Disclosure` in `components/ui` — the one accordion idiom, shared by
   the /faq page and the article FAQs so they cannot drift; its controlled sibling
@@ -738,14 +737,25 @@ home hero's floating verdicts and the expat hero's departure board. Treat any ot
   framed as a product shot, not a screenshot in a box (the stageshow rules, installed as the
   `stageshow` skill): one hero surface inset a gutter from the top and sides of the stage and
   running off its bottom, so only filler is cropped, and at most one satellite. 01 is the quote
-  form filling itself in, with "About 2 min" as a chip on its corner; 02 is two cards at one
-  width, the quote over the documents checklist rising from the crop and ticking off; 03 is
-  the tracking card, GBR to IDN on the departure board's tiles with the plane flying the route
-  (its ends on the tiles' centre line, a steep climb and a long shallow landing, dashes drawn
-  behind the plane, which is lucide's, filled white so it covers the landing dot) over the legs'
-  timeline; 04 is the doorstep, a panelled front door nearly the stage's height with two kraft
-  parcels landing at its foot, and the WhatsApp thread as the satellite, its avatar Rimkirim's
-  own app icon (the one lime in the illustrations: it is the brand's mark, not a "press this").
+  form filling itself in, centred a gutter from either side: From beside To on one row as the real
+  form sets them, then what is inside, the rest as filler off the crop, and "About 2 min" over it,
+  a chip centred on its top edge, half outside, its ring running while the form fills and closing
+  into a check once full; 02 is two cards at one width, the quote over the documents checklist
+  rising from the crop and ticking off; 03 is the tracking card, GBR to IDN on the departure
+  board's tiles with the plane flying the route as the hero's board flies it (a straight dashed
+  line drawn left to right on the tiles' centre line, lucide's plane level at its tip, turned to
+  fly east, landing flush with the route's end, on the board's 900ms) over the legs' timeline; 04
+  is the doorstep, drawn in a reference's own pixels so nothing stretches: a panelled front door
+  nearly the stage's height (a white casing with rounded head corners, a step and a rebate inside
+  it, the slab in the chapter's ink darkening toward the floor, two tall panels above and two
+  short below, each sunk behind a groove with its field lit at the top and left, a brushed letter
+  plate between them, a lever handle with its keyhole, two hinges, the house number on a plaque,
+  the sill it stands on), two kraft parcels landing forward on the floor by it in one oblique view
+  (their whole footprint in the floor's band, in front of the wall's line, their shadows a tight
+  one where they meet the floor, the footprint softened and a cast to the right), the small one
+  set back on the big one's lid, each with its AWB lying on its lid and the same width of tape
+  whatever its size, and the WhatsApp thread as the satellite, its avatar Rimkirim's own app icon
+  (the one lime in the illustrations: it is the brand's mark, not a "press this").
   Every size is in em, a share of the stage's width (2.85cqw), so a scene scales as one
   picture; below 30rem the stage turns portrait (4:5) and the scenes take a compact layout at
   3.9cqw, never squeezed, so their type stays at 10px or more. Things arrive by moving (a hero
@@ -754,15 +764,26 @@ home hero's floating verdicts and the expat hero's departure board. Treat any ot
   in its place, the other way round when stepping back. The scenes share one stage, beside the
   steps from `lg` and above them on a phone, on the travelling ground described under The
   No-Gradient Rule.
-  When the section is 30% in view it **reveals** once (head, stage, steps, button rising 1rem
-  on a 70ms stagger), then **plays the steps 1 to 4, once**: the active step's tile fills with
-  tone ink and flips in on the board's move (`board-flip`, without the seam, which strikes
-  through a 28px tile), a highlight **glides** to it (`transform` + `height`, 560ms
-  `--ease-in-out-strong`), the rail fills to it, the stage cross-fades (420ms) and its scene
-  **builds** piece by piece (each piece names its entrance and its start). Each step holds
-  5.2s; the round control on the stage wears the hold as a ring, and the rail runs on toward
-  the next step in step with it, so the reader can see the next move coming. After 04 it rests
-  on the doorstep. A scene rebuilds each time it comes up.
+  When the section is 30% in view it **reveals** once (head, stage, steps, button rising 1rem on a
+  70ms stagger), then **plays the steps 1 to 4, once**: the active step's tile fills with tone ink
+  and flips in on the board's move (`board-flip`, without the seam, which strikes through a 28px
+  tile), a highlight **glides** to it (`transform` + `height`, 450ms on `--ease-hover`, a strong
+  ease-out, so it moves the moment the step changes), the 2px rail fills to it, the stage
+  cross-fades (420ms) and its scene **builds** piece by piece (each piece names its entrance and
+  its start). Each step holds 5.2s; the round control on the stage wears the hold as a ring, and
+  the rail runs on toward the next step in step with it, a dot with a soft halo at its tip, from
+  the active tile's lower edge to the next tile's upper edge, so the reader can see the next move
+  coming and the step moves on the moment the run touches it. The step it reaches answers with a
+  **pulse**, a ring of the chapter's ink swelling out of its tile and fading (`.jr-pulse`, 750ms,
+  just after the flip), and the next run sets off a beat later (`--run-delay`, 650ms), its head
+  fading in at the tile's foot rather than popping up the instant the last run lands; the run
+  takes the rest of the hold, so it still lands as the timer ring closes. Reached by its run, a
+  step's fill takes the run's place at once (`data-snap`), so the stretch just drawn never empties
+  and refills; only a jump (a click, a replay) grows the fill. Below `lg`, where the steps sit
+  under the stage and out of sight while the scene plays, the stage carries the progress itself:
+  one segment per step level with the control, the past ones full, the active one filling over its
+  hold on the ring's clock and pausing with it, as a story's bars do. After 04 it rests on the
+  doorstep. A scene rebuilds each time it comes up.
   **A click (or Enter) on a step takes over**: that step comes up and the playing stops; the
   control pauses, resumes and replays (WCAG 2.2.2: content that moves on its own for more than
   five seconds must be pausable). The playing holds while a mouse rests on the stage (only
@@ -775,7 +796,7 @@ home hero's floating verdicts and the expat hero's departure board. Treat any ot
 - **The section scenes** (`SceneStage` + `SectionScenes`, expat pricing, what you can ship, who
   does what, and the closing stub): each section that describes a screen the visitor never sees
   shows it, framed and built as the journey's scenes are, from the same pieces (`SceneParts`:
-  the filler line, the flag, the parcel, the chat card) on the same ground, so the page's
+  the filler line, the flag, the chat card) on the same ground, so the page's
   illustrations are one figure language. One hero surface a gutter from the top and sides, off the
   bottom, at most one satellite. Pricing is the calculator's own package rows (the real
   calculator's readout: real, by size, charged), a box charged by its size beside a suitcase
@@ -804,12 +825,13 @@ home hero's floating verdicts and the expat hero's departure board. Treat any ot
   It ends on "Pickup booked". The phone is four fifths of a wide stage and nearly all of a compact
   one, so its 17pt type reads at 12 to 15px; the stage is portrait (8/9, 4/5 on a phone), beside
   the two lists, stacked, and held still as they scroll (`lg:sticky`), as the CIPL is.
-  What you can ship and Who does what each reveal once as the journey does (`.jr-reveal`,
-  `useSectionReveal`): the head, the illustration, then the section's lists piece by piece (What
-  you can ship's six goods, its larger items and its can't-ship line; Who does what's two lists),
-  each rising 1rem on a 70ms stagger, when the section's top is 30% up the viewport, since a band
-  as tall as Who does what (the pickups and the carriers follow its lists) would leave its head on
-  screen and unseen waiting for 30% of it to show.
+  Pricing, What you can ship and Who does what each reveal once as the journey does (`.jr-reveal`,
+  `useSectionReveal`): the head, the illustration, then the section's own pieces one by one
+  (Pricing's four factors in the order a quote is built from them, its promise and its button;
+  What you can ship's six goods, its larger items and its can't-ship line; Who does what's two
+  lists), each rising 1rem on a 70ms stagger, when the section's top is 30% up the viewport, since
+  a band as tall as Who does what (the pickups and the carriers follow its lists) would leave its
+  head on screen and unseen waiting for 30% of it to show.
   The closing stub gives each step its screen, white cards straight on the ticket (the ticket is
   their ground, so no stage of their own), their column's width, fading out at the foot over their
   empty end on an eased mask (`.scene-fade`, square at the foot, since a dissolving edge has no
@@ -835,9 +857,9 @@ clock, so the page feels made by one hand: arriving `--dur-hover` (300ms), leavi
 settles soft). Today: the hero's door arrow (`DoorButton` reads the tokens), the photo pile's
 fan and swaps, the pickup slices, the review cards, the CIPL's card (`.cipl-stack`: the other
 boxes' sheets, a degree askew under it, fan out further from the foot, one each way, to about
-3°, and the top sheet lifts), the WhatsApp phone's card (`SceneStage glint`, after x.ai's
-product cards: the scene leans in to 1.02 and one glint of light crosses the card, over the
-phone's glass, on the way in only; the lean on `--dur-hover`/`--dur-hover-out`, the glint, which
+3°, and the top sheet lifts), the WhatsApp phone's and the pricing calculator's cards
+(`SceneStage glint`, after x.ai's product cards: the scene leans in to 1.02 and one glint of light
+crosses the card, on the way in only; the lean on `--dur-hover`/`--dur-hover-out`, the glint, which
 crosses rather than settles, on `--dur-follow`). A new one joins the scale, never its own numbers. Colour-only hovers keep the system's 0.2s; entrances,
 builds and the journey keep their own, longer, timing, because they are read, not answered.
 

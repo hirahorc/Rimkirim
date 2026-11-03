@@ -13,6 +13,9 @@ const SCENES = [DetailsScene, QuoteScene, FlightScene, DoorScene];
 const DWELL_MS = 5200;
 /** how long a scene leaving the stage takes to travel out (the .jr-slot transition) */
 const LEAVE_MS = 650;
+/** the beat between a step coming up (its tile flips and pulses) and the
+ *  run setting off toward the next; the run takes the rest of the hold */
+const RUN_DELAY_MS = 650;
 
 /**
  * idle: not on screen yet · auto: playing 1 to 4 · paused: by the button ·
@@ -68,9 +71,18 @@ export function JourneySteps({
   const [built, setBuilt] = React.useState<number[]>([]);
   /** restarts the hold timer when a step is replayed or resumed from manual */
   const [run, setRun] = React.useState(0);
-  const [layout, setLayout] = React.useState<{ tiles: number[]; rows: { top: number; height: number }[] } | null>(null);
+  const [layout, setLayout] = React.useState<{
+    tiles: number[];
+    /** half a tile's height: the run toward the next step ends at its edge */
+    half: number;
+    rows: { top: number; height: number }[];
+  } | null>(null);
   const leaveRef = React.useRef(0);
   const activeRef = React.useRef(-1);
+  /** the step was reached by its run, not by a jump: the rail's fill takes
+   *  the run's place at once instead of growing again over what the run
+   *  just drew */
+  const [snap, setSnap] = React.useState(false);
 
   const go = React.useCallback((i: number) => {
     const prev = activeRef.current;
@@ -124,11 +136,10 @@ export function JourneySteps({
     const ro = new ResizeObserver(() => {
       const top = list.getBoundingClientRect().top;
       const rows = (Array.from(list.children) as HTMLElement[]).filter((el) => el.tagName === "LI");
+      const rects = rows.map((li) => li.querySelector<HTMLElement>("[data-tile]")!.getBoundingClientRect());
       setLayout({
-        tiles: rows.map((li) => {
-          const r = li.querySelector<HTMLElement>("[data-tile]")!.getBoundingClientRect();
-          return r.top + r.height / 2 - top;
-        }),
+        tiles: rects.map((r) => r.top + r.height / 2 - top),
+        half: rects[0] ? rects[0].height / 2 : 0,
         rows: rows.map((li) => ({ top: li.offsetTop, height: li.offsetHeight })),
       });
     });
@@ -144,10 +155,13 @@ export function JourneySteps({
 
   /** the hold ran out: on to the next step, or rest after the last */
   const next = () => {
-    if (active < steps.length - 1) go(active + 1);
-    else setMode("done");
+    if (active < steps.length - 1) {
+      setSnap(true);
+      go(active + 1);
+    } else setMode("done");
   };
   const choose = (i: number) => {
+    setSnap(false);
     go(i);
     setMode("manual");
   };
@@ -155,6 +169,7 @@ export function JourneySteps({
     if (mode === "auto") setMode("paused");
     else if (mode === "paused") setMode("auto");
     else {
+      setSnap(false);
       if (mode === "done" || active < 0) go(0);
       setRun((r) => r + 1);
       setMode("auto");
@@ -166,6 +181,11 @@ export function JourneySteps({
   const railTop = layout?.tiles[0] ?? 0;
   const railSpan = layout ? layout.tiles[last] - railTop : 0;
   const at = (i: number) => (layout && railSpan > 0 ? (layout.tiles[i] - railTop) / railSpan : 0);
+  /** the run toward the next step, in px down the rail: from the active
+   *  tile's lower edge to the next tile's upper edge, so the step moves on
+   *  the moment the run touches it */
+  const runFrom = layout && active >= 0 && active < last ? layout.tiles[active] - railTop + layout.half : 0;
+  const runLength = layout && active >= 0 && active < last ? layout.tiles[active + 1] - layout.tiles[active] - 2 * layout.half : 0;
   const shown = Math.max(active, 0);
   const row = layout && active >= 0 ? layout.rows[active] : null;
 
@@ -175,7 +195,7 @@ export function JourneySteps({
       className="jr-root"
       data-timing={timing || undefined}
       data-paused={mode === "paused" || undefined}
-      style={{ "--dwell": `${DWELL_MS}ms` } as React.CSSProperties}
+      style={{ "--dwell": `${DWELL_MS}ms`, "--run-delay": `${RUN_DELAY_MS}ms` } as React.CSSProperties}
     >
       <div className="jr-reveal" style={order(0)}>
         {head}
@@ -210,6 +230,28 @@ export function JourneySteps({
               ))}
             </div>
           </Frame>
+          {/* below lg the steps sit under the stage, out of sight while the
+              scene plays, so the stage carries the progress itself: one
+              segment per step, level with the control, the past ones full,
+              the active one filling over its hold (paused with it), as a
+              story's bars do */}
+          {mode !== "idle" && (
+            <div
+              aria-hidden
+              className="pointer-events-none absolute left-3 right-[3.75rem] top-[1.75rem] flex gap-1 sm:left-4 sm:right-[4.5rem] sm:top-[2.125rem] lg:hidden"
+            >
+              {steps.map((s, i) => (
+                <span key={s.title} className="relative h-1 flex-1 overflow-hidden rounded-full bg-background/75">
+                  {(i < active || (i === active && !timing) || mode === "done") && (
+                    <span className="absolute inset-0 rounded-full bg-tone-ink" />
+                  )}
+                  {i === active && timing && (
+                    <span key={`${run}-${active}`} className="jr-seg-run absolute inset-0 rounded-full bg-tone-ink" />
+                  )}
+                </span>
+              ))}
+            </div>
+          )}
           {/* pause, play, replay; its ring is the active step's hold running out */}
           {mode !== "idle" && (
             <button
@@ -256,24 +298,32 @@ export function JourneySteps({
               style={{ transform: `translateY(${row.top}px)`, height: row.height }}
             />
           )}
-          {/* the rail: filled to the active step, and running on toward the
-              next while the step holds */}
+          {/* the rail: 2px, filled to the active step, and while the step
+              holds a run grows from its tile toward the next with a head at
+              its tip, reaching the next tile's edge as the hold runs out, so
+              the step moves on the moment the run touches it. The run sets
+              off a beat after the step comes up (--run-delay), once its tile
+              has flipped and pulsed, its head fading in at the tile's foot */}
           {layout && (
             <span
               aria-hidden
-              className="pointer-events-none absolute left-[calc(1.625rem-0.5px)] w-px bg-border-strong"
+              className="pointer-events-none absolute left-[calc(1.625rem-1px)] w-[2px] rounded-full bg-border-strong"
               style={{ top: railTop, height: railSpan }}
             >
               <span
-                className="jr-rail-fill absolute inset-0 origin-top bg-tone-ink"
+                className="jr-rail-fill absolute inset-0 origin-top rounded-full bg-tone-ink"
+                data-snap={snap || undefined}
                 style={{ transform: `scaleY(${active >= 0 ? at(active) : 0})` }}
               />
-              {timing && active >= 0 && active < last && (
-                <span
-                  key={`${run}-${active}`}
-                  className="jr-rail-run absolute inset-x-0 origin-top bg-tone-ink"
-                  style={{ top: `${at(active) * 100}%`, height: `${(at(active + 1) - at(active)) * 100}%` }}
-                />
+              {timing && runLength > 0 && (
+                <span key={`${run}-${active}`} className="absolute inset-x-0" style={{ top: runFrom, height: runLength }}>
+                  <span className="jr-rail-run absolute inset-0 origin-top rounded-full bg-tone-ink" />
+                  {/* the head: a box as long as the run, its dot at the
+                      bottom, carried from the run's start to its end */}
+                  <span className="jr-rail-head absolute inset-0">
+                    <span className="absolute bottom-0 left-1/2 size-2.5 -translate-x-1/2 translate-y-1/2 rounded-full bg-tone-ink shadow-[0_0_0_4px_color-mix(in_srgb,var(--tone-ink)_18%,transparent)]" />
+                  </span>
+                </span>
               )}
             </span>
           )}
@@ -311,6 +361,9 @@ export function JourneySteps({
                     )}
                   >
                     {String(i + 1).padStart(2, "0")}
+                    {/* reached: a ring of the chapter's ink swells out of
+                        the tile and fades, the arrival the run led to */}
+                    {isActive && <span className="jr-pulse" />}
                   </span>
                 <div className="relative z-10 min-w-0">
                   <h3

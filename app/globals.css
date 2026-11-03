@@ -1625,8 +1625,8 @@ body:has(main > [data-field]) {
   }
 }
 /* a scene card that answers a mouse the way x.ai's product cards do (the
-   WhatsApp phone's, SceneStage `glint`): the scene leans in a touch and one
-   glint of light crosses the card, over the phone's glass, on the way in
+   WhatsApp phone's and the calculator's, SceneStage `glint`): the scene
+   leans in a touch and one glint of light crosses the card, on the way in
    only. Leaving, the scene settles back and the glint is simply gone, back
    off the card's left edge where it waits unseen. On the hover scale
    (DESIGN.md, Motion): the lean arrives on --dur-hover and leaves on
@@ -1715,14 +1715,21 @@ body:has(main > [data-field]) {
 .jr-slot[data-place="shown"] {
   transition-delay: 0s;
 }
-/* the highlight glides from step to step, and the rail fills behind it */
+/* the highlight glides from step to step, and the rail fills behind it;
+   on a strong ease-out, so the move starts the moment the run touches the
+   next step rather than easing in after it */
 .jr-glide {
   transition:
-    transform 560ms var(--ease-in-out-strong),
-    height 560ms var(--ease-in-out-strong);
+    transform 450ms var(--ease-hover),
+    height 450ms var(--ease-hover);
 }
 .jr-rail-fill {
-  transition: transform 560ms var(--ease-in-out-strong);
+  transition: transform 450ms var(--ease-hover);
+}
+/* reached by its run: the fill takes the run's place at once, so the
+   stretch the run just drew never empties and refills */
+.jr-rail-fill[data-snap] {
+  transition: none;
 }
 /* while a step holds, its timer ring and the rail toward the next step run
    down together; the ring's end moves the steps on (JourneySteps) */
@@ -1742,19 +1749,76 @@ body:has(main > [data-field]) {
     transform: scaleY(1);
   }
 }
+/* the run's head: its box is the run's own length, so -100% is the run's
+   start and 0 its end; it fades in as it sets off, so it never pops up at
+   the new tile the instant the last run lands */
+@keyframes jr-rail-head {
+  from {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  8% {
+    opacity: 1;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+/* a step reached: a ring of the chapter's ink swells out of its tile and
+   fades, just after the tile's flip; behind the tile's number */
+@keyframes jr-pulse {
+  from {
+    opacity: 0.7;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(1.9);
+  }
+}
+.jr-pulse {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background: color-mix(in srgb, var(--tone-ink) 22%, transparent);
+  box-shadow: 0 0 0 2px var(--tone-ink);
+  opacity: 0;
+  pointer-events: none;
+}
 .jr-timer {
   stroke-dasharray: 100;
   animation: jr-hold var(--dwell) linear both;
 }
+/* the run sets off a beat after its step comes up and takes the rest of
+   the hold, so it still lands as the timer ring closes */
 .jr-rail-run {
-  animation: jr-rail-run var(--dwell) linear both;
+  animation: jr-rail-run calc(var(--dwell) - var(--run-delay)) linear var(--run-delay) both;
 }
-.jr-root:is([data-hold], [data-paused]) :is(.jr-timer, .jr-rail-run) {
+.jr-rail-head {
+  animation: jr-rail-head calc(var(--dwell) - var(--run-delay)) linear var(--run-delay) both;
+}
+/* the stage's own progress below lg: the active step's segment fills over
+   its hold, on the timer ring's clock */
+@keyframes jr-seg-run {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+.jr-seg-run {
+  transform-origin: left;
+  animation: jr-seg-run var(--dwell) linear both;
+}
+.jr-root:is([data-hold], [data-paused]) :is(.jr-timer, .jr-rail-run, .jr-rail-head, .jr-seg-run) {
   animation-play-state: paused;
 }
 /* a mouse resting on the stage is someone looking at the scene */
 @media (hover: hover) and (pointer: fine) {
-  .jr-root:has(.jr-stage:hover) :is(.jr-timer, .jr-rail-run) {
+  .jr-root:has(.jr-stage:hover) :is(.jr-timer, .jr-rail-run, .jr-rail-head, .jr-seg-run) {
     animation-play-state: paused;
   }
 }
@@ -1768,9 +1832,12 @@ body:has(main > [data-field]) {
   .jr-tile {
     animation: board-flip 320ms var(--ease-out-soft) both;
   }
+  .jr-pulse {
+    animation: jr-pulse 750ms var(--ease-hover) 180ms both;
+  }
   /* the section reveals itself once, as it comes into view (the journey,
-     and "What you can ship" and "Who does what", which reveal as the
-     journey does: useSectionReveal) */
+     and the expat pricing, "What you can ship" and "Who does what", which
+     reveal as the journey does: useSectionReveal) */
   :is([data-journey-ready], [data-reveal-ready]):not([data-revealed]) .jr-reveal {
     opacity: 0;
   }
@@ -1787,15 +1854,12 @@ body:has(main > [data-field]) {
 .jr-ring {
   stroke-dasharray: 100;
 }
-/* the plane rides its arc nose first (lucide's glyph points up and right,
-   so it turns an eighth less than the path's tangent); it waits unseen
-   until JourneyScenes has measured the arc */
+/* the tracking card's plane flies as the hero's board flies it: the span
+   is the route's full width with the plane at its right end, so it moves
+   by its own width less the plane's (--plane), level, and lands flush with
+   the route's end; built, it stands landed */
 .jr-fly {
-  offset-distance: 100%;
-  offset-rotate: auto 45deg;
-}
-.jr-fly:not([data-arc]) {
-  visibility: hidden;
+  --plane: 1.3em;
 }
 
 /* entrances. Solid things arrive by moving, opaque almost at once, never
@@ -1884,15 +1948,16 @@ body:has(main > [data-field]) {
   }
 }
 @keyframes jr-fly {
-  from {
-    offset-distance: 0%;
+  0% {
     opacity: 0;
+    transform: translateX(calc(-100% + var(--plane)));
   }
-  10% {
+  15% {
     opacity: 1;
   }
-  to {
-    offset-distance: 100%;
+  100% {
+    opacity: 1;
+    transform: translateX(0);
   }
 }
 
@@ -1917,9 +1982,10 @@ body:has(main > [data-field]) {
   .jr-scene[data-built] .jr-check { animation-name: check-draw; animation-duration: 320ms; }
   .jr-scene[data-built] .jr-type { animation-name: jr-type; animation-duration: 520ms; animation-timing-function: linear; }
   .jr-scene[data-built] .jr-ring { animation-name: jr-ring; animation-duration: 1100ms; }
-  /* the route and its plane travel together, on the board's curve */
+  /* the route and its plane travel together, on the hero board's clock
+     and curve (.board-line, .board-plane) */
   .jr-scene[data-built] :is(.jr-draw, .jr-fly) {
-    animation-duration: 1500ms;
+    animation-duration: 900ms;
     animation-timing-function: var(--ease-in-out-strong);
   }
   .jr-scene[data-built] .jr-draw { animation-name: jr-type; }

@@ -7,8 +7,8 @@ import { cn } from "@/lib/utils/cn";
 /**
  * The small pieces every illustration on the expat page is built from (the
  * journey's scenes and the section scenes alike), so they read as one
- * figure language: one filler line, one flag, one title, one parcel, one
- * chat card. Sizes are in em, a share of the stage's width.
+ * figure language: one filler line, one flag, one title, one chat card.
+ * Sizes are in em, a share of the stage's width.
  */
 
 /** when a piece starts, in ms after its scene comes up */
@@ -30,36 +30,6 @@ export function SceneFlag({ code }: { code: string }) {
 
 export function SceneTitle({ children }: { children: React.ReactNode }) {
   return <span className="font-display text-[1.05em] font-semibold tracking-tight">{children}</span>;
-}
-
-/**
- * A parcel in three-quarter view: kraft board (its one colour outside the
- * palette, because a cardboard box is the brown of cardboard), each face
- * its own tone, the tape over the lid and down the front, the shipping
- * label, and the contact shadow it sits on. It lands when it comes in.
- */
-export function Parcel({ className, style }: { className?: string; style?: React.CSSProperties }) {
-  return (
-    <span className={cn("jr jr-land absolute block", className)} style={style}>
-      <svg viewBox="0 0 38 33" className="block size-full overflow-visible" aria-hidden>
-        <ellipse cx="18" cy="32.4" rx="20" ry="1.6" fill="#000" opacity="0.12" />
-        <path d="M0 10 L10 3.5 H38 L28 10 Z" fill="#ebc99c" />
-        <path d="M28 10 L38 3.5 V25.5 L28 32 Z" fill="#c08954" />
-        <rect x="0" y="10" width="28" height="22" fill="#d8a76e" />
-        {/* the lid's fold, catching the light */}
-        <path d="M0 10 H28 L38 3.5" fill="none" stroke="#f6dcb6" strokeWidth="0.5" />
-        {/* tape: over the lid, then down the front */}
-        <path d="M12.6 10 L22.6 3.5 H25.4 L15.4 10 Z" fill="#c9965c" opacity="0.9" />
-        <rect x="12.6" y="10" width="2.8" height="8" fill="#c9965c" opacity="0.9" />
-        {/* the label, with its barcode */}
-        <rect x="16.8" y="17.6" width="9" height="11" rx="0.6" fill="#fff" />
-        <rect x="18" y="19.2" width="6.6" height="1.1" rx="0.3" className="fill-muted-2" />
-        {[0, 1.1, 1.8, 3, 3.7, 4.9, 5.7].map((x) => (
-          <rect key={x} x={18 + x} y="21.7" width="0.55" height="5" className="fill-foreground" />
-        ))}
-      </svg>
-    </span>
-  );
 }
 
 /** the chat's header, as WhatsApp shows a business: its picture (Rimkirim's

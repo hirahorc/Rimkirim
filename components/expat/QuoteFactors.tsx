@@ -1,6 +1,5 @@
 "use client";
 
-import type * as React from "react";
 import { ArrowRight, Ruler } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SurchargeInfoDialog } from "@/components/rates/SurchargeInfoDialog";
@@ -10,6 +9,7 @@ import { SectionHead } from "./SectionHead";
 import { ReviewNote } from "./ReviewNote";
 import { SceneStage } from "./SceneStage";
 import { SizeScene } from "./SectionScenes";
+import { revealOrder as order, useSectionReveal } from "./useSectionReveal";
 
 const FACTORS = ["route", "weight", "size", "surcharge"] as const;
 
@@ -27,26 +27,32 @@ const FACTORS = ["route", "weight", "size", "surcharge"] as const;
  */
 export function QuoteFactors() {
   const t = useT();
+  // the section reveals once, as the journey does: its head, the
+  // calculator, then the factors in the order a quote is built from them,
+  // the promise and the way in
+  const rootRef = useSectionReveal<HTMLElement>();
   return (
-    <section aria-labelledby="pricing-heading" data-tone="violet" className="band">
+    <section ref={rootRef} aria-labelledby="pricing-heading" data-tone="violet" className="band">
       <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6">
         <ReviewNote note={REVIEW_NOTES.pricing} className="mb-8" />
         <div className="grid grid-cols-1 gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,30rem)] lg:gap-14">
           <div>
-            <SectionHead
-              id="pricing-heading"
-              eyebrow={t("expat.pricing.eyebrow")}
-              title={t("expat.pricing.heading")}
-              subtitle={t("expat.pricing.subtitle")}
-            />
-            {/* the quote builds from its inputs, so they arrive in that
-                order (globals.css, the build) */}
-            <dl className="build-seq mt-10 border-t border-border">
+            <div className="jr-reveal" style={order(0)}>
+              <SectionHead
+                id="pricing-heading"
+                eyebrow={t("expat.pricing.eyebrow")}
+                title={t("expat.pricing.heading")}
+                subtitle={t("expat.pricing.subtitle")}
+              />
+            </div>
+            {/* the quote is built from its inputs, so they arrive in that
+                order */}
+            <dl className="mt-10 border-t border-border">
               {FACTORS.map((f, i) => (
                 <div
                   key={f}
-                  className="build-row grid gap-1 border-b border-border py-4 sm:grid-cols-[8rem_minmax(0,1fr)] sm:gap-6"
-                  style={{ "--i": i } as React.CSSProperties}
+                  className="jr-reveal grid gap-1 border-b border-border py-4 sm:grid-cols-[8rem_minmax(0,1fr)] sm:gap-6"
+                  style={order(2 + i)}
                 >
                   <dt className="font-medium">{t(`expat.pricing.${f}Title`)}</dt>
                   <dd className="text-sm text-muted">
@@ -65,18 +71,26 @@ export function QuoteFactors() {
                 </div>
               ))}
             </dl>
-            <p className="mt-6 max-w-lg font-medium">{t("expat.pricing.promise")}</p>
-            <Button asChild size="lg" className="mt-5">
-              <a href={EXPAT_QUOTE_URL}>
-                {t("expat.cta")} <ArrowRight />
-              </a>
-            </Button>
+            <p className="jr-reveal mt-6 max-w-lg font-medium" style={order(2 + FACTORS.length)}>
+              {t("expat.pricing.promise")}
+            </p>
+            {/* the button rises inside a wrapper, so the reveal never holds
+                the button's own press */}
+            <div className="jr-reveal mt-5 w-fit" style={order(3 + FACTORS.length)}>
+              <Button asChild size="lg">
+                <a href={EXPAT_QUOTE_URL}>
+                  {t("expat.cta")} <ArrowRight />
+                </a>
+              </Button>
+            </div>
           </div>
 
           {/* the calculator weighing two pieces, built once in view; the
-              rule itself is real text under it */}
-          <figure className="self-start">
+              rule itself is real text under it. It rises right after the
+              head, as the journey's stage does */}
+          <figure className="jr-reveal self-start" style={order(1)}>
             <SceneStage
+              glint
               className="aspect-[4/5] w-full max-w-[30rem] sm:aspect-[30/31]"
               sceneClassName="text-[length:3.3cqw] @max-[30rem]:text-[length:4.3cqw]"
             >
