@@ -25,15 +25,20 @@ const EASE = "cubic-bezier(0.4, 0, 0.2, 1)";
  * ToC): the same motion — height only, duration from content, `auto` when
  * settled — driven by a prop instead of a <details>. While closed the region
  * is `inert` and hidden, so nothing inside it can be tabbed into or read by
- * assistive tech. Instant on first render and under reduced motion.
+ * assistive tech. Instant on first render, under reduced motion, and when the
+ * caller asks (`instant`).
  */
 export function CollapseHeight({
   open,
+  instant = false,
   children,
   className,
   id,
 }: {
   open: boolean;
+  /** land the next change at once, without the height motion: for a panel
+   *  that another takes the place of (What you can ship's cards) */
+  instant?: boolean;
   children: React.ReactNode;
   className?: string;
   /** lets the toggle point at the region with aria-controls */
@@ -42,7 +47,9 @@ export function CollapseHeight({
   const panelRef = React.useRef<HTMLDivElement>(null);
   const innerRef = React.useRef<HTMLDivElement>(null);
   const animToken = React.useRef(0);
-  const first = React.useRef(true);
+  // the `open` the panel last moved to: only a change of it moves the panel,
+  // never mount, nor `instant` changing on its own
+  const last = React.useRef(open);
   /* the initial state is frozen into the JSX once; every later change is
      applied imperatively in the effect. Binding height/visibility to `open`
      in JSX would have React write `height: auto` at commit — BEFORE the
@@ -55,10 +62,8 @@ export function CollapseHeight({
     const panel = panelRef.current;
     const inner = innerRef.current;
     if (!panel || !inner) return;
-    if (first.current) {
-      first.current = false;
-      if (open === initialOpen) return; // nothing to animate on mount
-    }
+    if (last.current === open) return;
+    last.current = open;
     const token = ++animToken.current;
 
     const settle = (cb: () => void) => {
@@ -71,7 +76,7 @@ export function CollapseHeight({
       panel.addEventListener("transitionend", onEnd);
     };
 
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    if (instant || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       panel.style.transition = "";
       panel.style.height = open ? "auto" : "0px";
       panel.style.visibility = open ? "" : "hidden";
@@ -105,8 +110,7 @@ export function CollapseHeight({
         });
       });
     }
-    // initialOpen never changes after mount (state initializer, never set)
-  }, [open, initialOpen]);
+  }, [open, instant]);
 
   return (
     <div

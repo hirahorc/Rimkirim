@@ -494,9 +494,11 @@ The expat page runs:
 4. Who does what, closed by the pickups and the carriers (band, violet)
 5. Why Rimkirim, the comparison table (desk, violet)
 6. Pricing (band, violet)
-7. How it works (desk, magenta)
-8. FAQ (band, magenta)
-9. The dusk ticket (see Components)
+7. What to expect at customs (band, magenta), right after Pricing's band: two bands in a row,
+   two sheets, so How it works keeps its desk
+8. How it works (desk, magenta)
+9. FAQ (band, magenta)
+10. The dusk ticket (see Components)
 
 ## Elevation & Depth
 
@@ -740,8 +742,9 @@ home hero's floating verdicts and the expat hero's departure board. Treat any ot
   form filling itself in, centred a gutter from either side: From beside To on one row as the real
   form sets them, then what is inside, the rest as filler off the crop, and "About 2 min" over it,
   a chip centred on its top edge, half outside, its ring running while the form fills and closing
-  into a check once full; 02 is two cards at one width, the quote over the documents checklist
-  rising from the crop and ticking off; 03 is the tracking card, GBR to IDN on the departure
+  into a check once full; 02 is two cards at one width in the order the team works, the review
+  ticking off the shipment details and documents first, then the quote rising from the crop under
+  it and building to its total; 03 is the tracking card, GBR to IDN on the departure
   board's tiles with the plane flying the route as the hero's board flies it (a straight dashed
   line drawn left to right on the tiles' centre line, lucide's plane level at its tip, turned to
   fly east, landing flush with the route's end, on the board's 900ms) over the legs' timeline; 04
@@ -793,8 +796,8 @@ home hero's floating verdicts and the expat hero's departure board. Treat any ot
   is a button laid over it so the title stays a heading. Under reduced motion nothing reveals,
   plays or glides: step 01 stands, built, and a click switches instantly; without script every
   scene stands built.
-- **The section scenes** (`SceneStage` + `SectionScenes`, expat pricing, what you can ship, who
-  does what, and the closing stub): each section that describes a screen the visitor never sees
+- **The section scenes** (`SceneStage` + `SectionScenes`, expat pricing, who does what, and the
+  closing stub): each section that describes a screen the visitor never sees
   shows it, framed and built as the journey's scenes are, from the same pieces (`SceneParts`:
   the filler line, the flag, the chat card) on the same ground, so the page's
   illustrations are one figure language. One hero surface a gutter from the top and sides, off the
@@ -802,17 +805,6 @@ home hero's floating verdicts and the expat hero's departure board. Treat any ot
   calculator's readout: real, by size, charged), a box charged by its size beside a suitcase
   charged by its weight, then the charged weight, the one big number; it replaced the line
   drawings of the size guide, whose rule and tip are now the caption under it.
-  What you can ship is the commercial invoice and packing list (CIPL) for the last of eight boxes
-  ("Box 8 of 8"), alone on its ground, the other seven's sheets under it a degree askew each way
-  so a pile shows at rest, the section's six goods with the section's icons printed bare, signed
-  at the foot by the shipper and stamped "Checked" by Rimkirim beside the signature: every box
-  reviewed. It is held still beside the list on a wide screen (`lg:sticky`) so the list scrolls
-  past it, and centred under the list below `lg`. It is paper, not a screen, so it is the one
-  surface on the page with no rounded corner, inside or out, and everything on it is printed in
-  black and white (`.print-ink`: an SVG filter in the scene, every colour a grey, toner a fraction
-  of a pixel ragged and thin in places, set on each piece so its grain travels with the piece as
-  it rises); only what a hand adds to the printout keeps a colour, the chapter's ink: the
-  signature, a pen line, and the stamp, rubber-patchy by its own filter, a little askew.
   Who does what is the team on WhatsApp walking a customer through the three to-dos (the
   documents, the packing list they fill in together, the pickup day), on the customer's phone: the
   stageshow kit's iPhone 18 Pro (`IPhone`, its `pro` frame ported, the screen at true points,
@@ -824,12 +816,13 @@ home hero's floating verdicts and the expat hero's departure board. Treat any ot
   in another product's colours, because it is that product on a phone, and only inside the screen.
   It ends on "Pickup booked". The phone is four fifths of a wide stage and nearly all of a compact
   one, so its 17pt type reads at 12 to 15px; the stage is portrait (8/9, 4/5 on a phone), beside
-  the two lists, stacked, and held still as they scroll (`lg:sticky`), as the CIPL is.
-  Pricing, What you can ship and Who does what each reveal once as the journey does (`.jr-reveal`,
-  `useSectionReveal`): the head, the illustration, then the section's own pieces one by one
-  (Pricing's four factors in the order a quote is built from them, its promise and its button;
-  What you can ship's six goods, its larger items and its can't-ship line; Who does what's two
-  lists), each rising 1rem on a 70ms stagger, when the section's top is 30% up the viewport, since
+  the two lists, stacked, and held still as they scroll (`lg:sticky`).
+  Pricing, What you can ship, Who does what and the customs section each reveal once as the
+  journey does (`.jr-reveal`, `useSectionReveal`): the head, the illustration, then the section's
+  own pieces one by one (Pricing's four factors in the order a quote is built from them, its
+  promise and its button; What you can ship's six cards in reading order, then what can't travel;
+  Who does what's two lists; the customs section's two routes, what catches people out, then the
+  way to ask), each rising 1rem on a 70ms stagger, when the section's top is 30% up the viewport, since
   a band as tall as Who does what (the pickups and the carriers follow its lists) would leave its
   head on screen and unseen waiting for 30% of it to show.
   The closing stub gives each step its screen, white cards straight on the ticket (the ticket is
@@ -840,9 +833,7 @@ home hero's floating verdicts and the expat hero's departure board. Treat any ot
   WhatsApp. Three in a row from `lg`, a row each beside its words on a tablet, the house scroll
   strip on a phone.
   Each **builds once** when 40% in view (a hero rises from the crop, rows lift in reading order,
-  fields type, values rise, the CIPL's signature is written last, `jr-ring` on its one stroke,
-  then its stamp comes down, `stamp-press`, the build's last beat,
-  a pressed answer's fill comes up under its one label, `jr-press` and `jr-ink`), then stands still: no loop, no player, no control,
+  fields type, values rise, a pressed answer's fill comes up under its one label, `jr-press` and `jr-ink`), then stands still: no loop, no player, no control,
   because none runs past about three seconds. The closing stub's three build as one set, 150ms
   apart, when the stub comes into view, so on a phone the slide peeking from the strip is
   already built.
@@ -855,9 +846,9 @@ clock, so the page feels made by one hand: arriving `--dur-hover` (300ms), leavi
 `--dur-hover-out` (240ms), anything trailing the pointer `--dur-follow` (450ms), all on
 `--ease-hover` (`cubic-bezier(0.23, 1, 0.32, 1)`, a strong ease-out: a move starts at speed and
 settles soft). Today: the hero's door arrow (`DoorButton` reads the tokens), the photo pile's
-fan and swaps, the pickup slices, the review cards, the CIPL's card (`.cipl-stack`: the other
-boxes' sheets, a degree askew under it, fan out further from the foot, one each way, to about
-3°, and the top sheet lifts), the WhatsApp phone's and the pricing calculator's cards
+fan and swaps, the pickup slices, the review cards, What you can ship's cards (`.ship-card`: the
+drawing lifts 4px off its ground and the ground under it draws in to 0.88; a card opened beside
+the open one slides the caret across on `--dur-follow`), the WhatsApp phone's and the pricing calculator's cards
 (`SceneStage glint`, after x.ai's product cards: the scene leans in to 1.02 and one glint of light
 crosses the card, on the way in only; the lean on `--dur-hover`/`--dur-hover-out`, the glint, which
 crosses rather than settles, on `--dur-follow`). A new one joins the scale, never its own numbers. Colour-only hovers keep the system's 0.2s; entrances,
@@ -1034,6 +1025,38 @@ in ink it stays neutral and lime stays the one colour in the action row.
   **Two written-down exceptions**: geometry on hover (the face grows, its words stay put), and
   a gradient, kept to a 1px ring under the pointer only, the expat identity's own sweep (as in
   `.nav-expat`). From `sm`, fine pointers only, never under reduced motion.
+- **The expat item cards** (`WhatYouCanShip`, after sendmybag.com's "What you can send"): one
+  card per kind of thing (boxes, suitcases and bags, clothes and homeware, electronics, new items,
+  furniture), Panel 1 with a hairline and the `lg` corner, three across from `lg`, two from `sm`.
+  Each leads with its drawing (`ShipArt`, below), then its name at the Title role, then one line
+  that opens on the verdict in ink ("Yes.", "Yes, if you tell us first.", "Ask us first.") and
+  finishes in Dim Grey, so a glance down the grid answers "can I send this?". The toggle at the
+  foot names what the details hold ("Weight, size and packing", never "Show more"), with the
+  disclosure's swapped chevron, and the whole card is its hit area. The details open under the
+  card's row as one white panel across the grid (dense placement, so it lands under the right row
+  at any column count), edged and pointed at its card by a caret in the chapter's hue, as is the
+  open card's edge; inside, each fact is a brand label, the rule in a few words at the Title role,
+  and why in Body, columns split by hairlines from `md`, so the panel reads as a short spec, not a
+  paragraph; it ends on one link (the handling charges, or WhatsApp with the message already
+  written). One card is open at a time; the panel's height moves as the disclosure's does, but a
+  card opened beside the open one takes its panel's place at once and the caret slides across.
+  On a phone the cards stack, drawing beside the words, rather than becoming a strip: each answers
+  a question every visitor has, so none may hide behind a swipe. Under them, what can't travel:
+  a Panel 2 block, each thing struck through by the no-entry sign (a 2px Stop Red ring and
+  slash), and the one thing that travels only declared marked with the warning glyph.
+- **The customs routes** (`ExpatCustoms`): the two ways belongings clear Indonesian customs, as
+  two white planes side by side on the magenta band (stacked on a phone). Each opens on what
+  decides it in a brand label ("With relocation documents", "Without them"), then the verdict at
+  the Title role beside a coin glyph, the chapter's ink with a check for duty-free and a quiet
+  Panel 3 receipt for charged (charged is not an error, so never Stop Red), the customs name in
+  Dim Grey, one line, what is usually needed with a document glyph, and a note pinned to the foot
+  so both feet share a line. Under them, what catches people out, set as the item cards' details
+  are (a label, the rule, why, hairline columns from `md`), and one WhatsApp link.
+- **The item drawings** (`ShipArt`): flat things on one ground line in one 168 × 112 frame, in
+  the chapter's hue in three values, its ink in two, its wash and a metal (`.ship-art`, all mixed
+  from the chapter) and the doorstep's kraft; anything with depth in the doorstep's projection,
+  the far face up and to the right. No outline, no gradient, no shadow but the ground's.
+  Decorative: the card's words carry the meaning.
 
 ### Card grid → scroll strip (signature)
 A multi-card row collapses into a horizontal, snapping strip below `sm` instead of stacking into a

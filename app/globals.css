@@ -198,7 +198,7 @@ body:has(main > [data-field]) {
    solid stops, never as a gradient fill: sky for the hero, reviews and what
    ships; violet (the gradient's midpoint) for who does what, why
    Rimkirim and pricing;
-   magenta for how it works and the FAQ; then the dusk ticket. A chapter
+   magenta for customs, how it works and the FAQ; then the dusk ticket. A chapter
    re-points the neutrals rather than painting components one by one, so
    every grey inside takes its hue: the band's wash, the muted words
    (tinted from the hue, never a washed-out grey), the hairlines, the
@@ -1585,45 +1585,6 @@ body:has(main > [data-field]) {
   background: currentColor;
   transform: translateX(-50%);
 }
-/* the CIPL's stack (PackingScene, on the stage marked .cipl-stack): the
-   other boxes' sheets lie under it a degree or so askew, one each way, so
-   at rest a pile shows behind the last box's sheet; a mouse on the card
-   fans them further from the foot and the top sheet lifts, the way a hand
-   riffles a pile of paper. On the hover scale (DESIGN.md, Motion): out on
-   --dur-hover, back on --dur-hover-out. It moves rotate and translate,
-   never transform, which the sheets' entrance holds. The fan is for fine
-   pointers only, and not under reduced motion */
-.cipl-under {
-  transform-origin: 50% 75%;
-}
-.cipl-under[data-side="left"] {
-  rotate: -1deg;
-}
-.cipl-under[data-side="right"] {
-  rotate: 0.8deg;
-}
-.cipl-sheet,
-.cipl-under {
-  transition:
-    translate var(--dur-hover-out) var(--ease-hover),
-    rotate var(--dur-hover-out) var(--ease-hover);
-}
-@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
-  .cipl-stack:hover :is(.cipl-sheet, .cipl-under) {
-    transition-duration: var(--dur-hover);
-  }
-  .cipl-stack:hover .cipl-sheet {
-    translate: 0 -0.15em;
-  }
-  .cipl-stack:hover .cipl-under[data-side="left"] {
-    translate: -0.25em -0.1em;
-    rotate: -2.6deg;
-  }
-  .cipl-stack:hover .cipl-under[data-side="right"] {
-    translate: 0.3em 0;
-    rotate: 3deg;
-  }
-}
 /* a scene card that answers a mouse the way x.ai's product cards do (the
    WhatsApp phone's and the calculator's, SceneStage `glint`): the scene
    leans in a touch and one glint of light crosses the card, on the way in
@@ -1658,39 +1619,50 @@ body:has(main > [data-field]) {
     transition: translate var(--dur-follow) var(--ease-hover);
   }
 }
-/* the CIPL's stamp (PackingScene): Rimkirim's "Checked" on the last box's
-   sheet, in the chapter's ink like the signature (only what a hand puts on
-   the printout keeps a colour), rubber-patchy by its own filter, a little
-   askew. It is the build's last beat, after the signature: it comes down
-   from just above, opaque early, and lands. Under reduced motion, and
-   without script, it is simply there */
-.cipl-stamp {
-  rotate: -7deg;
-  filter: url(#stamp-ink);
+/* What you can ship's drawings (ShipArt): the chapter's hue in three
+   values, its ink in two, its wash, a metal, and a ground to stand on, all
+   mixed from the chapter so the drawings take its hue as the words do; the
+   kraft is the doorstep's own (JourneyScenes) */
+.ship-art {
+  --art-hue: var(--tone);
+  --art-hue-top: color-mix(in oklab, var(--tone), white 38%);
+  --art-hue-side: color-mix(in oklab, var(--tone), var(--tone-ink) 55%);
+  --art-ink: var(--tone-ink);
+  --art-ink-side: color-mix(in oklab, var(--tone-ink), black 30%);
+  --art-wash: var(--tone-wash);
+  --art-metal: color-mix(in oklab, var(--tone-wash), var(--tone-ink) 18%);
+  --art-ground: color-mix(in oklab, var(--tone-ink) 12%, transparent);
 }
-@keyframes stamp-press {
-  from {
-    opacity: 0;
-    scale: 1.35;
+/* a card of What you can ship under a mouse: its drawing lifts a little
+   off its ground, the way a thing is picked up to look at, and the ground
+   under it draws in. On the hover scale (DESIGN.md, Motion), fine pointers
+   only, not under reduced motion */
+.ship-art-lift,
+.ship-art-ground {
+  transform-box: fill-box;
+  transform-origin: center;
+  transition:
+    translate var(--dur-hover-out) var(--ease-hover),
+    scale var(--dur-hover-out) var(--ease-hover);
+}
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .ship-card:hover :is(.ship-art-lift, .ship-art-ground) {
+    transition-duration: var(--dur-hover);
   }
-  45% {
-    opacity: 1;
+  .ship-card:hover .ship-art-lift {
+    translate: 0 -4px;
+  }
+  .ship-card:hover .ship-art-ground {
+    scale: 0.88;
   }
 }
+/* a card opened beside the open one: its details take the panel's place
+   at once and the caret slides across to it, on the hover scale's
+   following clock (WhatYouCanShip, swap) */
 @media (prefers-reduced-motion: no-preference) {
-  [data-scene-ready] .jr-scene:not([data-built]) .cipl-stamp {
-    opacity: 0;
+  [data-slide] .ship-caret {
+    transition: left var(--dur-follow) var(--ease-hover);
   }
-  .jr-scene[data-built] .cipl-stamp {
-    /* as the signature's pen lifts (it starts at 1750ms and runs 1100ms) */
-    animation: stamp-press var(--dur-hover) var(--ease-hover) 2750ms both;
-  }
-}
-/* printed, not rendered: black and white toner on paper, ragged a
-   fraction of a pixel and thin in places (the filter is drawn in
-   PackingScene, the CIPL) */
-.print-ink {
-  filter: url(#print-ink);
 }
 
 /* The stage moves like a conveyor: the scene that is done travels up and

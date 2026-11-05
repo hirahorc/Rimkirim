@@ -157,9 +157,10 @@ export function DetailsScene() {
 }
 
 /**
- * 02: two cards at one width, the quote over the documents it comes with
- * (stacked cards). The quote builds line by line to its total; the
- * checklist rises from the crop below and ticks off.
+ * 02: two cards at one width, the review over the quote it leads to
+ * (stacked cards), in the order the team works: the details and documents
+ * tick off first, then the quote rises from the crop below and builds line
+ * by line to its total, confirmed.
  */
 export function QuoteScene() {
   const k = useScene();
@@ -170,14 +171,48 @@ export function QuoteScene() {
   ];
   return (
     <div className="absolute inset-x-[3.2em] top-[4em] flex flex-col gap-[0.65em] @max-[30rem]:inset-x-[1.6em]">
-      <div className="jr jr-arrive rounded-[1.1em] bg-background p-[1.25em] shadow-float @max-[30rem]:p-[1.15em]" style={at(0)}>
+      <div className="jr jr-arrive rounded-[1.1em] bg-background p-[1.2em] shadow-float @max-[30rem]:p-[1.15em]" style={at(0)}>
+        <span className="block text-[0.82em] font-semibold">{k("docs")}</span>
+        <ul className="mt-[0.75em] space-y-[0.6em]">
+          {["doc1", "doc2", "doc3"].map((d, i) => (
+            <li key={d} className="flex items-center gap-[0.6em]">
+              <span
+                className="jr jr-fill grid size-[1.2em] shrink-0 place-items-center rounded-[0.3em] bg-tone-ink text-background shadow-[inset_0_0_0_1.5px_var(--tone-ink)]"
+                style={at(300 + i * 220)}
+              >
+                <svg viewBox="0 0 16 16" className="size-[0.85em]" aria-hidden>
+                  <path
+                    className="jr jr-check"
+                    style={at(350 + i * 220)}
+                    d="M3.5 8.5l3 3 6-7"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.4"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    pathLength={24}
+                  />
+                </svg>
+              </span>
+              <span className="truncate text-[0.84em]">{k(d)}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+      {/* 12px under the review, the same width, once the review is done;
+          tall enough to run off the crop on any stage, a phone's portrait
+          one too */}
+      <div
+        className="jr jr-lift min-h-[26em] rounded-[1.1em] bg-background p-[1.25em] shadow-float @max-[30rem]:p-[1.15em]"
+        style={at(1050)}
+      >
         <div className="flex items-center justify-between gap-[1em]">
           <SceneTitle>{k("quote")}</SceneTitle>
           <Bar w="3.2em" />
         </div>
         <ul className="mt-[0.85em] space-y-[0.55em]">
           {lines.map((l, i) => (
-            <li key={l.key} className="jr jr-rise flex items-center justify-between gap-[1em]" style={at(220 + i * 110)}>
+            <li key={l.key} className="jr jr-rise flex items-center justify-between gap-[1em]" style={at(1250 + i * 110)}>
               <span className="truncate text-[0.82em] text-muted">{k(l.key)}</span>
               <Bar w={l.w} />
             </li>
@@ -185,51 +220,15 @@ export function QuoteScene() {
         </ul>
         <div className="mt-[0.85em] flex items-center justify-between gap-[1em] border-t border-border pt-[0.75em]">
           <span className="text-[0.88em] font-semibold">{k("total")}</span>
-          <span className="jr jr-grow h-[0.75em] w-[5.6em] origin-right rounded-full bg-tone-ink" style={at(680)} />
+          <span className="jr jr-grow h-[0.75em] w-[5.6em] origin-right rounded-full bg-tone-ink" style={at(1700)} />
         </div>
         <p
           className="jr jr-rise mt-[0.6em] flex items-center gap-[0.35em] text-[0.74em] font-medium text-tone-ink"
-          style={at(900)}
+          style={at(1900)}
         >
           <Check className="size-[1.1em] shrink-0" strokeWidth={2.5} />
           {k("confirmed")}
         </p>
-      </div>
-      {/* 12px under the quote, the same width; its last row runs off the crop */}
-      <div className="jr jr-lift h-[14em] rounded-[1.1em] bg-background p-[1.2em] shadow-float @max-[30rem]:p-[1.15em]" style={at(1050)}>
-        <span className="block text-[0.82em] font-semibold">{k("docs")}</span>
-        <ul className="mt-[0.75em] space-y-[0.6em]">
-          {["doc1", "doc2", "doc3", null].map((d, i) => (
-            <li key={d ?? "more"} className="flex items-center gap-[0.6em]">
-              <span
-                className={cn(
-                  "grid size-[1.2em] shrink-0 place-items-center rounded-[0.3em]",
-                  d
-                    ? "jr jr-fill bg-tone-ink text-background shadow-[inset_0_0_0_1.5px_var(--tone-ink)]"
-                    : "shadow-[inset_0_0_0_1.5px_var(--border-strong)]",
-                )}
-                style={d ? at(1450 + i * 260) : undefined}
-              >
-                {d && (
-                  <svg viewBox="0 0 16 16" className="size-[0.85em]" aria-hidden>
-                    <path
-                      className="jr jr-check"
-                      style={at(1500 + i * 260)}
-                      d="M3.5 8.5l3 3 6-7"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2.4"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      pathLength={24}
-                    />
-                  </svg>
-                )}
-              </span>
-              {d ? <span className="truncate text-[0.84em]">{k(d)}</span> : <Bar w="6em" />}
-            </li>
-          ))}
-        </ul>
       </div>
     </div>
   );

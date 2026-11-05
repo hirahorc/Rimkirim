@@ -5,6 +5,7 @@ import { WhatYouCanShip } from "@/components/expat/WhatYouCanShip";
 import { WhatWeCoordinate } from "@/components/expat/WhatWeCoordinate";
 import { WhyRimkirim } from "@/components/expat/WhyRimkirim";
 import { QuoteFactors } from "@/components/expat/QuoteFactors";
+import { ExpatCustoms } from "@/components/expat/ExpatCustoms";
 import { ExpatSteps } from "@/components/expat/ExpatSteps";
 import { ShipmentExamples } from "@/components/expat/ShipmentExamples";
 import { ExpatFaq } from "@/components/expat/ExpatFaq";
@@ -45,7 +46,8 @@ function faqJsonLd() {
  * 09, in its order): a visitor from a search should know at once that this
  * ships personal belongings to Indonesia, packed in boxes and suitcases, see
  * who vouches for it, what fits, who does what, how it compares, what drives
- * the price and how it runs. Every "Get a quote" opens the relocation calculator, where the
+ * the price, what to expect at Indonesian customs (added after the brief, from
+ * ops' review) and how it runs. Every "Get a quote" opens the relocation calculator, where the
  * expat flow runs: estimate, eligibility, personal details, then WhatsApp.
  * Sections alternate between the open desk and bands (globals.css, .band),
  * so the page reads as distinct sheets, and walk the expat identity's hues
@@ -64,6 +66,7 @@ export default function ExpatRelocationPage() {
       <WhatWeCoordinate />
       <WhyRimkirim />
       <QuoteFactors />
+      <ExpatCustoms />
       <ExpatSteps />
       <ShipmentExamples />
       <ExpatFaq />
