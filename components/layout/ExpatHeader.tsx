@@ -1,8 +1,11 @@
 "use client";
 
+import { usePathname } from "next/navigation";
+import { MessageCircle } from "lucide-react";
 import { Logo } from "./Logo";
 import { Button } from "@/components/ui/button";
 import { EXPAT_QUOTE_URL } from "@/lib/data/expat";
+import { waLink } from "@/lib/contact";
 import { useT } from "@/lib/i18n/LanguageProvider";
 
 /**
@@ -14,10 +17,13 @@ import { useT } from "@/lib/i18n/LanguageProvider";
  * links. A plain sticky bar rather than the site's
  * floating capsule, so the page reads as its own service at a glance; the
  * translucency is the same functional one as the capsule's (DESIGN.md, The
- * No-Gradient Rule).
+ * No-Gradient Rule). Inside the order flow (rates, plan, booking) the
+ * visitor is already through the door, so the lime button gives way to a
+ * quiet "Need help?" on WhatsApp: each step's own button is its one lime.
  */
 export function ExpatHeader() {
   const t = useT();
+  const inFlow = usePathname() !== "/expat-relocation";
   return (
     // /95, as on the live page: a full-width bar shows whatever scrolls under
     // it, and at the capsule's /85 the content ghosted through as blotches
@@ -42,9 +48,20 @@ export function ExpatHeader() {
           </span>
         </div>
         {/* no language switch: the page is English only (LanguageProvider) */}
-        <Button asChild size="sm" className="shrink-0">
-          <a href={EXPAT_QUOTE_URL}>{t("expat.cta")}</a>
-        </Button>
+        {inFlow ? (
+          <a
+            href={waLink(t("expatOrder.helpWa"))}
+            target="_blank"
+            rel="noreferrer"
+            className="link-mark tap-row relative inline-flex shrink-0 items-center gap-1.5 text-sm"
+          >
+            <MessageCircle aria-hidden className="size-4" /> {t("expatOrder.help")}
+          </a>
+        ) : (
+          <Button asChild size="sm" className="shrink-0">
+            <a href={EXPAT_QUOTE_URL}>{t("expat.cta")}</a>
+          </Button>
+        )}
       </div>
     </header>
   );

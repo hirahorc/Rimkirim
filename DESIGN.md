@@ -1252,7 +1252,43 @@ arriving here reads as landing. It is dark because the last ask should not look 
 section.
 
 **One per landing, and only for the closing ask.** It is not a dark theme and does not license
-dark sections. The home landing's ink testimonial hook card is the only other dark surface.
+dark sections. The home landing's ink testimonial hook card is the only other dark surface. The
+expat order flow's Booking Summary is the ticket's one other use (below): the trip has landed, so
+the booking is the ticket.
+
+On dusk, the focus ring turns over (a white ring with a dusk gap). Secondary words are the soft
+lavender (9.3:1), never grey; white is 12.5:1 and the lime door 10.5:1.
+
+### The expat order flow
+The order flow under `/expat-relocation` (rates, plan, booking) walks the landing's chapters as
+the trip: **sky** for Check Rate, **violet** for the plan (Eligibility Check and Personal
+Information), **dusk** for the Booking Summary, with the magenta desk under it. It speaks English
+only, like the landing, and keeps the landing's bar, which trades the lime "Get a quote" for a
+quiet "Need help?" on WhatsApp, since each step's own button is that screen's one lime.
+
+- **The flow stepper:** Rate, Eligibility, Your details, in the status stepper's encoding (a
+  step behind is lime with an Ink check and links back, the current one is Ink-framed with a lime
+  core, the ones ahead are Hairline on Panel 2). Rate always reads done once you're planning. On
+  a phone only the current step keeps its word.
+- **The rate card:** the live page's anatomy (carrier logo and service, the route in flags, the
+  transit days with "clearance excluded"), the price per kg as the one big number and the
+  estimated total for the charged weight under it, beside an "Estimated" pill. The lead card is
+  framed in Ink and carries the lime "Select this rate"; the rest under "See more rates" take the
+  secondary button, so a long list never splits the voice. A Special Rate wears a tone-ink pill.
+- **Choice cards** (the Eligibility Check): white planes that frame in Ink (2px, as a doubled
+  hairline) when chosen. A single choice shows the stepper's dot (Ink ring, lime core); a multiple
+  choice shows the system checkbox (lime with an Ink tick). Neither fills with lime.
+- **Notices, not errors:** the furniture notice and the changed-address notice sit on Panel 3 with
+  a tone-ink icon. Nothing in the flow turns a customer away, so nothing there wears Stop Red.
+  Field errors appear once a field is left, never on every keystroke.
+- **Selected Service:** a band-wash sheet beside both plan steps, sticky from lg; on a phone a
+  one-line strip (service and price) that opens to the rest.
+- **The Booking Summary ticket:** the dusk ticket with "Booking received" in lime over the
+  booking number at up to 48px, then the stub as a definition grid (route, shipping, what's
+  shipping, pickup, contact). What happens next, the other answers and the documents follow on the
+  desk.
+- **The customs block in the flow** reads the landing's own Customs copy and coins, folded into a
+  Disclosure, the same for every customer: it never reflects their answers (docs/adr/0002).
 
 On dusk, the focus ring turns over (a white ring with a dusk gap). Secondary words are the soft
 lavender (9.3:1), never grey; white is 12.5:1 and the lime door 10.5:1.

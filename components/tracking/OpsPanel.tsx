@@ -10,8 +10,9 @@ import { Card } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { OpsSimulator } from "./OpsSimulator";
 import { VoucherOpsTab } from "./VoucherOpsTab";
+import { ExpatBookingsTab } from "./ExpatBookingsTab";
 
-/** Ops control-plane page: one simulator card per submitted order, plus the voucher back-office. */
+/** Ops control-plane page: one simulator card per submitted order, the voucher back-office, and the expat bookings' tickets. */
 export function OpsPanel() {
   const t = useT();
   // both stores gate the page: the voucher tab reads campaigns and orders
@@ -44,6 +45,7 @@ export function OpsPanel() {
         <TabsList className="mb-5">
           <TabsTrigger value="orders">{t("ops.ordersTab")}</TabsTrigger>
           <TabsTrigger value="vouchers">{t("ops.vcTab")}</TabsTrigger>
+          <TabsTrigger value="expat">{t("expatOrder.ops.tab")}</TabsTrigger>
         </TabsList>
         <TabsContent value="orders" className="max-w-3xl">
           {orders.length === 0 ? (
@@ -60,6 +62,9 @@ export function OpsPanel() {
         </TabsContent>
         <TabsContent value="vouchers">
           <VoucherOpsTab />
+        </TabsContent>
+        <TabsContent value="expat">
+          <ExpatBookingsTab />
         </TabsContent>
       </Tabs>
 

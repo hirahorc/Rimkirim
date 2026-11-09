@@ -39,6 +39,7 @@ export function DatePicker({
   onChange,
   min,
   max,
+  isDateDisabled,
   placeholder,
   ariaLabel,
   disabled,
@@ -50,6 +51,8 @@ export function DatePicker({
   /** inclusive bounds, "YYYY-MM-DD" */
   min?: string;
   max?: string;
+  /** further days that can't be picked inside the bounds (e.g. weekends) */
+  isDateDisabled?: (iso: string) => boolean;
   placeholder?: string;
   ariaLabel?: string;
   disabled?: boolean;
@@ -97,7 +100,8 @@ export function DatePicker({
     [fmtWeekday],
   );
 
-  const outOfRange = (d: Date) => (!!minD && d < minD) || (!!maxD && d > maxD);
+  const outOfRange = (d: Date) =>
+    (!!minD && d < minD) || (!!maxD && d > maxD) || !!isDateDisabled?.(toIso(d));
 
   const openTo = (d: Date) => {
     setView(addMonths(d, 0));

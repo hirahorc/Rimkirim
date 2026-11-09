@@ -10,13 +10,14 @@ import { ReviewNote } from "./ReviewNote";
 import { revealOrder as order, useSectionReveal } from "./useSectionReveal";
 
 /** how much of a route's duty is waived, which sets its verdict's coin */
-type Relief = "full" | "part" | "none";
+export type Relief = "full" | "part" | "none";
 
 /** the three ways belongings clear Indonesian customs, from ops' import
  *  summary, most relief first: duty-free as relocation goods, free up to
  *  USD 500 as passenger goods sent separately, or charged as a personal
- *  shipment */
-const ROUTES: readonly { key: string; docs: readonly string[]; relief: Relief }[] = [
+ *  shipment. The order flow lists the same three (CustomsPaths), so the two
+ *  can never tell a customer different things */
+export const CUSTOMS_ROUTES: readonly { key: string; docs: readonly string[]; relief: Relief }[] = [
   { key: "pindahan", docs: ["doc1", "doc2", "doc3", "doc4", "doc5"], relief: "full" },
   { key: "penumpang", docs: ["doc1", "doc2", "doc3"], relief: "part" },
   { key: "kiriman", docs: ["doc1", "doc2"], relief: "none" },
@@ -25,7 +26,7 @@ const ROUTES: readonly { key: string; docs: readonly string[]; relief: Relief }[
 /** each verdict's coin: the chapter's ink, solid, for duty-free; its ring
  *  for free up to a limit; a quiet receipt for charged (charged is not an
  *  error, so never Stop Red) */
-const COIN: Record<Relief, { glyph: LucideIcon; className: string }> = {
+export const COIN: Record<Relief, { glyph: LucideIcon; className: string }> = {
   full: { glyph: Check, className: "bg-tone-ink text-background" },
   part: { glyph: Check, className: "border-2 border-tone-ink text-tone-ink" },
   none: { glyph: Receipt, className: "bg-surface-3 text-muted" },
@@ -73,7 +74,7 @@ export function ExpatCustoms() {
         </div>
 
         <div className="mt-12 grid gap-4 lg:grid-cols-3">
-          {ROUTES.map(({ key, docs, relief }, i) => {
+          {CUSTOMS_ROUTES.map(({ key, docs, relief }, i) => {
             const k = (path: string) => t(`expat.customs.${key}.${path}`);
             const { glyph: Glyph, className: coin } = COIN[relief];
             return (
