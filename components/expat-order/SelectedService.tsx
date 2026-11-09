@@ -1,7 +1,6 @@
 "use client";
 
 import * as React from "react";
-import Link from "next/link";
 import { BadgePercent, ChevronDown } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { CollapseHeight } from "@/components/ui/disclosure";
@@ -17,7 +16,7 @@ import { cn } from "@/lib/utils/cn";
 /**
  * The picked rate beside both plan steps, after the live page's "Selected
  * service": carrier and service, from and to, transit, the charged weight and
- * the estimated price, with the way back to change it. A white card on the
+ * the estimated price, read only. A white card on the
  * field that stays in view on a wide screen; on a phone a one-line strip
  * over the form (service and price) that opens to the rest.
  */
@@ -66,12 +65,6 @@ export function SelectedService({ check, rate }: { check: CheckRateInput; rate: 
     </div>
   );
 
-  const change = (
-    <Link href="/expat-relocation/rates" className="link-mark tap-row relative text-sm">
-      {s("change")}
-    </Link>
-  );
-
   return (
     <aside
       aria-labelledby="selected-service"
@@ -101,7 +94,6 @@ export function SelectedService({ check, rate }: { check: CheckRateInput; rate: 
           <div className="space-y-4 pt-4">
             {rows}
             {price}
-            {change}
           </div>
         </CollapseHeight>
       </div>
@@ -111,7 +103,6 @@ export function SelectedService({ check, rate }: { check: CheckRateInput; rate: 
         {head}
         {rows}
         {price}
-        {change}
       </div>
     </aside>
   );

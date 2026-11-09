@@ -23,16 +23,31 @@ import type { AddressChange } from "@/lib/store/useExpatOrderStore";
 import { useT } from "@/lib/i18n/LanguageProvider";
 import { MapPinDialog } from "./MapPinDialog";
 
-/** where the move runs from or to, as Check Rate set it, with the way back */
-function ReadOnlyRoute({ label, country, place }: { label: string; country: string; place: Place | null }) {
+/**
+ * where the move runs from or to, as Check Rate set it. The origin has no way
+ * back from here: it moved the rate, so it changes on Check Rate only.
+ */
+function ReadOnlyRoute({
+  label,
+  country,
+  place,
+  changeable = false,
+}: {
+  label: string;
+  country: string;
+  place: Place | null;
+  changeable?: boolean;
+}) {
   const t = useT();
   return (
     <div className="rounded-md bg-surface-2 px-4 py-3">
       <div className="flex items-baseline justify-between gap-3">
         <p className="text-xs font-medium text-muted">{label}</p>
-        <Link href="/expat-relocation/rates" className="link-mark tap-row relative text-xs">
-          {t("expatOrder.details.change")}
-        </Link>
+        {changeable && (
+          <Link href="/expat-relocation/rates" className="link-mark tap-row relative text-xs">
+            {t("expatOrder.details.change")}
+          </Link>
+        )}
       </div>
       <p className="mt-1 text-sm font-medium">{getCountry(country)?.name}</p>
       {place && <p className="text-sm text-muted">{placeLine(place)}</p>}
@@ -100,9 +115,10 @@ function DetailAddress({
 
 /**
  * Personal Information, the epic's fields: where from and where to as Check
- * Rate set them (read only, with the way back), both Detail Addresses with
- * their pins, then name, email, phone and the Pickup Date. Every field is
- * required; an error shows once a field is left, not on every keystroke.
+ * Rate set them (read only; only the destination links back), both Detail
+ * Addresses with their pins, then name, email, phone and the Pickup Date.
+ * Every field is required; an error shows once a field is left, not on every
+ * keystroke.
  */
 export function DetailsStep({
   check,
@@ -128,7 +144,7 @@ export function DetailsStep({
     <div className="space-y-8">
       <div className="grid gap-3 sm:grid-cols-2">
         <ReadOnlyRoute label={d("from")} country={check.originCountry} place={check.origin} />
-        <ReadOnlyRoute label={d("to")} country="ID" place={check.destination} />
+        <ReadOnlyRoute label={d("to")} country="ID" place={check.destination} changeable />
       </div>
 
       <div className="grid gap-6 border-t border-border pt-6">
@@ -244,7 +260,7 @@ function PhoneField({
   );
 }
 
-/** the Pickup Date: weekdays only, from three days out (epic, section 7) */
+/** the Pickup Date: weekdays only, from tomorrow (the epic, section 7, said three days out) */
 function PickupPicker({
   value,
   onChange,

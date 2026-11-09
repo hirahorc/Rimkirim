@@ -148,9 +148,9 @@ export const phoneValid = (s: string) => /^[0-9 ]*[0-9][0-9 ]*$/.test(s.trim());
 const pad = (n: number) => String(n).padStart(2, "0");
 const toIso = (d: Date) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
 
-/** the first day a pickup can be booked: today plus three (H+0 to H+2 are out) */
+/** the first day a pickup can be booked: tomorrow (H+0 is out) */
 export function firstPickupIso(now = new Date()): string {
-  return toIso(new Date(now.getFullYear(), now.getMonth(), now.getDate() + 3));
+  return toIso(new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1));
 }
 
 /** weekends and anything before the first pickup day are out */

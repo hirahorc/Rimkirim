@@ -46,12 +46,13 @@ Q1 (what's shipping), the arrival date and the length of stay never move the fla
 
 - **Final price.** The epic (section 5) says the final price is set at quotation. The team corrected this: the Quotation is still an estimate, and the final price comes on the Invoice, once the packages reach Rimkirim's warehouse and are measured and weighed again. All copy follows the correction.
 - **Required fields.** The epic marks only the two Detail Addresses "(required)". Every Personal Information field is required here, since the email and phone are needed for the confirmation and the follow-up.
+- **Pickup Date.** The epic (section 7) opens the calendar three days out. The team moved it to tomorrow; weekends stay closed.
 - **Personas (Story 1).** The landing page doesn't frame the work and study personas; they appear only as the reason in Q4. Decided by the team with the PM.
 - **Passenger Goods.** The epic puts it out of scope. The service covers it, so the landing and the flow explain all three Customs Paths equally, with no choice for the customer (decided with the PM).
 
 ## Taken from the live flow (rimkirim.com/relocation)
 
-Not named in the epic, kept because the live flow has them: the Address autocomplete that insists on a postal code, the Selected Service panel beside the plan, the way back to Check Rate, the surcharge details dialog, and the wording "excludes duties, taxes, and surcharges".
+Not named in the epic, kept because the live flow has them: the Address autocomplete that insists on a postal code, the Selected Service panel beside the plan (read only: the team dropped its "Change rate" link, and the origin card in Personal Information has no "Change" either, so the origin changes on Check Rate only), the surcharge details dialog, and the wording "excludes duties, taxes, and surcharges".
 
 ## Copy
 
