@@ -21,7 +21,8 @@ import { useT } from "@/lib/i18n/LanguageProvider";
 /**
  * The internal system's view of expat bookings (mock): each ticket with its
  * provisional Customs Category, the full eligibility payload and contact the
- * epic carries into the ticket, who the confirmation went to, and the email
+ * epic carries into the ticket, the Packing List with each item's value and
+ * how many photos came with it, who the confirmation went to, and the email
  * itself. The one place the Customs Category is shown, because it's ops'.
  */
 export function ExpatBookingsTab() {
@@ -85,6 +86,33 @@ export function ExpatBookingsTab() {
                 </p>
               </div>
             </div>
+
+            {f.packing && (
+              <div className="mt-4 border-t border-border pt-4">
+                <p className="mb-1 text-xs font-medium text-muted">{t("expatOrder.ops.packing")}</p>
+                <p className="text-sm">{f.packing.summary}</p>
+                <p className="text-xs text-muted">{t("expatOrder.ops.checked").replace("{kg}", f.checkedKg)}</p>
+                <ol className="mt-3 space-y-3">
+                  {f.packing.packages.map((pk) => (
+                    <li key={pk.title} className="text-sm">
+                      <p className="font-medium">{pk.title}</p>
+                      <p className="text-xs tabular-nums text-muted">
+                        {pk.measures} · {t("expatOrder.ops.photos").replace("{n}", String(pk.photos))}
+                      </p>
+                      <ul className="mt-1 space-y-0.5">
+                        {pk.items.map((it, i) => (
+                          <li key={i} className="grid grid-cols-[minmax(0,1fr)_3rem_7rem] gap-2 tabular-nums">
+                            <span>{it.name}</span>
+                            <span className="text-right">× {it.quantity}</span>
+                            <span className="text-right text-muted">{it.value || "–"}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </li>
+                  ))}
+                </ol>
+              </div>
+            )}
 
             <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-border pt-4">
               <p className="text-xs text-muted">

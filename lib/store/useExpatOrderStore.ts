@@ -9,16 +9,21 @@ import {
   EMPTY_CHECK,
   EMPTY_DETAILS,
   EMPTY_ELIGIBILITY,
+  EMPTY_PACKING,
   TEAM_INBOX,
   addressReady,
   checkComplete,
   customsCategory,
   detailsProgress,
   eligibilityProgress,
+  packedPricing,
+  packingProgress,
+  toItemsData,
   type CheckRateInput,
   type DetailsInput,
   type EligibilityAnswers,
   type ExpatBooking,
+  type PackingInput,
 } from "@/lib/order/expat-order";
 
 /** which side's Address changed since its Detail Address was given */
@@ -29,6 +34,7 @@ interface ExpatOrderState {
   check: CheckRateInput;
   rate: ExpatRate | null;
   eligibility: EligibilityAnswers;
+  packing: PackingInput;
   details: DetailsInput;
   /** set when a changed Address cleared that side's detail and pin */
   addressChanged: AddressChange;
@@ -38,6 +44,7 @@ interface ExpatOrderState {
   setCheck: (next: CheckRateInput) => void;
   selectRate: (rate: ExpatRate) => void;
   setEligibility: (patch: Partial<EligibilityAnswers>) => void;
+  setPacking: (next: PackingInput) => void;
   setDetails: (patch: Partial<DetailsInput>) => void;
   dismissAddressChange: (side: keyof AddressChange) => void;
   /** registers the ticket and clears the draft; null when anything's missing */
@@ -50,6 +57,7 @@ export const useExpatOrderStore = create<ExpatOrderState>()(
       check: EMPTY_CHECK,
       rate: null,
       eligibility: EMPTY_ELIGIBILITY,
+      packing: EMPTY_PACKING,
       details: EMPTY_DETAILS,
       addressChanged: { origin: false, destination: false },
       bookings: [],
@@ -91,6 +99,8 @@ export const useExpatOrderStore = create<ExpatOrderState>()(
 
       setEligibility: (patch) => set((s) => ({ eligibility: { ...s.eligibility, ...patch } })),
 
+      setPacking: (packing) => set({ packing }),
+
       setDetails: (patch) =>
         set((s) => {
           const changed = { ...s.addressChanged };
@@ -103,7 +113,7 @@ export const useExpatOrderStore = create<ExpatOrderState>()(
         set((s) => ({ addressChanged: { ...s.addressChanged, [side]: false } })),
 
       submit: () => {
-        const { check, rate, eligibility, details, bookings } = get();
+        const { check, rate, eligibility, packing, details, bookings } = get();
         if (
           !checkComplete(check) ||
           !addressReady(check.origin) ||
@@ -111,6 +121,7 @@ export const useExpatOrderStore = create<ExpatOrderState>()(
           !check.weightKg ||
           !rate ||
           !eligibilityProgress(eligibility).done ||
+          !packingProgress(packing).done ||
           !detailsProgress(details).done
         ) {
           return null;
@@ -119,8 +130,9 @@ export const useExpatOrderStore = create<ExpatOrderState>()(
           number: makeBookingNumber(),
           createdAt: new Date().toISOString(),
           check: { ...check, origin: check.origin, destination: check.destination, weightKg: check.weightKg },
-          rate,
+          rate: packedPricing(check.originCountry, rate, packing).rate,
           eligibility,
+          packing: toItemsData(packing, check.originCountry),
           details,
           customsCategory: customsCategory(eligibility),
           emailTo: [details.email.trim(), TEAM_INBOX],
@@ -130,6 +142,7 @@ export const useExpatOrderStore = create<ExpatOrderState>()(
           check: EMPTY_CHECK,
           rate: null,
           eligibility: EMPTY_ELIGIBILITY,
+          packing: EMPTY_PACKING,
           details: EMPTY_DETAILS,
           addressChanged: { origin: false, destination: false },
         });
@@ -143,6 +156,7 @@ export const useExpatOrderStore = create<ExpatOrderState>()(
         check: s.check,
         rate: s.rate,
         eligibility: s.eligibility,
+        packing: s.packing,
         details: s.details,
         addressChanged: s.addressChanged,
         bookings: s.bookings,

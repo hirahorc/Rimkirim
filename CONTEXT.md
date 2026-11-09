@@ -31,7 +31,7 @@ A carrier's standard price per kg for the route; the cheapest one is shown first
 _Avoid_: 3PL rate, regular rate
 
 **Estimate**:
-The price shown at Check Rate for the entered weight; the first of two estimates before the Invoice.
+The price shown at Check Rate for the entered weight, and priced again on the Packing List's chargeable weight once every package is measured; the first of two estimates before the Invoice.
 _Avoid_: Quote, price (unqualified)
 
 **Quotation**:
@@ -39,7 +39,7 @@ The team's estimate of the shipping cost, sent after reviewing a booking and its
 _Avoid_: Final price, official price, quote (for the Check Rate figure)
 
 **Packing List**:
-The itemised list of what's in each package (items, quantities, types) that the team reviews before pickup to flag Take Outs and potential duty and tax.
+The itemised list of what's in each package (items, quantities, values, and each package's packaging, weight and size), given in the flow between the Eligibility Check and Personal Information, that the team reviews before pickup to flag Take Outs and potential duty and tax.
 _Avoid_: Item list, inventory, manifest
 
 **Packing Guide**:

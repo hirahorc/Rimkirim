@@ -1341,7 +1341,7 @@ else of the landing's dress, so no field or panel takes a chapter's tint. It spe
 like the landing, and keeps the landing's bar, which trades the lime "Check your rate" for a quiet
 "Need help?" on WhatsApp, since each step's own button is that screen's one lime.
 
-- **The flow stepper:** Rate, Eligibility, Your details, in the status stepper's encoding (a
+- **The flow stepper:** Rate, Eligibility, Packing list, Your details, in the status stepper's encoding (a
   step behind is lime with an Ink check and links back, the current one is Ink-framed with a lime
   core, the ones ahead are Hairline on Panel 2). Rate always reads done once you're planning. On
   a phone only the current step keeps its word.
@@ -1360,8 +1360,18 @@ like the landing, and keeps the landing's bar, which trades the lime "Check your
   does; ticking furniture only adds to its words and points its link at furniture's own steps.
   Nothing in the flow turns a customer away, so no verdict
   there wears Stop Red (the Special Rate tab is an offer mark, not a verdict). Field errors appear once a field is left, never on every keystroke.
-- **Selected Service:** a white card beside both plan steps, sticky from lg; on a phone a
-  one-line strip (service and price) that opens to the rest.
+- **The Packing List:** inside the step's white card, each package is a Panel 2 block with no
+  outline (`rounded-md`, a notch down from the card, The Step-Down Rule), whose head opens and
+  closes it with the swapped chevron and names it in one line while closed. Inside: what it's
+  packed in, the weight and three sides with their units worn in the inputs and one line on what
+  it's charged on, the items as rows between hairlines (de-boxed, so no third tone), and the
+  photos. "Add a package" is the dashed button across the card. The currency and the totals
+  (packages, chargeable weight, declared value) sit under hairlines below; the price never
+  repeats there, since the Selected Service beside it carries it. Declared values read as a code
+  and an amount ("AUD 300") to match the inputs' prefix.
+- **Selected Service:** a white card beside every plan step, sticky from lg; on a phone a
+  one-line strip (service and price) that opens to the rest. Once the Packing List is measured,
+  its weight and estimate are the packages', and the weight says "from your packing list".
 - **The Booking Summary:** a white card with the received head (the success check, who the
   summary went to) over the booking number on a Panel 2 strip with its copy button, then the
   summary as label-and-value rows between hairlines. What happens next, the other answers and

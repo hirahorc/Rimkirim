@@ -1,9 +1,10 @@
 import { getCountry } from "@/lib/data/countries";
 import { dialCodeFor } from "@/lib/data/dial-codes";
 import { placeLine } from "@/lib/data/expat-places";
-import type { ExpatBooking } from "@/lib/order/expat-order";
+import { declaredValue, type ExpatBooking } from "@/lib/order/expat-order";
 import { messages } from "@/lib/i18n/messages";
-import { formatIDR } from "@/lib/utils/currency";
+import { totalChargeableWeight } from "@/lib/utils/chargeable-weight";
+import { formatIDR, formatNumber } from "@/lib/utils/currency";
 
 type T = (path: string) => string;
 
@@ -36,6 +37,9 @@ export function bookingFacts(b: ExpatBooking, t: T) {
   const e = (k: string) => t(`expatOrder.eligibility.${k}`);
   const { check, rate, eligibility: a, details: d } = b;
 
+  const pk = (k: string) => t(`expatOrder.packing.${k}`);
+  const kg = (n: number) => formatNumber(n, 1, "en");
+
   const items = a.items.map((c) => (c === "others" && a.itemsOther.trim() ? `${e("items.others")}: ${a.itemsOther.trim()}` : e(`items.${c}`)));
   const yesNo = (v: boolean | undefined) => (v === undefined ? "" : v ? e("yes") : e("no"));
 
@@ -46,6 +50,30 @@ export function bookingFacts(b: ExpatBooking, t: T) {
     ...(a.hasVisa ? ([[bk("vitas"), yesNo(a.hasVitas)], [bk("itas"), yesNo(a.hasItas)]] as [string, string][]) : []),
     [bk("reason"), a.reason === "others" ? `${e("reasons.others")}: ${a.reasonOther.trim()}` : a.reason ? e(`reasons.${a.reason}`) : ""],
   ];
+
+  // the Packing List, absent on bookings made before it was asked
+  const list = b.packing?.packages ?? [];
+  const currency = b.packing?.currency ?? "";
+  const declared = list.reduce((s, p) => s + p.items.reduce((v, it) => v + it.quantity * it.value, 0), 0);
+  const packing = list.length
+    ? {
+        summary: [
+          list.length === 1 ? bk("packagesOne") : bk("packagesMany").replace("{n}", String(list.length)),
+          bk("chargeable").replace("{kg}", kg(totalChargeableWeight(list.map((p) => ({ ...p, quantity: 1 }))))),
+          ...(declared > 0 ? [bk("declared").replace("{value}", declaredValue(declared, currency))] : []),
+        ].join(" · "),
+        packages: list.map((p, i) => ({
+          title: `${pk("packageN").replace("{n}", String(i + 1))} · ${pk(`types.${p.packaging}`)}`,
+          measures: `${kg(p.weight)} kg · ${p.length} × ${p.width} × ${p.height} cm`,
+          items: p.items.map((it) => ({
+            name: it.name,
+            quantity: it.quantity,
+            value: it.value > 0 ? declaredValue(it.value, currency) : "",
+          })),
+          photos: Object.values(p.photos ?? {}).filter(Boolean).length,
+        })),
+      }
+    : null;
 
   return {
     number: b.number,
@@ -67,6 +95,8 @@ export function bookingFacts(b: ExpatBooking, t: T) {
       estimate: formatIDR(rate.total),
     },
     items,
+    packing,
+    checkedKg: kg(check.weightKg),
     packReminder: bk("packReminder").replace("{furniture}", a.items.includes("furniture") ? bk("packFurniture") : ""),
     pickup: longDate(d.pickupDate),
     contact: {

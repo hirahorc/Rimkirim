@@ -31,7 +31,7 @@ function Row({ label, children }: { label: string; children: React.ReactNode }) 
 /**
  * The Booking Summary, on the app's field like the steps before it: a white
  * card with the received head and the booking number, then the summary as
- * rows (route, shipping, what's shipping, pickup, contact). Beside it, what
+ * rows (route, shipping, what's shipping, the packing list, pickup, contact). Beside it, what
  * happens next, the other answers and the documents each Customs Path needs,
  * folded, and a way to ask. The Customs Category never shows.
  */
@@ -101,6 +101,20 @@ export function BookingView({ number }: { number: string }) {
                   {f.packReminder}
                 </p>
               </Row>
+              {f.packing && (
+                <Row label={bk("packing")}>
+                  <p className="font-medium">{f.packing.summary}</p>
+                  <ol className="space-y-2 pt-2">
+                    {f.packing.packages.map((pk) => (
+                      <li key={pk.title}>
+                        <p>{pk.title}</p>
+                        <p className="tabular-nums text-muted">{pk.measures}</p>
+                        <p className="text-muted">{pk.items.map((it) => `${it.name} × ${it.quantity}`).join(", ")}</p>
+                      </li>
+                    ))}
+                  </ol>
+                </Row>
+              )}
               <Row label={bk("pickup")}>
                 <p className="font-medium">{f.pickup}</p>
               </Row>

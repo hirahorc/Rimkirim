@@ -83,6 +83,19 @@ export function BookingEmail({ facts: f, t }: { facts: BookingFacts; t: T }) {
                           <br />
                           <span style={{ color: MUTED }}>{f.packReminder}</span>
                         </Row>
+                        {f.packing && (
+                          <Row label={bk("packing")}>
+                            <strong>{f.packing.summary}</strong>
+                            {f.packing.packages.map((pk) => (
+                              <span key={pk.title}>
+                                <br />
+                                {pk.title}, {pk.measures}
+                                <br />
+                                <span style={{ color: MUTED }}>{pk.items.map((it) => `${it.name} × ${it.quantity}`).join(", ")}</span>
+                              </span>
+                            ))}
+                          </Row>
+                        )}
                         <Row label={bk("pickup")}>{f.pickup}</Row>
                         <Row label={bk("contact")}>
                           {f.contact.name}

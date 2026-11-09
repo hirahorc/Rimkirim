@@ -10,11 +10,12 @@ To see the open questions in context, add `?review=1` to any page of the flow.
 | --- | --- | --- |
 | Check Rate + Select Rate | `/expat-relocation/rates` | `components/expat-order/RatesView.tsx` |
 | Eligibility Check | `/expat-relocation/plan` | `PlanView.tsx` → `EligibilityStep.tsx` |
+| Packing List | `/expat-relocation/plan?step=packing` | `PlanView.tsx` → `PackingStep.tsx` |
 | Personal Information | `/expat-relocation/plan?step=details` | `PlanView.tsx` → `DetailsStep.tsx` |
 | Booking Summary | `/expat-relocation/booking/[number]` | `BookingView.tsx` |
 | Internal ticket + email preview | `/simulator`, tab "Pesanan expat" | `components/tracking/ExpatBookingsTab.tsx` |
 
-The draft lives in `lib/store/useExpatOrderStore.ts` (localStorage key `rimkirim:expat-order`) and survives reloads until it's submitted. Arriving at `/plan` without a Selected Rate sends the customer back to Check Rate; arriving at the details with questions unanswered sends them back to the questions. Changing the origin country or the weight clears the Selected Rate; changing either Address clears that side's Detail Address and pin, with a notice.
+The draft lives in `lib/store/useExpatOrderStore.ts` (localStorage key `rimkirim:expat-order`) and survives reloads until it's submitted. Arriving at `/plan` without a Selected Rate sends the customer back to Check Rate; arriving at a step whose steps before it aren't done sends them back to the first one that isn't (the questions, then the Packing List). Changing the origin country or the weight clears the Selected Rate; changing either Address clears that side's Detail Address and pin, with a notice.
 
 ## Stand-ins to replace
 
@@ -22,6 +23,8 @@ The draft lives in `lib/store/useExpatOrderStore.ts` (localStorage key `rimkirim
 | --- | --- | --- | --- |
 | Rates | Special Rate from the existing import table; Normal Rates are invented FedEx/UPS services, banded by weight and always dearer per kg than the Special Rate | the rate API | `lib/pricing/expat-rates.ts` |
 | Weight rounding | rounded up to the next whole kg before pricing | the real rule | `chargedWeight()` in `expat-rates.ts` |
+| Pricing on the Packing List | once every package is measured, the Selected Rate's own service is priced again at the packages' chargeable weight (volumetric L × W × H / 5000, as the WNI flow uses); if that service isn't offered at that weight (a Special Rate below its first tier), the Check Rate estimate stands | the rate API, called with the packages | `packedPricing()` in `lib/order/expat-order.ts` |
+| Measurement photos | the file name only, as in the WNI flow | the upload service | `PackingStep.tsx`, `FileUpload` |
 | Address search | a few seeded places per country; any other country answers with the typed city and two streets. A place without a postal code is refused, as on the live page | Google Places (as live) | `lib/data/expat-places.ts` |
 | Map pin | a drawn map with dummy coordinates | the real map | `components/expat-order/MapPinDialog.tsx` |
 | Ticket registration | pushed into localStorage | the internal system's API | `submit()` in `useExpatOrderStore.ts` |
@@ -47,6 +50,7 @@ Q1 (what's shipping), the arrival date and the length of stay never move the fla
 - **Final price.** The epic (section 5) says the final price is set at quotation. The team corrected this: the Quotation is still an estimate, and the final price comes on the Invoice, once the packages reach Rimkirim's warehouse and are measured and weighed again. All copy follows the correction.
 - **Required fields.** The epic marks only the two Detail Addresses "(required)". Every Personal Information field is required here, since the email and phone are needed for the confirmation and the follow-up.
 - **Pickup Date.** The epic (section 7) opens the calendar three days out. The team moved it to tomorrow; weekends stay closed.
+- **Packing List step.** Not in the epic. The team added it between the Eligibility Check and Personal Information, with the fields of the WNI flow's Items & Packages module: per package, what it's packed in, the weight and three sides, each item's description, quantity and value, and four measurement photos; then the values' currency. Weight, sides, description and quantity are required; values and photos are optional, and going on without photos is asked once, as in the WNI flow. The booking carries it in the shared Packing List shape (`ItemsData` in `lib/types/packing.ts`), and the Booking Summary, the email and the ticket show it. Once it's measured, the Selected Service's weight and estimate are the packages' (see Stand-ins).
 - **Personas (Story 1).** The landing page doesn't frame the work and study personas; they appear only as the reason in Q4. Decided by the team with the PM.
 - **Passenger Goods.** The epic puts it out of scope. The service covers it, so the landing and the flow explain all three Customs Paths equally, with no choice for the customer (decided with the PM).
 
@@ -56,7 +60,7 @@ Not named in the epic, kept because the live flow has them: the Address autocomp
 
 ## Copy
 
-All flow copy is in `lib/i18n/messages.ts` under `expatOrder`. The page is English only, like the landing, but the Indonesian keeps the same shape (the `Messages` type enforces it). The epic's question wording is kept verbatim, with one change: Q1's subtext says "an accurate estimate" where the epic says "quote", since the figure is an Estimate (CONTEXT.md). Helper lines (the VITAS and ITAS hints, the Q4 subtext, the Pickup Date hint) are content additions. The customs block inside the flow reads the landing's own `expat.customs` copy, so the two can't disagree.
+All flow copy is in `lib/i18n/messages.ts` under `expatOrder`. The page is English only, like the landing, but the Indonesian keeps the same shape (the `Messages` type enforces it). The epic's question wording is kept verbatim, with one change: Q1's subtext says "an accurate estimate" where the epic says "quote", since the figure is an Estimate (CONTEXT.md). Helper lines (the VITAS and ITAS hints, the Q4 subtext, the Pickup Date hint, and every line of the Packing List beyond its field labels) are content additions. The Packing List's packaging names follow the landing's packing guide (cardboard box, suitcase or bag, plastic or bubble wrap, wooden crate, something else) over the WNI flow's values, so the data stays the same shape. The customs block inside the flow reads the landing's own `expat.customs` copy, so the two can't disagree.
 
 ## The landing page
 

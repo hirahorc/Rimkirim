@@ -14,13 +14,23 @@ import { useT } from "@/lib/i18n/LanguageProvider";
 import { cn } from "@/lib/utils/cn";
 
 /**
- * The picked rate beside both plan steps, after the live page's "Selected
+ * The picked rate beside every plan step, after the live page's "Selected
  * service": carrier and service, from and to, transit, the charged weight and
- * the estimated price, read only. A white card on the
- * field that stays in view on a wide screen; on a phone a one-line strip
- * over the form (service and price) that opens to the rest.
+ * the estimated price, read only. Once the Packing List is measured, the
+ * weight and price are the packages' (packedPricing), and the weight says so.
+ * A white card on the field that stays in view on a wide screen; on a phone a
+ * one-line strip over the form (service and price) that opens to the rest.
  */
-export function SelectedService({ check, rate }: { check: CheckRateInput; rate: ExpatRate }) {
+export function SelectedService({
+  check,
+  rate,
+  packed = false,
+}: {
+  check: CheckRateInput;
+  rate: ExpatRate;
+  /** the rate was priced again on the Packing List's weight */
+  packed?: boolean;
+}) {
   const t = useT();
   const s = (k: string) => t(`expatOrder.service.${k}`);
   const [open, setOpen] = React.useState(false);
@@ -33,11 +43,14 @@ export function SelectedService({ check, rate }: { check: CheckRateInput; rate: 
         [s("from"), from],
         [s("to"), to],
         [s("transit"), s("transitValue").replace("{min}", String(rate.etaMin)).replace("{max}", String(rate.etaMax))],
-        [s("weight"), s("weightValue").replace("{kg}", String(rate.chargedKg))],
-      ].map(([k, v]) => (
+        [s("weight"), s("weightValue").replace("{kg}", String(rate.chargedKg)), packed ? s("weightPacked") : ""],
+      ].map(([k, v, note]) => (
         <div key={k} className="grid grid-cols-[5rem_minmax(0,1fr)] gap-3">
           <dt className="text-muted">{k}</dt>
-          <dd className="font-medium">{v}</dd>
+          <dd className="font-medium">
+            {v}
+            {note && <span className="block text-xs font-normal text-muted">{note}</span>}
+          </dd>
         </div>
       ))}
     </dl>

@@ -5,20 +5,21 @@ import { Check } from "lucide-react";
 import { useT } from "@/lib/i18n/LanguageProvider";
 import { cn } from "@/lib/utils/cn";
 
-export type FlowStep = "rate" | "eligibility" | "details";
+export type FlowStep = "rate" | "eligibility" | "packing" | "details";
 
 const STEPS: { key: FlowStep; href: string }[] = [
   { key: "rate", href: "/expat-relocation/rates" },
   { key: "eligibility", href: "/expat-relocation/plan" },
+  { key: "packing", href: "/expat-relocation/plan?step=packing" },
   { key: "details", href: "/expat-relocation/plan?step=details" },
 ];
 
 /**
- * The booking's three steps, in the status stepper's encoding (DESIGN.md,
+ * The booking's four steps, in the status stepper's encoding (DESIGN.md,
  * Status stepper): a step behind you is a lime dot with an Ink check and
  * links back to itself, the current one is framed in Ink with a lime core,
  * the ones ahead are Hairline on Panel 2. The track is lime up to where you
- * are. Rate always reads done once you're planning, so only two steps remain.
+ * are. Rate always reads done once you're planning, so only three steps remain.
  */
 export function FlowStepper({ current, className }: { current: FlowStep; className?: string }) {
   const t = useT();

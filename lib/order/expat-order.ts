@@ -5,8 +5,11 @@
  * screens read these; swap the rules here for the real ones.
  */
 
+import { defaultCurrencyFor } from "@/lib/data/currencies";
 import type { Place } from "@/lib/data/expat-places";
-import type { ExpatRate } from "@/lib/pricing/expat-rates";
+import { chargedWeight, expatRates, type ExpatRate } from "@/lib/pricing/expat-rates";
+import type { ItemsData, PackageRow } from "@/lib/types/packing";
+import { chargeableWeight, volumetricWeight } from "@/lib/utils/chargeable-weight";
 
 /* ---------------------------------------------------------------- Check Rate */
 
@@ -106,6 +109,158 @@ export function customsCategory(a: EligibilityAnswers): CustomsCategory {
   return "eligible_pindahan";
 }
 
+/* --------------------------------------------------------------- Packing List */
+
+/** the measurement photos, by what each one shows; a file name once added */
+export type PackingPhotos = { weight?: string; length?: string; width?: string; height?: string };
+export const PHOTO_SIDES = ["weight", "length", "width", "height"] as const;
+
+export interface PackingItem {
+  /** a list key, never shown */
+  id: string;
+  name: string;
+  /** typed text, digits only */
+  quantity: string;
+  /** per item, in the list's currency; optional, the team asks if it's missing */
+  value: string;
+}
+
+/**
+ * One package as typed, the same fields as the WNI flow's Items & Packages
+ * (lib/types/packing): measurements stay text while typed, so "12." survives
+ * the keystroke, and become numbers in the booking (toItemsData).
+ */
+export interface PackingPackage {
+  id: string;
+  /** a PACKAGING_TYPES value */
+  packaging: string;
+  /** kg */
+  weight: string;
+  /** cm */
+  length: string;
+  width: string;
+  height: string;
+  items: PackingItem[];
+  photos: PackingPhotos;
+}
+
+export interface PackingInput {
+  /** the values' currency; empty follows the origin country's */
+  currency: string;
+  packages: PackingPackage[];
+}
+
+const key = () => Math.random().toString(36).slice(2, 10);
+
+export const newPackingItem = (): PackingItem => ({ id: key(), name: "", quantity: "1", value: "" });
+
+export const newPackingPackage = (): PackingPackage => ({
+  id: key(),
+  packaging: "box",
+  weight: "",
+  length: "",
+  width: "",
+  height: "",
+  items: [newPackingItem()],
+  photos: {},
+});
+
+export const EMPTY_PACKING: PackingInput = {
+  currency: "",
+  packages: [{ ...newPackingPackage(), id: "p0", items: [{ ...newPackingItem(), id: "i0" }] }],
+};
+
+const num = (s: string) => {
+  const n = Number.parseFloat(s);
+  return Number.isFinite(n) ? n : 0;
+};
+
+/** the currency the values are declared in: the one picked, or the origin's */
+export const packingCurrency = (p: PackingInput, originCountry: string) =>
+  p.currency || defaultCurrencyFor(originCountry);
+
+/** a declared value as the inputs wear it: the code, then the amount
+ *  ("AUD 300"), never a symbol that only some currencies have */
+export const declaredValue = (n: number, code: string) =>
+  `${code} ${new Intl.NumberFormat("en-GB", { maximumFractionDigits: 2 }).format(n)}`;
+
+/** weight and all three sides in, each above 0 */
+export const packageMeasured = (p: PackingPackage) =>
+  num(p.weight) > 0 && num(p.length) > 0 && num(p.width) > 0 && num(p.height) > 0;
+
+/** what a package is charged on: its weight, or its size when that's more */
+export function packageCharge(p: PackingPackage): { kg: number; by: "weight" | "size" } {
+  const dims = { weight: num(p.weight), length: num(p.length), width: num(p.width), height: num(p.height), quantity: 1 };
+  return { kg: chargeableWeight(dims), by: volumetricWeight(dims) > dims.weight ? "size" : "weight" };
+}
+
+export const itemDescribed = (it: PackingItem) => it.name.trim().length > 0 && num(it.quantity) >= 1;
+
+export function packingProgress(p: PackingInput) {
+  const measured = p.packages.length > 0 && p.packages.every(packageMeasured);
+  const described = p.packages.length > 0 && p.packages.every((pk) => pk.items.length > 0 && pk.items.every(itemDescribed));
+  return { measured, described, done: measured && described };
+}
+
+export const photosMissing = (p: PackingPackage) => PHOTO_SIDES.some((s) => !p.photos[s]);
+
+export function packingTotals(p: PackingInput) {
+  let kg = 0;
+  let items = 0;
+  let value = 0;
+  for (const pk of p.packages) {
+    kg += packageCharge(pk).kg;
+    for (const it of pk.items) {
+      items += num(it.quantity);
+      value += num(it.quantity) * num(it.value);
+    }
+  }
+  return { packages: p.packages.length, kg, items, value };
+}
+
+export interface PackedPricing {
+  /** the rate the estimate stands on: repriced when `packed` */
+  rate: ExpatRate;
+  packed: boolean;
+  /** the packages' charged weight once they're all measured, else 0 */
+  kg: number;
+  /** set when a Special Rate couldn't be repriced: where it starts */
+  specialFromKg?: number;
+}
+
+/**
+ * The estimate on the Packing List: once every package is measured, the
+ * Selected Rate's own service priced again at the packages' chargeable
+ * weight, so the one estimate on screen follows the best numbers there are.
+ * Until then, or when that service isn't offered at that weight (a Special
+ * Rate below its first tier), the Check Rate estimate stands.
+ */
+export function packedPricing(originCountry: string, rate: ExpatRate, p: PackingInput): PackedPricing {
+  if (!packingProgress(p).measured) return { rate, packed: false, kg: 0 };
+  const kg = chargedWeight(packingTotals(p).kg);
+  const priced = expatRates(originCountry, kg);
+  const same = priced.rates.find((r) => r.id === rate.id);
+  return same ? { rate: same, packed: true, kg } : { rate, packed: false, kg, specialFromKg: priced.specialFromKg };
+}
+
+/** the list in the shared Packing List shape, for the booking */
+export function toItemsData(p: PackingInput, originCountry: string): ItemsData {
+  return {
+    currency: packingCurrency(p, originCountry),
+    packages: p.packages.map(
+      (pk): PackageRow => ({
+        packaging: pk.packaging,
+        weight: num(pk.weight),
+        length: num(pk.length),
+        width: num(pk.width),
+        height: num(pk.height),
+        items: pk.items.map((it) => ({ name: it.name.trim(), quantity: num(it.quantity), value: num(it.value) })),
+        photos: { ...pk.photos },
+      }),
+    ),
+  };
+}
+
 /* ------------------------------------------------------- Personal Information */
 
 export interface Pin {
@@ -184,8 +339,11 @@ export interface ExpatBooking {
   /** ISO timestamp */
   createdAt: string;
   check: CheckRateInput & { origin: Place; destination: Place; weightKg: number };
+  /** the Selected Rate, priced on the Packing List when it could be */
   rate: ExpatRate;
   eligibility: EligibilityAnswers;
+  /** absent on bookings made before the Packing List step */
+  packing?: ItemsData;
   details: DetailsInput;
   /** internal only: never rendered to the customer, nor in the email */
   customsCategory: CustomsCategory;
