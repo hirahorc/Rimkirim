@@ -11,8 +11,8 @@ import { useT } from "@/lib/i18n/LanguageProvider";
 /**
  * The expat landing's own bar, after the live rimkirim.com/relocation page:
  * the wordmark, the service name in the expat gradient, one way forward
- * ("Get a quote", into the relocation calculator). No site menu, no sign-in
- * (expat orders run over WhatsApp, not the account system), and the logo
+ * ("Check your rate", into the order flow). No site menu, no sign-in
+ * (expat orders run in their own flow, not the account system), and the logo
  * stays on this page; the way back to the main site is the footer's service
  * links. A plain sticky bar rather than the site's
  * floating capsule, so the page reads as its own service at a glance; the

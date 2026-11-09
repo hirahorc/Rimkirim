@@ -600,7 +600,7 @@ body:has(main > [data-field]) {
   animation: notice-drop 0.55s var(--ease-out-soft) backwards;
   animation-delay: var(--at, 0s);
 }
-/* The door's arrow (DoorButton, the expat hero's "Get a quote"; DESIGN.md,
+/* The door's arrow (DoorButton, the expat hero's "Check your rate"; DESIGN.md,
    Motion): the step itself is WAAPI in DoorButton. Its shaft runs from 3
    to the stepped tip at 23, so at rest the one dash is shifted on by the
    offset to show only 5 to 19 (a zero-length dash would still draw a round

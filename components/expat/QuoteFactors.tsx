@@ -17,18 +17,18 @@ const FACTORS = ["route", "weight", "size", "surcharge"] as const;
  * Brief 05. People hesitate when a bulky piece is quoted high, so the cost
  * drivers come before the enquiry, in plain words: route, weight, size, type.
  * The one idea that surprises everyone, that a light box can cost like a heavy
- * one, is shown in the calculator itself rather than in jargon: a light box
+ * one, is shown as the warehouse weighs it rather than in jargon: a light box
  * charged by its size beside a heavy suitcase charged by its weight
  * (SectionScenes, SizeScene). Surcharges are named in plain
  * words (suitcases included, since they aren't cardboard) with the full
- * Surcharge Information modal one tap away. No per-kilo rates here: the
- * calculator behind "Get a quote" gives the estimate, and the final price is
- * only ever confirmed against the real shipment.
+ * Surcharge Information modal one tap away. No per-kilo rates here: Check
+ * Rate, behind "Check your rate", gives the estimate, and the final price
+ * comes on the invoice, once the packages are weighed again at the warehouse.
  */
 export function QuoteFactors() {
   const t = useT();
   // the section reveals once, as the journey does: its head, the
-  // calculator, then the factors in the order a quote is built from them,
+  // weighing, then the factors in the order a price is built from them,
   // the promise and the way in
   const rootRef = useSectionReveal<HTMLElement>();
   return (

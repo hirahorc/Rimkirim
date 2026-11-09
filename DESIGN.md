@@ -258,10 +258,10 @@ the only "press this" on every chapter, and it reads loudest on dusk, violet's n
 The tones are atmosphere and wayfinding, never state, so the app's status meanings are
 untouched. The rest of the product stays on daylight neutrals.
 
-**Every "Get a quote" is the primary button.** The hero's lime `lg` with its arrow appears in the hero,
-under the comparison, under pricing, under the steps and on the ticket, always worded "Get a
-quote". The bar keeps the `sm` size its height allows. It is one door, the quote calculator,
-repeated wherever a reader might decide, so a second lime "Get a quote" never splits the voice. A
+**Every "Check your rate" is the primary button.** The hero's lime `lg` with its arrow appears in the hero,
+under the comparison, under pricing, under the steps and on the ticket, always worded "Check
+your rate" (never "quote": the figure it opens is an Estimate, CONTEXT.md). The bar keeps the `sm`
+size its height allows. It is one door, Check Rate, repeated wherever a reader might decide, so a second lime "Check your rate" never splits the voice. A
 different action never takes lime.
 
 ### Named Rules
@@ -568,7 +568,7 @@ home hero's floating verdicts and the expat hero's departure board. Treat any ot
   pace), the marked phrase taped on as its words land (`TapeMark`: each line's strip pulled
   across left to right, 460ms, 170ms apart, as WAAPI on the words' own clock so it lands with
   them however late the page hydrates),
-  the subtitle, the way in (the lime "Get a quote", then the secondary "See how it works"), and
+  the subtitle, the way in (the lime "Check your rate", then the secondary "See how it works"), and
   last the proof: the photo pile dealt in back to front (`.deck-deal`, on `translate` and
   opacity so it never fights the cards' own `transform`, each print opaque a quarter of the way
   in so the pile never ghosts), then its satellite dropping onto it (`.hero-drop`). About 1.8s from the first word to the
@@ -709,7 +709,7 @@ home hero's floating verdicts and the expat hero's departure board. Treat any ot
   colour, not geometry", after the rating arrow, kept because it is how a mouse discovers there is
   more to see. Gated to fine pointers, so a tap never leaves it open, and off under reduced motion,
   where swaps are instant as well.
-- **The door's arrow** (`DoorButton` + `.door-shaft`, the expat hero's "Get a quote"): the
+- **The door's arrow** (`DoorButton` + `.door-shaft`, the expat hero's "Check your rate"): the
   button is the house lime and steps to Live Lime Dim under a mouse like any other; only its
   arrow answers, taking one step forward the way an inchworm walks. The head moves on first,
   so the shaft stretches behind it, then the tail catches up and the arrow stands 4 units
@@ -722,7 +722,7 @@ home hero's floating verdicts and the expat hero's departure board. Treat any ot
   moves colour, not geometry", after the rating arrow, the photo deck's fan and the pickup
   slices, and the smallest: it moves a glyph, never the button. Fine pointers only; on touch,
   from the keyboard and under reduced motion it stays still, and every press is the house 0.98.
-  Only on the hero: the page's other "Get a quote" buttons stay plain, so it stays a moment
+  Only on the hero: the page's other "Check your rate" buttons stay plain, so it stays a moment
   rather than a habit.
 - **The pickup slices** (`.pickup-slices`, expat "Who does what"): six real pickup photos in one
   row, one open at its full 4:5 and the rest slivers sharing what is left, so the row always fills
@@ -740,13 +740,15 @@ home hero's floating verdicts and the expat hero's departure board. Treat any ot
   as the trip they describe, each illustrated by its moment built from the site's own pieces and
   framed as a product shot, not a screenshot in a box (the stageshow rules, installed as the
   `stageshow` skill): one hero surface inset a gutter from the top and sides of the stage and
-  running off its bottom, so only filler is cropped, and at most one satellite. 01 is the quote
-  form filling itself in, centred a gutter from either side: From beside To on one row as the real
-  form sets them, then what is inside, the rest as filler off the crop, and "About 2 min" over it,
-  a chip centred on its top edge, half outside, its ring running while the form fills and closing
-  into a check once full; 02 is two cards at one width in the order the team works, the review
-  ticking off the shipment details and documents first, then the quote rising from the crop under
-  it and building to its total; 03 is the tracking card, GBR to IDN on the departure
+  running off its bottom, so only filler is cropped, and at most one satellite. 01 is Check Rate
+  filling itself in, centred a gutter from either side: From beside To on one row as the real
+  form sets them, each Address under its country, then the estimated weight, and "A few minutes"
+  over it, a chip centred on its top edge, half outside, its ring running while the form fills and
+  closing into a check once full; once full, the estimate rises from the crop below, drawn by the
+  order flow's own rate card (`RateCard`, shown and inert, `stacked` and `plain`); 02 is two cards
+  at one width in the order the team works, the packing list checked line by line (a phone marked
+  "Likely taxed", the wine to "Take out"), then the quotation rising from the crop under it and
+  building to its total, marked an estimate whose final price comes on the invoice; 03 is the tracking card, GBR to IDN on the departure
   board's tiles with the plane flying the route as the hero's board flies it (a straight dashed
   line drawn left to right on the tiles' centre line, lucide's plane level at its tip, turned to
   fly east, landing flush with the route's end, on the board's 900ms) over the legs' timeline; 04
@@ -803,12 +805,13 @@ home hero's floating verdicts and the expat hero's departure board. Treat any ot
   shows it, framed and built as the journey's scenes are, from the same pieces (`SceneParts`:
   the filler line, the flag, the chat card) on the same ground, so the page's
   illustrations are one figure language. One hero surface a gutter from the top and sides, off the
-  bottom, at most one satellite. Pricing is the calculator's own package rows (the real
-  calculator's readout: real, by size, charged), a box charged by its size beside a suitcase
-  charged by its weight, then the charged weight, the one big number; it replaced the line
+  bottom, at most one satellite. Pricing is two pieces as the warehouse weighs them before the
+  invoice ("Weighed at our warehouse", the readout: real, by size, charged), a box charged by its
+  size beside a suitcase charged by its weight, then the charged weight, the one big number; it replaced the line
   drawings of the size guide, whose rule and tip are now the caption under it.
-  Who does what is the team on WhatsApp walking a customer through the three to-dos (the
-  documents, the packing list they fill in together, the pickup day), on the customer's phone: the
+  Who does what is the team on WhatsApp after reviewing the packing list (the wine to take out,
+  the new phone likely taxed), then confirming the pickup on the day the customer chose, on the
+  customer's phone: the
   stageshow kit's iPhone 18 Pro (`IPhone`, its `pro` frame ported, the screen at true points,
   status bar, island and home indicator the phone's own), pinned a gutter from the stage's top and
   running off its foot, so the crop falls on the chat's empty wallpaper (WhatsApp sets a short
@@ -816,12 +819,12 @@ home hero's floating verdicts and the expat hero's departure board. Treat any ot
   colour without its doodles, white and WhatsApp-green bubbles with the iOS tail, the time in the
   bubble, the blue read ticks, the packing list as a document message; the one stretch of the page
   in another product's colours, because it is that product on a phone, and only inside the screen.
-  It ends on "Pickup booked". The phone is four fifths of a wide stage and nearly all of a compact
+  It ends on "Pickup confirmed". The phone is four fifths of a wide stage and nearly all of a compact
   one, so its 17pt type reads at 12 to 15px; the stage is portrait (8/9, 4/5 on a phone), beside
   the two lists, stacked, and held still as they scroll (`lg:sticky`).
   Pricing, What you can ship, Who does what and the customs section each reveal once as the
   journey does (`.jr-reveal`, `useSectionReveal`): the head, the illustration, then the section's
-  own pieces one by one (Pricing's four factors in the order a quote is built from them, its
+  own pieces one by one (Pricing's four factors in the order a price is built from them, its
   promise and its button; What you can ship's six cards in reading order, what it all travels in,
   then what to check before sending;
   Who does what's two lists; the customs section's three routes, the rates, what catches people
@@ -831,9 +834,9 @@ home hero's floating verdicts and the expat hero's departure board. Treat any ot
   The closing stub gives each step its screen, white cards straight on the ticket (the ticket is
   their ground, so no stage of their own), their column's width, fading out at the foot over their
   empty end on an eased mask (`.scene-fade`, square at the foot, since a dissolving edge has no
-  corner to round): the estimate, whose big number is the charged weight its price is worked from,
-  because no price here can be the visitor's; an eligibility question answered; the handoff on
-  WhatsApp. Three in a row from `lg`, a row each beside its words on a tablet, the house scroll
+  corner to round): the order flow's own three screens, drawn by its own components, shown and
+  inert so the picture can't drift from the product (Check Rate's lead rate card, the Eligibility
+  Check's first question answered, the Booking Summary's ticket head). Three in a row from `lg`, a row each beside its words on a tablet, the house scroll
   strip on a phone.
   Each **builds once** when 40% in view (a hero rises from the crop, rows lift in reading order,
   fields type, values rise, a pressed answer's fill comes up under its one label, `jr-press` and `jr-ink`), then stands still: no loop, no player, no control,
@@ -1153,10 +1156,10 @@ the active link is a Panel-2 pill instead. Same principle, inverted fill.
 footer for `ExpatHeader` / `ExpatFooter` (`isExpatRoute`), after the live rimkirim.com/relocation
 page: a plain full-width sticky bar (`bg-background/95`, hairline below; at the capsule's /85 the
 content ghosted through a bar this wide) holding the wordmark, a hairline divider and the service
-name in the `.nav-expat` gradient, and one lime "Get a quote" that opens the relocation
-calculator, like every other quote button on the page. The page is English only (LanguageProvider
+name in the `.nav-expat` gradient, and one lime "Check your rate" that opens the order flow, like
+every other rate button on the page (inside the flow it gives way to "Need help?"). The page is English only (LanguageProvider
 forces the locale on this route, whatever the visitor saved), so neither bar nor footer carries a
-language switch. No site menu, no sign-in, no bell: expat orders run over WhatsApp, not the
+language switch. No site menu, no sign-in, no bell: expat orders run in their own flow, not the
 account system. The logo stays on the page, so the only door back to the main site is the footer's
 two service links (Back For Good, Moving Abroad); the footer also carries contacts and legal.
 Under 350px the divider and name drop out, because beside the button they would clip; the hero
@@ -1226,7 +1229,7 @@ chapter's wash with the `lg` corner, rising above the header rule and running be
 - **The cells:** each answer leads with a short headline in the display face, so the lane reads as
   the pitch on its own, then the sentence in the chapter's muted ink. Row hairlines turn white
   inside the lane, so the rows read through it without ruling it.
-- **The foot:** "Get a quote" lives at the bottom of the lane from `md`; a phone, whose lane is too
+- **The foot:** "Check your rate" lives at the bottom of the lane from `md`; a phone, whose lane is too
   narrow for the button, keeps it under the table.
 - **The typical column** sits plain on the desk, smaller and in `muted-2`, under a note on what it
   summarises. No ticks, no crosses, no names: the lane does the highlighting, not a verdict.
@@ -1238,7 +1241,7 @@ The expat landing ends on a ticket, the page's one dark surface. It is `bg-dusk`
 with white words and the `lg` corner, and it sits inside the text column.
 
 - **Above the tear line, the ask:** the closing headline at up to 48px, one line under it in
-  `text-dusk-soft`, and the lime "Get a quote", which is at its loudest on dusk.
+  `text-dusk-soft`, and the lime "Check your rate", which is at its loudest on dusk.
 - **The tear line:** a dashed hairline at white 25%, inset to the text, with a 24px notch punched
   out of each edge where the desk shows through. The notches are white circles, so the ticket
   must sit on the white desk.
@@ -1256,14 +1259,11 @@ dark sections. The home landing's ink testimonial hook card is the only other da
 expat order flow's Booking Summary is the ticket's one other use (below): the trip has landed, so
 the booking is the ticket.
 
-On dusk, the focus ring turns over (a white ring with a dusk gap). Secondary words are the soft
-lavender (9.3:1), never grey; white is 12.5:1 and the lime door 10.5:1.
-
 ### The expat order flow
 The order flow under `/expat-relocation` (rates, plan, booking) walks the landing's chapters as
 the trip: **sky** for Check Rate, **violet** for the plan (Eligibility Check and Personal
 Information), **dusk** for the Booking Summary, with the magenta desk under it. It speaks English
-only, like the landing, and keeps the landing's bar, which trades the lime "Get a quote" for a
+only, like the landing, and keeps the landing's bar, which trades the lime "Check your rate" for a
 quiet "Need help?" on WhatsApp, since each step's own button is that screen's one lime.
 
 - **The flow stepper:** Rate, Eligibility, Your details, in the status stepper's encoding (a

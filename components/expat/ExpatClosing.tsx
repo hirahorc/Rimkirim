@@ -17,10 +17,10 @@ const NEXT = [
 
 /**
  * Brief 09. After reading this far nobody should have to scroll back up for
- * the way in, so the page ends on it: "Get a quote", the same door as the
- * hero's, into the relocation calculator. Below it, what that door leads
- * to, in the order the visitor will meet it (estimate, eligibility, details,
- * then our team on WhatsApp), because "and then what?" is the last doubt.
+ * the way in, so the page ends on it: "Check your rate", the same door as the
+ * hero's, into the order flow. Below it, what that door leads to, in the
+ * order the visitor will meet it (the rate, the questions, the booking
+ * summary), because "and then what?" is the last doubt.
  *
  * Set as a ticket, the page's one dark surface (DESIGN.md, The dusk
  * ticket): the ask above a tear line, what happens next on the stub. Dusk,

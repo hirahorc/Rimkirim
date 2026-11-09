@@ -17,8 +17,8 @@ import { ReviewNote } from "./ReviewNote";
  * this ships belongings to Indonesia, and what kind: the headline says where,
  * and the subtitle, the brief's own line, says what ships, how (door to
  * door, by air) and that we help coordinate the journey. The one
- * action is "Get a quote", which opens the relocation calculator (estimate,
- * eligibility, details, then WhatsApp); "see how it works" serves whoever
+ * action is "Check your rate", which opens the order flow's first step
+ * (Check Rate, then eligibility, details and the booking summary); "see how it works" serves whoever
  * wants the steps first. The reviews section follows straight after, so the
  * hero carries no review of its own (brief 02's "a short, genuine review
  * just below the hero" is that section). The right-hand column, as on the

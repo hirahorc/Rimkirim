@@ -116,7 +116,9 @@ export function ExpatCustoms() {
         {/* the personal shipment's rates: what's inside, then its duty as
             the one big number on the row, then the tax on top. From lg the
             words take the left third and the table the rest, so its three
-            columns sit close enough to read across */}
+            columns sit close enough to read across. Under them, that customs
+            sets the final figure and the packing list review flags what's
+            likely taxed */}
         <div
           className="jr-reveal mt-4 grid gap-y-5 rounded-lg bg-background px-5 py-7 sm:px-7 lg:grid-cols-[minmax(0,1fr)_minmax(0,2fr)] lg:gap-x-12"
           style={order(4)}
@@ -125,6 +127,7 @@ export function ExpatCustoms() {
             <h3 className="font-display text-xl font-semibold tracking-tight">{r("title")}</h3>
             <p className="mt-1.5 text-sm leading-relaxed text-muted">{r("subtitle")}</p>
             <p className="mt-4 hidden border-t border-border pt-4 text-sm leading-relaxed text-muted lg:block">{r("foot")}</p>
+            <p className="mt-3 hidden text-sm leading-relaxed text-muted lg:block">{r("packing")}</p>
           </div>
           <table className="w-full border-collapse text-left text-sm">
             <thead>
@@ -157,7 +160,10 @@ export function ExpatCustoms() {
               ))}
             </tbody>
           </table>
-          <p className="border-t border-border pt-4 text-sm leading-relaxed text-muted lg:hidden">{r("foot")}</p>
+          <div className="space-y-3 border-t border-border pt-4 text-sm leading-relaxed text-muted lg:hidden">
+            <p>{r("foot")}</p>
+            <p>{r("packing")}</p>
+          </div>
         </div>
 
         <div className="jr-reveal mt-14" style={order(5)}>

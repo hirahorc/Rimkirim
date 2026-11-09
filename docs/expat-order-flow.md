@@ -57,3 +57,6 @@ Not named in the epic, kept because the live flow has them: the Address autocomp
 
 All flow copy is in `lib/i18n/messages.ts` under `expatOrder`. The page is English only, like the landing, but the Indonesian keeps the same shape (the `Messages` type enforces it). The epic's question wording is kept verbatim, with one change: Q1's subtext says "an accurate estimate" where the epic says "quote", since the figure is an Estimate (CONTEXT.md). Helper lines (the VITAS and ITAS hints, the Q4 subtext, the Pickup Date hint) are content additions. The customs block inside the flow reads the landing's own `expat.customs` copy, so the two can't disagree.
 
+## The landing page
+
+Every "Check your rate" (`EXPAT_QUOTE_URL` in `lib/data/expat.ts`) opens Check Rate. The landing's pictures of the flow (the closing ticket's three steps, How it works step 01) render the flow's own components (`RateCard`, `CheckCards`, `BookingTicketHead`) inert, with dummy data, so a change to the flow shows on the landing too.

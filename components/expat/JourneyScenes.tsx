@@ -1,7 +1,9 @@
 "use client";
 
 import * as React from "react";
-import { Check, Plane, ShieldCheck, Truck } from "lucide-react";
+import { Check, Info, Plane, ShieldCheck, Truck } from "lucide-react";
+import { RateCard } from "@/components/expat-order/RateCard";
+import { expatRates } from "@/lib/pricing/expat-rates";
 import { useT } from "@/lib/i18n/LanguageProvider";
 import { cn } from "@/lib/utils/cn";
 import { at, Bar, Bubble, ChatHead, SceneFlag, SceneTitle } from "./SceneParts";
@@ -9,8 +11,9 @@ import { at, Bar, Bubble, ChatHead, SceneFlag, SceneTitle } from "./SceneParts";
 /**
  * The four illustrations of the expat "How it works", one per step, built
  * from the site's own pieces (fields, chips, the departure board's tiles,
- * flat flags) so each reads as the moment itself: the form, the quote and
- * its checklist, the flight, the doorstep.
+ * flat flags, and the order flow's own rate card) so each reads as the
+ * moment itself: Check Rate and its estimate, the packing list reviewed and
+ * the quotation, the flight, the doorstep.
  *
  * Framed as product shots, not screenshots in a box (the stageshow rules):
  * each scene has one hero surface, inset a gutter from the top and sides of
@@ -34,7 +37,7 @@ function useScene() {
 const HERO =
   "jr jr-arrive absolute inset-x-[3.2em] top-[4em] h-[30em] rounded-[1.1em] bg-background p-[1.4em] shadow-float @max-[30rem]:inset-x-[1.6em] @max-[30rem]:p-[1.15em]";
 
-/** a labelled field of the quote form; without a label it is filler */
+/** a labelled field of the Check Rate form; without a label it is filler */
 function Field({ label, ms, children }: { label?: string; ms: number; children?: React.ReactNode }) {
   return (
     <div className="jr jr-rise" style={at(ms)}>
@@ -50,58 +53,65 @@ function Field({ label, ms, children }: { label?: string; ms: number; children?:
   );
 }
 
+/** the Check Rate picture's rate: the UK to Jakarta, 30 kg, priced by the
+ *  flow's own rates, so the card is the one the visitor will see */
+const PICTURE_RATE = expatRates("GB", 30).rates[0];
+
 /**
- * 01: the quote form filling itself in: the route on one row, From beside
- * To, as the real form sets it, then what is inside, the rest of the form
- * as filler running off the crop. How long it takes stands over the form,
- * a chip centred on its top edge, half outside: its ring runs while the
- * form fills, and once full it turns into a check, the form done. The form
- * stands centred, a gutter from either side.
+ * 01: Check Rate filling itself in, as the real form sets it: From beside To,
+ * each country's Address under it, then the estimated weight; and once it's
+ * full, the estimate rises from the crop below, drawn by the flow's own rate
+ * card (shown, not used). How long it all takes stands over the form, a chip
+ * centred on its top edge, half outside: its ring runs while the form fills,
+ * and once full it turns into a check.
  */
 export function DetailsScene() {
   const k = useScene();
   return (
     <>
-      <div className={HERO} style={at(0)}>
-        <SceneTitle>{k("formTitle")}</SceneTitle>
-        <div className="mt-[1.3em] grid grid-cols-2 gap-[0.95em] @max-[30rem]:gap-x-[0.7em]">
-          <Field label={k("from")} ms={260}>
-            <span className="jr jr-type flex items-center gap-[0.5em] whitespace-nowrap text-[0.9em]" style={at(420)}>
-              <SceneFlag code="gb" />
-              {k("origin")}
-            </span>
-          </Field>
-          <Field label={k("to")} ms={380}>
-            <span className="jr jr-type flex items-center gap-[0.5em] whitespace-nowrap text-[0.9em]" style={at(820)}>
-              <SceneFlag code="id" />
-              {k("dest")}
-            </span>
-          </Field>
-          <div className="col-span-2">
-            <Field label={k("inside")} ms={500}>
-              {[k("boxes"), k("suitcases")].map((c, i) => (
-                <span
-                  key={c}
-                  className="jr jr-drop whitespace-nowrap rounded-full bg-(--tone-wash) px-[0.6em] py-[0.2em] text-[0.78em] font-medium text-tone-ink"
-                  style={at(1200 + i * 160)}
-                >
-                  {c}
-                </span>
-              ))}
+      <div className="absolute inset-x-[3.2em] top-[4em] flex flex-col gap-[0.65em] @max-[30rem]:inset-x-[1.6em]">
+        {/* no title of its own: the step it pictures is named beside it, and
+            the room goes to the estimate below */}
+        <div className="jr jr-arrive rounded-[1.1em] bg-background px-[1.4em] pb-[1.2em] pt-[1.5em] shadow-float @max-[30rem]:p-[1.15em]" style={at(0)}>
+          <div className="grid grid-cols-2 gap-[0.75em] @max-[30rem]:gap-x-[0.7em]">
+            <Field label={k("from")} ms={260}>
+              <span className="jr jr-type flex items-center gap-[0.5em] whitespace-nowrap text-[0.9em]" style={at(420)}>
+                <SceneFlag code="gb" />
+                {k("origin")}
+              </span>
+            </Field>
+            <Field label={k("to")} ms={380}>
+              <span className="jr jr-type flex items-center gap-[0.5em] whitespace-nowrap text-[0.9em]" style={at(700)}>
+                <SceneFlag code="id" />
+                {k("dest")}
+              </span>
+            </Field>
+            <Field label={k("address")} ms={500}>
+              <span className="jr jr-type truncate text-[0.82em]" style={at(900)}>
+                {k("originAddress")}
+              </span>
+            </Field>
+            <Field label={k("address")} ms={560}>
+              <span className="jr jr-type truncate text-[0.82em]" style={at(1100)}>
+                {k("destAddress")}
+              </span>
+            </Field>
+            <Field label={k("weight")} ms={620}>
+              <span className="jr jr-type text-[0.9em] tabular-nums" style={at(1300)}>
+                {k("weightValue")}
+              </span>
             </Field>
           </div>
-          {/* the rest of the form, filler, on until it runs off the crop
-              (a phone's portrait stage shows a row more) */}
-          <Field ms={620} />
-          <Field ms={680} />
-          <div className="col-span-2">
-            <Field ms={740} />
-          </div>
-          <Field ms={800} />
-          <Field ms={860} />
-          <div className="col-span-2">
-            <Field ms={920} />
-          </div>
+        </div>
+        {/* the estimate, once the form is full: the flow's own lead card,
+            running off the crop on any stage */}
+        <div
+          inert
+          aria-hidden
+          className="jr jr-lift min-h-[26em] rounded-[1.1em] bg-background p-[1.25em] shadow-float @max-[30rem]:p-[1.15em]"
+          style={at(1650)}
+        >
+          <RateCard rate={PICTURE_RATE} origin="GB" display stacked plain />
         </div>
       </div>
       {/* the time it takes, over the form: centred on its top edge, half
@@ -156,11 +166,20 @@ export function DetailsScene() {
   );
 }
 
+/** how the review marks a line of the packing list: fine to send, likely to
+ *  be taxed (so the customer may take it out), or one to take out */
+const LIST = [
+  { key: "doc1", tag: null },
+  { key: "doc2", tag: "taxed" },
+  { key: "doc3", tag: "takeOut" },
+] as const;
+
 /**
- * 02: two cards at one width, the review over the quote it leads to
- * (stacked cards), in the order the team works: the details and documents
- * tick off first, then the quote rises from the crop below and builds line
- * by line to its total, confirmed.
+ * 02: two cards at one width, the review over the quotation it leads to
+ * (stacked cards), in the order the team works: the packing list is checked
+ * line by line, a phone marked likely to be taxed and the wine to take out,
+ * then the quotation rises from the crop below and builds to its total, an
+ * estimate whose final price comes on the invoice.
  */
 export function QuoteScene() {
   const k = useScene();
@@ -174,16 +193,16 @@ export function QuoteScene() {
       <div className="jr jr-arrive rounded-[1.1em] bg-background p-[1.2em] shadow-float @max-[30rem]:p-[1.15em]" style={at(0)}>
         <span className="block text-[0.82em] font-semibold">{k("docs")}</span>
         <ul className="mt-[0.75em] space-y-[0.6em]">
-          {["doc1", "doc2", "doc3"].map((d, i) => (
-            <li key={d} className="flex items-center gap-[0.6em]">
+          {LIST.map(({ key, tag }, i) => (
+            <li key={key} className="flex items-center gap-[0.6em]">
               <span
                 className="jr jr-fill grid size-[1.2em] shrink-0 place-items-center rounded-[0.3em] bg-tone-ink text-background shadow-[inset_0_0_0_1.5px_var(--tone-ink)]"
-                style={at(300 + i * 220)}
+                style={at(300 + i * 260)}
               >
                 <svg viewBox="0 0 16 16" className="size-[0.85em]" aria-hidden>
                   <path
                     className="jr jr-check"
-                    style={at(350 + i * 220)}
+                    style={at(350 + i * 260)}
                     d="M3.5 8.5l3 3 6-7"
                     fill="none"
                     stroke="currentColor"
@@ -194,7 +213,18 @@ export function QuoteScene() {
                   />
                 </svg>
               </span>
-              <span className="truncate text-[0.84em]">{k(d)}</span>
+              <span className="min-w-0 flex-1 truncate text-[0.84em]">{k(key)}</span>
+              {tag && (
+                <span
+                  className={cn(
+                    "jr jr-drop shrink-0 whitespace-nowrap rounded-full px-[0.6em] py-[0.2em] text-[0.7em] font-semibold",
+                    tag === "taxed" ? "bg-(--tone-wash) text-tone-ink" : "bg-foreground text-background",
+                  )}
+                  style={at(500 + i * 260)}
+                >
+                  {k(tag)}
+                </span>
+              )}
             </li>
           ))}
         </ul>
@@ -204,7 +234,7 @@ export function QuoteScene() {
           one too */}
       <div
         className="jr jr-lift min-h-[26em] rounded-[1.1em] bg-background p-[1.25em] shadow-float @max-[30rem]:p-[1.15em]"
-        style={at(1050)}
+        style={at(1250)}
       >
         <div className="flex items-center justify-between gap-[1em]">
           <SceneTitle>{k("quote")}</SceneTitle>
@@ -212,7 +242,7 @@ export function QuoteScene() {
         </div>
         <ul className="mt-[0.85em] space-y-[0.55em]">
           {lines.map((l, i) => (
-            <li key={l.key} className="jr jr-rise flex items-center justify-between gap-[1em]" style={at(1250 + i * 110)}>
+            <li key={l.key} className="jr jr-rise flex items-center justify-between gap-[1em]" style={at(1450 + i * 110)}>
               <span className="truncate text-[0.82em] text-muted">{k(l.key)}</span>
               <Bar w={l.w} />
             </li>
@@ -220,13 +250,13 @@ export function QuoteScene() {
         </ul>
         <div className="mt-[0.85em] flex items-center justify-between gap-[1em] border-t border-border pt-[0.75em]">
           <span className="text-[0.88em] font-semibold">{k("total")}</span>
-          <span className="jr jr-grow h-[0.75em] w-[5.6em] origin-right rounded-full bg-tone-ink" style={at(1700)} />
+          <span className="jr jr-grow h-[0.75em] w-[5.6em] origin-right rounded-full bg-tone-ink" style={at(1900)} />
         </div>
         <p
           className="jr jr-rise mt-[0.6em] flex items-center gap-[0.35em] text-[0.74em] font-medium text-tone-ink"
-          style={at(1900)}
+          style={at(2100)}
         >
-          <Check className="size-[1.1em] shrink-0" strokeWidth={2.5} />
+          <Info className="size-[1.1em] shrink-0" strokeWidth={2.25} />
           {k("confirmed")}
         </p>
       </div>

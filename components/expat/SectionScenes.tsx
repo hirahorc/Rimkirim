@@ -1,19 +1,24 @@
 "use client";
 
 import * as React from "react";
-import { ArrowRight, Check, CheckCheck, ChevronLeft, PhoneCall, Video } from "lucide-react";
+import { Check, CheckCheck, ChevronLeft, PhoneCall, Video } from "lucide-react";
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
 import { formatNumber } from "@/lib/utils/currency";
 import { cn } from "@/lib/utils/cn";
+import { RateCard } from "@/components/expat-order/RateCard";
+import { CheckCards } from "@/components/expat-order/ChoiceCards";
+import { BookingTicketHead } from "@/components/expat-order/BookingTicketHead";
+import { expatRates } from "@/lib/pricing/expat-rates";
 import { IPhone } from "./IPhone";
-import { at, Bubble, ChatHead, SceneFlag, SceneTitle } from "./SceneParts";
+import { at, SceneTitle } from "./SceneParts";
 
 /**
  * The section illustrations of the expat page, each the product moment its
  * section describes, built once on a SceneStage: the calculator weighing two
- * pieces (pricing), the team on WhatsApp telling you what to have ready
- * (who does what), and the three screens behind "Get a quote" (the closing
- * ticket).
+ * pieces at the warehouse (pricing), the team on WhatsApp going through the
+ * packing list (who does what), and the order flow's own three screens
+ * behind "Check your rate" (the closing ticket), drawn by the flow's own
+ * components so the picture can never drift from the product.
  *
  * Framed as the journey's scenes are (the stageshow rules): one hero
  * surface, inset a gutter from the top and sides and running off the
@@ -75,10 +80,10 @@ function Readout({
 }
 
 /**
- * The calculator's package rows, two pieces filled in: a box light for its
- * size, charged by size, and a suitcase heavy for its size, charged by its
- * real weight; then the charged weight the price is worked from, the one
- * big number. The rule, shown in the tool the visitor is about to use.
+ * Two pieces as the warehouse weighs them before the invoice: a box light
+ * for its size, charged by size, and a suitcase heavy for its size, charged
+ * by its real weight; then the charged weight the final price is worked
+ * from, the one big number. The rule, shown where it's applied.
  */
 export function SizeScene() {
   const { k, locale } = useScene("size");
@@ -328,107 +333,68 @@ export function ThreadScene() {
 const NEXT_CARD =
   "scene-fade jr jr-arrive absolute inset-0 rounded-t-[1.1em] bg-background p-[1.1em] text-foreground @max-[18rem]:p-[0.95em]";
 
-/** the estimate's shipment: eight of the pricing scene's boxes and two of
- *  its suitcases, each charged at the higher of its two weights */
-const SHIPMENT = [
-  { piece: PIECES[0], n: 8 },
-  { piece: PIECES[1], n: 2 },
-];
+/** the closing pictures' route and weight: the UK to Jakarta, 30 kg, priced
+ *  by the flow's own rates, so the card is the one Check Rate shows */
+const PICTURE_RATE = expatRates("GB", 30).rates[0];
 
-/** 1: the calculator's estimate, instant. Its big number is the weight the
- *  price is worked from, not a price: no figure here can be the visitor's */
+/** the flow's own screens, shown and not used: no focus, no clicks, and out
+ *  of the accessibility tree (the step's words carry the meaning) */
+function Shown({ ms, className, children }: { ms: number; className?: string; children: React.ReactNode }) {
+  return (
+    <div inert aria-hidden className={cn("jr jr-rise", className)} style={at(ms)}>
+      {children}
+    </div>
+  );
+}
+
+/** 1: Check Rate's lead card, as the flow draws it: a Special Rate from the
+ *  UK, its price per kg and the estimated total */
 export function EstimateScene() {
-  const { k, locale } = useScene("next");
-  const charged = SHIPMENT.reduce((s, { piece, n }) => s + n * Math.max(piece.kg, sizeKg(piece.dims)), 0);
   return (
     <div className={NEXT_CARD} style={at(0)}>
-      <div className="flex items-center justify-between gap-[0.8em]">
-        <SceneTitle>{k("estimate")}</SceneTitle>
-        <span
-          className="jr jr-drop whitespace-nowrap rounded-full bg-(--tone-wash) px-[0.6em] py-[0.2em] text-[0.68em] font-semibold text-tone-ink"
-          style={at(900)}
-        >
-          {k("instant")}
-        </span>
-      </div>
-      <p className="jr jr-rise mt-[0.8em] flex items-center gap-[0.45em] whitespace-nowrap text-[0.78em]" style={at(250)}>
-        <SceneFlag code="gb" />
-        {k("origin")}
-        <ArrowRight className="size-[1em] shrink-0 text-muted-2" />
-        <SceneFlag code="id" />
-        {k("dest")}
-      </p>
-      <p className="jr jr-rise mt-[0.3em] text-[0.72em] text-muted" style={at(350)}>
-        {k("contents")}
-      </p>
-      <div
-        className="jr jr-rise mt-[0.8em] flex items-baseline justify-between gap-[1em] border-t border-border pt-[0.6em]"
-        style={at(600)}
-      >
-        <span className="text-[0.8em] font-medium">{k("total")}</span>
-        <span className="font-display text-[1.3em] font-semibold tabular-nums tracking-tight">
-          {formatNumber(charged, 1, locale)} kg
-        </span>
-      </div>
+      <Shown ms={250}>
+        <RateCard rate={PICTURE_RATE} origin="GB" display stacked plain />
+      </Shown>
     </div>
   );
 }
 
-/** 2: one of the eligibility questions, answered: Yes is pressed, and the
- *  progress it makes comes up with its count */
+/** 2: the Eligibility Check's first question, answered as the flow answers
+ *  it: furniture and personal effects ticked */
 export function EligibleScene() {
-  const { k } = useScene("next");
+  const { t } = useLanguage();
+  const e = (k: string) => t(`expatOrder.eligibility.${k}`);
   return (
     <div className={NEXT_CARD} style={at(0)}>
-      <div className="flex items-center justify-between gap-[0.8em]">
-        <span className="jr jr-rise text-[0.68em] font-medium text-muted" style={at(1150)}>
-          {k("progress")}
-        </span>
-        <span className="flex gap-[0.25em]">
-          {[0, 1, 2].map((i) => (
-            <span key={i} className="relative block h-[0.3em] w-[1.4em] overflow-hidden rounded-full bg-surface-3">
-              {i === 0 && <span className="jr jr-grow absolute inset-0 origin-left bg-tone-ink" style={at(1150)} />}
-            </span>
-          ))}
-        </span>
-      </div>
-      <p className="jr jr-rise mt-[0.75em] text-pretty text-[0.86em] font-medium leading-snug" style={at(250)}>
-        {k("question")}
-      </p>
-      <div className="mt-[0.8em] grid grid-cols-2 gap-[0.45em]">
-        {/* Yes, pressed: its fill comes up under the one label, which
-            turns white with it */}
-        <span
-          className="jr jr-rise relative flex h-[2.3em] items-center justify-center rounded-[0.6em] shadow-[inset_0_0_0_1.5px_var(--border-strong)]"
-          style={at(450)}
-        >
-          <span className="jr jr-press absolute inset-0 rounded-[0.6em] bg-tone-ink" style={at(950)} />
-          <span className="jr jr-ink relative text-[0.82em] font-medium text-background" style={at(950)}>
-            {k("yes")}
-          </span>
-        </span>
-        <span className="jr jr-rise flex h-[2.3em] items-center justify-center rounded-[0.6em] shadow-[inset_0_0_0_1.5px_var(--border-strong)]" style={at(520)}>
-          <span className="text-[0.82em] font-medium">{k("no")}</span>
-        </span>
-      </div>
+      <Shown ms={250}>
+        <p id="scene-q1" className="font-display text-sm font-semibold leading-snug tracking-tight">
+          {e("q1")}
+        </p>
+      </Shown>
+      <Shown ms={450} className="mt-3">
+        <CheckCards
+          single
+          labelledBy="scene-q1"
+          value={["furniture", "personal"]}
+          onChange={() => {}}
+          options={(["furniture", "personal", "fineArt", "electronics"] as const).map((c) => ({
+            value: c,
+            label: e(`items.${c}`),
+          }))}
+        />
+      </Shown>
     </div>
   );
 }
 
-/** 3: the details sent, and the team picking it up on WhatsApp */
+/** 3: the Booking Summary's ticket head, booked: received, its number, and
+ *  the summary on its way by email */
 export function HandoffScene() {
-  const { k } = useScene("next");
   return (
-    <div className={cn(NEXT_CARD, "p-0")} style={at(0)}>
-      <ChatHead />
-      <div className="flex flex-col gap-[0.45em] px-[0.8em] py-[0.8em]">
-        <Bubble from="me" ms={350}>
-          {k("hello")}
-        </Bubble>
-        <Bubble from="them" ms={1100}>
-          {k("reply")}
-        </Bubble>
-      </div>
+    <div className={NEXT_CARD} style={at(0)}>
+      <Shown ms={300} className="rounded-md bg-dusk px-4 py-4 text-background">
+        <BookingTicketHead number="RK4KX9M2PT" email="you@example.com" compact />
+      </Shown>
     </div>
   );
 }

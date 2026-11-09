@@ -33,7 +33,7 @@ const dash = (p: Pose) => ({ strokeDasharray: `${p.tip - p.tail} 40`, strokeDash
 const shift = (p: Pose) => ({ transform: `translateX(${p.head}px)` });
 
 /**
- * The expat hero's "Get a quote", the page's one door. The button is the
+ * The expat hero's "Check your rate", the page's one door. The button is the
  * house lime and steps to Live Lime Dim under a mouse like any other; only
  * its arrow answers, taking one step forward the way an inchworm walks: the
  * head moves on first, so the shaft stretches, then the tail catches up and

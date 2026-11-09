@@ -16,7 +16,7 @@ import { expatFaq } from "@/lib/data/expat";
 // ROUTE_LOCALE), so search engines and link previews read it in English too
 const TITLE = "Ship your belongings to Indonesia · Expat Relocation · Rimkirim";
 const DESCRIPTION =
-  "Relocating to Indonesia? Send your personal belongings by air, packed in boxes or suitcases. Rimkirim coordinates the pickup, the customs paperwork and the delivery. Get a quote.";
+  "Relocating to Indonesia? Send your personal belongings by air, packed in boxes or suitcases. Rimkirim coordinates the pickup, the customs paperwork and the delivery. Check your rate.";
 
 export const metadata: Metadata = {
   title: TITLE,
@@ -47,8 +47,8 @@ function faqJsonLd() {
  * ships personal belongings to Indonesia, packed in boxes and suitcases, see
  * who vouches for it, what fits, who does what, how it compares, what drives
  * the price, what to expect at Indonesian customs (added after the brief, from
- * ops' review) and how it runs. Every "Get a quote" opens the relocation calculator, where the
- * expat flow runs: estimate, eligibility, personal details, then WhatsApp.
+ * ops' review) and how it runs. Every "Check your rate" opens the order flow under this route
+ * (Check Rate, the Eligibility Check, personal details, then the Booking Summary).
  * Sections alternate between the open desk and bands (globals.css, .band),
  * so the page reads as distinct sheets, and walk the expat identity's hues
  * as chapters (data-tone: sky, violet, magenta) to end on the dusk ticket.
