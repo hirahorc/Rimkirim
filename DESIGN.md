@@ -271,6 +271,10 @@ lime.
 marked phrase, the checked state. Its rarity is the signal; if two things are lime, neither reads
 as the answer. On daylight this budget is *tighter* than it was on black, because a lime fill on
 white carries far more visual weight than the same fill on near-black.
+One list is exempt, after the live rimkirim.com page: the Check Rate results (The offer card),
+where every card carries its own lime order button. Each card is a whole offer read on its own,
+and the list is a choice among equals, so one button per card is the answer each time, not a
+competing voice. It licenses nothing else: any other list of options keeps one lime action.
 
 **The Marker Rule.** Lime is a **fill behind dark ink**, never ink itself. Emphasis in text is
 carried by weight and Ink; when a phrase must be singled out it gets the highlighter treatment
@@ -285,8 +289,8 @@ The one sanctioned translucency is functional: sticky chrome (the header capsule
 `bg-background/85` + `backdrop-blur-xl` so the page reads legibly as it scrolls underneath — an
 effect doing a specific job, not a texture.
 
-There are exactly **three standing exceptions**, each narrow, each doing a job no solid fill can do.
-None licenses a fourth: a new gradient has to earn its place the same way, in writing, at the
+There are exactly **four standing exceptions**, each narrow, each doing a job no solid fill can do.
+None licenses a fifth: a new gradient has to earn its place the same way, in writing, at the
 point of use.
 - **Scrim over photography.** Where text sits on an image — the testimonial hook card's name and
   attribution — a `from-foreground/95 via-foreground/70 to-transparent` ramp buys legibility
@@ -313,6 +317,11 @@ point of use.
   on a white card. This
   extends the exception to the page's illustrations; it does not license a gradient anywhere
   else.
+- **`.offer-special`,** the Special Rate card's border (The offer card): a 1px border that runs
+  from Stop Red at the tab to the Hairline across the card (90°, `danger` 70% → `danger` 22%
+  into the hairline at 45% → `border`), lifted from the live rimkirim.com card. It is a stroke,
+  not a surface: the card's face stays solid white, and the fade says where the offer is marked
+  (the tab) without boxing the whole card in red.
 
 **The Tint-15 Rule.** *Status* chips use the colour at 15% opacity for the fill (banners and
 strips step down to 10%), full strength for the icon, and the **status ink** (`--*-ink`: the
@@ -335,7 +344,9 @@ white card.
   an NPD round. Time pressure keeps the clock glyph orange even on a purple surface.
 - **Go Green / Info Blue** — progress, no verdict about you. Routine phases are blue, terminal
   good news is green.
-- **Stop Red** — cancelled. Terminal bad news only.
+- **Stop Red** — cancelled. Terminal bad news only. The one red that is not a verdict is the
+  Special Rate tab on the Check Rate card (The offer card), the live page's offer mark; it never
+  sits on a shipment.
 - A **voucher** is a record, never a move: its lifecycle (reserved → redeemed → finalized, or
   released) reads in Info Blue on the timeline and as neutral mono text in the summary. The
   discount line is the one place it earns Go Green ink — a deduction, not a struck-out price.
@@ -1039,8 +1050,7 @@ in ink it stays neutral and lime stays the one colour in the action row.
 - **Internal Padding:** horizontal `px-5 → sm:px-6` (20–24px); vertical follows the Clearance
   Rule's contract — `pt-7`/`pb-7` (28px) on a square edge, standard `py-5 → sm:py-6` on a
   concentric edge (pill/badge/circle on top, button on the bottom). Data-dense comparison cards
-  (the rate list:
-  RateCard, SpecialRateCard, their PriceBreakdown rows; the clearance route picker) run one step
+  (the clearance route picker) run one step
   tighter, `p-4 → sm:p-5` (16–20px), so on phones their rhythm stays close to the de-boxed
   record's 16px page inset — and per the Clearance Rule their corner steps down with the padding,
   to `rounded-md` (16px); at `lg` the 28px sweep crowded the carrier logo in the top corner.
@@ -1294,6 +1304,32 @@ section.
 **One per landing, and only for the closing ask.** It is not a dark theme and does not license
 dark sections. The home landing's ink testimonial hook card is the only other dark surface.
 
+### The offer card (the Check Rate result)
+`OfferCard`, after the live rimkirim.com rate card, is the one card both Check Rate pages show:
+Back For Good's Cek Tarif (the special rate per tier, and the Advance carrier quotes) and the
+expat flow's rates. It is a full `rounded-lg` card at the standard `px-5 → sm:px-6` padding.
+
+- **Left, the service:** the carrier's logo (with Cheapest or Fastest beside it on Advance), the
+  service in `muted`, the route as flags and ISO codes ("GB to ID"), then the transit days with
+  "clearance process excluded" wrapping as a sentence (the days never break from their unit),
+  and the weight band the price holds for.
+- **Right, the price:** the price per kg as the card's one big figure (mono, `text-2xl`), the
+  total under it, "Starting from … for 21 kg" for a tier or "Estimated … for 30 kg" for the
+  weight entered, then "Excludes duties, taxes and surcharges." with the link to the surcharge
+  details. The column stops at 21rem, so the excludes line wraps before it crowds the service.
+  A phone stacks the two sides.
+- **Between the price and the button,** what the card needs: Advance's price breakdown as a fold
+  running to the card's edges between two hairlines, or Malaysia's regions table.
+- **The foot:** the lime order button across the card ("Lanjut pesan", "Pilih FedEx", "Select
+  this rate"), absent when ordering is blocked.
+- **A Special Rate** wears a tab on the card's top edge (a pill in Stop Red ink on its 9% tint
+  with a `danger/45` hairline, `-top-3.5` at the padding's left) and the `.offer-special` border
+  that fades from red at the tab to the hairline (The No-Gradient Rule's fourth exception). The
+  red here marks an offer, as on the live page, and nothing else on the card turns red.
+- **Stacked** (the landing's small pictures of the card), it stays one column at any width, the
+  tab rides the carrier's row and the days share the route's line, so the price clears the
+  picture's fade.
+
 ### The expat order flow
 The order flow under `/expat-relocation` (rates, plan, booking) is the app, not the landing: it
 sits on **the field** (`data-field`, Panel 2 under white cards with no outline, The Stroke Rule),
@@ -1309,19 +1345,17 @@ like the landing, and keeps the landing's bar, which trades the lime "Check your
   a phone only the current step keeps its word.
 - **Check Rate:** one white card, Moving from beside Moving to, then the weight and the button
   under a hairline. Fields are the system's Panel 2 inputs.
-- **The rate card:** the live page's anatomy (carrier logo and service, the route in flags, the
-  transit days with "clearance excluded"), the price per kg as the one big number and the
-  estimated total for the charged weight under it, beside an "Estimated" pill. The lead card is
-  framed in Ink and carries the lime "Select this rate"; the rest under "See more rates" are white
-  planes with the secondary button, so a long list never splits the voice. A Special Rate wears
-  the brand chip, as Back For Good's special rate card does.
+- **The rate card:** the offer card (below), the same one Back For Good's Cek Tarif shows, with
+  "Estimated … for 30 kg" under the price for the charged weight. Every card carries the lime
+  "Select this rate" (The One-Voice Rule's one list); on the field the plain cards are white with
+  no outline, and a Special Rate wears the red tab and its fading border.
 - **Choice cards** (the Eligibility Check): white planes with a hairline that frame in Ink (2px,
   as a doubled hairline) when chosen. A single choice shows the stepper's dot (Ink ring, lime
   core); a multiple choice shows the system checkbox (lime with an Ink tick). Neither fills with
   lime. Follow-ups sit on Panel 2 under the answer that asks them.
 - **Notices, not errors:** the furniture notice is the epic's warning in the warning tint, the
-  changed-address notice the info tint; nothing in the flow turns a customer away, so nothing
-  there wears Stop Red. Field errors appear once a field is left, never on every keystroke.
+  changed-address notice the info tint; nothing in the flow turns a customer away, so no verdict
+  there wears Stop Red (the Special Rate tab is an offer mark, not a verdict). Field errors appear once a field is left, never on every keystroke.
 - **Selected Service:** a white card beside both plan steps, sticky from lg; on a phone a
   one-line strip (service and price) that opens to the rest.
 - **The Booking Summary:** a white card with the received head (the success check, who the

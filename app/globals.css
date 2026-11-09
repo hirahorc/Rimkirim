@@ -195,6 +195,24 @@ body:has(main > [data-field]) {
   }
 }
 
+/* A Special Rate's card (OfferCard), after the live rimkirim.com card: a
+   1px border that runs from Stop Red at the tab on its top-left edge to the
+   plain hairline by the right, so the mark reads at the tab and fades out
+   across the card instead of boxing it in red. Two backgrounds, one clipped
+   to the padding (the card's white) and one to the border (the fade). */
+.offer-special {
+  border: 1px solid transparent;
+  background:
+    linear-gradient(var(--background), var(--background)) padding-box,
+    linear-gradient(
+        90deg,
+        color-mix(in oklab, var(--danger) 70%, transparent),
+        color-mix(in oklab, var(--danger) 22%, var(--border)) 45%,
+        var(--border)
+      )
+      border-box;
+}
+
 /* The section shell: every landing section's content column (max-w-6xl,
    the 16/24px gutter). Inside a band the sheet's own inset comes off the
    column, so a band's content starts on the same edge as the desk's and

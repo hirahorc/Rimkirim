@@ -39,6 +39,8 @@ export interface ExpatRate {
   chargedKg: number;
   /** perKg × chargedKg, IDR */
   total: number;
+  /** the weight band the per-kg price holds for, e.g. "25–40 kg" */
+  band: string;
   /** transit days, clearance excluded */
   etaMin: number;
   etaMax: number;
@@ -86,6 +88,13 @@ function bandFactor(kg: number): number {
   return 0.92;
 }
 
+/** the dummy Normal Rate band a weight falls in, as the card shows it */
+function bandLabel(kg: number): string {
+  if (kg < 21) return "1–20 kg";
+  if (kg < 45) return "21–44 kg";
+  return "> 44 kg";
+}
+
 /** the rounding rule: up to the next whole kg (dummy) */
 export function chargedWeight(kg: number): number {
   return Math.max(1, Math.ceil(kg));
@@ -112,6 +121,7 @@ export function expatRates(originCountry: string, weightKg: number): ExpatRates 
       perKg,
       chargedKg,
       total: perKg * chargedKg,
+      band: bandLabel(chargedKg),
       etaMin: s.etaMin,
       etaMax: s.etaMax,
     };
@@ -127,6 +137,7 @@ export function expatRates(originCountry: string, weightKg: number): ExpatRates 
       perKg: tier.pricePerKg,
       chargedKg,
       total: tier.pricePerKg * chargedKg,
+      band: tier.display,
       ...SPECIAL_ETA,
     };
     return { chargedKg, rates: [special, ...normal] };

@@ -126,6 +126,7 @@ export function CheckRatesClient() {
                 key={opt.vendor.id}
                 quote={opt}
                 chargeableWeight={quote.chargeableWeight}
+                route={quote.route}
                 cheapest={opt.vendor.id === cheapestId}
                 fastest={opt.vendor.id === fastestId && opt.vendor.id !== cheapestId}
                 orderBlocked={!!gap}

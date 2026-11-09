@@ -9,7 +9,6 @@ import { Input } from "@/components/ui/input";
 import { CollapseHeight } from "@/components/ui/disclosure";
 import { CountrySelect } from "@/components/shared/CountrySelect";
 import { Field } from "@/components/shared/forms/Field";
-import { SurchargeInfoDialog } from "@/components/rates/SurchargeInfoDialog";
 import { ReviewNote } from "@/components/expat/ReviewNote";
 import { ORDER_REVIEW_NOTES } from "@/lib/data/expat-order-notes";
 import { INDONESIA } from "@/lib/data/countries";
@@ -197,14 +196,8 @@ function RatesForm() {
             </p>
           )}
 
-          <p className="mt-4 max-w-2xl text-sm leading-relaxed text-muted">
-            {r("disclaimer")}{" "}
-            <SurchargeInfoDialog>
-              <button type="button" className="link-mark tap-row relative">
-                {r("surcharges")}
-              </button>
-            </SurchargeInfoDialog>
-          </p>
+          {/* the card says what it excludes; the page adds what it leads to */}
+          <p className="mt-4 max-w-2xl text-sm leading-relaxed text-muted">{t("expatOrder.service.note")}</p>
 
           {rest.length > 0 && (
             <div className="mt-8 border-t border-border pt-6">
