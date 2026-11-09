@@ -110,6 +110,7 @@ function RatesForm() {
                     onChange={(code) => update({ originCountry: code, origin: null })}
                     placeholder={r("countryPh")}
                     ariaLabel={`${r("from")}: ${r("country")}`}
+                    exclude="ID"
                   />
                 </Field>
                 <Field label={r("address")} hint={originErr ? undefined : r("addressHint")} error={originErr}>
@@ -242,7 +243,9 @@ function RatesForm() {
 }
 
 /** CountrySelect is named by `ariaLabel`, not by an id, so Field's wiring
- *  lands on a wrapper and the rest is dropped */
+ *  lands on a wrapper and the rest is dropped. Check Rate's list is plain:
+ *  every country A to Z, no region beside each and no "Popular" group, and
+ *  never Indonesia as the origin (the service imports to it) */
 function CountrySelectField({
   id,
   value,
@@ -250,10 +253,20 @@ function CountrySelectField({
   locked,
   placeholder,
   ariaLabel,
+  exclude,
 }: React.ComponentProps<typeof CountrySelect> & { id?: string }) {
   return (
     <div id={id}>
-      <CountrySelect value={value} onChange={onChange} locked={locked} placeholder={placeholder} ariaLabel={ariaLabel} />
+      <CountrySelect
+        value={value}
+        onChange={onChange}
+        locked={locked}
+        placeholder={placeholder}
+        ariaLabel={ariaLabel}
+        exclude={exclude}
+        showZone={false}
+        showPopular={false}
+      />
     </div>
   );
 }

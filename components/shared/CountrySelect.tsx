@@ -25,6 +25,11 @@ interface CountrySelectProps {
   exclude?: string;
   /** accessible name for the trigger (no visible label is associated) */
   ariaLabel?: string;
+  /** each row's region beside its name (default on) */
+  showZone?: boolean;
+  /** the "Popular" group of Rimkirim's focus markets over the rest (default
+   *  on); off, the list is one alphabetical run with no group headings */
+  showPopular?: boolean;
 }
 
 export function CountrySelect({
@@ -34,6 +39,8 @@ export function CountrySelect({
   placeholder,
   exclude,
   ariaLabel,
+  showZone = true,
+  showPopular = true,
 }: CountrySelectProps) {
   const t = useT();
   const [open, setOpen] = React.useState(false);
@@ -55,10 +62,10 @@ export function CountrySelect({
     );
   }
 
-  const priority = COUNTRIES.filter((c) => c.priority && c.code !== exclude);
-  const rest = ALL_COUNTRIES.filter(
-    (c) => !c.priority && c.code !== exclude,
-  );
+  const priority = showPopular ? COUNTRIES.filter((c) => c.priority && c.code !== exclude) : [];
+  const rest = showPopular
+    ? ALL_COUNTRIES.filter((c) => !c.priority && c.code !== exclude)
+    : ALL_COUNTRIES.filter((c) => c.code !== exclude).sort((a, b) => a.name.localeCompare(b.name));
 
   const renderItem = (c: Country) => (
     <Command.Item
@@ -75,9 +82,11 @@ export function CountrySelect({
     >
       <Flag code={c.code} size={14} />
       <span className="flex-1">{c.name}</span>
-      <span className="text-[10px] uppercase tracking-wide text-muted-2">
-        {t(`zone.${c.zone}`)}
-      </span>
+      {showZone && (
+        <span className="text-[10px] uppercase tracking-wide text-muted-2">
+          {t(`zone.${c.zone}`)}
+        </span>
+      )}
       {value === c.code && <Check className="size-4 text-foreground" />}
     </Command.Item>
   );
@@ -134,7 +143,7 @@ export function CountrySelect({
               </Command.Group>
             )}
             <Command.Group
-              heading={t("country.all")}
+              heading={showPopular ? t("country.all") : undefined}
               className="[&_[cmdk-group-heading]]:px-2.5 [&_[cmdk-group-heading]]:py-1.5 [&_[cmdk-group-heading]]:text-[10px] [&_[cmdk-group-heading]]:font-semibold [&_[cmdk-group-heading]]:uppercase [&_[cmdk-group-heading]]:tracking-wider [&_[cmdk-group-heading]]:text-muted-2"
             >
               {rest.map(renderItem)}
