@@ -15,9 +15,9 @@ import {
   Laptop,
   MessageCircle,
   Pill,
+  ShieldAlert,
   SprayCan,
   Sprout,
-  Warehouse,
   Wine,
   type LucideIcon,
 } from "lucide-react";
@@ -250,12 +250,18 @@ export function WhatYouCanShip() {
           })}
         </div>
 
-        {/* what it all travels in: open on the desk, not cards, since none
-            of it opens, and drawn smaller than the cards' things, since it's
-            what they travel in, not what you send; the rule that prices every
-            piece over them, each one's own rule leading its words. On a phone
-            each reads as a card does, drawing beside the words */}
-        <div className="jr-reveal mt-12 border-t border-border pt-10 sm:mt-16 sm:pt-12" style={order(1 + CARDS.length)}>
+        {/* the packing guide, which the order flow links to (#packing): who
+            packs, then what it all travels in, open on the desk, not cards,
+            since none of it opens, and drawn smaller than the cards' things,
+            since it's what they travel in, not what you send; the rule that
+            prices every piece over them, each one's own rule leading its
+            words. On a phone each reads as a card does, drawing beside the
+            words */}
+        <div
+          id="packing"
+          className="jr-reveal mt-12 scroll-mt-24 border-t border-border pt-10 sm:mt-16 sm:pt-12"
+          style={order(1 + CARDS.length)}
+        >
           <h3 className="font-display text-xl font-semibold tracking-tight sm:text-2xl">{t("expat.ship.pack.title")}</h3>
           <p className="mt-2 max-w-2xl leading-relaxed text-muted">{t("expat.ship.pack.lead")}</p>
           <p className="mt-2 text-sm">
@@ -285,9 +291,12 @@ export function WhatYouCanShip() {
               </li>
             ))}
           </ul>
+          {/* why the guide matters, in ops' own terms: nothing is turned
+              away at pickup, but a damage claim on a piece packed any other
+              way isn't paid at its declared value */}
           <p className="mt-8 flex gap-2 text-sm leading-relaxed">
-            <Warehouse aria-hidden className="mt-0.5 size-4 shrink-0 text-tone-ink" />
-            {t("expat.ship.pack.repack")}
+            <ShieldAlert aria-hidden className="mt-0.5 size-4 shrink-0 text-tone-ink" />
+            {t("expat.ship.pack.claim")}
           </p>
           {/* furniture's own guide, closed until it's wanted: most visitors
               send boxes and suitcases, and the six steps are for the few

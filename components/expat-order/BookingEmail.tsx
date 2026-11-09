@@ -80,12 +80,8 @@ export function BookingEmail({ facts: f, t }: { facts: BookingFacts; t: T }) {
                         </Row>
                         <Row label={bk("items")}>
                           {f.items.join(", ")}
-                          {f.furniture && (
-                            <>
-                              <br />
-                              <span style={{ color: MUTED }}>{bk("furnitureReminder")}</span>
-                            </>
-                          )}
+                          <br />
+                          <span style={{ color: MUTED }}>{f.packReminder}</span>
                         </Row>
                         <Row label={bk("pickup")}>{f.pickup}</Row>
                         <Row label={bk("contact")}>

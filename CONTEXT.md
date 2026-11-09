@@ -42,6 +42,10 @@ _Avoid_: Final price, official price, quote (for the Check Rate figure)
 The itemised list of what's in each package (items, quantities, types) that the team reviews before pickup to flag Take Outs and potential duty and tax.
 _Avoid_: Item list, inventory, manifest
 
+**Packing Guide**:
+Rimkirim's rules for how the customer packs every item, furniture included, based on FedEx's packing guidelines; the customer always packs, Rimkirim never packs or repacks, and a damaged piece not packed to it can't be claimed at its declared value.
+_Avoid_: Packing criteria, packing requirements, packing tips
+
 **Take Out**:
 An item the customer removes from the shipment before pickup on the team's advice, because it can't be sent or would likely be taxed.
 _Avoid_: Removed item, excluded item

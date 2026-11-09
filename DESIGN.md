@@ -1088,12 +1088,14 @@ in ink it stays neutral and lime stays the one colour in the action row.
   caret slides across. On a phone the cards stack, drawing beside the words, rather than becoming
   a strip: each answers a question every visitor has, so none may hide behind a swipe. The two
   parts after the cards each open under a full-width hairline with a sub-head a step under the
-  section's (24px, 30px from `sm`). Second, what it all travels in (suitcases, boxes, special
-  packaging): the one rule that prices every piece, then three columns open on the desk, split by
+  section's (24px, 30px from `sm`). Second, the packing guide (`#packing`, where the order flow
+  links): that the customer packs everything, then what it all travels in (suitcases, boxes,
+  special packaging): the one rule that prices every piece, then three columns open on the desk, split by
   hairlines from `md` (nothing in them opens, so they are not cards), each its name, its own rule
   in ink ("Double-wall, up to 25 kg") and why in Dim Grey, its drawing at 120 × 80, two thirds of
-  a card's, since it's what things travel in, not what you send; the warehouse repack on one line
-  under all three, and furniture's own packing guide closed under one hairline (the FAQ's
+  a card's, since it's what things travel in, not what you send; what a piece packed any other way
+  loses (its claim at the declared value) on one line under all three, and furniture's own steps
+  closed under one hairline (the FAQ's
   disclosure row), its six steps numbered in How it works' tiles. Third, what to check before
   sending, a Panel 2 block: what can go once the team has looked (each thing in a 2px warning
   ring, the warning glyph on its head) beside what can't go at all (each struck through by the
@@ -1353,8 +1355,10 @@ like the landing, and keeps the landing's bar, which trades the lime "Check your
   as a doubled hairline) when chosen. A single choice shows the stepper's dot (Ink ring, lime
   core); a multiple choice shows the system checkbox (lime with an Ink tick). Neither fills with
   lime. Follow-ups sit on Panel 2 under the answer that asks them.
-- **Notices, not errors:** the furniture notice is the epic's warning in the warning tint, the
-  changed-address notice the info tint; nothing in the flow turns a customer away, so no verdict
+- **Notices, not errors:** the packing notice (you pack everything yourself) stands under the
+  first question for every customer, so it wears the info tint, as the changed-address notice
+  does; ticking furniture only adds to its words and points its link at furniture's own steps.
+  Nothing in the flow turns a customer away, so no verdict
   there wears Stop Red (the Special Rate tab is an offer mark, not a verdict). Field errors appear once a field is left, never on every keystroke.
 - **Selected Service:** a white card beside both plan steps, sticky from lg; on a phone a
   one-line strip (service and price) that opens to the rest.

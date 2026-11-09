@@ -69,7 +69,8 @@ function FollowUp({ id, title, hint, children }: { id: string; title: string; hi
  * The Eligibility Check: the epic's four questions in its words, each
  * follow-up opening under the answer that asks it. Changing an answer clears
  * the follow-ups it asked, so the ticket never mixes two stories. Nothing here
- * turns the customer away: furniture brings a notice and the order goes on.
+ * turns the customer away: what they pack, they pack themselves, and the
+ * order goes on.
  */
 export function EligibilityStep({
   value,
@@ -105,28 +106,28 @@ export function EligibilityStep({
             />
           </Field>
         )}
-        {/* the epic's warning, in the app's warning tint: not an error (the
-            customer did nothing wrong) and never a block */}
-        {furniture && (
-          <div role="status" className="flex gap-3 rounded-md bg-warning/10 px-4 py-3.5">
-            <PackageOpen aria-hidden className="mt-0.5 size-5 shrink-0 text-warning" />
-            <div className="text-sm">
-              <p className="font-medium">{e("furnitureTitle")}</p>
-              <p className="mt-0.5 text-muted">
-                {e("furnitureBody")}{" "}
-                <a
-                  href="/expat-relocation#packing-furniture"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="link-mark tap-row relative inline-flex items-center gap-0.5"
-                >
-                  {e("furnitureLink")}
-                  <ArrowUpRight aria-hidden className="size-3.5" />
-                </a>
-              </p>
-            </div>
+        {/* who packs, for every customer and whatever they ship, so in the
+            info tint: nothing they chose brought it on. Furniture only adds
+            to its words and points at its own steps, so the notice never
+            jumps or disappears as answers change */}
+        <div role="status" className="flex gap-3 rounded-md bg-info/10 px-4 py-3.5">
+          <PackageOpen aria-hidden className="mt-0.5 size-5 shrink-0 text-info" />
+          <div className="text-sm">
+            <p className="font-medium">{e("packTitle")}</p>
+            <p className="mt-0.5 text-muted">
+              {e("packBody").replace("{furniture}", furniture ? e("packFurniture") : "")}{" "}
+              <a
+                href={furniture ? "/expat-relocation#packing-furniture" : "/expat-relocation#packing"}
+                target="_blank"
+                rel="noreferrer"
+                className="link-mark tap-row relative inline-flex items-center gap-0.5"
+              >
+                {e(furniture ? "packFurnitureLink" : "packLink")}
+                <ArrowUpRight aria-hidden className="size-3.5" />
+              </a>
+            </p>
           </div>
-        )}
+        </div>
       </Question>
 
       <Question n={2} id="q2" title={e("q2")}>

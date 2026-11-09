@@ -67,7 +67,7 @@ export function bookingFacts(b: ExpatBooking, t: T) {
       estimate: formatIDR(rate.total),
     },
     items,
-    furniture: a.items.includes("furniture"),
+    packReminder: bk("packReminder").replace("{furniture}", a.items.includes("furniture") ? bk("packFurniture") : ""),
     pickup: longDate(d.pickupDate),
     contact: {
       name: d.fullName.trim(),
@@ -80,9 +80,7 @@ export function bookingFacts(b: ExpatBooking, t: T) {
       { title: bk("next2Title"), body: bk("next2Body") },
       {
         title: bk("next3Title"),
-        body: bk("next3Body")
-          .replace("{date}", longDate(d.pickupDate))
-          .replace("{furniture}", a.items.includes("furniture") ? bk("next3Furniture") : ""),
+        body: bk("next3Body").replace("{date}", longDate(d.pickupDate)),
       },
     ],
   };

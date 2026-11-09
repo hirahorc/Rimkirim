@@ -96,12 +96,10 @@ export function BookingView({ number }: { number: string }) {
                     <li key={i}>{i}</li>
                   ))}
                 </ul>
-                {f.furniture && (
-                  <p className="flex gap-2 pt-2 text-muted">
-                    <PackageOpen aria-hidden className="mt-0.5 size-4 shrink-0 text-warning" />
-                    {bk("furnitureReminder")}
-                  </p>
-                )}
+                <p className="flex gap-2 pt-2 text-muted">
+                  <PackageOpen aria-hidden className="mt-0.5 size-4 shrink-0 text-info" />
+                  {f.packReminder}
+                </p>
               </Row>
               <Row label={bk("pickup")}>
                 <p className="font-medium">{f.pickup}</p>
