@@ -1091,14 +1091,14 @@ in ink it stays neutral and lime stays the one colour in the action row.
   asks for a photo or a list. Seven things that can't go read as four and three: down two columns
   on a phone and from `lg`, across four between, never a row with one left over.
 - **The customs routes** (`ExpatCustoms`, from ops' import summary, the source of truth for the
-  service): the three ways belongings clear Indonesian customs, most relief first, as three white
-  planes side by side on the magenta band from `lg` (stacked below it, never two and one). Each
-  opens on who it's for in a brand label ("Moving here on a work or study ITAS", "Flying in, your
-  things sent separately", "Anyone, any time"), then the verdict at the Title role beside a coin
-  whose fill says how much is waived: the chapter's ink, solid, with a check for duty-free; its
-  2px ring for free up to a limit; a quiet Panel 3 receipt for charged (charged is not an error,
-  so never Stop Red). Then the customs name in Dim Grey, one line, what is usually needed with a
-  document glyph, and a note pinned to the foot so the three feet share a line. Under them, one
+  service): the three ways belongings clear Indonesian customs, as three white planes side by
+  side on the magenta band from `lg` (stacked below it, never two and one), **set as equals**:
+  ops recommends the path at review and the customer decides (docs/adr/0002), so no glyph, colour
+  or weight on a card says one path is the better one. Each is built the same way: the path's
+  name at the Title role ("Relocation goods (barang pindahan)"), then the same two facts under a
+  hairline, "For" (who it's for) and "Duty and tax" (what it pays), the explanation, what is
+  usually needed with a document glyph, and a note pinned to the foot so the three feet share a
+  line. Only the words differ. Under them, one
   more white plane for the only route with no exemption: what a personal shipment pays, a real
   table (what's inside, its duty as the one number at the Title role, the tax on top), its title
   and footnote in the left third from `lg`. Then what catches people out, set as the item cards'
@@ -1328,8 +1328,9 @@ like the landing, and keeps the landing's bar, which trades the lime "Check your
   summary went to) over the booking number on a Panel 2 strip with its copy button, then the
   summary as label-and-value rows between hairlines. What happens next, the other answers and
   the documents sit in a side card.
-- **The customs block in the flow** reads the landing's own Customs copy and coins, folded into a
-  Disclosure, the same for every customer: it never reflects their answers (docs/adr/0002).
+- **The customs block in the flow** reads the landing's own Customs copy, folded into a
+  Disclosure: each path's name and the same two facts, as equals, the same for every customer.
+  It never reflects their answers (docs/adr/0002).
 - **On the landing,** the pictures of the flow render these components inside `.tone-none`,
   which hands the neutrals back inside a chapter, so the picture shows the product as it is.
 

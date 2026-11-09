@@ -616,6 +616,8 @@ const id = {
       subtitle:
         "Tergantung alasan kamu pindah dan kapan barangmu tiba. Ada tiga jalur. Saat mereview pesananmu, kami tunjukkan jalur yang paling menguntungkan, dan keputusannya tetap di kamu.",
       needed: "Biasanya diperlukan",
+      forLabel: "Untuk",
+      dutyLabel: "Bea dan pajak",
       pindahan: {
         when: "Pindah dengan ITAS kerja atau belajar",
         verdict: "Bebas bea, tanpa batas nilai",
@@ -2807,6 +2809,8 @@ const en: Messages = {
       subtitle:
         "It depends on why you're moving and when your things arrive. There are three ways in. When we review your booking, we'll point out the one that saves you the most, and the choice is yours.",
       needed: "Usually needed",
+      forLabel: "For",
+      dutyLabel: "Duty and tax",
       pindahan: {
         when: "Moving here on a work or study ITAS",
         verdict: "Duty-free, no value limit",

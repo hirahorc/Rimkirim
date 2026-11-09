@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Check, ChevronDown, FileText, MessageCircle, Receipt, type LucideIcon } from "lucide-react";
+import { ChevronDown, FileText, MessageCircle } from "lucide-react";
 import { CollapseHeight } from "@/components/ui/disclosure";
 import { REVIEW_NOTES } from "@/lib/data/expat";
 import { waLink } from "@/lib/contact";
@@ -11,28 +11,17 @@ import { SectionHead } from "./SectionHead";
 import { ReviewNote } from "./ReviewNote";
 import { revealOrder as order, useSectionReveal } from "./useSectionReveal";
 
-/** how much of a route's duty is waived, which sets its verdict's coin */
-export type Relief = "full" | "part" | "none";
-
 /** the three ways belongings clear Indonesian customs, from ops' import
- *  summary, most relief first: duty-free as relocation goods, free up to
- *  USD 500 as passenger goods sent separately, or charged as a personal
- *  shipment. The order flow lists the same three (CustomsPaths), so the two
- *  can never tell a customer different things */
-export const CUSTOMS_ROUTES: readonly { key: string; docs: readonly string[]; relief: Relief }[] = [
-  { key: "pindahan", docs: ["doc1", "doc2", "doc3", "doc4", "doc5"], relief: "full" },
-  { key: "penumpang", docs: ["doc1", "doc2", "doc3"], relief: "part" },
-  { key: "kiriman", docs: ["doc1", "doc2"], relief: "none" },
+ *  summary: relocation goods, passenger goods sent separately, and a
+ *  personal shipment. Set as equals: nothing on a card marks one as better
+ *  than another, since ops recommends the path at review and the customer
+ *  decides (docs/adr/0002). The order flow lists the same three
+ *  (CustomsPaths), so the two can never tell a customer different things */
+export const CUSTOMS_ROUTES: readonly { key: string; docs: readonly string[] }[] = [
+  { key: "pindahan", docs: ["doc1", "doc2", "doc3", "doc4", "doc5"] },
+  { key: "penumpang", docs: ["doc1", "doc2", "doc3"] },
+  { key: "kiriman", docs: ["doc1", "doc2"] },
 ];
-
-/** each verdict's coin: the chapter's ink, solid, for duty-free; its ring
- *  for free up to a limit; a quiet receipt for charged (charged is not an
- *  error, so never Stop Red) */
-export const COIN: Record<Relief, { glyph: LucideIcon; className: string }> = {
-  full: { glyph: Check, className: "bg-tone-ink text-background" },
-  part: { glyph: Check, className: "border-2 border-tone-ink text-tone-ink" },
-  none: { glyph: Receipt, className: "bg-surface-3 text-muted" },
-};
 
 /** what a personal shipment pays, by what's inside (the CN flat rates) */
 const RATES = ["general", "books", "regulated", "apparel"] as const;
@@ -45,17 +34,28 @@ const GOOD = ["timing", "excluded", "blocked"] as const;
  * source of truth for the service: the question every relocating visitor
  * has once they've seen how a shipment runs, "will I pay import duty?",
  * answered on the page in plain words rather than in a guide. Three cards
- * side by side, most relief first, each opening on who it's for in a brand
- * label (a work or study ITAS, flying in with things sent separately,
- * anyone), then the verdict beside its coin, the customs name under it,
- * what's usually needed, and a note pinned to the foot so the three feet
- * share a line. The one route with no exemption gets its rates under them,
+ * side by side, built the same way so none reads as the better one: the
+ * path's name, then two facts under the same two labels (who it's for, and
+ * its duty and tax), the explanation, what's usually needed, and a note
+ * pinned to the foot so the three feet share a line. The one route with no exemption gets its rates under them,
  * one number big on each row, since that's the one a visitor has to work
  * out. Then the three things that catch people out, as the item cards'
  * details are set (a label, the rule, why), and a way to ask. A band in the
  * magenta chapter, between How it works and the FAQ on the desk. Every
  * rule here is a draft until ops confirms it (REVIEW_NOTES.customs).
  */
+/** a path's name as its title, the Indonesian term ("barang pindahan")
+ *  on a quiet line of its own so the three titles stay short and level */
+function PathName({ name }: { name: string }) {
+  const [title, local] = name.split(/\s*\((.+)\)\s*$/);
+  return (
+    <h3 className="font-display text-xl font-semibold tracking-tight">
+      {title}
+      {local && <span className="mt-0.5 block font-sans text-sm font-normal tracking-normal text-muted">{local}</span>}
+    </h3>
+  );
+}
+
 /** one Customs Path's usual documents */
 function DocList({ docs, k }: { docs: readonly string[]; k: (path: string) => string }) {
   return (
@@ -98,24 +98,27 @@ export function ExpatCustoms() {
         </div>
 
         <div className="mt-8 grid gap-4 sm:mt-12 lg:grid-cols-3">
-          {CUSTOMS_ROUTES.map(({ key, docs, relief }, i) => {
+          {CUSTOMS_ROUTES.map(({ key, docs }, i) => {
             const k = (path: string) => t(`expat.customs.${key}.${path}`);
-            const { glyph: Glyph, className: coin } = COIN[relief];
             return (
               <article
                 key={key}
                 className="jr-reveal flex flex-col rounded-lg bg-background px-5 py-7 sm:px-7"
                 style={order(1 + i)}
               >
-                {/* who it's for, then the verdict it brings */}
-                <p className="text-sm font-medium text-muted">{k("when")}</p>
-                <h3 className="mt-3 flex items-center gap-3 font-display text-xl font-semibold tracking-tight">
-                  <span className={cn("grid size-8 shrink-0 place-items-center rounded-full", coin)}>
-                    <Glyph aria-hidden className="size-4" strokeWidth={relief === "none" ? 2 : 3} />
-                  </span>
-                  {k("verdict")}
-                </h3>
-                <p className="mt-2 text-sm font-medium text-muted">{k("name")}</p>
+                {/* the path's name, then the same two facts on every card:
+                    no glyph or colour ranks one path above another */}
+                <PathName name={k("name")} />
+                <dl className="mt-4 grid gap-3 border-t border-border pt-4 text-sm">
+                  <div>
+                    <dt className="text-muted">{t("expat.customs.forLabel")}</dt>
+                    <dd className="mt-0.5 font-medium">{k("when")}</dd>
+                  </div>
+                  <div>
+                    <dt className="text-muted">{t("expat.customs.dutyLabel")}</dt>
+                    <dd className="mt-0.5 font-medium">{k("verdict")}</dd>
+                  </div>
+                </dl>
                 <p className="mt-4 text-sm leading-relaxed">{k("body")}</p>
                 {/* the documents: from lg all three lists stand open, side by
                     side; a phone, where the cards stack, folds each behind
