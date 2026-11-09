@@ -28,7 +28,9 @@ export function ExpatFaq() {
   }, []);
 
   return (
-    <section id="faq" aria-labelledby="faq-heading" data-tone="magenta" className="band scroll-mt-24">
+    // on the desk, after the customs band: the questions read as a page of
+    // their own, not one more sheet
+    <section id="faq" aria-labelledby="faq-heading" data-tone="magenta" className="scroll-mt-24">
       <div className="mx-auto max-w-3xl px-4 py-20 sm:px-6">
         <ReviewNote note={REVIEW_NOTES.faq} className="mb-8" />
         <SectionHead id="faq-heading" eyebrow={t("expat.faq.eyebrow")} title={t("expat.faq.heading")} />

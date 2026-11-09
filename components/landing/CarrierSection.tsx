@@ -48,16 +48,29 @@ const heightFor = (aspect: number) => Math.round(RAMP.k / aspect ** RAMP.p);
 const CARRIERS = Object.entries(CARRIER_LOGOS).map(([name, l]) => ({ name, ...l }));
 
 /** the logo row alone, for a host that brings its own label: the expat
- *  page wears it as the foot of its "Why Rimkirim" band */
-export function CarrierLogos({ className }: { className?: string }) {
+ *  page wears it as the foot of its "Who does what" band, leaving out the
+ *  carriers it doesn't ship with (`omit`). Centred on its own (the 3 + 3
+ *  above); `align="start"` sets it from the left, beside or under a label
+ *  that is, and the row stays one line from `md`, spread across whatever
+ *  column it's given */
+export function CarrierLogos({
+  className,
+  omit = [],
+  align = "center",
+}: {
+  className?: string;
+  omit?: readonly string[];
+  align?: "center" | "start";
+}) {
   return (
     <ul
       className={cn(
-        "mx-auto flex max-w-[340px] flex-wrap items-center justify-center gap-x-4 gap-y-6 [--logo-scale:0.78] md:max-w-none md:flex-nowrap md:justify-between md:gap-x-0 md:gap-y-0 md:[--logo-scale:0.9] lg:[--logo-scale:1]",
+        "flex flex-wrap items-center gap-y-6 [--logo-scale:0.78] md:flex-nowrap md:justify-between md:gap-x-0 md:gap-y-0 md:[--logo-scale:0.9] lg:[--logo-scale:1]",
+        align === "center" ? "mx-auto max-w-[340px] justify-center gap-x-4 md:max-w-none" : "justify-start gap-x-8",
         className,
       )}
     >
-      {CARRIERS.map(({ name, src, aspect, capScale = 1 }) => (
+      {CARRIERS.filter(({ name }) => !omit.includes(name)).map(({ name, src, aspect, capScale = 1 }) => (
         <li key={name} className="flex items-center justify-center">
           {/* eslint-disable-next-line @next/next/no-img-element -- logo dims
               come from the file; height is set per aspect, width stays natural */}

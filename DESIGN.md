@@ -484,20 +484,22 @@ The tone step is the whole separator. There is no hairline on either side, no sh
 entrance animation: every section arriving the same way reads as a template and makes the reader
 wait for the words. Two bands in a row stay two sheets, with a 12px strip of desk between them.
 A thin strip that is not a section, like the carrier logos, never becomes a stripe of its own: it
-closes the band it proves.
+closes the band it proves. On the expat page the carriers are one line under the band's last
+hairline: their label beside the marks from `lg` (over them below), set from the left in the
+pickups' own label since both prove the same promise, the marks spread across the rest of the
+line; never a centred label over marks pushed to the band's two edges.
 
 The expat page runs:
 
 1. Hero (desk, sky)
 2. Reviews (band, sky)
-3. What you can ship (desk, sky)
+3. What you can send (desk, sky)
 4. Who does what, closed by the pickups and the carriers (band, violet)
 5. Why Rimkirim, the comparison table (desk, violet)
 6. Pricing (band, violet)
-7. What to expect at customs (band, magenta), right after Pricing's band: two bands in a row,
-   two sheets, so How it works keeps its desk
-8. How it works (desk, magenta)
-9. FAQ (band, magenta)
+7. How it works (desk, magenta)
+8. What to expect at customs (band, magenta), once the reader has seen how a shipment runs
+9. FAQ (desk, magenta)
 10. The dusk ticket (see Components)
 
 ## Elevation & Depth
@@ -820,9 +822,10 @@ home hero's floating verdicts and the expat hero's departure board. Treat any ot
   Pricing, What you can ship, Who does what and the customs section each reveal once as the
   journey does (`.jr-reveal`, `useSectionReveal`): the head, the illustration, then the section's
   own pieces one by one (Pricing's four factors in the order a quote is built from them, its
-  promise and its button; What you can ship's six cards in reading order, then what can't travel;
-  Who does what's two lists; the customs section's two routes, what catches people out, then the
-  way to ask), each rising 1rem on a 70ms stagger, when the section's top is 30% up the viewport, since
+  promise and its button; What you can ship's six cards in reading order, what it all travels in,
+  then what to check before sending;
+  Who does what's two lists; the customs section's three routes, the rates, what catches people
+  out, then the way to ask), each rising 1rem on a 70ms stagger, when the section's top is 30% up the viewport, since
   a band as tall as Who does what (the pickups and the carriers follow its lists) would leave its
   head on screen and unseen waiting for 30% of it to show.
   The closing stub gives each step its screen, white cards straight on the ticket (the ticket is
@@ -1025,37 +1028,55 @@ in ink it stays neutral and lime stays the one colour in the action row.
   **Two written-down exceptions**: geometry on hover (the face grows, its words stay put), and
   a gradient, kept to a 1px ring under the pointer only, the expat identity's own sweep (as in
   `.nav-expat`). From `sm`, fine pointers only, never under reduced motion.
-- **The expat item cards** (`WhatYouCanShip`, after sendmybag.com's "What you can send"): one
-  card per kind of thing (boxes, suitcases and bags, clothes and homeware, electronics, new items,
-  furniture), Panel 1 with a hairline and the `lg` corner, three across from `lg`, two from `sm`.
-  Each leads with its drawing (`ShipArt`, below), then its name at the Title role, then one line
-  that opens on the verdict in ink ("Yes.", "Yes, if you tell us first.", "Ask us first.") and
-  finishes in Dim Grey, so a glance down the grid answers "can I send this?". The toggle at the
-  foot names what the details hold ("Weight, size and packing", never "Show more"), with the
-  disclosure's swapped chevron, and the whole card is its hit area. The details open under the
-  card's row as one white panel across the grid (dense placement, so it lands under the right row
-  at any column count), edged and pointed at its card by a caret in the chapter's hue, as is the
-  open card's edge; inside, each fact is a brand label, the rule in a few words at the Title role,
-  and why in Body, columns split by hairlines from `md`, so the panel reads as a short spec, not a
-  paragraph; it ends on one link (the handling charges, or WhatsApp with the message already
-  written). One card is open at a time; the panel's height moves as the disclosure's does, but a
-  card opened beside the open one takes its panel's place at once and the caret slides across.
-  On a phone the cards stack, drawing beside the words, rather than becoming a strip: each answers
-  a question every visitor has, so none may hide behind a swipe. Under them, what can't travel:
-  a Panel 2 block, each thing struck through by the no-entry sign (a 2px Stop Red ring and
-  slash), and the one thing that travels only declared marked with the warning glyph.
-- **The customs routes** (`ExpatCustoms`): the two ways belongings clear Indonesian customs, as
-  two white planes side by side on the magenta band (stacked on a phone). Each opens on what
-  decides it in a brand label ("With relocation documents", "Without them"), then the verdict at
-  the Title role beside a coin glyph, the chapter's ink with a check for duty-free and a quiet
-  Panel 3 receipt for charged (charged is not an error, so never Stop Red), the customs name in
-  Dim Grey, one line, what is usually needed with a document glyph, and a note pinned to the foot
-  so both feet share a line. Under them, what catches people out, set as the item cards' details
-  are (a label, the rule, why, hairline columns from `md`), and one WhatsApp link.
-- **The item drawings** (`ShipArt`): flat things on one ground line in one 168 × 112 frame, in
-  the chapter's hue in three values, its ink in two, its wash and a metal (`.ship-art`, all mixed
-  from the chapter) and the doorstep's kraft; anything with depth in the doorstep's projection,
-  the far face up and to the right. No outline, no gradient, no shadow but the ground's.
+- **The expat item cards** (`WhatYouCanShip`, after sendmybag.com's "What you can send", in ops'
+  outline of three parts). First, one card per kind of thing customers send most (clothes and
+  personal items, books, home and kitchen, sports and hobbies, bikes, anything else), Panel 1 with
+  a hairline and the `lg` corner, three across from `lg`, two from `sm`. Each leads with its
+  drawing (`ShipArt`, below), then its name at the Title role, then one Dim Grey line that says
+  what's in it. The toggle at the foot names what the details hold ("Weight, packing and duty",
+  never "Show more"), with the disclosure's swapped chevron, and the whole card is its hit area.
+  The details open under the card's row as one white panel across the grid (dense placement, so
+  it lands under the right row at any column count), edged and pointed at its card by a caret in
+  the chapter's hue, as is the open card's edge; inside, each fact is a brand label, the rule in a
+  few words at the Title role, and why in Body, columns split by hairlines from `md`, so the panel
+  reads as a short spec, not a paragraph; it ends on one link (the price check, or WhatsApp with
+  the message already written). One card is open at a time; the panel's height moves as the
+  disclosure's does, but a card opened beside the open one takes its panel's place at once and the
+  caret slides across. On a phone the cards stack, drawing beside the words, rather than becoming
+  a strip: each answers a question every visitor has, so none may hide behind a swipe. The two
+  parts after the cards each open under a full-width hairline with a sub-head a step under the
+  section's (24px, 30px from `sm`). Second, what it all travels in (suitcases, boxes, special
+  packaging): the one rule that prices every piece, then three columns open on the desk, split by
+  hairlines from `md` (nothing in them opens, so they are not cards), each its name, its own rule
+  in ink ("Double-wall, up to 25 kg") and why in Dim Grey, its drawing at 120 × 80, two thirds of
+  a card's, since it's what things travel in, not what you send; the warehouse repack on one line
+  under all three, and furniture's own packing guide closed under one hairline (the FAQ's
+  disclosure row), its six steps numbered in How it works' tiles. Third, what to check before
+  sending, a Panel 2 block: what can go once the team has looked (each thing in a 2px warning
+  ring, the warning glyph on its head) beside what can't go at all (each struck through by the
+  no-entry sign, a 2px Stop Red ring and slash), side by side from `lg`, over the one place that
+  asks for a photo or a list. Seven things that can't go read as four and three: down two columns
+  on a phone and from `lg`, across four between, never a row with one left over.
+- **The customs routes** (`ExpatCustoms`, from ops' import summary, the source of truth for the
+  service): the three ways belongings clear Indonesian customs, most relief first, as three white
+  planes side by side on the magenta band from `lg` (stacked below it, never two and one). Each
+  opens on who it's for in a brand label ("Moving here on a work or study ITAS", "Flying in, your
+  things sent separately", "Anyone, any time"), then the verdict at the Title role beside a coin
+  whose fill says how much is waived: the chapter's ink, solid, with a check for duty-free; its
+  2px ring for free up to a limit; a quiet Panel 3 receipt for charged (charged is not an error,
+  so never Stop Red). Then the customs name in Dim Grey, one line, what is usually needed with a
+  document glyph, and a note pinned to the foot so the three feet share a line. Under them, one
+  more white plane for the only route with no exemption: what a personal shipment pays, a real
+  table (what's inside, its duty as the one number at the Title role, the tax on top), its title
+  and footnote in the left third from `lg`. Then what catches people out, set as the item cards'
+  details are (a label, the rule, why, hairline columns from `md`), and one WhatsApp link.
+- **The item drawings** (`ShipArt`, on the item cards and on what it all travels in): flat
+  things on one ground line in one 168 × 112 frame, in the chapter's hue in three values, its ink
+  in two, its wash and a metal (`.ship-art`, all mixed from the chapter) and the doorstep's kraft;
+  anything with depth in the doorstep's projection, the far face up and to the right. Each is
+  scaled from its measured ink to stand the same height (88 of the frame's 112, or as wide as 160
+  for a long thing like the bike) and set flush left, its ground as wide as it is, so a row of
+  cards matches and every drawing starts where its card's words do. No outline, no gradient, no shadow but the ground's.
   Decorative: the card's words carry the meaning.
 
 ### Card grid → scroll strip (signature)

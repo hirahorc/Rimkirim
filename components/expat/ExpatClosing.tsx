@@ -37,9 +37,9 @@ const NEXT = [
 export function ExpatClosing() {
   const t = useT();
   return (
-    // on the desk after the FAQ's band, with the same space above as below,
-    // so the ticket stands on its own
-    <section aria-labelledby="closing-heading" className="mx-auto max-w-6xl px-3 py-16 sm:px-6 sm:py-20">
+    // on the desk after the FAQ, also on the desk: the FAQ's own foot is the
+    // space above, so the ticket keeps the same space above as below
+    <section aria-labelledby="closing-heading" className="mx-auto max-w-6xl px-3 pb-16 sm:px-6 sm:pb-20">
       <ReviewNote note={REVIEW_NOTES.closing} className="mb-8" />
       <div className="rounded-lg bg-dusk text-background">
         <div className="flex flex-col gap-8 px-5 pb-10 pt-10 sm:px-10 sm:pt-12 lg:flex-row lg:items-end lg:justify-between lg:px-14 lg:pt-14">

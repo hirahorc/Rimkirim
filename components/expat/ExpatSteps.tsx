@@ -23,7 +23,14 @@ export function ExpatSteps() {
       <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6">
         <ReviewNote note={REVIEW_NOTES.steps} className="mb-8" />
         <JourneySteps
-          head={<SectionHead id="steps-heading" title={t("expat.steps.heading")} subtitle={t("expat.steps.subtitle")} />}
+          head={
+            <SectionHead
+              id="steps-heading"
+              eyebrow={t("expat.steps.eyebrow")}
+              title={t("expat.steps.heading")}
+              subtitle={t("expat.steps.subtitle")}
+            />
+          }
           steps={STEPS.map((s) => ({ title: t(`expat.steps.${s}Title`), body: t(`expat.steps.${s}Body`) }))}
           footer={
             <Button asChild size="lg">

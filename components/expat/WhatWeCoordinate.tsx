@@ -114,11 +114,15 @@ export function WhatWeCoordinate() {
 
         <PickupPhotos className="mt-16" />
 
-        <div className="mt-16 border-t border-border-strong pt-12">
-          <h3 className="text-center font-display text-xs font-medium uppercase tracking-[0.14em] text-muted">
+        {/* the carriers who fly it close the band in one line: named beside
+            the marks from lg, over them below, and set from the left in the
+            pickups' own label, since both are proof of the same promise.
+            Rayspeed isn't a partner on the expat routes */}
+        <div className="mt-16 grid gap-y-7 border-t border-border-strong pt-10 lg:grid-cols-[minmax(0,13rem)_minmax(0,1fr)] lg:items-center lg:gap-x-16">
+          <h3 className="font-display text-xs font-medium uppercase tracking-[0.04em] text-muted">
             {t("carrier.eyebrow")}
           </h3>
-          <CarrierLogos className="mt-9" />
+          <CarrierLogos align="start" omit={["Rayspeed Asia"]} />
         </div>
       </div>
     </section>

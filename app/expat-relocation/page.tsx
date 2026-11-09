@@ -5,8 +5,8 @@ import { WhatYouCanShip } from "@/components/expat/WhatYouCanShip";
 import { WhatWeCoordinate } from "@/components/expat/WhatWeCoordinate";
 import { WhyRimkirim } from "@/components/expat/WhyRimkirim";
 import { QuoteFactors } from "@/components/expat/QuoteFactors";
-import { ExpatCustoms } from "@/components/expat/ExpatCustoms";
 import { ExpatSteps } from "@/components/expat/ExpatSteps";
+import { ExpatCustoms } from "@/components/expat/ExpatCustoms";
 import { ShipmentExamples } from "@/components/expat/ShipmentExamples";
 import { ExpatFaq } from "@/components/expat/ExpatFaq";
 import { ExpatClosing } from "@/components/expat/ExpatClosing";
@@ -66,8 +66,8 @@ export default function ExpatRelocationPage() {
       <WhatWeCoordinate />
       <WhyRimkirim />
       <QuoteFactors />
-      <ExpatCustoms />
       <ExpatSteps />
+      <ExpatCustoms />
       <ShipmentExamples />
       <ExpatFaq />
       <ExpatClosing />
