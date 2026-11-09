@@ -35,7 +35,7 @@ function Question({
       <div className="flex gap-3">
         <span
           aria-hidden
-          className="grid size-6 shrink-0 place-items-center rounded-full bg-surface-3 font-display text-xs font-semibold tabular-nums text-tone-ink"
+          className="grid size-6 shrink-0 place-items-center rounded-full bg-surface-2 font-display text-xs font-semibold tabular-nums text-foreground"
         >
           {n}
         </span>
@@ -105,11 +105,11 @@ export function EligibilityStep({
             />
           </Field>
         )}
-        {/* a notice, not an error: the customer did nothing wrong, and the
-            order carries on */}
+        {/* the epic's warning, in the app's warning tint: not an error (the
+            customer did nothing wrong) and never a block */}
         {furniture && (
-          <div role="status" className="flex gap-3 rounded-md bg-surface-3 px-4 py-3.5">
-            <PackageOpen aria-hidden className="mt-0.5 size-5 shrink-0 text-tone-ink" />
+          <div role="status" className="flex gap-3 rounded-md bg-warning/10 px-4 py-3.5">
+            <PackageOpen aria-hidden className="mt-0.5 size-5 shrink-0 text-warning" />
             <div className="text-sm">
               <p className="font-medium">{e("furnitureTitle")}</p>
               <p className="mt-0.5 text-muted">

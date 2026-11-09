@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import { ReviewNote } from "@/components/expat/ReviewNote";
 import { ORDER_REVIEW_NOTES } from "@/lib/data/expat-order-notes";
 import { detailsProgress, eligibilityProgress } from "@/lib/order/expat-order";
@@ -19,7 +20,7 @@ import { SelectedService } from "./SelectedService";
 
 /**
  * The plan: the Eligibility Check, then Personal Information, on one route
- * (the violet chapter) with the step in the URL, so the browser's Back moves
+ * (the app's field, a white card per column) with the step in the URL, so the browser's Back moves
  * between them instead of leaving. The Selected Service stays beside both.
  * Arriving without a rate goes back to Check Rate; arriving at the details
  * with questions unanswered goes back to them. Confirm registers the ticket
@@ -54,8 +55,9 @@ export function PlanView() {
   const ready = detailsProgress(details).done;
 
   return (
-    <div data-tone="violet" className="pb-20">
-      <div className="mx-auto max-w-6xl px-4 pt-8 sm:px-6 sm:pt-10">
+    // the app's field, as the rates step sits: white cards on Panel 2
+    <div data-field className="pb-20">
+      <div className="mx-auto max-w-5xl px-4 pt-8 sm:px-6 sm:pt-10">
         <ReviewNote note={step === "eligibility" ? ORDER_REVIEW_NOTES.eligibility : ORDER_REVIEW_NOTES.details} className="mb-6" />
         <FlowStepper current={step} />
         <h1 className="mt-8 text-balance font-display text-3xl font-bold tracking-tight sm:text-4xl">{p("title")}</h1>
@@ -67,7 +69,7 @@ export function PlanView() {
             <SelectedService check={check} rate={rate} />
           </div>
 
-          <div className="min-w-0 lg:order-1">
+          <Card className="min-w-0 px-5 py-6 sm:px-8 sm:py-8 lg:order-1">
             {step === "eligibility" ? (
               <section aria-labelledby="step-heading">
                 <h2 id="step-heading" className="font-display text-2xl font-semibold tracking-tight">
@@ -144,7 +146,7 @@ export function PlanView() {
                 </div>
               </section>
             )}
-          </div>
+          </Card>
         </div>
       </div>
     </div>

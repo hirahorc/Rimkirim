@@ -47,9 +47,8 @@ export function MapPinDialog({
 }) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      {/* portalled out of the page, so it takes the plan's chapter itself;
-          the picker mounts each time it opens, on the saved pin */}
-      <DialogContent sheet={false} data-tone="violet" className="max-w-xl">
+      {/* the picker mounts each time it opens, on the saved pin */}
+      <DialogContent sheet={false} className="max-w-xl">
         <PinPicker
           title={title}
           place={place}
@@ -151,10 +150,10 @@ function PinPicker({
             {/* the pin stays put; its tip marks the spot */}
             <MapPin
               aria-hidden
-              className="pointer-events-none absolute left-1/2 top-1/2 size-9 -translate-x-1/2 -translate-y-full fill-background text-tone-ink drop-shadow-md"
+              className="pointer-events-none absolute left-1/2 top-1/2 size-9 -translate-x-1/2 -translate-y-full fill-background text-foreground drop-shadow-md"
               strokeWidth={2.25}
             />
-            <span aria-hidden className="pointer-events-none absolute left-1/2 top-1/2 size-1.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-tone-ink" />
+            <span aria-hidden className="pointer-events-none absolute left-1/2 top-1/2 size-1.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-foreground" />
             <div className="absolute right-3 top-3 flex flex-col overflow-hidden rounded-sm border border-border-strong bg-background shadow-float">
               <button
                 type="button"
@@ -198,7 +197,7 @@ function PinPicker({
 /**
  * A neighbourhood drawn once: blocks on a street grid, two main roads (the
  * one through the centre carries the Address's name), a park and a canal, in
- * the chapter's own panel greys so it reads as a map without pretending to
+ * the app's own panel greys so it reads as a map without pretending to
  * be one from a provider. 1600px square, centred on the viewport and moved
  * by the pan offset.
  */
@@ -232,7 +231,7 @@ function DummyMap({ label, offset, scale }: { label: string; offset: { x: number
       {/* the park */}
       <rect x="909" y="609" width="182" height="182" rx="10" style={{ fill: "color-mix(in oklab, var(--success) 22%, var(--background))" }} />
       {/* the canal */}
-      <rect x="0" y="918" width="1600" height="64" style={{ fill: "color-mix(in oklab, var(--tone) 30%, var(--background))" }} />
+      <rect x="0" y="918" width="1600" height="64" style={{ fill: "color-mix(in oklab, var(--info) 22%, var(--background))" }} />
       {/* main roads */}
       <rect x="0" y="796" width="1600" height="18" className="fill-background" />
       <rect x="696" y="0" width="18" height="1600" className="fill-background" />

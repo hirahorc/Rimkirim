@@ -108,7 +108,7 @@ export function DetailsScene() {
         <div
           inert
           aria-hidden
-          className="jr jr-lift min-h-[26em] rounded-[1.1em] bg-background p-[1.25em] shadow-float @max-[30rem]:p-[1.15em]"
+          className="tone-none jr jr-lift min-h-[26em] rounded-[1.1em] bg-background p-[1.25em] shadow-float @max-[30rem]:p-[1.15em]"
           style={at(1650)}
         >
           <RateCard rate={PICTURE_RATE} origin="GB" display stacked plain />

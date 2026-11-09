@@ -258,6 +258,19 @@ body:has(main > [data-field]) {
   --border: #f5befa;
   --border-strong: #f0a5f7;
 }
+/* out of the chapter again: the landing's pictures of the order flow render
+   its own components, and the flow is the app on daylight neutrals, so the
+   picture shows them as they are rather than in the section's hue */
+[data-tone] .tone-none {
+  --tone-ink: var(--muted);
+  --muted: #52525b;
+  --muted-2: #64646c;
+  --border: #e5e5e5;
+  --border-strong: #d4d4d4;
+  --surface: #fafafa;
+  --surface-2: #f5f5f5;
+  --surface-3: #f3f3f3;
+}
 /* the photo slots' grid speaks the chapter's hue too */
 [data-tone] {
   --grid-line: color-mix(in srgb, var(--tone) 16%, transparent);

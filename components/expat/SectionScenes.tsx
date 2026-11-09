@@ -7,7 +7,7 @@ import { formatNumber } from "@/lib/utils/currency";
 import { cn } from "@/lib/utils/cn";
 import { RateCard } from "@/components/expat-order/RateCard";
 import { CheckCards } from "@/components/expat-order/ChoiceCards";
-import { BookingTicketHead } from "@/components/expat-order/BookingTicketHead";
+import { BookingHead } from "@/components/expat-order/BookingHead";
 import { expatRates } from "@/lib/pricing/expat-rates";
 import { IPhone } from "./IPhone";
 import { at, SceneTitle } from "./SceneParts";
@@ -337,11 +337,12 @@ const NEXT_CARD =
  *  by the flow's own rates, so the card is the one Check Rate shows */
 const PICTURE_RATE = expatRates("GB", 30).rates[0];
 
-/** the flow's own screens, shown and not used: no focus, no clicks, and out
- *  of the accessibility tree (the step's words carry the meaning) */
+/** the flow's own screens, shown and not used: no focus, no clicks, out of
+ *  the accessibility tree (the step's words carry the meaning), and on the
+ *  app's neutrals rather than the ticket's chapter (.tone-none) */
 function Shown({ ms, className, children }: { ms: number; className?: string; children: React.ReactNode }) {
   return (
-    <div inert aria-hidden className={cn("jr jr-rise", className)} style={at(ms)}>
+    <div inert aria-hidden className={cn("tone-none jr jr-rise", className)} style={at(ms)}>
       {children}
     </div>
   );
@@ -387,13 +388,13 @@ export function EligibleScene() {
   );
 }
 
-/** 3: the Booking Summary's ticket head, booked: received, its number, and
- *  the summary on its way by email */
+/** 3: the Booking Summary's head, as the flow draws it: received, the
+ *  summary on its way by email, and the booking number */
 export function HandoffScene() {
   return (
     <div className={NEXT_CARD} style={at(0)}>
-      <Shown ms={300} className="rounded-md bg-dusk px-4 py-4 text-background">
-        <BookingTicketHead number="RK4KX9M2PT" email="you@example.com" compact />
+      <Shown ms={300}>
+        <BookingHead number="RK4KX9M2PT" email="you@example.com" compact />
       </Shown>
     </div>
   );

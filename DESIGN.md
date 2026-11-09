@@ -835,8 +835,8 @@ home hero's floating verdicts and the expat hero's departure board. Treat any ot
   their ground, so no stage of their own), their column's width, fading out at the foot over their
   empty end on an eased mask (`.scene-fade`, square at the foot, since a dissolving edge has no
   corner to round): the order flow's own three screens, drawn by its own components, shown and
-  inert so the picture can't drift from the product (Check Rate's lead rate card, the Eligibility
-  Check's first question answered, the Booking Summary's ticket head). Three in a row from `lg`, a row each beside its words on a tablet, the house scroll
+  inert and on the app's neutrals so the picture can't drift from the product (Check Rate's lead
+  rate card, the Eligibility Check's first question answered, the Booking Summary's head). Three in a row from `lg`, a row each beside its words on a tablet, the house scroll
   strip on a phone.
   Each **builds once** when 40% in view (a hero rises from the crop, rows lift in reading order,
   fields type, values rise, a pressed answer's fill comes up under its one label, `jr-press` and `jr-ink`), then stands still: no loop, no player, no control,
@@ -1255,43 +1255,46 @@ arriving here reads as landing. It is dark because the last ask should not look 
 section.
 
 **One per landing, and only for the closing ask.** It is not a dark theme and does not license
-dark sections. The home landing's ink testimonial hook card is the only other dark surface. The
-expat order flow's Booking Summary is the ticket's one other use (below): the trip has landed, so
-the booking is the ticket.
+dark sections. The home landing's ink testimonial hook card is the only other dark surface.
 
 ### The expat order flow
-The order flow under `/expat-relocation` (rates, plan, booking) walks the landing's chapters as
-the trip: **sky** for Check Rate, **violet** for the plan (Eligibility Check and Personal
-Information), **dusk** for the Booking Summary, with the magenta desk under it. It speaks English
-only, like the landing, and keeps the landing's bar, which trades the lime "Check your rate" for a
-quiet "Need help?" on WhatsApp, since each step's own button is that screen's one lime.
+The order flow under `/expat-relocation` (rates, plan, booking) is the app, not the landing: it
+sits on **the field** (`data-field`, Panel 2 under white cards with no outline, The Stroke Rule),
+on daylight neutrals, as every order screen does. The landing's chapter tones, bands and dusk
+ticket stay on the landing; the flow shares the system's corners, type and buttons, and nothing
+else of the landing's dress, so no field or panel takes a chapter's tint. It speaks English only,
+like the landing, and keeps the landing's bar, which trades the lime "Check your rate" for a quiet
+"Need help?" on WhatsApp, since each step's own button is that screen's one lime.
 
 - **The flow stepper:** Rate, Eligibility, Your details, in the status stepper's encoding (a
   step behind is lime with an Ink check and links back, the current one is Ink-framed with a lime
   core, the ones ahead are Hairline on Panel 2). Rate always reads done once you're planning. On
   a phone only the current step keeps its word.
+- **Check Rate:** one white card, Moving from beside Moving to, then the weight and the button
+  under a hairline. Fields are the system's Panel 2 inputs.
 - **The rate card:** the live page's anatomy (carrier logo and service, the route in flags, the
   transit days with "clearance excluded"), the price per kg as the one big number and the
   estimated total for the charged weight under it, beside an "Estimated" pill. The lead card is
-  framed in Ink and carries the lime "Select this rate"; the rest under "See more rates" take the
-  secondary button, so a long list never splits the voice. A Special Rate wears a tone-ink pill.
-- **Choice cards** (the Eligibility Check): white planes that frame in Ink (2px, as a doubled
-  hairline) when chosen. A single choice shows the stepper's dot (Ink ring, lime core); a multiple
-  choice shows the system checkbox (lime with an Ink tick). Neither fills with lime.
-- **Notices, not errors:** the furniture notice and the changed-address notice sit on Panel 3 with
-  a tone-ink icon. Nothing in the flow turns a customer away, so nothing there wears Stop Red.
-  Field errors appear once a field is left, never on every keystroke.
-- **Selected Service:** a band-wash sheet beside both plan steps, sticky from lg; on a phone a
+  framed in Ink and carries the lime "Select this rate"; the rest under "See more rates" are white
+  planes with the secondary button, so a long list never splits the voice. A Special Rate wears
+  the brand chip, as Back For Good's special rate card does.
+- **Choice cards** (the Eligibility Check): white planes with a hairline that frame in Ink (2px,
+  as a doubled hairline) when chosen. A single choice shows the stepper's dot (Ink ring, lime
+  core); a multiple choice shows the system checkbox (lime with an Ink tick). Neither fills with
+  lime. Follow-ups sit on Panel 2 under the answer that asks them.
+- **Notices, not errors:** the furniture notice is the epic's warning in the warning tint, the
+  changed-address notice the info tint; nothing in the flow turns a customer away, so nothing
+  there wears Stop Red. Field errors appear once a field is left, never on every keystroke.
+- **Selected Service:** a white card beside both plan steps, sticky from lg; on a phone a
   one-line strip (service and price) that opens to the rest.
-- **The Booking Summary ticket:** the dusk ticket with "Booking received" in lime over the
-  booking number at up to 48px, then the stub as a definition grid (route, shipping, what's
-  shipping, pickup, contact). What happens next, the other answers and the documents follow on the
-  desk.
+- **The Booking Summary:** a white card with the received head (the success check, who the
+  summary went to) over the booking number on a Panel 2 strip with its copy button, then the
+  summary as label-and-value rows between hairlines. What happens next, the other answers and
+  the documents sit in a side card.
 - **The customs block in the flow** reads the landing's own Customs copy and coins, folded into a
   Disclosure, the same for every customer: it never reflects their answers (docs/adr/0002).
-
-On dusk, the focus ring turns over (a white ring with a dusk gap). Secondary words are the soft
-lavender (9.3:1), never grey; white is 12.5:1 and the lime door 10.5:1.
+- **On the landing,** the pictures of the flow render these components inside `.tone-none`,
+  which hands the neutrals back inside a chapter, so the picture shows the product as it is.
 
 ### De-boxed record (signature)
 The read-only counterpart to the card. A long reference record — the order summary, the FAQ — is

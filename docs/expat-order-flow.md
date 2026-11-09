@@ -59,4 +59,4 @@ All flow copy is in `lib/i18n/messages.ts` under `expatOrder`. The page is Engli
 
 ## The landing page
 
-Every "Check your rate" (`EXPAT_QUOTE_URL` in `lib/data/expat.ts`) opens Check Rate. The landing's pictures of the flow (the closing ticket's three steps, How it works step 01) render the flow's own components (`RateCard`, `CheckCards`, `BookingTicketHead`) inert, with dummy data, so a change to the flow shows on the landing too.
+Every "Check your rate" (`EXPAT_QUOTE_URL` in `lib/data/expat.ts`) opens Check Rate. The landing's pictures of the flow (the closing ticket's three steps, How it works step 01) render the flow's own components (`RateCard`, `CheckCards`, `BookingHead`) inert, with dummy data and on the app's neutrals (`.tone-none`), so a change to the flow shows on the landing too.

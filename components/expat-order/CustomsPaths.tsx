@@ -18,16 +18,19 @@ export function CustomsPaths({
   id,
   title,
   wide = false,
+  edges = "both",
 }: {
   id: string;
   title: string;
-  /** three across from lg, where the column is wide enough (the Booking
-   *  Summary); stacked beside the plan's Selected Service */
+  /** three across from lg, where the column is wide enough; stacked beside
+   *  the plan's Selected Service and in the Booking Summary's side card */
   wide?: boolean;
+  /** its hairlines: both in a column of rows, top only as a card's last row */
+  edges?: "both" | "top";
 }) {
   const t = useT();
   return (
-    <div className="border-y border-border">
+    <div className={cn("border-t border-border", edges === "both" && "border-b")}>
       <Disclosure id={id} question={title}>
         <p className="text-sm text-muted">{t("expatOrder.customs.lead")}</p>
         <ul className={cn("mt-4 grid gap-3", wide && "lg:grid-cols-3")}>
@@ -36,7 +39,7 @@ export function CustomsPaths({
             const { glyph: Glyph, className: coin } = COIN[relief];
             return (
               <li key={key} className="rounded-md bg-surface-2 px-4 py-4">
-                <p className="font-display text-xs font-medium uppercase tracking-[0.04em] text-muted">{k("when")}</p>
+                <p className="text-xs font-medium text-muted">{k("when")}</p>
                 <p className="mt-2 flex items-center gap-2 font-display text-base font-semibold tracking-tight">
                   <span className={cn("grid size-6 shrink-0 place-items-center rounded-full", coin)}>
                     <Glyph aria-hidden className="size-3.5" strokeWidth={relief === "none" ? 2 : 3} />
@@ -44,7 +47,7 @@ export function CustomsPaths({
                   {k("verdict")}
                 </p>
                 <p className="mt-1 text-xs text-muted">{k("name")}</p>
-                <p className="mt-3 font-display text-xs font-medium uppercase tracking-[0.04em] text-tone-ink">
+                <p className="mt-3 text-xs font-medium text-muted">
                   {t("expatOrder.customs.needed")}
                 </p>
                 <ul className="mt-2 space-y-1.5">

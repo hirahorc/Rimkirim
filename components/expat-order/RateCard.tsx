@@ -1,6 +1,7 @@
 "use client";
 
 import { ArrowRight, BadgePercent, Clock } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Flag } from "@/components/shared/Flag";
 import { CarrierLogo } from "@/components/rates/CarrierMark";
@@ -44,8 +45,12 @@ export function RateCard({
       className={cn(
         "relative",
         !plain && "rounded-lg border bg-background px-5 py-5 sm:px-6",
-        // the lead card framed in Ink, as a chosen option is
-        !plain && (lead ? "border-foreground shadow-[inset_0_0_0_1px_var(--foreground)]" : "border-border-strong"),
+        // the lead card framed in Ink, as a chosen option is; the rest are
+        // white planes on the field with no outline (The Stroke Rule)
+        !plain &&
+          (lead
+            ? "border-foreground shadow-[inset_0_0_0_1px_var(--foreground)]"
+            : "border-[var(--card-border,var(--border-strong))]"),
       )}
     >
       {rate.special && !stacked && <SpecialPill label={r("special")} className="mb-3" />}
@@ -110,16 +115,12 @@ export function RateCard({
   );
 }
 
-/** the Special Rate's mark: the chapter's ink, solid */
+/** the Special Rate's mark: the app's brand chip, as Back For Good's
+ *  special rate card wears it */
 function SpecialPill({ label, className }: { label: string; className?: string }) {
   return (
-    <span
-      className={cn(
-        "inline-flex items-center gap-1.5 rounded-full bg-tone-ink px-2.5 py-1 font-display text-xs font-semibold text-background",
-        className,
-      )}
-    >
+    <Badge variant="brand" className={className}>
       <BadgePercent aria-hidden className="size-3.5" /> {label}
-    </span>
+    </Badge>
   );
 }

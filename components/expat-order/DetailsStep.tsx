@@ -66,8 +66,8 @@ function DetailAddress({
   return (
     <div className="space-y-3">
       {changed && (
-        <p role="status" className="flex gap-2 rounded-md bg-surface-3 px-3 py-2.5 text-sm">
-          <Info aria-hidden className="mt-0.5 size-4 shrink-0 text-tone-ink" />
+        <p role="status" className="flex gap-2 rounded-md bg-info/10 px-3 py-2.5 text-sm">
+          <Info aria-hidden className="mt-0.5 size-4 shrink-0 text-info" />
           {changedNote}
         </p>
       )}

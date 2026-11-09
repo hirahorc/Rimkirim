@@ -3,6 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { BadgePercent, ChevronDown } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 import { CollapseHeight } from "@/components/ui/disclosure";
 import { CarrierLogo } from "@/components/rates/CarrierMark";
 import { getCountry } from "@/lib/data/countries";
@@ -16,9 +17,9 @@ import { cn } from "@/lib/utils/cn";
 /**
  * The picked rate beside both plan steps, after the live page's "Selected
  * service": carrier and service, from and to, transit, the charged weight and
- * the estimated price, with the way back to change it. A band-wash sheet that
- * stays in view on a wide screen; on a phone a one-line strip over the form
- * (service and price) that opens to the rest.
+ * the estimated price, with the way back to change it. A white card on the
+ * field that stays in view on a wide screen; on a phone a one-line strip
+ * over the form (service and price) that opens to the rest.
  */
 export function SelectedService({ check, rate }: { check: CheckRateInput; rate: ExpatRate }) {
   const t = useT();
@@ -50,15 +51,15 @@ export function SelectedService({ check, rate }: { check: CheckRateInput; rate: 
         <p className="truncate font-display text-sm font-semibold">{rate.service}</p>
       </div>
       {rate.special && (
-        <p className="mt-2 inline-flex items-center gap-1 text-xs font-medium text-tone-ink">
+        <Badge variant="brand" className="mt-2">
           <BadgePercent aria-hidden className="size-3.5" /> {t("expatOrder.rates.special")}
-        </p>
+        </Badge>
       )}
     </div>
   );
 
   const price = (
-    <div className="rounded-md bg-background px-4 py-3">
+    <div className="rounded-md bg-surface-2 px-4 py-3">
       <p className="text-xs text-muted">{s("estimate")}</p>
       <p className="mt-0.5 font-display text-2xl font-bold tracking-tight tabular-nums">{formatIDR(rate.total)}</p>
       <p className="mt-1 text-xs leading-relaxed text-muted">{s("note")}</p>
@@ -72,8 +73,11 @@ export function SelectedService({ check, rate }: { check: CheckRateInput; rate: 
   );
 
   return (
-    <aside aria-labelledby="selected-service" className="band mx-0! rounded-lg px-5 py-5">
-      <h2 id="selected-service" className="font-display text-xs font-medium uppercase tracking-[0.04em] text-tone-ink">
+    <aside
+      aria-labelledby="selected-service"
+      className="rounded-lg border border-[var(--card-border,var(--border))] bg-[var(--card-surface,var(--surface))] px-5 py-5"
+    >
+      <h2 id="selected-service" className="text-xs font-medium text-muted">
         {s("title")}
       </h2>
 

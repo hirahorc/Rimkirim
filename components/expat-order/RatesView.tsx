@@ -4,6 +4,7 @@ import * as React from "react";
 import { useRouter } from "next/navigation";
 import { ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { CollapseHeight } from "@/components/ui/disclosure";
 import { CountrySelect } from "@/components/shared/CountrySelect";
@@ -31,9 +32,9 @@ function addressError(p: Place | null, t: (k: string) => string): string | undef
 }
 
 /**
- * Check Rate and Select Rate on one page (the sky chapter, where the trip
- * departs): the form on a band, and once checked the one rate the epic asks
- * for under it, the rest behind "See more rates". The form writes straight
+ * Check Rate and Select Rate on one page, on the app's field (a white card
+ * on Panel 2, as every order screen sits): the form, and once checked the
+ * one rate the epic asks for under it, the rest behind "See more rates". The form writes straight
  * into the draft, so a changed input reprices at once and a reload keeps it.
  */
 export function RatesView() {
@@ -81,13 +82,13 @@ function RatesForm() {
   const rounded = !!check.weightKg && result && result.chargedKg !== check.weightKg;
 
   return (
-    <div data-tone="sky" className="pb-20">
-      <div className="mx-auto max-w-6xl px-4 pt-8 sm:px-6 sm:pt-10">
-        <ReviewNote note={ORDER_REVIEW_NOTES.rates} className="mb-6" />
-        <FlowStepper current="rate" />
-        <h1 className="mt-8 text-balance font-display text-3xl font-bold tracking-tight sm:text-4xl">{r("title")}</h1>
-        <p className="mt-3 max-w-xl text-pretty text-muted">{r("subtitle")}</p>
-      </div>
+    // the app's field: Panel 2 under white cards, the way every order screen
+    // reads; the landing's chapter colours stay on the landing
+    <div data-field className="mx-auto max-w-5xl px-4 pb-20 pt-8 sm:px-6 sm:pt-10">
+      <ReviewNote note={ORDER_REVIEW_NOTES.rates} className="mb-6" />
+      <FlowStepper current="rate" />
+      <h1 className="mt-8 text-balance font-display text-3xl font-bold tracking-tight sm:text-4xl">{r("title")}</h1>
+      <p className="mt-3 max-w-xl text-pretty text-muted">{r("subtitle")}</p>
 
       <form
         noValidate
@@ -96,60 +97,56 @@ function RatesForm() {
           setTried(true);
           if (complete) setShown(true);
         }}
-        className="band mt-8"
+        className="mt-8"
       >
-        <div className="mx-auto grid max-w-6xl gap-4 px-4 py-6 sm:px-6 sm:py-8 md:grid-cols-2">
-          <fieldset className="rounded-lg bg-background px-5 py-5 sm:px-6">
-            <legend className="sr-only">{r("from")}</legend>
-            <p aria-hidden className="mb-4 font-display text-xs font-medium uppercase tracking-[0.04em] text-tone-ink">
-              {r("from")}
-            </p>
-            <div className="space-y-4">
-              <Field label={r("country")} error={errs.originCountry}>
-                <CountrySelectField
-                  value={check.originCountry}
-                  onChange={(code) => update({ originCountry: code, origin: null })}
-                  placeholder={r("countryPh")}
-                  ariaLabel={`${r("from")}: ${r("country")}`}
-                />
-              </Field>
-              <Field label={r("address")} hint={originErr ? undefined : r("addressHint")} error={originErr}>
-                <AddressField
-                  country={check.originCountry}
-                  value={check.origin}
-                  onChange={(p) => update({ origin: p })}
-                  invalid={!!originErr}
-                />
-              </Field>
-            </div>
-          </fieldset>
+        <Card className="p-5 sm:p-6">
+          <div className="grid gap-8 md:grid-cols-2 md:gap-6">
+            <fieldset className="min-w-0">
+              <legend className="mb-4 font-display text-base font-semibold tracking-tight">{r("from")}</legend>
+              <div className="space-y-4">
+                <Field label={r("country")} error={errs.originCountry}>
+                  <CountrySelectField
+                    value={check.originCountry}
+                    onChange={(code) => update({ originCountry: code, origin: null })}
+                    placeholder={r("countryPh")}
+                    ariaLabel={`${r("from")}: ${r("country")}`}
+                  />
+                </Field>
+                <Field label={r("address")} hint={originErr ? undefined : r("addressHint")} error={originErr}>
+                  <AddressField
+                    country={check.originCountry}
+                    value={check.origin}
+                    onChange={(p) => update({ origin: p })}
+                    invalid={!!originErr}
+                  />
+                </Field>
+              </div>
+            </fieldset>
 
-          <fieldset className="rounded-lg bg-background px-5 py-5 sm:px-6">
-            <legend className="sr-only">{r("to")}</legend>
-            <p aria-hidden className="mb-4 font-display text-xs font-medium uppercase tracking-[0.04em] text-tone-ink">
-              {r("to")}
-            </p>
-            <div className="space-y-4">
-              <Field label={r("country")}>
-                <CountrySelectField
-                  value={INDONESIA.code}
-                  onChange={() => {}}
-                  locked
-                  ariaLabel={`${r("to")}: ${r("country")}`}
-                />
-              </Field>
-              <Field label={r("address")} hint={destErr ? undefined : r("addressHint")} error={destErr}>
-                <AddressField
-                  country="ID"
-                  value={check.destination}
-                  onChange={(p) => update({ destination: p })}
-                  invalid={!!destErr}
-                />
-              </Field>
-            </div>
-          </fieldset>
+            <fieldset className="min-w-0">
+              <legend className="mb-4 font-display text-base font-semibold tracking-tight">{r("to")}</legend>
+              <div className="space-y-4">
+                <Field label={r("country")}>
+                  <CountrySelectField
+                    value={INDONESIA.code}
+                    onChange={() => {}}
+                    locked
+                    ariaLabel={`${r("to")}: ${r("country")}`}
+                  />
+                </Field>
+                <Field label={r("address")} hint={destErr ? undefined : r("addressHint")} error={destErr}>
+                  <AddressField
+                    country="ID"
+                    value={check.destination}
+                    onChange={(p) => update({ destination: p })}
+                    invalid={!!destErr}
+                  />
+                </Field>
+              </div>
+            </fieldset>
+          </div>
 
-          <div className="flex flex-col gap-4 rounded-lg bg-background px-5 py-5 sm:flex-row sm:items-start sm:justify-between sm:px-6 md:col-span-2">
+          <div className="mt-6 flex flex-col gap-4 border-t border-border pt-6 sm:flex-row sm:items-start sm:justify-between">
             <div className="sm:w-64">
               <Field label={r("weight")} hint={errs.weight ? undefined : r("weightHint")} error={errs.weight}>
                 <WeightInput
@@ -168,11 +165,11 @@ function RatesForm() {
               {r("submit")}
             </Button>
           </div>
-        </div>
+        </Card>
       </form>
 
       {shown && result && lead && (
-        <section aria-labelledby="estimate-heading" className="mx-auto mt-10 max-w-6xl px-4 sm:px-6">
+        <section aria-labelledby="estimate-heading" className="mt-10">
           <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1">
             <h2 id="estimate-heading" className="font-display text-2xl font-semibold tracking-tight">
               {r("resultsTitle")}
