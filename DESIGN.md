@@ -261,8 +261,10 @@ untouched. The rest of the product stays on daylight neutrals.
 **Every "Check your rate" is the primary button.** The hero's lime `lg` with its arrow appears in the hero,
 under the comparison, under pricing, under the steps and on the ticket, always worded "Check
 your rate" (never "quote": the figure it opens is an Estimate, CONTEXT.md). The bar keeps the `sm`
-size its height allows. It is one door, Check Rate, repeated wherever a reader might decide, so a second lime "Check your rate" never splits the voice. A
-different action never takes lime.
+size its height allows, and waits until the hero's pair has scrolled away. On a phone every one
+is full width, as the hero's is. It is one door, Check Rate, repeated wherever a reader might
+decide, so a second lime "Check your rate" never splits the voice. A different action never takes
+lime.
 
 ### Named Rules
 **The One-Voice Rule.** Live Lime appears on ≤10% of any given screen — the primary CTA, the one
@@ -472,9 +474,28 @@ which is white. So a landing alternates two grounds:
 
 - **The open desk:** white and de-boxed, with no container and no hairline at its edges.
 - **The band** (`.band`): the section laid on its own sheet with the `lg` card corner. The sheet
-  is its chapter's wash (The Chapter Rule), or Panel 2 on a page without chapters. On phones it
-  runs full bleed, because measure is scarce and the corners alone say "sheet". From `sm` it
-  sits 12px in from the viewport, so the desk shows around it.
+  is its chapter's wash (The Chapter Rule), or Panel 2 on a page without chapters. It sits in
+  from the viewport by one inset at every width, 8px on a phone and 12px from `sm`, so its
+  corners always clear the screen's edge and the desk shows around it. The closing ticket takes
+  the same inset on a phone.
+
+**The section shell** (`.section-shell`): every landing section's content column, `max-w-6xl`
+with the 16px/24px gutter. Inside a band the sheet's own inset comes off the column, so a band's
+content starts on exactly the desk's content edge and nothing jogs sideways at a transition. A
+strip that bleeds (the reviews, the pickup photos) bleeds to the band's edge, not the screen's.
+
+**The rhythm.** Three intervals, each clearly bigger than the next: a section's own padding
+(64px on a phone, 80px from `sm`), a sub-section inside it (a hairline with 48–64px above and
+40–48px under it, and its head one step down the scale: 20–24px against the section's 30–36px),
+then heading to content (32px on a phone, 48px from `sm`). Groups inside sit at 16–24px.
+
+**No band colour on the desk.** A container inside a desk section is never tinted with a band's
+wash: it is de-boxed between hairlines, or a white plane, or at most the chapter's Panel 2. A
+tinted panel on the desk reads as a second, narrower band and stutters against the real one.
+
+**Caps are for eyebrows.** Tracked uppercase is the section eyebrow's alone. Group heads, card
+labels, column headers and field labels are sentence case in the display face, semibold, so the
+one tracked line per section still means "a new section starts here".
 
 Inside a band, a `Card` is a white plane with no outline, as in the field (The Field). Anything
 that would itself sit at the sheet's own tone, such as a photo slot, steps up to white so it
@@ -489,6 +510,13 @@ hairline: their label beside the marks from `lg` (over them below), set from the
 pickups' own label since both prove the same promise, the marks spread across the rest of the
 line; never a centred label over marks pushed to the band's two edges.
 
+**Each section in the viewport.** The hero owns the first screen from `lg`: it fills the viewport
+under the bar, less a 1.5rem peek of the reviews' sheet (capped for very tall screens). Short
+sections (pricing, the FAQ, the closing ticket) fit one desktop screen; long ones (what you can
+send, who does what, the comparison, customs) read as a scroll with their own landmarks, a
+sub-head between hairlines every screen or so. No section is forced to a full screen: snapping a
+long page into screens hides content behind its own crop.
+
 The expat page runs:
 
 1. Hero (desk, sky)
@@ -499,7 +527,9 @@ The expat page runs:
 6. Pricing (band, violet)
 7. How it works (desk, magenta)
 8. What to expect at customs (band, magenta), once the reader has seen how a shipment runs
-9. FAQ (desk, magenta)
+9. FAQ (desk, magenta): on the content edge like the rest, the head and the way to ask in a
+   column of their own from `lg` (sticky), the questions beside it ruled one from the next,
+   each one step up the scale (`Disclosure strong`)
 10. The dusk ticket (see Components)
 
 ## Elevation & Depth
@@ -1157,7 +1187,10 @@ footer for `ExpatHeader` / `ExpatFooter` (`isExpatRoute`), after the live rimkir
 page: a plain full-width sticky bar (`bg-background/95`, hairline below; at the capsule's /85 the
 content ghosted through a bar this wide) holding the wordmark, a hairline divider and the service
 name in the `.nav-expat` gradient, and one lime "Check your rate" that opens the order flow, like
-every other rate button on the page (inside the flow it gives way to "Need help?"). The page is English only (LanguageProvider
+every other rate button on the page. On the landing it waits, hidden and inert, while the hero's
+own pair is in view, and arrives (a fade and a 4px rise on the hover curve) once it has scrolled
+away, so two limes saying the same thing never show at once. Inside the flow it gives way to
+"Need help?". The page is English only (LanguageProvider
 forces the locale on this route, whatever the visitor saved), so neither bar nor footer carries a
 language switch. No site menu, no sign-in, no bell: expat orders run in their own flow, not the
 account system. The logo stays on the page, so the only door back to the main site is the footer's
@@ -1220,8 +1253,12 @@ eyebrow names the service right below.
 
 ### The comparison lane (signature)
 The expat "Why Rimkirim" table, Rimkirim against the typical options. It stays a real table at
-every width, and Rimkirim is a **lane laid across a ruled sheet**: one continuous card in the
-chapter's wash with the `lg` corner, rising above the header rule and running below the last row.
+every width from `md`, and Rimkirim is a **lane laid across a ruled sheet**: one continuous card
+on the chapter's Panel 2 with the `lg` corner, rising above the header rule and running below the
+last row. Panel 2, not the band's wash: the table sits on the desk between two violet bands, and a
+wash-coloured lane would run the chapter together into one long violet stretch. On a phone the
+table becomes rows read down: the label, the lane's answer on its Panel 2 tile, then "Typical
+options:" under it in `muted-2`, under the lane's `tone-ink` head with the wordmark.
 
 - **The head:** `tone-ink` with the white wordmark and the page's "Door to door, by air" in a
   brand badge, the section's one lime mark (lime is at its loudest on violet). Phones keep the

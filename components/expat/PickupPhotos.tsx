@@ -108,7 +108,7 @@ function PickupStrip({ className }: { className?: string }) {
         ref={list}
         tabIndex={0}
         aria-labelledby="pickups-heading"
-        className="scroll-strip relative -mx-4 flex snap-x snap-mandatory scroll-px-4 gap-3 overflow-x-auto px-4 pb-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-foreground/40"
+        className="scroll-strip relative -mx-2 flex snap-x snap-mandatory scroll-px-2 gap-3 overflow-x-auto px-2 pb-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-foreground/40"
       >
         {PHOTOS.map((p) => {
           const r = route(p);
@@ -165,7 +165,7 @@ export function PickupPhotos({ className }: { className?: string }) {
 
   return (
     <div className={className}>
-      <h3 id="pickups-heading" className="font-display text-xs font-medium uppercase tracking-[0.04em] text-muted">
+      <h3 id="pickups-heading" className="font-display text-sm font-semibold text-muted">
         {t("expat.pickups.label")}
       </h3>
       <ul

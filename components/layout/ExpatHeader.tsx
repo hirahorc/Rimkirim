@@ -1,5 +1,6 @@
 "use client";
 
+import * as React from "react";
 import { usePathname } from "next/navigation";
 import { MessageCircle } from "lucide-react";
 import { Logo } from "./Logo";
@@ -7,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { EXPAT_QUOTE_URL } from "@/lib/data/expat";
 import { waLink } from "@/lib/contact";
 import { useT } from "@/lib/i18n/LanguageProvider";
+import { cn } from "@/lib/utils/cn";
 
 /**
  * The expat landing's own bar, after the live rimkirim.com/relocation page:
@@ -24,6 +26,21 @@ import { useT } from "@/lib/i18n/LanguageProvider";
 export function ExpatHeader() {
   const t = useT();
   const inFlow = usePathname() !== "/expat-relocation";
+  // on the landing the bar's button waits while the hero's own pair is in
+  // view, then arrives (a fade and a 4px rise, 200ms ease-out): two limes
+  // saying the same thing at once split the voice
+  const [heroDoor, setHeroDoor] = React.useState(true);
+  React.useEffect(() => {
+    if (inFlow) return;
+    const door = document.querySelector("[data-hero-door]");
+    if (!door) return;
+    // the latest entry wins: a fast scroll can deliver several at once
+    const io = new IntersectionObserver((entries) => setHeroDoor(entries[entries.length - 1].isIntersecting), {
+      rootMargin: "-64px 0px 0px 0px",
+    });
+    io.observe(door);
+    return () => io.disconnect();
+  }, [inFlow]);
   return (
     // /95, as on the live page: a full-width bar shows whatever scrolls under
     // it, and at the capsule's /85 the content ghosted through as blotches
@@ -58,9 +75,18 @@ export function ExpatHeader() {
             <MessageCircle aria-hidden className="size-4" /> {t("expatOrder.help")}
           </a>
         ) : (
-          <Button asChild size="sm" className="shrink-0">
-            <a href={EXPAT_QUOTE_URL}>{t("expat.cta")}</a>
-          </Button>
+          <span
+            inert={heroDoor || undefined}
+            aria-hidden={heroDoor || undefined}
+            className={cn(
+              "shrink-0 transition-[opacity,translate] duration-200 ease-(--ease-hover) motion-reduce:transition-none",
+              heroDoor ? "pointer-events-none translate-y-1 opacity-0 motion-reduce:translate-y-0" : "opacity-100",
+            )}
+          >
+            <Button asChild size="sm">
+              <a href={EXPAT_QUOTE_URL}>{t("expat.cta")}</a>
+            </Button>
+          </span>
         )}
       </div>
     </header>

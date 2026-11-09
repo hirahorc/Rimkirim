@@ -54,7 +54,7 @@ export function WhyRimkirim() {
   const last = ROWS.length - 1;
   return (
     <section aria-labelledby="compare-heading" data-tone="violet">
-      <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6">
+      <div className="section-shell mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-20">
         <ReviewNote note={REVIEW_NOTES.compare} className="mb-8" />
         <SectionHead
           id="compare-heading"
@@ -63,9 +63,43 @@ export function WhyRimkirim() {
           subtitle={t("expat.compare.subtitle")}
         />
 
+        {/* a phone reads it down, row by row: what's compared, our answer on
+            the lane's pale tint, then the typical one under it, so no cell
+            is squeezed to two or three words a line */}
+        <div className="mt-8 md:hidden">
+          <div className="flex items-center justify-between gap-3 rounded-t-lg bg-tone-ink px-4 py-3.5">
+            <Image
+              src="/rimkirim-logo-white.png"
+              alt="Rimkirim"
+              width={1796}
+              height={618}
+              sizes="58px"
+              className="h-5 w-auto"
+            />
+            <span className="text-xs font-medium text-background/80">{t("expat.compare.caption")}</span>
+          </div>
+          <ul className="divide-y divide-border border-b border-border">
+            {ROWS.map((key) => (
+              <li key={key} className="py-5">
+                <p className="text-sm font-medium text-muted">{t(`expat.compare.${key}`)}</p>
+                <div className="mt-2 rounded-md bg-surface-2 px-4 py-3">
+                  <p className="font-display text-base font-semibold leading-snug tracking-tight">
+                    {t(`expat.compare.${key}Lead`)}
+                  </p>
+                  <p className="mt-1 text-sm leading-snug text-muted">{t(`expat.compare.${key}Ours`)}</p>
+                </div>
+                <p className="mt-3 text-sm leading-snug text-muted-2">
+                  <span className="font-medium text-muted">{t("expat.compare.typical")}:</span>{" "}
+                  {t(`expat.compare.${key}Typical`)}
+                </p>
+              </li>
+            ))}
+          </ul>
+        </div>
+
         {/* separate borders: only they let the lane's cells keep their
-            rounded ends */}
-        <table className="mt-12 w-full table-fixed border-separate border-spacing-0 text-left md:mt-14">
+            rounded ends. From md, where three columns have room */}
+        <table className="mt-12 hidden w-full table-fixed border-separate border-spacing-0 text-left md:table">
           <caption className="sr-only">{t("expat.compare.caption")}</caption>
           <colgroup>
             <col className="w-[24%] md:w-[11rem] lg:w-[13rem]" />
@@ -95,9 +129,7 @@ export function WhyRimkirim() {
                 scope="col"
                 className="border-b border-border-strong px-3 pb-5 align-bottom font-normal md:px-7 md:pb-6"
               >
-                <span className="block font-display text-xs font-medium uppercase tracking-[0.04em] text-muted">
-                  {t("expat.compare.typical")}
-                </span>
+                <span className="block font-display text-sm font-semibold text-muted">{t("expat.compare.typical")}</span>
                 <span className="mt-1 hidden text-xs leading-snug text-muted-2 md:block">
                   {t("expat.compare.typicalNote")}
                 </span>
@@ -122,7 +154,7 @@ export function WhyRimkirim() {
                     without ruling it like the sheet underneath */}
                 <td
                   className={cn(
-                    "bg-(--tone-wash) px-3 py-5 align-top md:px-7 md:py-7",
+                    "bg-surface-2 px-3 py-5 align-top md:px-7 md:py-7",
                     i < last ? "border-b border-background/80" : "rounded-b-lg md:rounded-b-none",
                   )}
                 >
@@ -157,7 +189,7 @@ export function WhyRimkirim() {
           <tfoot className="hidden md:table-footer-group">
             <tr>
               <td />
-              <td className="rounded-b-lg bg-(--tone-wash) px-7 pb-8 pt-1">
+              <td className="rounded-b-lg bg-surface-2 px-7 pb-8 pt-1">
                 <Button asChild size="lg">
                   <a href={EXPAT_QUOTE_URL}>
                     {t("expat.cta")} <ArrowRight />
@@ -170,7 +202,7 @@ export function WhyRimkirim() {
         </table>
 
         <p className="mt-8 max-w-2xl text-xs leading-relaxed text-muted-2">{t("expat.compare.footnote")}</p>
-        <Button asChild size="lg" className="mt-8 md:hidden">
+        <Button asChild size="lg" className="mt-8 w-full md:hidden">
           <a href={EXPAT_QUOTE_URL}>
             {t("expat.cta")} <ArrowRight />
           </a>

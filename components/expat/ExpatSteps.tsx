@@ -20,7 +20,7 @@ export function ExpatSteps() {
   const t = useT();
   return (
     <section id="how-it-works" aria-labelledby="steps-heading" data-tone="magenta" className="scroll-mt-24">
-      <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6">
+      <div className="section-shell mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-20">
         <ReviewNote note={REVIEW_NOTES.steps} className="mb-8" />
         <JourneySteps
           head={
@@ -33,7 +33,7 @@ export function ExpatSteps() {
           }
           steps={STEPS.map((s) => ({ title: t(`expat.steps.${s}Title`), body: t(`expat.steps.${s}Body`) }))}
           footer={
-            <Button asChild size="lg">
+            <Button asChild size="lg" className="w-full sm:w-auto">
               <a href={EXPAT_QUOTE_URL}>
                 {t("expat.cta")} <ArrowRight />
               </a>

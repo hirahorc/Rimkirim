@@ -148,7 +148,7 @@ export function WhatYouCanShip() {
 
   return (
     <section ref={rootRef} aria-labelledby="ship-heading" data-tone="sky">
-      <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6">
+      <div className="section-shell mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-20">
         <ReviewNote note={REVIEW_NOTES.ship} className="mb-8" />
         <div className="jr-reveal" style={order(0)}>
           <SectionHead
@@ -163,7 +163,7 @@ export function WhatYouCanShip() {
             placement lifts the next cards back up beside it, so the details
             land under the card's own row at every column count. The rows'
             gap is each card's own foot, so a closed panel adds none */}
-        <div ref={gridRef} className="mt-12 -mb-4 grid grid-flow-row-dense gap-x-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div ref={gridRef} className="mt-8 -mb-4 grid sm:mt-12 grid-flow-row-dense gap-x-4 sm:grid-cols-2 lg:grid-cols-3">
           {CARDS.map(({ key, facts, action }, i) => {
             const isOpen = open === key;
             const Chevron = isOpen ? ChevronUp : ChevronDown;
@@ -173,7 +173,7 @@ export function WhatYouCanShip() {
                 <div data-card={key} className="jr-reveal pb-4" style={order(1 + i)}>
                   <div
                     className={cn(
-                      "ship-card relative flex h-full gap-4 rounded-lg border bg-surface p-5 transition-colors duration-200 sm:flex-col sm:gap-5 sm:p-6",
+                      "ship-card relative flex h-full gap-4 rounded-lg border bg-surface p-4 transition-colors duration-200 sm:flex-col sm:gap-5 sm:p-6",
                       isOpen ? "border-(--tone)" : "border-border hover:bg-surface-2",
                     )}
                   >
@@ -189,7 +189,7 @@ export function WhatYouCanShip() {
                         aria-expanded={isOpen}
                         aria-controls={`ship-${key}`}
                         onClick={() => choose(key)}
-                        className="mt-auto flex items-center gap-1.5 self-start pt-4 text-left text-sm font-medium after:absolute after:inset-0 after:rounded-lg focus-visible:outline-none focus-visible:after:ring-2 focus-visible:after:ring-foreground/50"
+                        className="mt-auto flex items-center gap-1.5 self-start pt-3 text-left text-sm font-medium after:absolute sm:pt-4 after:inset-0 after:rounded-lg focus-visible:outline-none focus-visible:after:ring-2 focus-visible:after:ring-foreground/50"
                       >
                         {k("more")}
                         <Chevron aria-hidden className="size-4 text-muted-2" />
@@ -255,8 +255,8 @@ export function WhatYouCanShip() {
             what they travel in, not what you send; the rule that prices every
             piece over them, each one's own rule leading its words. On a phone
             each reads as a card does, drawing beside the words */}
-        <div className="jr-reveal mt-16 border-t border-border pt-12" style={order(1 + CARDS.length)}>
-          <h3 className="font-display text-2xl font-semibold tracking-tight sm:text-3xl">{t("expat.ship.pack.title")}</h3>
+        <div className="jr-reveal mt-12 border-t border-border pt-10 sm:mt-16 sm:pt-12" style={order(1 + CARDS.length)}>
+          <h3 className="font-display text-xl font-semibold tracking-tight sm:text-2xl">{t("expat.ship.pack.title")}</h3>
           <p className="mt-2 max-w-2xl leading-relaxed text-muted">{t("expat.ship.pack.lead")}</p>
           <p className="mt-2 text-sm">
             {/* the same modal as the main site's calculator */}
@@ -320,9 +320,11 @@ export function WhatYouCanShip() {
             can't go at all, each thing in its ring (amber to ask about, the
             no-entry sign for never). On a phone it reads down, the asking
             first; from lg the two sit side by side over one way to ask */}
-        <div className="jr-reveal mt-16 border-t border-border pt-12" style={order(2 + CARDS.length)}>
-          <h3 className="font-display text-2xl font-semibold tracking-tight sm:text-3xl">{t("expat.ship.before.title")}</h3>
-          <div className="mt-6 grid rounded-lg bg-surface-2 px-5 py-7 sm:px-8 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] lg:p-10">
+        <div className="jr-reveal mt-12 border-t border-border pt-10 sm:mt-16 sm:pt-12" style={order(2 + CARDS.length)}>
+          <h3 className="font-display text-xl font-semibold tracking-tight sm:text-2xl">{t("expat.ship.before.title")}</h3>
+          {/* de-boxed on the desk: no tinted panel, so nothing in the sky
+              chapter stacks against the violet band that follows */}
+          <div className="mt-6 grid lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
             <div className="lg:pr-12">
               <h4 className="flex items-center gap-2.5 font-display text-xl font-semibold tracking-tight">
                 <CircleAlert aria-hidden className="size-5 text-warning-ink" strokeWidth={2.25} />
@@ -338,7 +340,7 @@ export function WhatYouCanShip() {
                 ))}
               </ul>
             </div>
-            <div className="mt-8 border-t border-border-strong pt-7 lg:mt-0 lg:border-l lg:border-t-0 lg:pl-12 lg:pt-0">
+            <div className="mt-8 border-t border-border pt-7 lg:mt-0 lg:border-l lg:border-t-0 lg:pl-12 lg:pt-0">
               <h4 className="flex items-center gap-2.5 font-display text-xl font-semibold tracking-tight">
                 <Ban aria-hidden className="size-5 text-danger" strokeWidth={2.25} />
                 {t("expat.ship.before.banned.title")}
@@ -356,7 +358,7 @@ export function WhatYouCanShip() {
                 ))}
               </ul>
             </div>
-            <p className="mt-8 border-t border-border-strong pt-5 text-sm leading-relaxed text-muted lg:col-span-2">
+            <p className="mt-8 border-t border-border pt-5 text-sm leading-relaxed text-muted lg:col-span-2">
               {t("expat.ship.before.ask")}{" "}
               <a
                 href={waLink(t("expat.ship.before.wa"))}

@@ -31,21 +31,28 @@ export function ExpatFaq() {
     // on the desk, after the customs band: the questions read as a page of
     // their own, not one more sheet
     <section id="faq" aria-labelledby="faq-heading" data-tone="magenta" className="scroll-mt-24">
-      <div className="mx-auto max-w-3xl px-4 py-20 sm:px-6">
-        <ReviewNote note={REVIEW_NOTES.faq} className="mb-8" />
-        <SectionHead id="faq-heading" eyebrow={t("expat.faq.eyebrow")} title={t("expat.faq.heading")} />
-        <div className="mt-10 border-t border-border">
+      {/* on the page's content edge like every other section, the heading
+          and the way to ask in a column of their own from lg, the questions
+          beside them, ruled one from the next */}
+      <div className="section-shell mx-auto grid max-w-6xl gap-8 px-4 py-16 sm:px-6 sm:py-20 lg:grid-cols-[minmax(0,1fr)_minmax(0,2fr)] lg:gap-16">
+        <div>
+          <ReviewNote note={REVIEW_NOTES.faq} className="mb-8" />
+          <div className="lg:sticky lg:top-28">
+            <SectionHead id="faq-heading" eyebrow={t("expat.faq.eyebrow")} title={t("expat.faq.heading")} />
+            <p className="mt-6">
+              <a href={WA_URL} target="_blank" rel="noreferrer" className="link-mark tap-row relative text-sm">
+                {t("expat.faq.wa")}
+              </a>
+            </p>
+          </div>
+        </div>
+        <div className="divide-y divide-border border-y border-border">
           {expatFaq(locale).map((f) => (
-            <Disclosure key={f.q} id={f.slug} question={f.q}>
+            <Disclosure key={f.q} id={f.slug} question={f.q} strong>
               {f.a}
             </Disclosure>
           ))}
         </div>
-        <p className="mt-8">
-          <a href={WA_URL} target="_blank" rel="noreferrer" className="link-mark text-sm">
-            {t("expat.faq.wa")}
-          </a>
-        </p>
       </div>
     </section>
   );

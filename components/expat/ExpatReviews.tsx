@@ -151,7 +151,7 @@ export function ExpatReviews() {
 
   return (
     <section id="reviews" aria-labelledby="reviews-heading" data-tone="sky" className="band scroll-mt-24">
-      <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6">
+      <div className="section-shell mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-20">
         <ReviewNote note={REVIEW_NOTES.reviews} className="mb-8" />
         {/* no eyebrow, unlike the sections below: this one often shows from
             the hero's own viewport, where an eyebrow read as a stray label
@@ -168,7 +168,7 @@ export function ExpatReviews() {
             strip, the one exception) */}
         <div
           ref={gridRef}
-          className="reviews-grid scroll-strip -mx-4 mt-10 flex snap-x snap-mandatory items-start sm:items-stretch scroll-px-4 gap-4 overflow-x-auto px-4 pb-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-foreground/40 sm:mx-0 sm:grid sm:snap-none sm:grid-cols-2 sm:overflow-visible sm:px-0 sm:pb-0"
+          className="reviews-grid scroll-strip -mx-2 mt-8 flex snap-x snap-mandatory items-start sm:items-stretch scroll-px-2 gap-4 overflow-x-auto px-2 pb-1 sm:mt-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-foreground/40 sm:mx-0 sm:grid sm:snap-none sm:grid-cols-2 sm:overflow-visible sm:px-0 sm:pb-0"
           tabIndex={0}
           role="group"
           aria-label={`${reviews.length} ${t("testimonial.stripLabel")}`}

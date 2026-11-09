@@ -84,8 +84,14 @@ export function ExpatHero() {
   const t = useT();
   const title1 = t("expat.hero.title1");
   return (
-    <section data-tone="sky" className="relative overflow-hidden">
-      <div className="relative mx-auto max-w-6xl px-4 pb-16 pt-10 sm:px-6 sm:pt-14 lg:pb-20 lg:pt-16">
+    // from lg the hero owns the first screen: it fills the viewport under
+    // the bar, less a 1.5rem peek of the reviews' sheet, so the page opens
+    // on one picture with the next one only hinted (capped for tall screens)
+    <section
+      data-tone="sky"
+      className="relative overflow-hidden lg:flex lg:min-h-[min(calc(100svh-5.5rem),56rem)] lg:items-center"
+    >
+      <div className="relative mx-auto w-full max-w-6xl px-4 pb-16 pt-10 sm:px-6 sm:pt-14 lg:py-16">
         <ReviewNote note={REVIEW_NOTES.hero} className="mb-3" />
         <ReviewNote note={REVIEW_NOTES.cta} className="mb-6" />
         <div className="grid items-center gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,30rem)] lg:gap-14">
@@ -124,7 +130,9 @@ export function ExpatHero() {
                 tinted panel so lime stays the one colour in the row. On a
                 phone, where the pair won't fit one row, they stack at full
                 width, the door on top */}
-            <div className="mt-8 grid gap-3 sm:flex sm:flex-wrap sm:items-center">
+            {/* the bar's own button waits until this pair has scrolled away
+                (ExpatHeader, data-hero-door), so two limes never show at once */}
+            <div data-hero-door className="mt-8 grid gap-3 sm:flex sm:flex-wrap sm:items-center">
               <DoorButton href={EXPAT_QUOTE_URL} className="hero-in" style={at(TIERS.quote)}>
                 {t("expat.cta")}
               </DoorButton>

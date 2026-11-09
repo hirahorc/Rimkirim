@@ -289,8 +289,9 @@ export function JourneySteps({
           )}
         </div>
 
-        <ol ref={listRef} className="relative -mx-3 lg:col-start-1 lg:row-start-1">
-          {/* the highlight, gliding to the active step */}
+        <ol ref={listRef} className="relative -mx-2 sm:-mx-3 lg:col-start-1 lg:row-start-1">
+          {/* the highlight, gliding to the active step; on a phone it reaches
+              8px past the text, not 12, so it keeps clear of the screen edge */}
           {row && (
             <span
               aria-hidden
@@ -307,7 +308,7 @@ export function JourneySteps({
           {layout && (
             <span
               aria-hidden
-              className="pointer-events-none absolute left-[calc(1.625rem-1px)] w-[2px] rounded-full bg-border-strong"
+              className="pointer-events-none absolute left-[calc(1.375rem-1px)] w-[2px] rounded-full bg-border-strong sm:left-[calc(1.625rem-1px)]"
               style={{ top: railTop, height: railSpan }}
             >
               <span
@@ -332,7 +333,7 @@ export function JourneySteps({
             return (
               <li
                 key={s.title}
-                className="jr-reveal group/step relative grid grid-cols-[1.75rem_minmax(0,1fr)] gap-x-4 p-3"
+                className="jr-reveal group/step relative grid grid-cols-[1.75rem_minmax(0,1fr)] gap-x-4 p-2 sm:p-3"
                 style={order(2 + i)}
               >
                 {/* the whole row is the button, laid over it, so the title

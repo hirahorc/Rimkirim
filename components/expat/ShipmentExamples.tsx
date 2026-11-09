@@ -29,7 +29,7 @@ export function ShipmentExamples() {
   }
   return (
     <section aria-labelledby="examples-heading" data-tone="magenta" className="band">
-      <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6">
+      <div className="section-shell mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-20">
         <SectionHead
           id="examples-heading"
           title={t("expat.examples.heading")}

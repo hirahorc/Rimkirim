@@ -1,6 +1,8 @@
 "use client";
 
-import { Check, FileText, MessageCircle, Receipt, type LucideIcon } from "lucide-react";
+import * as React from "react";
+import { Check, ChevronDown, FileText, MessageCircle, Receipt, type LucideIcon } from "lucide-react";
+import { CollapseHeight } from "@/components/ui/disclosure";
 import { REVIEW_NOTES } from "@/lib/data/expat";
 import { waLink } from "@/lib/contact";
 import { useT } from "@/lib/i18n/LanguageProvider";
@@ -54,15 +56,37 @@ const GOOD = ["timing", "excluded", "blocked"] as const;
  * magenta chapter, between How it works and the FAQ on the desk. Every
  * rule here is a draft until ops confirms it (REVIEW_NOTES.customs).
  */
+/** one Customs Path's usual documents */
+function DocList({ docs, k }: { docs: readonly string[]; k: (path: string) => string }) {
+  return (
+    <ul className="mt-3 space-y-2.5">
+      {docs.map((d) => (
+        <li key={d} className="flex gap-2.5 text-sm">
+          <FileText aria-hidden className="mt-0.5 size-4 shrink-0 text-muted-2" />
+          {k(d)}
+        </li>
+      ))}
+    </ul>
+  );
+}
+
 export function ExpatCustoms() {
   const t = useT();
+  const [docsOpen, setDocsOpen] = React.useState<Set<string>>(() => new Set());
+  const toggleDocs = (key: string) =>
+    setDocsOpen((open) => {
+      const next = new Set(open);
+      if (next.has(key)) next.delete(key);
+      else next.add(key);
+      return next;
+    });
   // the section reveals once, as the journey does: its head, the three
   // routes, the rates, what catches people out, then the way to ask
   const rootRef = useSectionReveal<HTMLElement>();
   const r = (path: string) => t(`expat.customs.rates.${path}`);
   return (
     <section ref={rootRef} aria-labelledby="customs-heading" data-tone="magenta" className="band">
-      <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6">
+      <div className="section-shell mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-20">
         <ReviewNote note={REVIEW_NOTES.customs} className="mb-8" />
         <div className="jr-reveal" style={order(0)}>
           <SectionHead
@@ -73,7 +97,7 @@ export function ExpatCustoms() {
           />
         </div>
 
-        <div className="mt-12 grid gap-4 lg:grid-cols-3">
+        <div className="mt-8 grid gap-4 sm:mt-12 lg:grid-cols-3">
           {CUSTOMS_ROUTES.map(({ key, docs, relief }, i) => {
             const k = (path: string) => t(`expat.customs.${key}.${path}`);
             const { glyph: Glyph, className: coin } = COIN[relief];
@@ -84,7 +108,7 @@ export function ExpatCustoms() {
                 style={order(1 + i)}
               >
                 {/* who it's for, then the verdict it brings */}
-                <p className="font-display text-xs font-medium uppercase tracking-[0.04em] text-muted">{k("when")}</p>
+                <p className="text-sm font-medium text-muted">{k("when")}</p>
                 <h3 className="mt-3 flex items-center gap-3 font-display text-xl font-semibold tracking-tight">
                   <span className={cn("grid size-8 shrink-0 place-items-center rounded-full", coin)}>
                     <Glyph aria-hidden className="size-4" strokeWidth={relief === "none" ? 2 : 3} />
@@ -92,19 +116,37 @@ export function ExpatCustoms() {
                   {k("verdict")}
                 </h3>
                 <p className="mt-2 text-sm font-medium text-muted">{k("name")}</p>
-                <p className="mt-4 leading-relaxed">{k("body")}</p>
+                <p className="mt-4 text-sm leading-relaxed">{k("body")}</p>
+                {/* the documents: from lg all three lists stand open, side by
+                    side; a phone, where the cards stack, folds each behind
+                    its label and count, so the three verdicts read close */}
                 <div className="mt-6 border-t border-border pt-5">
-                  <p className="font-display text-xs font-medium uppercase tracking-[0.04em] text-tone-ink">
+                  <p className="hidden font-display text-sm font-semibold text-tone-ink lg:block">
                     {t("expat.customs.needed")}
                   </p>
-                  <ul className="mt-3 space-y-2.5">
-                    {docs.map((d) => (
-                      <li key={d} className="flex gap-2.5 text-sm">
-                        <FileText aria-hidden className="mt-0.5 size-4 shrink-0 text-muted-2" />
-                        {k(d)}
-                      </li>
-                    ))}
-                  </ul>
+                  <button
+                    type="button"
+                    aria-expanded={docsOpen.has(key)}
+                    aria-controls={`customs-${key}-docs`}
+                    onClick={() => toggleDocs(key)}
+                    className="tap-row relative flex w-full items-center justify-between gap-3 text-left font-display text-sm font-semibold text-tone-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/50 lg:hidden"
+                  >
+                    <span>
+                      {t("expat.customs.needed")} <span className="font-normal text-muted">· {docs.length}</span>
+                    </span>
+                    <ChevronDown
+                      aria-hidden
+                      className={cn("size-4 text-muted-2 transition-transform", docsOpen.has(key) && "rotate-180")}
+                    />
+                  </button>
+                  <div className="lg:hidden">
+                    <CollapseHeight open={docsOpen.has(key)} id={`customs-${key}-docs`}>
+                      <DocList docs={docs} k={k} />
+                    </CollapseHeight>
+                  </div>
+                  <div className="hidden lg:block">
+                    <DocList docs={docs} k={k} />
+                  </div>
                 </div>
                 {/* the foot of all three cards on one line */}
                 <p className="mt-auto pt-6 text-sm leading-relaxed text-muted">{k("note")}</p>
@@ -131,7 +173,7 @@ export function ExpatCustoms() {
           </div>
           <table className="w-full border-collapse text-left text-sm">
             <thead>
-              <tr className="border-b border-border font-display text-xs uppercase tracking-[0.04em] text-tone-ink">
+              <tr className="border-b border-border font-display text-sm text-tone-ink">
                 <th scope="col" className="pb-3 pr-4 font-medium">
                   {r("what")}
                 </th>
@@ -166,10 +208,8 @@ export function ExpatCustoms() {
           </div>
         </div>
 
-        <div className="jr-reveal mt-14" style={order(5)}>
-          <h3 className="font-display text-xs font-medium uppercase tracking-[0.04em] text-muted">
-            {t("expat.customs.goodTitle")}
-          </h3>
+        <div className="jr-reveal mt-12 sm:mt-16" style={order(5)}>
+          <h3 className="font-display text-xl font-semibold tracking-tight">{t("expat.customs.goodTitle")}</h3>
           <dl className="mt-5 grid gap-y-6 md:grid-cols-3">
             {GOOD.map((g, j) => (
               <div
@@ -179,7 +219,7 @@ export function ExpatCustoms() {
                   j < GOOD.length - 1 && "md:pr-8",
                 )}
               >
-                <dt className="font-display text-xs font-medium uppercase tracking-[0.04em] text-tone-ink">
+                <dt className="font-display text-sm font-semibold text-tone-ink">
                   {t(`expat.customs.${g}.label`)}
                 </dt>
                 <dd className="mt-2">

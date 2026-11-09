@@ -33,7 +33,7 @@ export function QuoteFactors() {
   const rootRef = useSectionReveal<HTMLElement>();
   return (
     <section ref={rootRef} aria-labelledby="pricing-heading" data-tone="violet" className="band">
-      <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6">
+      <div className="section-shell mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-20">
         <ReviewNote note={REVIEW_NOTES.pricing} className="mb-8" />
         <div className="grid grid-cols-1 gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,30rem)] lg:gap-14">
           <div>
@@ -77,7 +77,7 @@ export function QuoteFactors() {
             {/* the button rises inside a wrapper, so the reveal never holds
                 the button's own press */}
             <div className="jr-reveal mt-5 w-fit" style={order(3 + FACTORS.length)}>
-              <Button asChild size="lg">
+              <Button asChild size="lg" className="w-full sm:w-auto">
                 <a href={EXPAT_QUOTE_URL}>
                   {t("expat.cta")} <ArrowRight />
                 </a>
@@ -86,9 +86,10 @@ export function QuoteFactors() {
           </div>
 
           {/* the calculator weighing two pieces, built once in view; the
-              rule itself is real text under it. It rises right after the
-              head, as the journey's stage does */}
-          <figure className="jr-reveal self-start" style={order(1)}>
+              rule itself is real text under it (beside it on a tablet, where
+              one 30rem stage would leave a dead column). It rises right
+              after the head, as the journey's stage does */}
+          <figure className="jr-reveal self-start md:grid md:grid-cols-2 md:items-end md:gap-8 lg:block" style={order(1)}>
             <SceneStage
               glint
               className="aspect-[4/5] w-full max-w-[30rem] sm:aspect-[30/31]"
@@ -96,7 +97,7 @@ export function QuoteFactors() {
             >
               <SizeScene />
             </SceneStage>
-            <figcaption className="mt-6 max-w-[30rem]">
+            <figcaption className="mt-6 max-w-[30rem] md:mt-0 lg:mt-6">
               <h3 className="font-display text-xl font-semibold tracking-tight">{t("expat.pricing.guideTitle")}</h3>
               <p className="mt-2 text-sm leading-relaxed text-muted">{t("expat.pricing.guideBody")}</p>
               <p className="mt-4 flex items-start gap-2.5 text-sm leading-relaxed">

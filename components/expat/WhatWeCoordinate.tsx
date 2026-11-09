@@ -37,7 +37,7 @@ export function WhatWeCoordinate() {
 
   return (
     <section ref={rootRef} aria-labelledby="coordinate-heading" data-tone="violet" className="band">
-      <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6">
+      <div className="section-shell mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-20">
         <ReviewNote note={REVIEW_NOTES.coordinate} className="mb-8" />
         <div className="jr-reveal" style={order(0)}>
           <SectionHead
@@ -52,10 +52,10 @@ export function WhatWeCoordinate() {
             still as they scroll past it (the CIPL's arrangement in "What you
             can ship"); side by side, the lists left the phone a column of
             its own twice as tall as theirs */}
-        <div className="mt-12 grid gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,28rem)] lg:gap-14">
+        <div className="mt-8 grid gap-12 sm:mt-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,28rem)] lg:gap-14">
           <div>
             <h3
-              className="jr-reveal font-display text-xs font-medium uppercase tracking-[0.04em] text-muted"
+              className="jr-reveal font-display text-lg font-semibold tracking-tight"
               style={order(2)}
             >
               {t("expat.coordinate.usTitle")}
@@ -75,7 +75,7 @@ export function WhatWeCoordinate() {
             </ul>
 
             <h3
-              className="jr-reveal mt-10 border-t border-border pt-10 font-display text-xs font-medium uppercase tracking-[0.04em] text-muted"
+              className="jr-reveal mt-10 border-t border-border pt-10 font-display text-lg font-semibold tracking-tight"
               style={order(3 + OURS.length)}
             >
               {t("expat.coordinate.youTitle")}
@@ -119,7 +119,7 @@ export function WhatWeCoordinate() {
             pickups' own label, since both are proof of the same promise.
             Rayspeed isn't a partner on the expat routes */}
         <div className="mt-16 grid gap-y-7 border-t border-border-strong pt-10 lg:grid-cols-[minmax(0,13rem)_minmax(0,1fr)] lg:items-center lg:gap-x-16">
-          <h3 className="font-display text-xs font-medium uppercase tracking-[0.04em] text-muted">
+          <h3 className="font-display text-sm font-semibold text-muted">
             {t("carrier.eyebrow")}
           </h3>
           <CarrierLogos align="start" omit={["Rayspeed Asia"]} />

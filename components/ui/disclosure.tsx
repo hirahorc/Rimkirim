@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { ChevronDown, ChevronUp } from "lucide-react";
+import { cn } from "@/lib/utils/cn";
 
 /**
  * Material's getAutoHeightDuration: the open/close duration is derived from
@@ -147,11 +148,15 @@ export function CollapseHeight({
 export function Disclosure({
   id,
   question,
+  strong = false,
   children,
 }: {
   /** DOM id on the <details> — /faq deep-links rely on it; optional elsewhere */
   id?: string;
   question: string;
+  /** a question that is the section's content, not an aside: one step up the
+   *  scale, semibold, more air (a landing's FAQ) */
+  strong?: boolean;
   children: React.ReactNode;
 }) {
   const detailsRef = React.useRef<HTMLDetailsElement>(null);
@@ -258,7 +263,10 @@ export function Disclosure({
           e.preventDefault();
           toggle();
         }}
-        className="flex cursor-pointer list-none items-center justify-between gap-4 px-2 py-4 text-sm font-medium text-foreground transition-colors hover:bg-surface-2/70 focus-visible:bg-surface-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/50 [&::-webkit-details-marker]:hidden"
+        className={cn(
+          "flex cursor-pointer list-none items-center justify-between gap-4 px-2 text-foreground transition-colors hover:bg-surface-2/70 focus-visible:bg-surface-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/50 [&::-webkit-details-marker]:hidden",
+          strong ? "py-5 font-display text-base font-semibold tracking-tight" : "py-4 text-sm font-medium",
+        )}
       >
         <span>{question}</span>
         <Chevron aria-hidden className="size-4 shrink-0 text-muted-2" />
@@ -266,7 +274,7 @@ export function Disclosure({
       <div ref={panelRef} className="overflow-hidden" style={{ height: 0 }}>
         {/* the answer steps in past the question (8px padding + 12px indent):
             the extra level reads as "belongs to the row above", not a sibling */}
-        <div ref={innerRef} className="pb-4 pl-5 pr-2">
+        <div ref={innerRef} className={cn("pb-4 pl-5 pr-2", strong && "pb-5 leading-relaxed text-muted")}>
           {children}
         </div>
       </div>

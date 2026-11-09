@@ -175,12 +175,14 @@ body:has(main > [data-field]) {
    corner: its chapter's wash (data-tone, below), or Panel 2 on a page
    without chapters. The tone step is the separator, so neither side needs a
    hairline, and inside a band a Card is a white plane with no outline, as in
-   the field. Full bleed on phones, where measure is scarce and the corners
-   alone say "sheet"; from sm the sheet sits 12px in, so the desk shows
-   around it. Two bands in a row stay two sheets: a strip of desk between. */
+   the field. One inset at every width (8px on a phone, 12px from sm), so a
+   sheet always reads as a sheet, its corners clear of the screen's edge.
+   Two bands in a row stay two sheets: a strip of desk between. */
 .band {
+  --band-inset: 0.5rem;
   background: var(--tone-wash);
   border-radius: var(--radius-lg);
+  margin-inline: var(--band-inset);
   --card-surface: var(--background);
   --card-border: transparent;
 }
@@ -189,7 +191,21 @@ body:has(main > [data-field]) {
 }
 @media (min-width: 40rem) {
   .band {
-    margin-inline: 0.75rem;
+    --band-inset: 0.75rem;
+  }
+}
+
+/* The section shell: every landing section's content column (max-w-6xl,
+   the 16/24px gutter). Inside a band the sheet's own inset comes off the
+   column, so a band's content starts on the same edge as the desk's and
+   nothing jogs sideways at a transition. */
+.band > .section-shell {
+  max-width: calc(72rem - 2 * var(--band-inset));
+  padding-inline: calc(1rem - var(--band-inset));
+}
+@media (min-width: 40rem) {
+  .band > .section-shell {
+    padding-inline: calc(1.5rem - var(--band-inset));
   }
 }
 
