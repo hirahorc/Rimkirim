@@ -26,14 +26,14 @@ import { MissingPhotosDialog, PackingStep, type PackingStepHandle } from "./Pack
 import { SelectedService } from "./SelectedService";
 
 /**
- * The plan: the Eligibility Check, the Packages, then Personal
- * Information, on one route (the app's field, a white card per column) with
+ * The plan: the Eligibility Check, Personal Information, then the
+ * Packages, on one route (the app's field, a white card per column) with
  * the step in the URL, so the browser's Back moves between them instead of
  * leaving. The Selected Service stays beside all three, priced on the
  * packages once they're measured. Arriving without a rate goes back to Check
  * Rate; arriving at a step whose steps before it aren't done goes back to
- * the first one that isn't. Confirm registers the ticket and opens its
- * Booking Summary.
+ * the first one that isn't. Confirm, on the Packages, registers the ticket
+ * and opens its Booking Summary.
  */
 export function PlanView() {
   const t = useT();
@@ -48,14 +48,14 @@ export function PlanView() {
   const packingRef = React.useRef<PackingStepHandle>(null);
 
   const eligible = eligibilityProgress(eligibility).done;
-  const packed = packingProgress(packing).done;
+  const ready = detailsProgress(details).done;
   const asked = params.get("step");
   const step = !eligible
     ? "eligibility"
-    : asked === "details" && packed
-      ? "details"
-      : asked === "packing" || asked === "details"
-        ? "packing"
+    : asked === "packing" && ready
+      ? "packing"
+      : asked === "details" || asked === "packing"
+        ? "details"
         : "eligibility";
 
   React.useEffect(() => {
@@ -73,12 +73,17 @@ export function PlanView() {
 
   if (!hydrated || !rate) return <FlowLoading />;
 
-  const ready = detailsProgress(details).done;
+  const packed = packingProgress(packing).done;
   const pricing = packedPricing(check.originCountry, rate, packing);
-  const toDetails = () => router.push("/expat-relocation/plan?step=details");
+  const confirm = () => {
+    setSending(true);
+    const booking = submit();
+    if (booking) router.push(`/expat-relocation/booking/${booking.number}`);
+    else setSending(false);
+  };
 
   return (
-    // the app's field, as the rates step sits: white cards on Panel 2
+    // the app's field, as Check Rate sits: white cards on Panel 2
     <div data-field className="pb-20">
       <div className="mx-auto max-w-5xl px-4 pt-8 sm:px-6 sm:pt-10">
         <ReviewNote note={ORDER_REVIEW_NOTES[step]} className="mb-6" />
@@ -117,7 +122,7 @@ export function PlanView() {
                       size="lg"
                       disabled={!eligible}
                       aria-describedby={eligible ? undefined : "eligibility-hint"}
-                      onClick={() => router.push("/expat-relocation/plan?step=packing")}
+                      onClick={() => router.push("/expat-relocation/plan?step=details")}
                     >
                       {p("continue")} <ArrowRight />
                     </Button>
@@ -129,7 +134,40 @@ export function PlanView() {
                   </div>
                 </div>
               </section>
-            ) : step === "packing" ? (
+            ) : step === "details" ? (
+              <section aria-labelledby="step-heading">
+                <h2 id="step-heading" className="font-display text-2xl font-semibold tracking-tight">
+                  {t("expatOrder.details.title")}
+                </h2>
+                <p className="mt-2 text-sm text-muted">{t("expatOrder.details.lead")}</p>
+                <div className="mt-8">
+                  <DetailsStep check={check} value={details} changed={addressChanged} onChange={setDetails} />
+                </div>
+                <div className="mt-10 flex flex-col-reverse gap-3 border-t border-border pt-6 sm:flex-row sm:items-center sm:justify-between">
+                  <Button asChild variant="ghost">
+                    <Link href="/expat-relocation/plan">
+                      <ArrowLeft /> {p("back")}
+                    </Link>
+                  </Button>
+                  <div className="flex flex-col items-stretch gap-2 sm:items-end">
+                    <Button
+                      type="button"
+                      size="lg"
+                      disabled={!ready}
+                      aria-describedby={ready ? undefined : "details-hint"}
+                      onClick={() => router.push("/expat-relocation/plan?step=packing")}
+                    >
+                      {p("continue")} <ArrowRight />
+                    </Button>
+                    {!ready && (
+                      <p id="details-hint" className="text-xs text-muted">
+                        {p("detailsIncomplete")}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </section>
+            ) : (
               <section aria-labelledby="step-heading">
                 <h2 id="step-heading" className="font-display text-2xl font-semibold tracking-tight">
                   {t("expatOrder.packing.title")}
@@ -147,7 +185,7 @@ export function PlanView() {
                 </div>
                 <div className="mt-10 flex flex-col-reverse gap-3 border-t border-border pt-6 sm:flex-row sm:items-center sm:justify-between">
                   <Button asChild variant="ghost">
-                    <Link href="/expat-relocation/plan">
+                    <Link href="/expat-relocation/plan?step=details">
                       <ArrowLeft /> {p("back")}
                     </Link>
                   </Button>
@@ -156,11 +194,12 @@ export function PlanView() {
                       type="button"
                       size="lg"
                       disabled={!packed}
+                      loading={sending}
                       aria-describedby={packed ? undefined : "packing-hint"}
-                      // photos never block; going on without them is asked once
-                      onClick={() => (packing.packages.some(photosMissing) ? setPhotoCheck(true) : toDetails())}
+                      // photos never block; confirming without them is asked once
+                      onClick={() => (packing.packages.some(photosMissing) ? setPhotoCheck(true) : confirm())}
                     >
-                      {p("continue")} <ArrowRight />
+                      {p("confirm")}
                     </Button>
                     {!packed && (
                       <p id="packing-hint" className="text-xs text-muted">
@@ -179,48 +218,9 @@ export function PlanView() {
                   }}
                   onContinue={() => {
                     setPhotoCheck(false);
-                    toDetails();
+                    confirm();
                   }}
                 />
-              </section>
-            ) : (
-              <section aria-labelledby="step-heading">
-                <h2 id="step-heading" className="font-display text-2xl font-semibold tracking-tight">
-                  {t("expatOrder.details.title")}
-                </h2>
-                <p className="mt-2 text-sm text-muted">{t("expatOrder.details.lead")}</p>
-                <div className="mt-8">
-                  <DetailsStep check={check} value={details} changed={addressChanged} onChange={setDetails} />
-                </div>
-                <div className="mt-10 flex flex-col-reverse gap-3 border-t border-border pt-6 sm:flex-row sm:items-center sm:justify-between">
-                  <Button asChild variant="ghost">
-                    <Link href="/expat-relocation/plan?step=packing">
-                      <ArrowLeft /> {p("back")}
-                    </Link>
-                  </Button>
-                  <div className="flex flex-col items-stretch gap-2 sm:items-end">
-                    <Button
-                      type="button"
-                      size="lg"
-                      disabled={!ready}
-                      loading={sending}
-                      aria-describedby={ready ? undefined : "details-hint"}
-                      onClick={() => {
-                        setSending(true);
-                        const booking = submit();
-                        if (booking) router.push(`/expat-relocation/booking/${booking.number}`);
-                        else setSending(false);
-                      }}
-                    >
-                      {p("confirm")}
-                    </Button>
-                    {!ready && (
-                      <p id="details-hint" className="text-xs text-muted">
-                        {p("detailsIncomplete")}
-                      </p>
-                    )}
-                  </div>
-                </div>
               </section>
             )}
           </Card>

@@ -1391,10 +1391,11 @@ else of the landing's dress, so no field or panel takes a chapter's tint. It spe
 like the landing, and keeps the landing's bar, which trades the lime "Check your rate" for a quiet
 "Need help?" on WhatsApp, since each step's own button is that screen's one lime.
 
-- **The flow stepper:** Rate, Eligibility, Packages, Your details, in the status stepper's encoding (a
+- **The flow stepper:** Eligibility, Your details, Packages, in the status stepper's encoding (a
   step behind is lime with an Ink check and links back, the current one is Ink-framed with a lime
-  core, the ones ahead are Hairline on Panel 2). Rate always reads done once you're planning. On
-  a phone only the current step keeps its word.
+  core, the ones ahead are Hairline on Panel 2). It counts the plan's steps only: Check Rate
+  comes before it and wears none, so that page opens on its title. On a phone only the current
+  step keeps its word.
 - **Check Rate:** one white card, Moving from beside Moving to, then the weight and the button
   under a hairline. Fields are the system's Panel 2 inputs.
 - **The rate card:** the offer card (below), the same one Back For Good's Cek Tarif shows, with

@@ -8,8 +8,8 @@ export const metadata: Metadata = {
   robots: { index: false },
 };
 
-/** the Eligibility Check and Personal Information; the step rides the URL
- *  (useSearchParams), so the view waits in a Suspense boundary */
+/** the Eligibility Check, Personal Information and the Packages; the step
+ *  rides the URL (useSearchParams), so the view waits in a Suspense boundary */
 export default function ExpatPlanPage() {
   return (
     <Suspense fallback={<FlowLoading />}>

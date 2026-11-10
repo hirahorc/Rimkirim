@@ -92,18 +92,17 @@ const id = {
     title: "Pendamping pindahmu lintas negara",
     body: "Rimkirim membuat pengiriman barang pribadi lintas negara bisa diselesaikan sendiri oleh orang biasa: harga jelas di depan, dan urusan bea cukai kami ambil alih sepenuhnya. Halaman lengkap tentang kami sedang disiapkan.",
   },
-  // alur order Expat Relocation: Check Rate, lalu plan (Eligibility Check dan
-  // Personal Information), lalu Booking Summary. Di halaman hanya bahasa
-  // Inggris, seperti landing-nya; versi Indonesia menjaga bentuknya
+  // alur order Expat Relocation: Check Rate, lalu plan (Eligibility Check,
+  // Personal Information, lalu Packages), lalu Booking Summary. Di halaman
+  // hanya bahasa Inggris, seperti landing-nya; versi Indonesia menjaga bentuknya
   expatOrder: {
     help: "Butuh bantuan?",
     helpWa: "Halo Rimkirim, saya sedang memesan relokasi ke Indonesia dan punya pertanyaan.",
     stepper: {
       label: "Pesananmu",
-      rate: "Tarif",
       eligibility: "Kelayakan",
-      packing: "Paket",
       details: "Data dirimu",
+      packing: "Paket",
       done: "selesai",
     },
     rates: {
@@ -138,13 +137,13 @@ const id = {
     },
     plan: {
       title: "Rencanakan relokasimu",
-      subtitle: "Beberapa pertanyaan tentang kepindahanmu, paketmu, lalu data dirimu.",
+      subtitle: "Beberapa pertanyaan tentang kepindahanmu, data dirimu, lalu paketmu.",
       back: "Kembali",
       continue: "Lanjut",
       confirm: "Konfirmasi pengajuan",
       incomplete: "Jawab semua pertanyaan untuk lanjut.",
-      packingIncomplete: "Isi kemasan, berat, ukuran, dan isi tiap paket untuk lanjut.",
-      detailsIncomplete: "Isi semua kolom untuk konfirmasi.",
+      packingIncomplete: "Isi kemasan, berat, ukuran, dan isi tiap paket untuk konfirmasi.",
+      detailsIncomplete: "Isi semua kolom untuk lanjut.",
     },
     service: {
       title: "Layanan terpilih",
@@ -279,10 +278,10 @@ const id = {
       estimateNoSpecial: "Special Rate mulai dari {min} kg, jadi estimasimu tetap di {kg} kg dari Check Rate. Harganya kami konfirmasi di quotation.",
       required: "Wajib diisi.",
       aboveZero: "Lebih dari 0.",
-      photoWarnTitle: "Lanjut tanpa foto ukuran?",
+      photoWarnTitle: "Konfirmasi tanpa foto ukuran?",
       photoWarnBody: "Foto ini opsional, tapi jadi buktimu. Kalau kurir mengukur paket lebih berat dari ukuranmu, kami hanya bisa menyanggahnya dengan fotomu.",
       photoWarnAdd: "Tambah foto",
-      photoWarnContinue: "Lanjut tanpa foto",
+      photoWarnContinue: "Konfirmasi tanpa foto",
     },
     details: {
       title: "Data dirimu",
@@ -2351,17 +2350,16 @@ const en: Messages = {
     body: "Rimkirim makes shipping personal belongings across borders something ordinary people can do themselves: pricing clear up front, and customs fully taken off your plate. A full page about us is on the way.",
   },
   // the Expat Relocation order flow: Check Rate, then the plan (Eligibility
-  // Check and Personal Information), then the Booking Summary. English only on
-  // the page, like the landing; the Indonesian keeps the shape
+  // Check, Personal Information, then the Packages), then the Booking Summary.
+  // English only on the page, like the landing; the Indonesian keeps the shape
   expatOrder: {
     help: "Need help?",
     helpWa: "Hi Rimkirim, I'm booking my relocation to Indonesia and have a question.",
     stepper: {
       label: "Your booking",
-      rate: "Rate",
       eligibility: "Eligibility",
-      packing: "Packages",
       details: "Your details",
+      packing: "Packages",
       done: "done",
     },
     rates: {
@@ -2396,13 +2394,13 @@ const en: Messages = {
     },
     plan: {
       title: "Plan your relocation",
-      subtitle: "A few questions about your move, your packages, then your details.",
+      subtitle: "A few questions about your move, your details, then your packages.",
       back: "Back",
       continue: "Continue",
       confirm: "Confirm application",
       incomplete: "Answer every question to continue.",
-      packingIncomplete: "Fill in each package's packaging, weight, size and what's inside to continue.",
-      detailsIncomplete: "Fill in every field to confirm.",
+      packingIncomplete: "Fill in each package's packaging, weight, size and what's inside to confirm.",
+      detailsIncomplete: "Fill in every field to continue.",
     },
     service: {
       title: "Selected service",
@@ -2537,10 +2535,10 @@ const en: Messages = {
       estimateNoSpecial: "The Special Rate starts at {min} kg, so your estimate stays at the {kg} kg you checked. We'll confirm the price in your quotation.",
       required: "Required.",
       aboveZero: "More than 0.",
-      photoWarnTitle: "Continue without measurement photos?",
+      photoWarnTitle: "Confirm without measurement photos?",
       photoWarnBody: "They're optional, but they're your proof. If the carrier measures a package heavier than you did, we can only dispute it with your photos.",
       photoWarnAdd: "Add photos",
-      photoWarnContinue: "Continue without them",
+      photoWarnContinue: "Confirm without them",
     },
     details: {
       title: "Your details",

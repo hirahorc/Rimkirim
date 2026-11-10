@@ -483,7 +483,7 @@ function PrefixedInput({ prefix, className, ...props }: { prefix: string } & Rea
   );
 }
 
-/** the WNI flow's warning, kept: photos never block, but going on without
+/** the WNI flow's warning, kept: photos never block, but confirming without
  *  them is a choice the customer makes knowingly */
 export function MissingPhotosDialog({
   open,
@@ -498,7 +498,7 @@ export function MissingPhotosDialog({
 }) {
   const t = useT();
   const p = (k: string) => t(`expatOrder.packing.${k}`);
-  // going to add photos hands focus to the first upload, not back to Continue
+  // going to add photos hands focus to the first upload, not back to Confirm
   const adding = React.useRef(false);
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>

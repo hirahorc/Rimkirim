@@ -10,12 +10,14 @@ To see the open questions in context, add `?review=1` to any page of the flow.
 | --- | --- | --- |
 | Check Rate + Select Rate | `/expat-relocation/rates` | `components/expat-order/RatesView.tsx` |
 | Eligibility Check | `/expat-relocation/plan` | `PlanView.tsx` → `EligibilityStep.tsx` |
-| Packages | `/expat-relocation/plan?step=packing` | `PlanView.tsx` → `PackingStep.tsx` |
 | Personal Information | `/expat-relocation/plan?step=details` | `PlanView.tsx` → `DetailsStep.tsx` |
+| Packages | `/expat-relocation/plan?step=packing` | `PlanView.tsx` → `PackingStep.tsx` |
 | Booking Summary | `/expat-relocation/booking/[number]` | `BookingView.tsx` |
 | Internal ticket + email preview | `/simulator`, tab "Pesanan expat" | `components/tracking/ExpatBookingsTab.tsx` |
 
-The draft lives in `lib/store/useExpatOrderStore.ts` (localStorage key `rimkirim:expat-order`) and survives reloads until it's submitted. Arriving at `/plan` without a Selected Rate sends the customer back to Check Rate; arriving at a step whose steps before it aren't done sends them back to the first one that isn't (the questions, then the Packages). Changing the origin country or the weight clears the Selected Rate; changing either Address clears that side's Detail Address and pin, with a notice.
+The stepper (`FlowStepper.tsx`) counts the plan's three steps only: Eligibility, Your details, Packages. Check Rate comes before it and shows none; from the plan, the way back to it is Back on the Eligibility Check. Confirm application is on the last step, the Packages.
+
+The draft lives in `lib/store/useExpatOrderStore.ts` (localStorage key `rimkirim:expat-order`) and survives reloads until it's submitted. Arriving at `/plan` without a Selected Rate sends the customer back to Check Rate; arriving at a step whose steps before it aren't done sends them back to the first one that isn't (the questions, then Personal Information). Changing the origin country or the weight clears the Selected Rate; changing either Address clears that side's Detail Address and pin, with a notice.
 
 ## Stand-ins to replace
 
@@ -50,7 +52,7 @@ Q1 (what's shipping), the arrival date and the length of stay never move the fla
 - **Final price.** The epic (section 5) says the final price is set at quotation. The team corrected this: the Quotation is still an estimate, and the final price comes on the Invoice, once the packages reach Rimkirim's warehouse and are measured and weighed again. All copy follows the correction.
 - **Required fields.** The epic marks only the two Detail Addresses "(required)". Every Personal Information field is required here, since the email and phone are needed for the confirmation and the follow-up.
 - **Pickup Date.** The epic (section 7) opens the calendar three days out. The team moved it to tomorrow; weekends stay closed.
-- **Packages step.** Not in the epic. The team added it between the Eligibility Check and Personal Information, with the fields of the WNI flow's Items & Packages module: per package, its packaging (Others asks what it's packed in, as free text), the weight and three sides, each item's description, quantity and value, and four measurement photos; then the values' currency. Weight, sides, description and quantity are required, and so is what it's packed in when the packaging is Others; values and photos are optional, and going on without photos is asked once, as in the WNI flow. The booking carries it in the shared Packing List shape (`ItemsData` in `lib/types/packing.ts`), and the Booking Summary, the email and the ticket show it. Once it's measured, the Selected Service's weight and estimate are the packages' (see Stand-ins).
+- **Packages step.** Not in the epic. The team added it as the plan's last step, after Personal Information (it first sat before it), with the fields of the WNI flow's Items & Packages module: per package, its packaging (Others asks what it's packed in, as free text), the weight and three sides, each item's description, quantity and value, and four measurement photos; then the values' currency. Weight, sides, description and quantity are required, and so is what it's packed in when the packaging is Others; values and photos are optional, and confirming without photos is asked once, as in the WNI flow. The booking carries it in the shared Packing List shape (`ItemsData` in `lib/types/packing.ts`), and the Booking Summary, the email and the ticket show it. Once it's measured, the Selected Service's weight and estimate are the packages' (see Stand-ins).
 - **Personas (Story 1).** The landing page doesn't frame the work and study personas; they appear only as the reason in Q4. Decided by the team with the PM.
 - **Passenger Goods.** The epic puts it out of scope. The service covers it, so the landing and the flow explain all three Customs Paths equally, with no choice for the customer (decided with the PM).
 

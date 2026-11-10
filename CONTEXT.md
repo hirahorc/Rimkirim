@@ -15,7 +15,7 @@ _Avoid_: BFG (in copy), returning home
 ## Check Rate
 
 **Check Rate**:
-The first step of an order, where the customer enters where they're moving from, where to, and an estimated weight, and gets an estimated price.
+Where an order starts, ahead of the plan's steps (it isn't one of the stepper's): the customer enters where they're moving from, where to, and an estimated weight, and gets an estimated price.
 _Avoid_: Calculator, quote (for this step)
 
 **Address**:
@@ -39,7 +39,7 @@ The team's estimate of the shipping cost, sent after reviewing a booking and its
 _Avoid_: Final price, official price, quote (for the Check Rate figure)
 
 **Packages**:
-The customer's list of what they're sending, package by package (each one's packaging, weight and size, and the items inside with quantities and values), given in the flow between the Eligibility Check and Personal Information, that the team reviews before pickup to flag Take Outs and potential duty and tax.
+The customer's list of what they're sending, package by package (each one's packaging, weight and size, and the items inside with quantities and values), given in the flow's last step, after Personal Information, that the team reviews before pickup to flag Take Outs and potential duty and tax.
 _Avoid_: Packing list (that names the customs document, the Commercial Invoice/Packing List), item list, inventory, manifest
 
 **Packing Guide**:

@@ -115,8 +115,9 @@ const FAQ: ExpatFaqSource[] = [
 
 /**
  * Where every "Check your rate" on the expat page goes: the order flow's
- * first step, Check Rate (docs/expat-order-flow.md), which runs on to the
- * Eligibility Check, Personal Information and the Booking Summary.
+ * start, Check Rate (docs/expat-order-flow.md), which runs on to the plan
+ * (the Eligibility Check, Personal Information, the Packages) and the
+ * Booking Summary.
  */
 export const EXPAT_QUOTE_URL = "/expat-relocation/rates";
 

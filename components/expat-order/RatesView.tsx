@@ -19,7 +19,6 @@ import type { Place } from "@/lib/data/expat-places";
 import { useT } from "@/lib/i18n/LanguageProvider";
 import { cn } from "@/lib/utils/cn";
 import { AddressField } from "./AddressField";
-import { FlowStepper } from "./FlowStepper";
 import { FlowLoading } from "./FlowLoading";
 import { RateCard } from "./RateCard";
 
@@ -35,6 +34,8 @@ function addressError(p: Place | null, t: (k: string) => string): string | undef
  * on Panel 2, as every order screen sits): the form, and once checked the
  * one rate the epic asks for under it, the rest behind "See more rates". The form writes straight
  * into the draft, so a changed input reprices at once and a reload keeps it.
+ * It comes before the plan, so it wears no stepper: the steps start once a
+ * rate is picked.
  */
 export function RatesView() {
   const hydrated = useExpatOrderHydrated();
@@ -85,8 +86,7 @@ function RatesForm() {
     // reads; the landing's chapter colours stay on the landing
     <div data-field className="mx-auto max-w-5xl px-4 pb-20 pt-8 sm:px-6 sm:pt-10">
       <ReviewNote note={ORDER_REVIEW_NOTES.rates} className="mb-6" />
-      <FlowStepper current="rate" />
-      <h1 className="mt-8 text-balance font-display text-3xl font-bold tracking-tight sm:text-4xl">{r("title")}</h1>
+      <h1 className="text-balance font-display text-3xl font-bold tracking-tight sm:text-4xl">{r("title")}</h1>
       <p className="mt-3 max-w-xl text-pretty text-muted">{r("subtitle")}</p>
 
       <form
