@@ -254,7 +254,15 @@
       "Bash(npm i *)",
       "Bash(node capture-quest.mjs 1280 1100 clr-align-desktop.png)",
       "Bash(node capture-quest.mjs 390 1000 clr-align-mobile.png)",
-      "Bash(node /Users/hira.rimkirim/.claude/plugins/cache/impeccable/impeccable/4.0.2/skills/impeccable/scripts/critique-storage.mjs slug components/layout/AppHeader.tsx)"
+      "Bash(node /Users/hira.rimkirim/.claude/plugins/cache/impeccable/impeccable/4.0.2/skills/impeccable/scripts/critique-storage.mjs slug components/layout/AppHeader.tsx)",
+      "ClaudeInChromeDomain(x.ai)",
+      "ClaudeInChromeDomain(www.sendmybag.com)",
+      "mcp__claude-in-chrome__tabs_context_mcp",
+      "ClaudeInChromeDomain(rimkirim.com)",
+      "Bash(lsof -iTCP -sTCP:LISTEN -nP)",
+      "Bash(grep -E \"^tsx$|^ts-node$\")",
+      "Bash(node capture.mjs ./shots)",
+      "ClaudeInChromeDomain(localhost:3000)"
     ],
     "additionalDirectories": [
       "/private/tmp/cdp-fs",
