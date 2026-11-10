@@ -405,7 +405,9 @@ brand-label tier (eyebrows, chips, statuses, buttons — see The Brand-Label Rul
 - **Display** (Space Grotesk 500, `clamp(2rem, 7.5vw, 4.75rem)` = 32px -> 76px, line-height
   1.05, tracking -0.02em): Hero headline only, set as individually rising words. Medium weight, not
   bold: at 76px the lighter cut reads editorial and confident rather than shouty, and it keeps the
-  lime highlighter behind it feeling like a mark rather than a block.
+  lime highlighter behind it feeling like a mark rather than a block. One other use, at its top size
+  only (4.75rem, line-height 1.05, in the chapter's ink): the one number of What you can send's
+  books tile (0%), the bento's stat, a figure rather than a headline.
 - **Headline** (Space Grotesk 700, `2.25rem`/36px, tracking -0.025em): the largest non-hero
   heading — landing section titles ("Kenapa Rimkirim", "Dua arah, satu tim"), set `text-3xl
   sm:text-4xl`.
@@ -1081,9 +1083,17 @@ in ink it stays neutral and lime stays the one colour in the action row.
   no row is left with a hole. Every tile shares that one ground except **anything else**, the one
   that asks rather than tells, set apart on the chapter's wash (it has no drawing, so nothing
   drawn in the wash is lost on it); no other tile, the books stat included, gets a ground of its
-  own. Each leads with its
-  drawing (`ShipArt`, below), then its name at the Title role, then one Dim Grey line that says
-  what's in it. The toggle at the foot names what the details hold ("Weight, packing and duty",
+  own. Each leads with its own kind of picture (`ShipTiles`), so no tile sits beside or over one
+  of its own kind at three across or at two: clothes listed in the Packing List's own package
+  (the hero, hung off the tile's right edge beside its words from `md`, inset and fading out at
+  its foot over the rows still to fill when stacked), the books' one number (0%, page text at the
+  Display role's top size, not a picture), the home's things drawn (`ShipArt`, below), the size
+  rule as a guitar case measured to 121 cm and running on off the tile, and what people ask about
+  as white chips. Each picture is drawn at 1:1 and pinned to its tile's edge, so a wider tile
+  shows more ground or more of a bleed, never larger type, and builds once as the grid comes into
+  view, one small beat a tile, 110ms apart (`SceneStage`). Then its name at the Title role, then
+  one Dim Grey line that says what's in it, held to two lines from `sm` so a row's titles share a
+  line. The toggle at the foot names what the details hold ("Weight, packing and duty",
   never "Show more"), with the disclosure's swapped chevron, and the whole card is its hit area.
   The details open under the card's row as one white panel across the grid (dense placement, so
   it lands under the right row at any column count), edged and pointed at its card by a caret in
@@ -1092,8 +1102,8 @@ in ink it stays neutral and lime stays the one colour in the action row.
   reads as a short spec, not a paragraph; it ends on one link (the price check, or WhatsApp with
   the message already written). One card is open at a time; the panel's height moves as the
   disclosure's does, but a card opened beside the open one takes its panel's place at once and the
-  caret slides across. On a phone the cards stack, drawing beside the words, rather than becoming
-  a strip: each answers a question every visitor has, so none may hide behind a swipe. The two
+  caret slides across. On a phone the tiles stack, the picture over the words, rather than
+  becoming a strip: each answers a question every visitor has, so none may hide behind a swipe. The two
   parts after the cards each open under a full-width hairline with a sub-head a step under the
   section's (24px, 30px from `sm`). Second, the packing guide (`#packing`, where the order flow
   links): that the customer packs everything, then what it all travels in (suitcases, boxes,
@@ -1131,9 +1141,9 @@ in ink it stays neutral and lime stays the one colour in the action row.
   personal shipment pays, a real table (what's inside, its duty as the one number at the Title
   role, the tax on top), its title and footnote in the left third from `lg`, then one WhatsApp
   link.
-- **The item drawings** (`ShipArt`, on the item cards and on what it all travels in): flat
+- **The item drawings** (`ShipArt`, on the home tile and on what it all travels in): flat
   things on one ground line in one 168 × 112 frame, in the chapter's hue in three values, its ink
-  in two, its wash and a metal (`.ship-art`, all mixed from the chapter) and the doorstep's kraft;
+  in two, its wash (`.ship-art`, all mixed from the chapter) and the doorstep's kraft;
   anything with depth in the doorstep's projection, the far face up and to the right. Each is
   scaled from its measured ink to stand the same height (88 of the frame's 112, or as wide as 160
   for a long thing) and set flush left, its ground as wide as it is, so a row of
@@ -1357,7 +1367,7 @@ else of the landing's dress, so no field or panel takes a chapter's tint. It spe
 like the landing, and keeps the landing's bar, which trades the lime "Check your rate" for a quiet
 "Need help?" on WhatsApp, since each step's own button is that screen's one lime.
 
-- **The flow stepper:** Rate, Eligibility, Packing list, Your details, in the status stepper's encoding (a
+- **The flow stepper:** Rate, Eligibility, Packages, Your details, in the status stepper's encoding (a
   step behind is lime with an Ink check and links back, the current one is Ink-framed with a lime
   core, the ones ahead are Hairline on Panel 2). Rate always reads done once you're planning. On
   a phone only the current step keeps its word.
@@ -1376,18 +1386,19 @@ like the landing, and keeps the landing's bar, which trades the lime "Check your
   does; ticking furniture only adds to its words and points its link at furniture's own steps.
   Nothing in the flow turns a customer away, so no verdict
   there wears Stop Red (the Special Rate tab is an offer mark, not a verdict). Field errors appear once a field is left, never on every keystroke.
-- **The Packing List:** inside the step's white card, each package is a Panel 2 block with no
+- **The Packages step:** inside the step's white card, each package is a Panel 2 block with no
   outline (`rounded-md`, a notch down from the card, The Step-Down Rule), whose head opens and
-  closes it with the swapped chevron and names it in one line while closed. Inside: what it's
-  packed in, the weight and three sides with their units worn in the inputs and one line on what
+  closes it with the swapped chevron and names it in one line while closed. Inside: its
+  packaging (Others opens what it's packed in beside it from sm, its examples in the placeholder
+  and the hint, as the Eligibility Check's Others does under its answer), the weight and three sides with their units worn in the inputs and one line on what
   it's charged on, the items as rows between hairlines (de-boxed, so no third tone), and the
   photos. "Add a package" is the dashed button across the card. The currency and the totals
   (packages, chargeable weight, declared value) sit under hairlines below; the price never
   repeats there, since the Selected Service beside it carries it. Declared values read as a code
   and an amount ("AUD 300") to match the inputs' prefix.
 - **Selected Service:** a white card beside every plan step, sticky from lg; on a phone a
-  one-line strip (service and price) that opens to the rest. Once the Packing List is measured,
-  its weight and estimate are the packages', and the weight says "from your packing list".
+  one-line strip (service and price) that opens to the rest. Once the packages are measured,
+  the weight and estimate are theirs, and the weight says "from your packages".
 - **The Booking Summary:** a white card with the received head (the success check, who the
   summary went to) over the booking number on a Panel 2 strip with its copy button, then the
   summary as label-and-value rows between hairlines. What happens next, the other answers and

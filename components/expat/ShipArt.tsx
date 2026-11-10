@@ -2,7 +2,8 @@ import type { ComponentType } from "react";
 import { cn } from "@/lib/utils/cn";
 
 /**
- * The drawings on What you can ship's cards and on what it all travels in
+ * The drawings of What you can send: the home's things on the bento's home
+ * tile (ShipTiles), and what it all travels in under the packing guide
  * (suitcases, boxes, special packaging): each thing drawn flat and simple
  * so it reads at a glance, in the chapter's hue (globals.css, .ship-art:
  * the hue in three values, its ink in two, its wash) and the doorstep's
@@ -14,11 +15,7 @@ import { cn } from "@/lib/utils/cn";
  * Decorative: the card's words carry the meaning.
  */
 export type ShipArtName =
-  | "clothes"
-  | "books"
   | "home"
-  | "hobby"
-  | "other"
   | "suitcases"
   | "boxes"
   | "special";
@@ -38,7 +35,6 @@ const HUE_TOP = "fill-(--art-hue-top)";
 const HUE_SIDE = "fill-(--art-hue-side)";
 const INK = "fill-(--art-ink)";
 const INK_SIDE = "fill-(--art-ink-side)";
-const WASH = "fill-(--art-wash)";
 const PAPER = "fill-white";
 
 /** the depth of the doorstep's projection: k across, 0.72k up */
@@ -154,74 +150,6 @@ function Suitcases() {
   );
 }
 
-function Clothes() {
-  return (
-    <>
-      {/* a stack of folded clothes, jeans to shirt, a cap on top */}
-      <rect x={10} y={82} width={78} height={20} rx={4} className={INK} />
-      <rect x={10} y={91.2} width={78} height={1.6} className={INK_SIDE} />
-      <rect x={14} y={64} width={70} height={18} rx={4} className={WASH} />
-      <rect x={14} y={68.6} width={70} height={2.4} className={HUE_SIDE} />
-      <rect x={14} y={74} width={70} height={2.4} className={HUE_SIDE} />
-      <rect x={17} y={47} width={64} height={17} rx={3.5} className={HUE} />
-      <path d="M17 55H81" className="stroke-(--art-hue-side)" strokeWidth={1.2} />
-      <rect x={21} y={32} width={56} height={15} rx={3.5} fill={KRAFT.lid} />
-      <path d="M21 40H77" stroke={KRAFT.front} strokeWidth={1.2} />
-      <path d="M39 32q10 7 20 0Z" className={PAPER} />
-      <path d="M33 32a16 15 0 0 1 32 0Z" className={HUE_SIDE} />
-      <path d="M58 30.4H74.5a1.6 1.6 0 0 1 0 3.2H58Z" className={INK} />
-      <circle cx={49} cy={17.6} r={2} className={INK} />
-      {/* and a tote bag beside them */}
-      <path d="M108 56c0-25 28-25 28 0" fill="none" className="stroke-(--art-ink-side)" strokeWidth={3.2} strokeLinecap="round" />
-      <path d="M97 54H147L143 102H101Z" fill={KRAFT.front} />
-      <path d="M97 54H147L146.6 59H97.4Z" fill={KRAFT.lid} />
-      <rect x={105.5} y={53} width={5} height={8} rx={1} className={INK_SIDE} />
-      <rect x={133.5} y={53} width={5} height={8} rx={1} className={INK_SIDE} />
-      <rect x={113} y={72} width={18} height={12} rx={2} className={HUE} />
-    </>
-  );
-}
-
-/** a book's spine: its colour, the two bands near its ends, a title */
-function Spine({ x, y, w, h, fill, band, title }: { x: number; y: number; w: number; h: number; fill: string; band: string; title: string }) {
-  const across = w > h;
-  return (
-    <>
-      <rect x={x} y={y} width={w} height={h} rx={1.5} style={{ fill }} />
-      {across ? (
-        <>
-          <rect x={x + 6} y={y} width={3} height={h} style={{ fill: band }} />
-          <rect x={x + w - 9} y={y} width={3} height={h} style={{ fill: band }} />
-          <rect x={x + w / 2 - 12} y={y + h / 2 - 1.5} width={24} height={3} rx={1} style={{ fill: title }} />
-        </>
-      ) : (
-        <>
-          <rect x={x} y={y + 6} width={w} height={3} style={{ fill: band }} />
-          <rect x={x} y={y + h - 9} width={w} height={3} style={{ fill: band }} />
-          <rect x={x + w / 2 - 1.5} y={y + h / 2 - 10} width={3} height={20} rx={1} style={{ fill: title }} />
-        </>
-      )}
-    </>
-  );
-}
-
-function Books() {
-  return (
-    <>
-      {/* a pile lying down */}
-      <Spine x={8} y={88} w={78} h={14} fill="var(--art-ink)" band="var(--art-ink-side)" title="var(--art-wash)" />
-      <Spine x={14} y={76} w={66} h={12} fill={KRAFT.front} band={KRAFT.tape} title={KRAFT.lid} />
-      <Spine x={10} y={65} w={72} h={11} fill="var(--art-hue)" band="var(--art-hue-side)" title="var(--art-hue-top)" />
-      <Spine x={19} y={55} w={56} h={10} fill={KRAFT.side} band={KRAFT.inside} title={KRAFT.lid} />
-      <Spine x={14} y={45} w={64} h={10} fill="var(--art-hue-side)" band="var(--art-ink)" title="var(--art-hue-top)" />
-      {/* and three standing up beside it */}
-      <Spine x={92} y={32} w={14} h={70} fill="var(--art-hue-side)" band="var(--art-hue-top)" title="var(--art-hue-top)" />
-      <Spine x={107} y={16} w={17} h={86} fill="var(--art-ink)" band="var(--art-ink-side)" title="var(--art-wash)" />
-      <Spine x={125} y={40} w={13} h={62} fill={KRAFT.front} band={KRAFT.tape} title={KRAFT.lid} />
-    </>
-  );
-}
-
 function Home() {
   return (
     <>
@@ -245,72 +173,6 @@ function Home() {
       <rect x={100} y={64} width={36} height={38} rx={8} className={INK} />
       <path d="M106 64.5q12-9 24 0Z" className={HUE_TOP} />
       <rect x={114.5} y={55} width={7} height={4} rx={2} className={INK_SIDE} />
-    </>
-  );
-}
-
-/** a racket's head: an oval rim, strung across */
-const HEAD = { rx: 13, ry: 17 };
-const STRINGS = [-8, -4, 0, 4, 8];
-
-function Hobby() {
-  return (
-    <>
-      {/* a guitar standing up: its neck, then its body over the neck's foot */}
-      <rect x={53} y={10} width={6} height={50} className={INK_SIDE} />
-      <rect x={50.5} y={2} width={11} height={13} rx={2.5} className={INK} />
-      <circle cx={56} cy={82} r={20} className={HUE} />
-      <circle cx={56} cy={58} r={15} className={HUE} />
-      <circle cx={56} cy={65} r={5.5} className={INK_SIDE} />
-      <rect x={47} y={85} width={18} height={3.6} rx={1.6} className={INK_SIDE} />
-      <path d="M54.6 12V86.5M57.4 12V86.5" className="stroke-white opacity-60" strokeWidth={0.7} />
-      {/* a badminton racket leaning in from the right */}
-      <g transform="translate(118 102) rotate(-20)">
-        <rect x={-2.6} y={-22} width={5.2} height={22} rx={2.2} className={INK} />
-        <rect x={-1} y={-50} width={2} height={30} className={INK_SIDE} />
-        <ellipse cx={0} cy={-66} rx={HEAD.rx} ry={HEAD.ry} className={cn(HUE_TOP, "opacity-40")} />
-        {STRINGS.map((d) => {
-          const v = HEAD.ry * Math.sqrt(1 - (d / HEAD.rx) ** 2);
-          const y = d * 1.6;
-          const u = HEAD.rx * Math.sqrt(1 - (y / HEAD.ry) ** 2);
-          return (
-            <g key={d} className="stroke-(--art-hue-side)" strokeWidth={0.8}>
-              <path d={`M${d} ${-66 - v}V${-66 + v}`} />
-              <path d={`M${-u} ${-66 + y}H${u}`} />
-            </g>
-          );
-        })}
-        <ellipse cx={0} cy={-66} rx={HEAD.rx} ry={HEAD.ry} fill="none" className="stroke-(--art-ink)" strokeWidth={3} />
-      </g>
-      {/* and a shuttlecock */}
-      <path d="M135 92L130 76H150L145 92Z" className={WASH} />
-      <path d="M137.5 92L135 76M142.5 92L145 76M140 92V76" className="stroke-(--art-hue-side)" strokeWidth={1} />
-      <path d="M130 76H150" className="stroke-(--art-hue-side)" strokeWidth={1.4} />
-      <path d="M134.5 92H145.5V96.5a5.5 5.5 0 0 1-11 0Z" fill={KRAFT.front} />
-    </>
-  );
-}
-
-function Other() {
-  return (
-    <>
-      {/* a box, and the question it asks */}
-      <Block x={26} y={58} w={76} h={44} k={22} front={KRAFT.front} top={KRAFT.lid} side={KRAFT.side} />
-      <path d="M59.5 58L81.5 42.16H90.5L68.5 58Z" fill={KRAFT.tapeLid} />
-      <rect x={59.5} y={58} width={9} height={13} fill={KRAFT.tape} />
-      <rect x={78} y={78} width={18} height={14} rx={1.5} className={PAPER} />
-      <rect x={80.5} y={81} width={9} height={2.6} rx={0.6} className={HUE} />
-      <rect x={80.5} y={85.6} width={13} height={1.6} rx={0.6} className={cn(INK, "opacity-35")} />
-      <rect x={104} y={4} width={42} height={32} rx={12} className={HUE} />
-      <path d="M112 33l-5 11 15-8Z" className={HUE} />
-      <path
-        d="M119.6 15.6a5.6 5.6 0 1 1 7.6 5.3c-1.5.6-2.2 1.6-2.2 3.2v1.4"
-        fill="none"
-        className="stroke-white"
-        strokeWidth={3}
-        strokeLinecap="round"
-      />
-      <circle cx={125} cy={30.6} r={1.9} className={PAPER} />
     </>
   );
 }
@@ -343,11 +205,7 @@ function Special() {
 /** each drawing, and its ink in its own units (left, top, right, bottom,
  *  strokes included): measure it again whenever a drawing changes */
 const ART: Record<ShipArtName, { Art: ComponentType; ink: readonly [number, number, number, number] }> = {
-  clothes: { Art: Clothes, ink: [10, 15.6, 147, 102] },
-  books: { Art: Books, ink: [8, 16, 138, 102] },
   home: { Art: Home, ink: [6, 14, 150.5, 102] },
-  hobby: { Art: Hobby, ink: [36, 2, 150.7, 102] },
-  other: { Art: Other, ink: [26, 4, 146, 102] },
   suitcases: { Art: Suitcases, ink: [26, 5, 146, 102] },
   boxes: { Art: Boxes, ink: [28, 3, 136, 102] },
   special: { Art: Special, ink: [20, 7, 153.4, 102] },

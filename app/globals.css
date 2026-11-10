@@ -1667,8 +1667,9 @@ body:has(main > [data-field]) {
     transition: translate var(--dur-follow) var(--ease-hover);
   }
 }
-/* What you can ship's drawings (ShipArt): the chapter's hue in three
-   values, its ink in two, its wash, a metal, and a ground to stand on, all
+/* What you can ship's drawings (ShipArt, and the bento's measured case):
+   the chapter's hue in three values, its ink in two, its wash, and a
+   ground to stand on, all
    mixed from the chapter so the drawings take its hue as the words do; the
    kraft is the doorstep's own (JourneyScenes) */
 .ship-art {
@@ -1678,7 +1679,6 @@ body:has(main > [data-field]) {
   --art-ink: var(--tone-ink);
   --art-ink-side: color-mix(in oklab, var(--tone-ink), black 30%);
   --art-wash: var(--tone-wash);
-  --art-metal: color-mix(in oklab, var(--tone-wash), var(--tone-ink) 18%);
   --art-ground: color-mix(in oklab, var(--tone-ink) 12%, transparent);
 }
 /* a card of What you can ship under a mouse: its drawing lifts a little
