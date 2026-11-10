@@ -26,9 +26,6 @@ export const CUSTOMS_ROUTES: readonly { key: string; docs: readonly string[] }[]
 /** what a personal shipment pays, by what's inside (the CN flat rates) */
 const RATES = ["general", "books", "regulated", "apparel"] as const;
 
-/** what catches people out, whichever route they take */
-const GOOD = ["timing", "excluded", "blocked"] as const;
-
 /**
  * What to expect at Indonesian customs, from ops' import summary, the
  * source of truth for the service: the question every relocating visitor
@@ -36,34 +33,51 @@ const GOOD = ["timing", "excluded", "blocked"] as const;
  * answered on the page in plain words rather than in a guide. Three cards
  * side by side, built the same way so none reads as the better one: the
  * path's name, then two facts under the same two labels (who it's for, and
- * its duty and tax), the explanation, what's usually needed, and a note
- * pinned to the foot so the three feet share a line. The one route with no exemption gets its rates under them,
+ * its duty and tax), the explanation, the documents it needs, and a note
+ * pinned to the foot so the three feet share a line; under all three, that
+ * customs may ask for more. Each card carries its own rules, as ops wrote
+ * them (the timing, what isn't covered, the NPWP), so nothing under the
+ * cards says them again. The one route with no exemption gets its rates under them,
  * one number big on each row, since that's the one a visitor has to work
- * out. Then the three things that catch people out, as the item cards'
- * details are set (a label, the rule, why), and a way to ask. A band in the
+ * out, then a way to ask. A band in the
  * magenta chapter, between How it works and the FAQ on the desk. Every
  * rule here is a draft until ops confirms it (REVIEW_NOTES.customs).
  */
-/** a path's name as its title, the Indonesian term ("barang pindahan")
- *  on a quiet line of its own so the three titles stay short and level */
+/** a path's name as its title, the Indonesian term ("Barang Pindahan")
+ *  on a quiet line of its own, in italic as a foreign term, so the three
+ *  titles stay short and level */
 function PathName({ name }: { name: string }) {
   const [title, local] = name.split(/\s*\((.+)\)\s*$/);
   return (
     <h3 className="font-display text-xl font-semibold tracking-tight">
       {title}
-      {local && <span className="mt-0.5 block font-sans text-sm font-normal tracking-normal text-muted">{local}</span>}
+      {local && <span className="mt-0.5 block font-sans text-sm font-normal italic tracking-normal text-muted">{local}</span>}
     </h3>
   );
 }
 
-/** one Customs Path's usual documents */
+/** a document's name, and the help that comes with it ("we'll send you a
+ *  template") on a quiet line under it, as PathName sets the Indonesian
+ *  term, so the names read straight down the list. The order flow's
+ *  CustomsPaths sets its documents the same way */
+export function DocName({ doc }: { doc: string }) {
+  const [name, help] = doc.split(/\s*\((.+)\)\s*$/);
+  return (
+    <span>
+      {name}
+      {help && <span className="mt-0.5 block text-muted first-letter:uppercase">{help}</span>}
+    </span>
+  );
+}
+
+/** one Customs Path's documents */
 function DocList({ docs, k }: { docs: readonly string[]; k: (path: string) => string }) {
   return (
     <ul className="mt-3 space-y-2.5">
       {docs.map((d) => (
         <li key={d} className="flex gap-2.5 text-sm">
           <FileText aria-hidden className="mt-0.5 size-4 shrink-0 text-muted-2" />
-          {k(d)}
+          <DocName doc={k(d)} />
         </li>
       ))}
     </ul>
@@ -81,7 +95,7 @@ export function ExpatCustoms() {
       return next;
     });
   // the section reveals once, as the journey does: its head, the three
-  // routes, the rates, what catches people out, then the way to ask
+  // routes, the rates, then the way to ask
   const rootRef = useSectionReveal<HTMLElement>();
   const r = (path: string) => t(`expat.customs.rates.${path}`);
   return (
@@ -97,24 +111,28 @@ export function ExpatCustoms() {
           />
         </div>
 
-        <div className="mt-8 grid gap-4 sm:mt-12 lg:grid-cols-3">
+        {/* from lg the three cards share their rows (a subgrid): a "For"
+            that runs to two lines moves the other cards' rows down with it,
+            so the three duty and tax answers, the explanations, the document
+            lists and the notes each start on one line and read across */}
+        <div className="mt-8 grid gap-4 sm:mt-12 lg:grid-cols-3 lg:gap-y-0">
           {CUSTOMS_ROUTES.map(({ key, docs }, i) => {
             const k = (path: string) => t(`expat.customs.${key}.${path}`);
             return (
               <article
                 key={key}
-                className="jr-reveal flex flex-col rounded-lg bg-background px-5 py-7 sm:px-7"
+                className="jr-reveal flex flex-col rounded-lg bg-background px-5 py-7 sm:px-7 lg:row-span-6 lg:grid lg:grid-rows-subgrid"
                 style={order(1 + i)}
               >
                 {/* the path's name, then the same two facts on every card:
                     no glyph or colour ranks one path above another */}
                 <PathName name={k("name")} />
-                <dl className="mt-4 grid gap-3 border-t border-border pt-4 text-sm">
+                <dl className="mt-4 grid gap-3 border-t border-border pt-4 text-sm lg:row-span-2 lg:grid-rows-subgrid lg:gap-y-0">
                   <div>
                     <dt className="text-muted">{t("expat.customs.forLabel")}</dt>
                     <dd className="mt-0.5 font-medium">{k("when")}</dd>
                   </div>
-                  <div>
+                  <div className="lg:mt-3">
                     <dt className="text-muted">{t("expat.customs.dutyLabel")}</dt>
                     <dd className="mt-0.5 font-medium">{k("verdict")}</dd>
                   </div>
@@ -151,21 +169,28 @@ export function ExpatCustoms() {
                     <DocList docs={docs} k={k} />
                   </div>
                 </div>
-                {/* the foot of all three cards on one line */}
-                <p className="mt-auto pt-6 text-sm leading-relaxed text-muted">{k("note")}</p>
+                {/* the foot of all three cards on one line, the subgrid's
+                    last row */}
+                <p className="pt-6 text-sm leading-relaxed text-muted">{k("note")}</p>
               </article>
             );
           })}
         </div>
+        {/* once, for all three lists: they're what customs asks for, not
+            all it ever may */}
+        <p className="jr-reveal mt-4 text-sm leading-relaxed text-muted" style={order(4)}>
+          {t("expat.customs.extraDocs")}
+        </p>
 
         {/* the personal shipment's rates: what's inside, then its duty as
             the one big number on the row, then the tax on top. From lg the
             words take the left third and the table the rest, so its three
-            columns sit close enough to read across. Under them, that customs
-            sets the final figure and the packing list review flags what's
-            likely taxed */}
+            columns sit close enough to read across. Under them, the rule
+            over USD 1,500 and that the packing list review flags what's
+            likely taxed; the card above already says customs sets the
+            figure and the NPWP's part */}
         <div
-          className="jr-reveal mt-4 grid gap-y-5 rounded-lg bg-background px-5 py-7 sm:px-7 lg:grid-cols-[minmax(0,1fr)_minmax(0,2fr)] lg:gap-x-12"
+          className="jr-reveal mt-8 grid gap-y-5 rounded-lg bg-background px-5 py-7 sm:px-7 lg:grid-cols-[minmax(0,1fr)_minmax(0,2fr)] lg:gap-x-12"
           style={order(4)}
         >
           <div>
@@ -211,32 +236,9 @@ export function ExpatCustoms() {
           </div>
         </div>
 
-        <div className="jr-reveal mt-12 sm:mt-16" style={order(5)}>
-          <h3 className="font-display text-xl font-semibold tracking-tight">{t("expat.customs.goodTitle")}</h3>
-          <dl className="mt-5 grid gap-y-6 md:grid-cols-3">
-            {GOOD.map((g, j) => (
-              <div
-                key={g}
-                className={cn(
-                  j > 0 && "border-t border-border pt-6 md:border-l md:border-t-0 md:pl-8 md:pt-0",
-                  j < GOOD.length - 1 && "md:pr-8",
-                )}
-              >
-                <dt className="font-display text-sm font-semibold text-tone-ink">
-                  {t(`expat.customs.${g}.label`)}
-                </dt>
-                <dd className="mt-2">
-                  <p className="font-display text-base font-semibold tracking-tight">{t(`expat.customs.${g}.value`)}</p>
-                  <p className="mt-1.5 text-sm leading-relaxed text-muted">{t(`expat.customs.${g}.body`)}</p>
-                </dd>
-              </div>
-            ))}
-          </dl>
-        </div>
-
         {/* the message arrives already asking the question, so the team
             starts where the visitor is */}
-        <p className="jr-reveal mt-12 text-sm text-muted" style={order(6)}>
+        <p className="jr-reveal mt-12 text-sm text-muted" style={order(5)}>
           {t("expat.customs.ask")}{" "}
           <a
             href={waLink(t("expat.customs.wa"))}

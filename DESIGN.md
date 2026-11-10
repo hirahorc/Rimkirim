@@ -1118,14 +1118,19 @@ in ink it stays neutral and lime stays the one colour in the action row.
   side on the magenta band from `lg` (stacked below it, never two and one), **set as equals**:
   ops recommends the path at review and the customer decides (docs/adr/0002), so no glyph, colour
   or weight on a card says one path is the better one. Each is built the same way: the path's
-  name at the Title role ("Relocation goods (barang pindahan)"), then the same two facts under a
-  hairline, "For" (who it's for) and "Duty and tax" (what it pays), the explanation, what is
-  usually needed with a document glyph, and a note pinned to the foot so the three feet share a
-  line. Only the words differ. Under them, one
-  more white plane for the only route with no exemption: what a personal shipment pays, a real
-  table (what's inside, its duty as the one number at the Title role, the tax on top), its title
-  and footnote in the left third from `lg`. Then what catches people out, set as the item cards'
-  details are (a label, the rule, why, hairline columns from `md`), and one WhatsApp link.
+  name at the Title role, its Indonesian term on a quiet italic line under it ("Relocation
+  goods", *Barang Pindahan*), then the same two facts under a hairline, "For" (who it's for) and
+  "Duty and tax" (what it pays), the explanation, the documents needed with a document glyph
+  (what we do to help, "We'll send you a template", on a Dim Grey line under the document's
+  name), and a note at the foot. Only the words differ. From `lg` the three share their rows
+  (`grid-rows-subgrid`), so a "For" that runs to two lines moves the others with it: the duty
+  and tax answers, the explanations, the lists and the notes each start on one line. Each card
+  carries its own rules as ops wrote them (the timing, what isn't covered, the NPWP), so nothing
+  under the cards repeats them. Under them, one Dim Grey line for all three lists, that customs
+  may ask for more, then one more white plane for the only route with no exemption: what a
+  personal shipment pays, a real table (what's inside, its duty as the one number at the Title
+  role, the tax on top), its title and footnote in the left third from `lg`, then one WhatsApp
+  link.
 - **The item drawings** (`ShipArt`, on the item cards and on what it all travels in): flat
   things on one ground line in one 168 × 112 frame, in the chapter's hue in three values, its ink
   in two, its wash and a metal (`.ship-art`, all mixed from the chapter) and the doorstep's kraft;

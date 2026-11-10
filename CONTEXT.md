@@ -77,7 +77,7 @@ One of the three ways Expat Relocation belongings clear Indonesian customs: Relo
 _Avoid_: Clearance option, route (for customs)
 
 **Relocation Goods**:
-Used personal belongings that enter Indonesia duty-free as _barang pindahan_, for fresh arrivals on a work or study visa.
+Household goods, furniture included, that enter Indonesia free of import duty as _barang pindahan_, in reasonable quantities, for people moving here on a work or study ITAS; they arrive within 90 days before or after the customer does.
 _Avoid_: Moving goods, household goods
 
 **Passenger Goods**:

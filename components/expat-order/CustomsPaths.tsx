@@ -2,15 +2,15 @@
 
 import { FileText } from "lucide-react";
 import { Disclosure } from "@/components/ui/disclosure";
-import { CUSTOMS_ROUTES } from "@/components/expat/ExpatCustoms";
+import { CUSTOMS_ROUTES, DocName } from "@/components/expat/ExpatCustoms";
 import { useT } from "@/lib/i18n/LanguageProvider";
 import { cn } from "@/lib/utils/cn";
 
 /**
  * The three Customs Paths inside the order flow, folded: each path's name,
- * who it's for and its duty and tax, then the documents it usually needs,
- * read from the same copy as the landing's Customs section and set as
- * equals, as there. The same for every
+ * who it's for and its duty and tax, then the documents it needs, read
+ * from the same copy as the landing's Customs section and set as equals, as
+ * there, with the landing's word that customs may ask for more. The same for every
  * customer, never matched to their answers, so it can't give away the
  * internal Customs Category (docs/adr/0002). It ends on the promise that ops
  * recommends a path at review and the choice stays the customer's.
@@ -58,7 +58,7 @@ export function CustomsPaths({
                   {docs.map((d) => (
                     <li key={d} className="flex gap-2 text-sm">
                       <FileText aria-hidden className="mt-0.5 size-3.5 shrink-0 text-muted-2" />
-                      {k(d)}
+                      <DocName doc={k(d)} />
                     </li>
                   ))}
                 </ul>
@@ -66,6 +66,7 @@ export function CustomsPaths({
             );
           })}
         </ul>
+        <p className="mt-3 text-sm leading-relaxed text-muted">{t("expat.customs.extraDocs")}</p>
         <p className="mt-4 text-sm leading-relaxed text-muted">{t("expatOrder.customs.close")}</p>
       </Disclosure>
     </div>
