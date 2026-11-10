@@ -23,6 +23,28 @@ const BRASS = { lit: "#f6dfa8", mid: "#d6aa62", shade: "#9c7036" };
  *  metal, not plastic; `n` is how far toward the ink, in % */
 const enamel = (n: number) => ({ stopColor: `color-mix(in oklab, var(--art-hue), var(--art-ink) ${n}%)` });
 
+/** a box's depth in the bento: k across, 0.6k up (the doorstep's
+ *  projection made steeper, so a cover or a deck reads as one) */
+const BOX_DEPTH = 0.6;
+
+/**
+ * The shadow a box throws on the floor: its own footprint (the front edge
+ * from x to x + w at y, running k back), softened and cast to the right,
+ * away from the light, as the doorstep's parcels' are. A level ellipse
+ * fits a round foot; under a box it parts from the side that climbs away.
+ */
+function BoxShadow({ x, y, w, k, cast, filter, opacity = 0.3 }: { x: number; y: number; w: number; k: number; cast: number; filter: string; opacity?: number }) {
+  const dy = k * BOX_DEPTH;
+  return (
+    <path
+      d={`M${x + 2} ${y + 2}H${x + w + cast}L${x + w + k + cast} ${y - dy + 2}H${x + k + 2}Z`}
+      filter={filter}
+      style={{ fill: "var(--art-ink)" }}
+      opacity={opacity}
+    />
+  );
+}
+
 /** a bowl's outer wall, from its rim's front edge down to its foot */
 function bowlWall(cx: number, rim: number) {
   return (
@@ -33,15 +55,17 @@ function bowlWall(cx: number, rim: number) {
 }
 
 /**
- * Home & kitchen: a dome table lamp lit, three bowls stacked, and an enamel
- * pot with its lid on and a checked tea towel hanging over its front.
+ * Home & kitchen, staged as one group, back to front: a dome table lamp
+ * lit, an enamel pot with its lid on and a checked tea towel over its
+ * front, and three bowls stacked before them, over the lamp's base and the
+ * pot's handle.
  */
 export function HomeObjects({ className }: { className?: string }) {
   const id = React.useId().replace(/[^a-zA-Z0-9]/g, "");
   const u = (name: string) => `url(#${id}-${name})`;
-  const BOWLS = { cx: 274, rims: [228, 246, 264] };
+  const BOWLS = { cx: 214, rims: [196, 214, 232] };
   return (
-    <svg viewBox="0 36 580 296" className={cn("ship-art block overflow-visible", className)} aria-hidden>
+    <svg viewBox="14 20 460 284" className={cn("ship-art block overflow-visible", className)} aria-hidden>
       <defs>
         <filter id={`${id}-soft`} x="-20%" y="-200%" width="140%" height="500%">
           <feGaussianBlur stdDeviation="5" />
@@ -116,26 +140,46 @@ export function HomeObjects({ className }: { className?: string }) {
       {/* where each thing meets the floor */}
       <g className="ship-art-ground">
         <g filter={`url(#${id}-soft)`} style={{ fill: "var(--art-ink)" }}>
-          <ellipse cx="112" cy="318" rx="64" ry="7" opacity="0.26" />
-          <ellipse cx="278" cy="320" rx="46" ry="6" opacity="0.26" />
-          <ellipse cx="458" cy="320" rx="98" ry="8" opacity="0.3" />
+          <ellipse cx="120" cy="264" rx="62" ry="7" opacity="0.26" />
+          <ellipse cx="362" cy="274" rx="98" ry="8" opacity="0.3" />
+          <ellipse cx="222" cy="290" rx="62" ry="6.5" opacity="0.28" />
         </g>
       </g>
 
       <g className="ship-art-lift">
-        {/* the lamp: its base, the stem, the warm light under the dome */}
-        <path d="M50 304A54 11 0 0 0 158 304V311A54 11 0 0 1 50 311Z" fill={BRASS.shade} />
-        <ellipse cx="104" cy="304" rx="54" ry="11" fill={u("brassTop")} />
-        <ellipse cx="104" cy="303" rx="30" ry="5" fill="#fff4cc" opacity="0.55" filter={u("blur")} />
-        <rect x="99.5" y="132" width="9" height="174" fill={u("brass")} />
-        <rect x="95" y="128" width="18" height="12" rx="4" fill={u("brass")} />
-        <ellipse cx="104" cy="148" rx="58" ry="12" fill={u("glow")} />
-        <path d="M18 138C18 78 52 44 104 44C156 44 190 78 190 138A86 10 0 0 1 18 138Z" fill={u("shade")} />
-        <path d="M18 138A86 10 0 0 0 190 138" fill="none" stroke="#fff3d0" strokeWidth="3" />
-        <ellipse cx="72" cy="78" rx="24" ry="14" fill="#fff" opacity="0.5" filter={u("blur")} />
+        {/* the lamp, at the back: its base, the stem, the warm light under
+            the dome */}
+        <path d="M58 250A54 11 0 0 0 166 250V257A54 11 0 0 1 58 257Z" fill={BRASS.shade} />
+        <ellipse cx="112" cy="250" rx="54" ry="11" fill={u("brassTop")} />
+        <ellipse cx="112" cy="249" rx="30" ry="5" fill="#fff4cc" opacity="0.55" filter={u("blur")} />
+        <rect x="107.5" y="118" width="9" height="134" fill={u("brass")} />
+        <rect x="103" y="114" width="18" height="12" rx="4" fill={u("brass")} />
+        <ellipse cx="112" cy="134" rx="58" ry="12" fill={u("glow")} />
+        <path d="M26 124C26 64 60 30 112 30C164 30 198 64 198 124A86 10 0 0 1 26 124Z" fill={u("shade")} />
+        <path d="M26 124A86 10 0 0 0 198 124" fill="none" stroke="#fff3d0" strokeWidth="3" />
+        <ellipse cx="80" cy="64" rx="24" ry="14" fill="#fff" opacity="0.5" filter={u("blur")} />
 
-        {/* the bowls, nested: the top one's inside, then each wall over the
-            one sitting in it */}
+        {/* the pot, behind the bowls: its handles, its wall, the towel over its front, its lid */}
+        <g transform="translate(-102 -44)">
+          <path d="M368 220H352Q342 220 342 230Q342 240 352 240H368Z" fill={u("ear")} />
+          <path d="M536 220H552Q562 220 562 230Q562 240 552 240H536Z" fill={u("ear")} />
+          <path d="M366 212V300A86 18 0 0 0 538 300V212A86 16 0 0 1 366 212Z" fill={u("pot")} />
+          <ellipse cx="404" cy="262" rx="14" ry="38" fill="#fff" opacity="0.2" filter={u("soft")} />
+          <path d="M366 212A86 16 0 0 0 538 212" fill="none" style={{ stroke: "var(--art-ink)" }} strokeWidth="4" opacity="0.35" />
+          <path d="M448 226Q488 225 526 218C534 240 540 268 544 300C536 306 526 301 517 306C505 312 496 303 483 310C470 316 456 305 442 312C446 284 446 254 448 226Z" fill={u("check")} />
+          <path d="M448 226Q488 225 526 218C534 240 540 268 544 300C536 306 526 301 517 306C505 312 496 303 483 310C470 316 456 305 442 312C446 284 446 254 448 226Z" fill={u("fold")} />
+          <path d="M544 300C536 306 526 301 517 306C505 312 496 303 483 310C470 316 456 305 442 312" fill="none" style={{ stroke: "var(--art-ink)" }} strokeWidth="2" opacity="0.35" />
+          <ellipse cx="488" cy="229" rx="42" ry="5" fill="#000" opacity="0.22" filter={u("blur")} />
+          <path d="M368 210C376 186 414 178 452 178C490 178 528 186 536 210A84 15 0 0 1 368 210Z" fill={u("lid")} />
+          <path d="M368 210A84 15 0 0 0 536 210" fill="none" style={{ stroke: "var(--art-ink)" }} strokeWidth="3" opacity="0.3" />
+          <ellipse cx="422" cy="190" rx="28" ry="6" fill="#fff" opacity="0.3" filter={u("blur")} />
+          <ellipse cx="452" cy="179" rx="15" ry="4.5" style={{ fill: "var(--art-ink)" }} opacity="0.35" />
+          <path d="M441 161V176A11 4 0 0 0 463 176V161Z" fill={u("ear")} />
+          <ellipse cx="452" cy="161" rx="11" ry="4" style={{ fill: "color-mix(in oklab, var(--art-hue), var(--art-ink) 25%)" }} />
+        </g>
+
+        {/* the bowls, in front, nested: the top one's inside, then each wall
+            over the one sitting in it */}
         <ellipse cx={BOWLS.cx} cy={BOWLS.rims[0]} rx="62" ry="12" fill={u("bowlIn")} />
         <ellipse cx={BOWLS.cx + 4} cy={BOWLS.rims[0] + 3} rx="40" ry="6" fill={CREAM.deep} opacity="0.35" filter={u("blur")} />
         {BOWLS.rims.map((rim, i) => (
@@ -148,23 +192,6 @@ export function HomeObjects({ className }: { className?: string }) {
             <path d={`M${BOWLS.cx - 62} ${rim}A62 12 0 0 0 ${BOWLS.cx + 62} ${rim}`} fill="none" stroke="#fff" strokeWidth="2.5" opacity="0.85" />
           </g>
         ))}
-
-        {/* the pot: its handles, its wall, the towel over its front, its lid */}
-        <path d="M368 220H352Q342 220 342 230Q342 240 352 240H368Z" fill={u("ear")} />
-        <path d="M536 220H552Q562 220 562 230Q562 240 552 240H536Z" fill={u("ear")} />
-        <path d="M366 212V300A86 18 0 0 0 538 300V212A86 16 0 0 1 366 212Z" fill={u("pot")} />
-        <ellipse cx="404" cy="262" rx="14" ry="38" fill="#fff" opacity="0.2" filter={u("soft")} />
-        <path d="M366 212A86 16 0 0 0 538 212" fill="none" style={{ stroke: "var(--art-ink)" }} strokeWidth="4" opacity="0.35" />
-        <path d="M448 226Q488 225 526 218C534 240 540 268 544 300C536 306 526 301 517 306C505 312 496 303 483 310C470 316 456 305 442 312C446 284 446 254 448 226Z" fill={u("check")} />
-        <path d="M448 226Q488 225 526 218C534 240 540 268 544 300C536 306 526 301 517 306C505 312 496 303 483 310C470 316 456 305 442 312C446 284 446 254 448 226Z" fill={u("fold")} />
-        <path d="M544 300C536 306 526 301 517 306C505 312 496 303 483 310C470 316 456 305 442 312" fill="none" style={{ stroke: "var(--art-ink)" }} strokeWidth="2" opacity="0.35" />
-        <ellipse cx="488" cy="229" rx="42" ry="5" fill="#000" opacity="0.22" filter={u("blur")} />
-        <path d="M368 210C376 186 414 178 452 178C490 178 528 186 536 210A84 15 0 0 1 368 210Z" fill={u("lid")} />
-        <path d="M368 210A84 15 0 0 0 536 210" fill="none" style={{ stroke: "var(--art-ink)" }} strokeWidth="3" opacity="0.3" />
-        <ellipse cx="422" cy="190" rx="28" ry="6" fill="#fff" opacity="0.3" filter={u("blur")} />
-        <ellipse cx="452" cy="179" rx="15" ry="4.5" style={{ fill: "var(--art-ink)" }} opacity="0.35" />
-        <path d="M441 161V176A11 4 0 0 0 463 176V161Z" fill={u("ear")} />
-        <ellipse cx="452" cy="161" rx="11" ry="4" style={{ fill: "color-mix(in oklab, var(--art-hue), var(--art-ink) 25%)" }} />
       </g>
     </svg>
   );
@@ -332,10 +359,6 @@ export function ClothesObjects({ className }: { className?: string }) {
   );
 }
 
-/** a book's depth, the doorstep's projection made steeper so a cover
- *  reads as one: k across, 0.6k up */
-const BOOK_DEPTH = 0.6;
-
 /** a hardcover lying flat: its front (the spine, or the page edges with the
  *  boards over and under them), its top cover, and its pages on the right */
 function Book({
@@ -359,7 +382,7 @@ function Book({
   board: string;
   pages: string;
 }) {
-  const dy = k * BOOK_DEPTH;
+  const dy = k * BOX_DEPTH;
   return (
     <>
       <path d={`M${x} ${y}L${x + k} ${y - dy}H${x + w + k}L${x + w} ${y}Z`} fill={top} />
@@ -381,10 +404,10 @@ export function BooksObjects({ className }: { className?: string }) {
   const u = (name: string) => `url(#${id}-${name})`;
   const teal = (n: number) => `color-mix(in oklab, var(--art-hue), var(--art-ink) ${n}%)`;
   return (
-    <svg viewBox="12 40 240 152" className={cn("ship-art block overflow-visible", className)} aria-hidden>
+    <svg viewBox="12 40 256 152" className={cn("ship-art block overflow-visible", className)} aria-hidden>
       <defs>
-        <filter id={`${id}-soft`} x="-20%" y="-200%" width="140%" height="500%">
-          <feGaussianBlur stdDeviation="4" />
+        <filter id={`${id}-soft`} x="-20%" y="-40%" width="140%" height="180%">
+          <feGaussianBlur stdDeviation="3.5" />
         </filter>
         <filter id={`${id}-blur`} x="-50%" y="-50%" width="200%" height="200%">
           <feGaussianBlur stdDeviation="2" />
@@ -424,7 +447,7 @@ export function BooksObjects({ className }: { className?: string }) {
       </defs>
 
       <g className="ship-art-ground">
-        <ellipse cx="146" cy="184" rx="118" ry="7" filter={u("soft")} style={{ fill: "var(--art-ink)" }} opacity="0.26" />
+        <BoxShadow x={20} y={184} w={160} k={64} cast={18} filter={u("soft")} />
       </g>
 
       <g className="ship-art-lift">
@@ -454,14 +477,11 @@ export function BooksObjects({ className }: { className?: string }) {
   );
 }
 
-/** where 121 cm falls, and the guitar's length against it (an acoustic is
- *  about 104 cm), in the picture's px: the measure in ShipTiles reads these */
-export const HOBBY_MEASURE = { mark: 258, guitar: 222 };
-
 /**
- * Sports & hobbies, drawn at 1:1 in px (270 × 170): an acoustic guitar on
- * its back, body to the left, its length against the 121 cm measure; a
- * badminton racket lying in front, a shuttlecock and a golf ball by it.
+ * Sports & hobbies, staged as one pile, back to front: a badminton racket, an acoustic guitar leaning up to the
+ * right across it (the racket's head shows over the guitar's body, its
+ * shaft and grip under the neck), then a shuttlecock and a golf ball in
+ * front, each over the thing behind it.
  */
 export function HobbyObjects({ className }: { className?: string }) {
   const id = React.useId().replace(/[^a-zA-Z0-9]/g, "");
@@ -474,10 +494,13 @@ export function HobbyObjects({ className }: { className?: string }) {
   // frets from the nut toward the body, closer as they climb
   const frets = Array.from({ length: 12 }, (_, i) => 190 - 160 * (1 - 2 ** (-(i + 1) / 12)));
   return (
-    <svg viewBox="0 0 270 170" width="270" height="170" className={cn("ship-art block overflow-visible", className)} aria-hidden>
+    <svg viewBox="-2 44 230 128" className={cn("ship-art block overflow-visible", className)} aria-hidden>
       <defs>
         <filter id={`${id}-soft`} x="-20%" y="-200%" width="140%" height="500%">
           <feGaussianBlur stdDeviation="3.5" />
+        </filter>
+        <filter id={`${id}-blur`} x="-50%" y="-50%" width="200%" height="200%">
+          <feGaussianBlur stdDeviation="2" />
         </filter>
         <radialGradient id={`${id}-top`} cx="0.3" cy="0.25" r="0.9">
           <stop offset="0" style={blue(22)} />
@@ -492,80 +515,93 @@ export function HobbyObjects({ className }: { className?: string }) {
           <stop offset="0" stopColor="#ffffff" />
           <stop offset="1" stopColor="#d3d9df" />
         </radialGradient>
+        <linearGradient id={`${id}-grip`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#fbf6ea" />
+          <stop offset="1" stopColor="#d9ccb2" />
+        </linearGradient>
         <clipPath id={`${id}-strings`}>
-          <ellipse cx="0" cy="0" rx="21" ry="11" />
+          <ellipse cx="0" cy="0" rx="21" ry="16.5" />
         </clipPath>
       </defs>
 
+      {/* the pile's one shadow on the floor, cast a little to the right */}
       <g className="ship-art-ground">
         <g filter={u("soft")} style={{ fill: "var(--art-ink)" }}>
-          <ellipse cx="112" cy="126" rx="114" ry="6" opacity="0.24" />
-          <ellipse cx="88" cy="158" rx="70" ry="5" opacity="0.22" />
-          <ellipse cx="226" cy="160" rx="34" ry="4" opacity="0.22" />
+          <ellipse cx="74" cy="161" rx="66" ry="5.5" opacity="0.28" />
+          <ellipse cx="150" cy="162" rx="46" ry="4.5" opacity="0.22" />
         </g>
       </g>
 
       <g className="ship-art-lift">
-        {/* the guitar: its side under the top, the top with its binding */}
-        <path d={body} transform="translate(0 8)" style={{ fill: "color-mix(in oklab, var(--art-hue), var(--art-ink) 84%)" }} />
-        <path d={body} fill={u("top")} stroke="#f6f0e3" strokeWidth="1.8" />
-        <ellipse cx="74" cy="92" rx="14" ry="10" fill="none" stroke="#f6f0e3" strokeWidth="2" />
-        <ellipse cx="74" cy="92" rx="10.5" ry="7.5" fill="#1d2a33" />
-        <rect x="24" y="84" width="7" height="16" rx="2" fill="#3b2a20" />
-        {/* the neck, its side, the fretboard and frets; the headstock and pegs */}
-        <rect x="106" y="96.5" width="86" height="4.5" fill="#6e4527" />
-        <rect x="106" y="87.5" width="86" height="9" fill="#3b2a20" />
-        {frets.map((x) => (
-          <path key={x} d={`M${x} 87.5V96.5`} stroke="#c9ced4" strokeWidth="1" />
-        ))}
-        <rect x="189" y="87" width="2.5" height="10" fill="#f6f0e3" />
-        <path d="M191 90.5L219 88.5Q222 88.5 222 91V102Q222 104.5 219 104.5L191 102.5Z" fill="#5a3820" />
-        <path d="M191 86L219 83Q222 83 222 86V97Q222 100 219 100L191 97Z" fill={u("wood")} />
-        {[198, 206, 214].map((x) => (
-          <g key={x}>
-            {/* the tuners stand off the headstock's edges, which close in
-                toward its tip */}
-            <ellipse cx={x} cy={86 - ((x - 191) * 3) / 28 - 1} rx="2.6" ry="2" fill="#e4e8ec" />
-            <ellipse cx={x} cy={102.5 + ((x - 191) * 2) / 28 + 1.5} rx="2.6" ry="2" fill="#c9ced4" />
-          </g>
-        ))}
-        {/* six strings, bridge to nut */}
-        {[-5, -3, -1, 1, 3, 5].map((k) => (
-          <path key={k} d={`M28 ${92 + k}L190 ${92 + k * 0.7}`} stroke="#e8edf1" strokeWidth="0.7" />
-        ))}
-
-        {/* the racket, lying in front: its head strung, the shaft, the grip */}
-        <g transform="rotate(-9 40 146)">
-          <ellipse cx="40" cy="146" rx="25" ry="15" fill="#fff" opacity="0.25" />
-          <g transform="translate(40 146)" clipPath={`url(#${id}-strings)`}>
+        {/* the racket, at the back, head up to the left: strung, its throat,
+            the shaft, and a grip that swells to its butt cap */}
+        <g transform="translate(68 70) rotate(37)">
+          <ellipse cx="0" cy="0" rx="23" ry="18.5" fill="#fff" opacity="0.3" />
+          <g clipPath={`url(#${id}-strings)`}>
             {Array.from({ length: 11 }, (_, i) => -20 + i * 4).map((d) => (
               <g key={d}>
-                <path d={`M${d} -16V16`} stroke="#fff" strokeOpacity="0.85" strokeWidth="0.6" />
-                <path d={`M-24 ${d * 0.6}H24`} stroke="#fff" strokeOpacity="0.85" strokeWidth="0.6" />
+                <path d={`M${d} -20V20`} stroke="#fff" strokeOpacity="0.9" strokeWidth="0.6" />
+                <path d={`M-24 ${d * 0.8}H24`} stroke="#fff" strokeOpacity="0.9" strokeWidth="0.6" />
               </g>
             ))}
           </g>
-          <ellipse cx="40" cy="146" rx="23" ry="13" fill="none" style={{ stroke: "var(--art-ink)" }} strokeWidth="3.5" />
-          <path d="M62 143L70 146L62 149Z" style={{ fill: "var(--art-ink)" }} />
-          <path d="M69 146H120" stroke="#8d99a3" strokeWidth="2" />
-          <rect x="118" y="142.8" width="34" height="6.4" rx="3.2" fill="#f6f0e3" />
-          <path d="M126 143V149M134 143V149M142 143V149" style={{ stroke: "var(--art-ink)" }} strokeOpacity="0.3" strokeWidth="1.2" />
+          <ellipse cx="0" cy="0" rx="22.5" ry="18" fill="none" style={{ stroke: "var(--art-ink)" }} strokeWidth="3.2" />
+          <path d="M21 -4.5L31 0L21 4.5Z" style={{ fill: "var(--art-ink)" }} />
+          <path d="M30 0H86" stroke="#8d99a3" strokeWidth="2" />
+          <path d="M82 -2.4H112Q118 -4.2 118 0Q118 4.2 112 2.4H82Q80 0 82 -2.4Z" fill={u("grip")} />
+          <path d="M112 -3.4Q119.5 -4.8 119.5 0Q119.5 4.8 112 3.4Z" style={{ fill: "var(--art-ink)" }} />
+          <path d="M88 -2.4L91 2.4M95 -2.4L98 2.4M102 -2.4L105 2.4" style={{ stroke: "var(--art-ink)" }} strokeOpacity="0.28" strokeWidth="1" />
         </g>
 
-        {/* a shuttlecock on its side, cork to the left, and a golf ball */}
-        <path d="M187 152L208 145Q211 156 208 167L187 160Z" fill="#fbfcfd" />
-        <path d="M188 154L208 148M188 156L209 156M188 158L208 164" stroke="#b9c2ca" strokeWidth="0.8" />
-        <ellipse cx="208" cy="156" rx="3.5" ry="11" fill="none" stroke="#c9d0d6" strokeWidth="1.2" />
-        <path d="M187 151.5A6 6 0 0 0 187 160.5Z" fill="#f6f0e3" />
-        <circle cx="184" cy="156" r="5.5" fill="#efe3cc" />
-        <rect x="186" y="151" width="2.5" height="10" style={{ fill: "var(--art-ink)" }} opacity="0.6" />
-        <circle cx="236" cy="153" r="8.5" fill={u("ball")} />
+        {/* the guitar, leaning across it: the shade it throws on the racket,
+            its side under the top, the top with its binding */}
+        <g transform="translate(3 130) rotate(-16) translate(0 -92)">
+          <path d={body} transform="translate(3 12)" fill="#000" opacity="0.16" filter={u("blur")} />
+          <path d={body} transform="translate(0 8)" style={{ fill: "color-mix(in oklab, var(--art-hue), var(--art-ink) 84%)" }} />
+          <path d={body} fill={u("top")} stroke="#f6f0e3" strokeWidth="1.8" />
+          <ellipse cx="74" cy="92" rx="14" ry="10" fill="none" stroke="#f6f0e3" strokeWidth="2" />
+          <ellipse cx="74" cy="92" rx="10.5" ry="7.5" fill="#1d2a33" />
+          <rect x="24" y="84" width="7" height="16" rx="2" fill="#3b2a20" />
+          {/* the neck, its side, the fretboard and frets; the headstock and pegs */}
+          <rect x="106" y="96.5" width="86" height="4.5" fill="#6e4527" />
+          <rect x="106" y="87.5" width="86" height="9" fill="#3b2a20" />
+          {frets.map((x) => (
+            <path key={x} d={`M${x} 87.5V96.5`} stroke="#c9ced4" strokeWidth="1" />
+          ))}
+          <rect x="189" y="87" width="2.5" height="10" fill="#f6f0e3" />
+          <path d="M191 90.5L219 88.5Q222 88.5 222 91V102Q222 104.5 219 104.5L191 102.5Z" fill="#5a3820" />
+          <path d="M191 86L219 83Q222 83 222 86V97Q222 100 219 100L191 97Z" fill={u("wood")} />
+          {[198, 206, 214].map((x) => (
+            <g key={x}>
+              {/* the tuners stand off the headstock's edges, which close in
+                  toward its tip */}
+              <ellipse cx={x} cy={86 - ((x - 191) * 3) / 28 - 1} rx="2.6" ry="2" fill="#e4e8ec" />
+              <ellipse cx={x} cy={102.5 + ((x - 191) * 2) / 28 + 1.5} rx="2.6" ry="2" fill="#c9ced4" />
+            </g>
+          ))}
+          {/* six strings, bridge to nut */}
+          {[-5, -3, -1, 1, 3, 5].map((k) => (
+            <path key={k} d={`M28 ${92 + k}L190 ${92 + k * 0.7}`} stroke="#e8edf1" strokeWidth="0.7" />
+          ))}
+        </g>
+
+        {/* in front: a shuttlecock tipped on its cork against the guitar,
+            and a golf ball over the racket's grip */}
+        <g transform="translate(98 158) rotate(-52)">
+          <path d="M3 -4L24 -11Q27 0 24 11L3 4Z" fill="#fbfcfd" />
+          <path d="M4 -2L24 -8M4 0L25 0M4 2L24 8" stroke="#b9c2ca" strokeWidth="0.8" />
+          <ellipse cx="24" cy="0" rx="3.5" ry="11" fill="none" stroke="#c9d0d6" strokeWidth="1.2" />
+          <path d="M3 -4.5A6 6 0 0 0 3 4.5Z" fill="#f6f0e3" />
+          <circle cx="0" cy="0" r="5.5" fill="#efe3cc" />
+          <rect x="2" y="-5" width="2.5" height="10" style={{ fill: "var(--art-ink)" }} opacity="0.6" />
+        </g>
+        <circle cx="166" cy="151" r="9" fill={u("ball")} />
         {[
-          [233, 149],
-          [238, 150],
-          [235, 154],
-          [240, 155],
-          [232, 156],
+          [163, 147],
+          [168, 148],
+          [165, 152],
+          [170, 153],
+          [162, 154],
         ].map(([x, y]) => (
           <circle key={`${x}-${y}`} cx={x} cy={y} r="0.9" fill="#000" opacity="0.1" />
         ))}
@@ -573,9 +609,6 @@ export function HobbyObjects({ className }: { className?: string }) {
     </svg>
   );
 }
-
-/** a case's depth: k across, 0.6k up, as the books' */
-const CASE_DEPTH = 0.6;
 
 /**
  * Anything else: a record player, its lid up, a record on the platter and
@@ -591,15 +624,15 @@ export function RecordPlayerObjects({ className }: { className?: string }) {
   const W = 124;
   const H = 26;
   const K = 70;
-  const dy = K * CASE_DEPTH;
+  const dy = K * BOX_DEPTH;
   const LID = 58;
   // plan (x across, z into the deck) onto the deck's face
-  const deck = `matrix(1 0 1 ${-CASE_DEPTH} ${X} ${Y})`;
+  const deck = `matrix(1 0 1 ${-BOX_DEPTH} ${X} ${Y})`;
   return (
-    <svg viewBox="0 -4 210 140" className={cn("ship-art block overflow-visible", className)} aria-hidden>
+    <svg viewBox="0 -4 222 140" className={cn("ship-art block overflow-visible", className)} aria-hidden>
       <defs>
-        <filter id={`${id}-soft`} x="-20%" y="-200%" width="140%" height="500%">
-          <feGaussianBlur stdDeviation="4" />
+        <filter id={`${id}-soft`} x="-20%" y="-40%" width="140%" height="180%">
+          <feGaussianBlur stdDeviation="3.5" />
         </filter>
         <filter id={`${id}-blur`} x="-50%" y="-50%" width="200%" height="200%">
           <feGaussianBlur stdDeviation="2.5" />
@@ -623,7 +656,7 @@ export function RecordPlayerObjects({ className }: { className?: string }) {
       </defs>
 
       <g className="ship-art-ground">
-        <ellipse cx="108" cy="132" rx="96" ry="6" filter={u("soft")} style={{ fill: "var(--art-ink)" }} opacity="0.28" />
+        <BoxShadow x={X} y={Y + H} w={W} k={K} cast={16} filter={u("soft")} />
       </g>
 
       <g className="ship-art-lift">

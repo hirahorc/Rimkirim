@@ -1084,18 +1084,20 @@ in ink it stays neutral and lime stays the one colour in the action row.
   that asks rather than tells, set apart on the chapter's wash (its record player is cream and
   black, so nothing in it is lost in the wash); no other tile, the books stat included, gets a
   ground of its own. Every tile shows the things themselves, drawn in the round (`ShipObjects`,
-  below), so the bento says "what you can send" at a glance; beside them each says its one thing
-  in its own kind of picture (`ShipTiles`), so no tile's second picture sits beside or over one
-  of its own kind at three across or at two: clothes listed in the Packages step's own package
+  below), so the bento says "what you can send" at a glance; beside them three say their one thing
+  in a picture of its own kind (`ShipTiles`), and none of those sits beside or over another at
+  three across or at two: clothes listed in the Packages step's own package
   (the hero, hung off the tile's right edge beside its words from `md`, inset and fading out at
   its foot over the rows still to fill when stacked), the folded clothes, trainers and a cap set
   before it on a stage of their own, past the fade, low enough that no listed row is covered; the
   books' one number (0%, page text at the Display role's top size, not a picture) with the books
-  stacked in the corner beside it; the home's things alone, standing on the words; the size rule
-  as an acoustic guitar laid along a measure from its end to 121 cm, stopping short of the mark as
-  a real one (about 104 cm) does, a racket, a shuttlecock and a golf ball in front; and what people
+  stacked in the corner beside it; and what people
   ask about as white chips, a record player in the corner, which gives way to the chips on a tile
-  under 20rem. Text in a picture is pinned at 1:1, so a wider tile shows more ground, never larger
+  under 20rem. The two between them stand alone, each one group centred over its words: the home's
+  things (the lamp at the back, the pot, the bowls in front over the lamp's base and the pot's
+  handle) and the hobby things (an acoustic guitar leaning up to the right, a racket crossed
+  behind it, a shuttlecock and a golf ball in front), with no measure drawn on them: the size rule
+  is a fact in the card's details. Text in a picture is pinned at 1:1, so a wider tile shows more ground, never larger
   type, and each picture builds once as the grid comes into view, one small beat a tile, 110ms
   apart (`SceneStage`). Then its name at the Title role, then
   one Dim Grey line that says what's in it, held to two lines from `sm` so a row's titles share a
@@ -1151,7 +1153,10 @@ in ink it stays neutral and lime stays the one colour in the action row.
   round, as the doorstep's door is (plain SVG, after a reference: a 3D render of the bento):
   every surface its own gradient lit from the top left, matte, a soft blurred shadow in the
   chapter's ink where each thing meets the floor and a thin one where it rests on another, no
-  outline. Painted and dyed things (the pot's enamel, the denim, a cap, a book's cloth, a guitar's
+  outline. A round foot stands on a level ellipse; a box (the books, the record player) on its
+  own footprint, softened and cast to the right as the doorstep's parcels' are, since a level
+  ellipse parts from a side that climbs away. Several things are staged as one group, back to
+  front, each over the one behind it, never set apart in a row. Painted and dyed things (the pot's enamel, the denim, a cap, a book's cloth, a guitar's
   top) take the chapter's hue pulled toward its ink (`color-mix`, so they read as paint, not
   plastic); everything else is the colour of the thing: cream ceramic and knit, white leather,
   brass, wood, a black record. Anything with depth is in the doorstep's projection made steeper

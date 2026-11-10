@@ -4,7 +4,7 @@ import { ChevronUp } from "lucide-react";
 import { useT } from "@/lib/i18n/LanguageProvider";
 import { cn } from "@/lib/utils/cn";
 import { at, Bar } from "./SceneParts";
-import { BooksObjects, ClothesObjects, HOBBY_MEASURE, HobbyObjects, HomeObjects, RecordPlayerObjects } from "./ShipObjects";
+import { BooksObjects, ClothesObjects, HobbyObjects, HomeObjects, RecordPlayerObjects } from "./ShipObjects";
 
 /**
  * The pictures of What you can send's bento (WhatYouCanShip): on every tile
@@ -12,10 +12,10 @@ import { BooksObjects, ClothesObjects, HOBBY_MEASURE, HobbyObjects, HomeObjects,
  * the one thing the tile says, a different kind on each so no two
  * neighbours say it the same way (the stageshow bento rules): the Packages
  * step's own package, its clothes listed (the hero); the one number books
- * are about (BooksStat, page text); the size rule measured on a guitar;
- * what people ask about (a collection). Home's things stand alone. Text
- * is pinned to its tile's edge at 1:1, so a wider tile shows more ground,
- * never larger type. The pieces carry the journey's entrances
+ * are about (BooksStat, page text); what people ask about (a collection).
+ * The home's things and the hobby things stand alone, each one group
+ * centred over its words. Text is pinned to its tile's edge at 1:1, so a
+ * wider tile shows more ground, never larger type. The pieces carry the journey's entrances
  * (`.jr-*`, `at(ms)`) and build once, on the tile's SceneStage; everything
  * but the stat is decorative, since the tile's words carry the meaning.
  */
@@ -146,49 +146,31 @@ export function BooksPicture() {
 /*  Home: the things themselves                                        */
 /* ------------------------------------------------------------------ */
 
-/** the home's things, standing on the words: a lamp, bowls, a pot */
+/** the home's things as one group, centred over the words: a lamp at the
+ *  back, a pot, bowls in front */
 export function HomePicture() {
   return (
-    <div className="jr jr-rise absolute bottom-3 left-6 w-[17rem] max-w-[calc(100%-3rem)] sm:w-[18rem]" style={at(0)}>
-      <HomeObjects className="h-auto w-full" />
+    <div className="absolute inset-x-6 bottom-2 flex justify-center">
+      <div className="jr jr-rise w-[15.5rem] max-w-full sm:w-[17rem]" style={at(0)}>
+        <HomeObjects className="h-auto w-full" />
+      </div>
     </div>
   );
 }
 
 /* ------------------------------------------------------------------ */
-/*  Sports & hobbies: the size rule, measured                          */
+/*  Sports & hobbies: the things themselves                            */
 /* ------------------------------------------------------------------ */
 
-/**
- * The size rule on the thing: an acoustic guitar laid along a measure, the
- * measure running from its end to 121 cm, so the guitar (about 104 cm)
- * stops short of the mark. A racket, a shuttlecock and a golf ball lie in
- * front of it. The measure is page text over the drawing, so it reads at
- * one size on every tile.
- */
-export function RulerPicture() {
-  const { mark } = HOBBY_MEASURE;
+/** the hobby things as one pile, centred over the words as the home's
+ *  group is: a guitar, a racket crossed behind it, a shuttlecock and a
+ *  golf ball in front */
+export function HobbyPicture() {
   return (
-    <div className="absolute left-6 top-0 h-[170px] w-[270px]">
-      <div className="jr jr-rise absolute inset-0" style={at(0)}>
-        <HobbyObjects />
+    <div className="absolute inset-x-6 bottom-2 flex justify-center">
+      <div className="jr jr-rise w-[15.5rem] max-w-full sm:w-[17rem]" style={at(0)}>
+        <HobbyObjects className="h-auto w-full" />
       </div>
-      {/* the measure: from the guitar's end to 121 cm, with the mark's line
-          dropped past its head */}
-      <div className="absolute" style={{ left: 0, top: 6, width: mark }}>
-        <span className="jr jr-rise block text-center font-display text-sm font-semibold text-tone-ink" style={at(900)}>
-          121 cm
-        </span>
-        <span className="mt-1.5 flex items-center">
-          <span className="h-3 w-px shrink-0 bg-tone-ink" />
-          <span className="jr jr-grow h-px flex-1 origin-left bg-tone-ink" style={at(350)} />
-          <span className="h-3 w-px shrink-0 bg-tone-ink" />
-        </span>
-      </div>
-      <span
-        className="jr jr-drop absolute w-0 border-l border-dashed border-tone-ink/60"
-        style={{ left: mark - 0.5, top: 30, height: 104, ...at(800) }}
-      />
     </div>
   );
 }

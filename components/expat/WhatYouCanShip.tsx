@@ -32,7 +32,7 @@ import { SectionHead } from "./SectionHead";
 import { ReviewNote } from "./ReviewNote";
 import { ShipArt } from "./ShipArt";
 import { SceneStage } from "./SceneStage";
-import { AsksPicture, BooksPicture, BooksStat, ClothesPicture, HomePicture, PackedPicture, RulerPicture } from "./ShipTiles";
+import { AsksPicture, BooksPicture, BooksStat, ClothesPicture, HobbyPicture, HomePicture, PackedPicture } from "./ShipTiles";
 import { revealOrder as order, useSectionReveal } from "./useSectionReveal";
 
 /** what a card's details end on: the price check, or a word with the team
@@ -40,14 +40,14 @@ import { revealOrder as order, useSectionReveal } from "./useSectionReveal";
 type Action = "price" | "wa";
 
 /** a tile's picture (ShipTiles): the things themselves on every tile, beside
- *  the hero's package, the one number, the rule measured, the questions
- *  asked; the home's things alone */
-type Picture = "packed" | "stat" | "home" | "ruler" | "asks";
+ *  the hero's package, the one number, the questions asked; the home's
+ *  things and the hobby things alone */
+type Picture = "packed" | "stat" | "home" | "hobby" | "asks";
 
 const PICTURES: Record<Exclude<Picture, "stat">, () => React.ReactNode> = {
   packed: PackedPicture,
   home: HomePicture,
-  ruler: RulerPicture,
+  hobby: HobbyPicture,
   asks: AsksPicture,
 };
 
@@ -64,15 +64,14 @@ type CardKey = "clothes" | "books" | "home" | "hobby" | "other";
 /** what our customers send most, in ops' order, the one that needs a word
  *  first last. Each opens onto its facts, a label, the rule and why. A
  *  bento, hero and strip: clothes, what's sent most, takes two columns,
- *  and no tile's second picture sits beside or over one of its own kind at
- *  three across or at two (the package over the number and the home's
- *  things, the number over the measure, the home's things over the
- *  questions) */
+ *  and no tile's second picture (the package, the number, the questions)
+ *  sits beside or over another's at three across or at two; the home's
+ *  things and the hobby things, which stand alone, sit between them */
 const CARDS: readonly { key: CardKey; facts: readonly string[]; action: Action; picture: Picture }[] = [
   { key: "clothes", facts: ["packing", "inside", "customs"], action: "price", picture: "packed" },
   { key: "books", facts: ["price", "packing", "duty"], action: "price", picture: "stat" },
   { key: "home", facts: ["wrap", "fill", "label"], action: "price", picture: "home" },
-  { key: "hobby", facts: ["packing", "size", "battery"], action: "price", picture: "ruler" },
+  { key: "hobby", facts: ["packing", "size", "battery"], action: "price", picture: "hobby" },
   { key: "other", facts: ["rules"], action: "wa", picture: "asks" },
 ];
 
