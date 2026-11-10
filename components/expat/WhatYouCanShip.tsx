@@ -16,6 +16,7 @@ import {
   MessageCircle,
   Pill,
   ShieldAlert,
+  Sofa,
   SprayCan,
   Sprout,
   Wine,
@@ -29,22 +30,40 @@ import { useT } from "@/lib/i18n/LanguageProvider";
 import { cn } from "@/lib/utils/cn";
 import { SectionHead } from "./SectionHead";
 import { ReviewNote } from "./ReviewNote";
-import { ShipArt, type ShipArtName } from "./ShipArt";
+import { ShipArt } from "./ShipArt";
+import { SceneStage } from "./SceneStage";
+import { AsksPicture, BooksStat, HomePicture, PackedPicture, RulerPicture } from "./ShipTiles";
 import { revealOrder as order, useSectionReveal } from "./useSectionReveal";
 
 /** what a card's details end on: the price check, or a word with the team
  *  on WhatsApp that already says what it's about */
 type Action = "price" | "wa";
 
+/** a tile's picture, one kind per tile (ShipTiles): the hero's package, the
+ *  one number, the things drawn, the rule measured, the questions asked */
+type Picture = "packed" | "stat" | "home" | "ruler" | "asks";
+
+const PICTURES: Record<Exclude<Picture, "stat">, () => React.ReactNode> = {
+  packed: PackedPicture,
+  home: HomePicture,
+  ruler: RulerPicture,
+  asks: AsksPicture,
+};
+
+type CardKey = "clothes" | "books" | "home" | "hobby" | "other";
+
 /** what our customers send most, in ops' order, the one that needs a word
- *  first last. Each opens onto its facts, a label, the rule and why */
-const CARDS: readonly { key: ShipArtName; facts: readonly string[]; action: Action }[] = [
-  { key: "clothes", facts: ["packing", "inside", "customs"], action: "price" },
-  { key: "books", facts: ["price", "packing", "duty"], action: "price" },
-  { key: "home", facts: ["wrap", "fill", "label"], action: "price" },
-  { key: "hobby", facts: ["packing", "size", "battery"], action: "price" },
-  { key: "bike", facts: ["packing", "price", "battery"], action: "wa" },
-  { key: "other", facts: ["rules"], action: "wa" },
+ *  first last. Each opens onto its facts, a label, the rule and why. A
+ *  bento, hero and strip: clothes, what's sent most, takes two columns,
+ *  and no tile sits beside or over one of its own kind at three across or
+ *  at two (the hero over the stat and the drawing, the stat over the
+ *  measure, the drawing over the questions) */
+const CARDS: readonly { key: CardKey; facts: readonly string[]; action: Action; picture: Picture }[] = [
+  { key: "clothes", facts: ["packing", "inside", "customs"], action: "price", picture: "packed" },
+  { key: "books", facts: ["price", "packing", "duty"], action: "price", picture: "stat" },
+  { key: "home", facts: ["wrap", "fill", "label"], action: "price", picture: "home" },
+  { key: "hobby", facts: ["packing", "size", "battery"], action: "price", picture: "ruler" },
+  { key: "other", facts: ["rules"], action: "wa", picture: "asks" },
 ];
 
 /** what it all travels in, each piece priced the same way */
@@ -98,7 +117,7 @@ export function WhatYouCanShip() {
   // reading order, what it all travels in, then what to check
   const rootRef = useSectionReveal<HTMLElement>();
   const gridRef = React.useRef<HTMLDivElement>(null);
-  const [open, setOpen] = React.useState<ShipArtName | null>(null);
+  const [open, setOpen] = React.useState<CardKey | null>(null);
   // a card opened beside the open one, in the same row: its details take
   // the open panel's place at once, as if one panel changed its words, and
   // the caret slides across to it, rather than one panel folding away as
@@ -106,13 +125,13 @@ export function WhatYouCanShip() {
   const [swap, setSwap] = React.useState(false);
   const caretAt = React.useRef<number | null>(null);
 
-  const choose = (key: ShipArtName) => {
+  const choose = (key: CardKey) => {
     if (open === key) {
       setSwap(false);
       setOpen(null);
       return;
     }
-    const top = (k: ShipArtName) => gridRef.current?.querySelector<HTMLElement>(`[data-card="${k}"]`)?.offsetTop;
+    const top = (k: CardKey) => gridRef.current?.querySelector<HTMLElement>(`[data-card="${k}"]`)?.offsetTop;
     setSwap(open !== null && top(open) === top(key));
     setOpen(key);
   };
@@ -162,25 +181,66 @@ export function WhatYouCanShip() {
         {/* each card's details follow it, across the whole grid; dense
             placement lifts the next cards back up beside it, so the details
             land under the card's own row at every column count. The rows'
-            gap is each card's own foot, so a closed panel adds none */}
-        <div ref={gridRef} className="mt-8 -mb-4 grid sm:mt-12 grid-flow-row-dense gap-x-4 sm:grid-cols-2 lg:grid-cols-3">
-          {CARDS.map(({ key, facts, action }, i) => {
+            gap is each card's own foot, so a closed panel adds none. The
+            tiles share one frame, their words at the foot, and one ground,
+            the chapter's Panel 3, filled, so each reads as a tile off the
+            desk without a hairline; what differs is the picture over them.
+            Anything else, the one that asks rather than tells, is set apart
+            on the chapter's wash: it has no drawing, so nothing in it is
+            drawn in the wash and lost */}
+        <div
+          ref={gridRef}
+          data-ship-grid
+          className="mt-8 -mb-4 grid sm:mt-12 grid-flow-row-dense gap-x-4 sm:grid-cols-2 lg:grid-cols-3"
+        >
+          {CARDS.map(({ key, facts, action, picture }, i) => {
             const isOpen = open === key;
             const Chevron = isOpen ? ChevronUp : ChevronDown;
             const k = (path: string) => t(`expat.ship.${key}.${path}`);
+            const hero = picture === "packed";
+            const apart = picture === "asks";
+            const Picture = picture === "stat" ? null : PICTURES[picture];
             return (
               <React.Fragment key={key}>
-                <div data-card={key} className="jr-reveal pb-4" style={order(1 + i)}>
+                <div data-card={key} className={cn("jr-reveal pb-4", hero && "sm:col-span-2")} style={order(1 + i)}>
                   <div
                     className={cn(
-                      "ship-card relative flex h-full gap-4 rounded-lg border bg-surface p-4 transition-colors duration-200 sm:flex-col sm:gap-5 sm:p-6",
-                      isOpen ? "border-(--tone)" : "border-border hover:bg-surface-2",
+                      "ship-card relative flex h-full flex-col overflow-hidden rounded-lg border transition-colors duration-200",
+                      apart
+                        ? "bg-(--tone-wash) hover:bg-[color-mix(in_oklab,var(--tone-wash),var(--tone)_10%)]"
+                        : "bg-surface-3 hover:bg-[color-mix(in_oklab,var(--surface-3),var(--tone-ink)_6%)]",
+                      isOpen ? "border-(--tone)" : "border-transparent",
+                      hero && "md:min-h-[22rem] md:justify-end",
                     )}
                   >
-                    <ShipArt name={key} className="h-16 w-24 shrink-0 sm:h-28 sm:w-42" />
-                    <div className="flex min-w-0 flex-1 flex-col">
+                    {/* the picture over the words; the hero's, from md,
+                        behind them, hung off the tile's right edge */}
+                    {Picture ? (
+                      <div className={cn("relative min-h-44 flex-1 sm:min-h-50", hero && "min-h-70 sm:min-h-70 md:absolute md:inset-0")}>
+                        <SceneStage
+                          ground="none"
+                          buildWith="[data-ship-grid]"
+                          delay={i * 110}
+                          className={cn(
+                            "pointer-events-none absolute inset-0",
+                            // stacked over its words, the hero's package
+                            // fades out at the picture's foot, over the
+                            // rows still to fill, never over a listed one
+                            hero && "max-md:[mask-image:linear-gradient(to_bottom,black_76%,transparent)]",
+                          )}
+                        >
+                          <Picture />
+                        </SceneStage>
+                      </div>
+                    ) : (
+                      <div className="flex-1">
+                        <BooksStat />
+                      </div>
+                    )}
+                    <div className={cn("flex min-w-0 flex-col px-6 pb-6", !Picture && "pt-6", hero && "md:max-w-[19rem]")}>
                       <h3 className="font-display text-xl font-semibold tracking-tight">{k("title")}</h3>
-                      <p className="mt-1.5 text-sm leading-relaxed text-muted">{k("answer")}</p>
+                      {/* two lines held from sm, so a row's titles share a line */}
+                      <p className="mt-1.5 text-sm leading-relaxed text-muted sm:min-h-[2lh]">{k("answer")}</p>
                       {/* the whole card is the toggle's hit area; the label
                           says what the details hold */}
                       <button
@@ -189,7 +249,7 @@ export function WhatYouCanShip() {
                         aria-expanded={isOpen}
                         aria-controls={`ship-${key}`}
                         onClick={() => choose(key)}
-                        className="mt-auto flex items-center gap-1.5 self-start pt-3 text-left text-sm font-medium after:absolute sm:pt-4 after:inset-0 after:rounded-lg focus-visible:outline-none focus-visible:after:ring-2 focus-visible:after:ring-foreground/50"
+                        className="mt-auto flex items-center gap-1.5 self-start pt-4 text-left text-sm font-medium after:absolute after:inset-0 after:rounded-lg focus-visible:outline-none focus-visible:after:ring-2 focus-visible:after:ring-foreground/50"
                       >
                         {k("more")}
                         <Chevron aria-hidden className="size-4 text-muted-2" />
@@ -254,15 +314,16 @@ export function WhatYouCanShip() {
             packs, then what it all travels in, open on the desk, not cards,
             since none of it opens, and drawn smaller than the cards' things,
             since it's what they travel in, not what you send; the rule that
-            prices every piece over them, each one's own rule leading its
-            words. On a phone each reads as a card does, drawing beside the
-            words */}
+            prices every piece over them. Each reads as a fact in the cards'
+            details does: its name the label, its own rule the title, why
+            under it, so no two lines in a column speak at the same level.
+            On a phone each reads as a card does, drawing beside the words */}
         <div
           id="packing"
           className="jr-reveal mt-12 scroll-mt-24 border-t border-border pt-10 sm:mt-16 sm:pt-12"
           style={order(1 + CARDS.length)}
         >
-          <h3 className="font-display text-xl font-semibold tracking-tight sm:text-2xl">{t("expat.ship.pack.title")}</h3>
+          <h3 className="font-display text-2xl font-semibold tracking-tight sm:text-3xl">{t("expat.ship.pack.title")}</h3>
           <p className="mt-2 max-w-2xl leading-relaxed text-muted">{t("expat.ship.pack.lead")}</p>
           <p className="mt-2 text-sm">
             {/* the same modal as the main site's calculator */}
@@ -284,9 +345,11 @@ export function WhatYouCanShip() {
               >
                 <ShipArt name={p} className="h-16 w-24 shrink-0 md:h-20 md:w-30" />
                 <div className="min-w-0">
-                  <h4 className="font-display text-lg font-semibold tracking-tight">{t(`expat.ship.pack.${p}.title`)}</h4>
-                  <p className="mt-1 text-sm font-medium">{t(`expat.ship.pack.${p}.rule`)}</p>
-                  <p className="mt-1 text-sm leading-relaxed text-muted">{t(`expat.ship.pack.${p}.body`)}</p>
+                  <h4 className="font-display text-xs font-medium uppercase tracking-[0.04em] text-tone-ink">
+                    {t(`expat.ship.pack.${p}.title`)}
+                  </h4>
+                  <p className="mt-2 font-display text-lg font-semibold tracking-tight sm:text-xl">{t(`expat.ship.pack.${p}.rule`)}</p>
+                  <p className="mt-1.5 text-sm leading-relaxed text-muted">{t(`expat.ship.pack.${p}.body`)}</p>
                 </div>
               </li>
             ))}
@@ -300,10 +363,29 @@ export function WhatYouCanShip() {
           </p>
           {/* furniture's own guide, closed until it's wanted: most visitors
               send boxes and suitcases, and the six steps are for the few
-              who don't. Numbered as How it works numbers its steps; no rule
-              under it, since Before you send's opens right after */}
-          <div className="mt-8 border-t border-border">
-            <Disclosure id="packing-furniture" question={t("expat.ship.pack.furniture.title")}>
+              who don't. A tile, not a ruled row, so it reads as something
+              to open: the thing, what it holds, the chevron in its ring.
+              Still a <details>, so the order flow's #packing-furniture
+              opens it (ExpatFaq, openFaqItem). Numbered as How it works
+              numbers its steps */}
+          <div className="mt-8">
+            <Disclosure
+              id="packing-furniture"
+              tile
+              question={
+                <span className="flex items-center gap-4">
+                  <span aria-hidden className="grid size-11 shrink-0 place-items-center rounded-sm bg-background text-tone-ink">
+                    <Sofa className="size-5" strokeWidth={1.75} />
+                  </span>
+                  <span className="min-w-0">
+                    <span className="block font-display text-lg font-semibold tracking-tight">
+                      {t("expat.ship.pack.furniture.title")}
+                    </span>
+                    <span className="mt-0.5 block text-sm text-muted">{t("expat.ship.pack.furniture.hint")}</span>
+                  </span>
+                </span>
+              }
+            >
               <p className="max-w-2xl text-sm leading-relaxed text-muted">{t("expat.ship.pack.furniture.lead")}</p>
               <ol className="mt-6 grid gap-x-8 gap-y-6 sm:grid-cols-2 lg:grid-cols-3">
                 {FURNITURE.map((step, n) => (
@@ -330,7 +412,7 @@ export function WhatYouCanShip() {
             no-entry sign for never). On a phone it reads down, the asking
             first; from lg the two sit side by side over one way to ask */}
         <div className="jr-reveal mt-12 border-t border-border pt-10 sm:mt-16 sm:pt-12" style={order(2 + CARDS.length)}>
-          <h3 className="font-display text-xl font-semibold tracking-tight sm:text-2xl">{t("expat.ship.before.title")}</h3>
+          <h3 className="font-display text-2xl font-semibold tracking-tight sm:text-3xl">{t("expat.ship.before.title")}</h3>
           {/* de-boxed on the desk: no tinted panel, so nothing in the sky
               chapter stacks against the violet band that follows */}
           <div className="mt-6 grid lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">

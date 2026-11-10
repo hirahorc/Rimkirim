@@ -1075,8 +1075,13 @@ in ink it stays neutral and lime stays the one colour in the action row.
   `.nav-expat`). From `sm`, fine pointers only, never under reduced motion.
 - **The expat item cards** (`WhatYouCanShip`, after sendmybag.com's "What you can send", in ops'
   outline of three parts). First, one card per kind of thing customers send most (clothes and
-  personal items, books, home and kitchen, sports and hobbies, bikes, anything else), Panel 1 with
-  a hairline and the `lg` corner, three across from `lg`, two from `sm`. Each leads with its
+  personal items, books, home and kitchen, sports and hobbies, anything else), each a tile on the
+  chapter's Panel 3, filled and with no hairline, so it reads off the white desk, with the `lg`
+  corner, three across from `lg`, two from `sm`; clothes, what's sent most, takes two columns, so
+  no row is left with a hole. Every tile shares that one ground except **anything else**, the one
+  that asks rather than tells, set apart on the chapter's wash (it has no drawing, so nothing
+  drawn in the wash is lost on it); no other tile, the books stat included, gets a ground of its
+  own. Each leads with its
   drawing (`ShipArt`, below), then its name at the Title role, then one Dim Grey line that says
   what's in it. The toggle at the foot names what the details hold ("Weight, packing and duty",
   never "Show more"), with the disclosure's swapped chevron, and the whole card is its hit area.
@@ -1093,12 +1098,16 @@ in ink it stays neutral and lime stays the one colour in the action row.
   section's (24px, 30px from `sm`). Second, the packing guide (`#packing`, where the order flow
   links): that the customer packs everything, then what it all travels in (suitcases, boxes,
   special packaging): the one rule that prices every piece, then three columns open on the desk, split by
-  hairlines from `md` (nothing in them opens, so they are not cards), each its name, its own rule
-  in ink ("Double-wall, up to 25 kg") and why in Dim Grey, its drawing at 120 × 80, two thirds of
+  hairlines from `md` (nothing in them opens, so they are not cards), each set as a fact in the
+  cards' details is: its name as the brand label in the chapter's ink, its own rule at the Title
+  role ("Double-wall, up to 25 kg"), why in Dim Grey, so no two lines in a column speak at the
+  same level; its drawing at 120 × 80, two thirds of
   a card's, since it's what things travel in, not what you send; what a piece packed any other way
   loses (its claim at the declared value) on one line under all three, and furniture's own steps
-  closed under one hairline (the FAQ's
-  disclosure row), its six steps numbered in How it works' tiles. Third, what to check before
+  closed in the disclosure's **tile** (`Disclosure tile`: Panel 3 like the item tiles, a sofa in a
+  white square, the title over one line that says what's inside, the chevron in a white ring), so
+  it reads as something to open rather than a line of text; still a `<details>`, so the order
+  flow's `#packing-furniture` opens it. Its six steps are numbered in How it works' tiles. Third, what to check before
   sending, a Panel 2 block: what can go once the team has looked (each thing in a 2px warning
   ring, the warning glyph on its head) beside what can't go at all (each struck through by the
   no-entry sign, a 2px Stop Red ring and slash), side by side from `lg`, over the one place that
@@ -1122,7 +1131,7 @@ in ink it stays neutral and lime stays the one colour in the action row.
   in two, its wash and a metal (`.ship-art`, all mixed from the chapter) and the doorstep's kraft;
   anything with depth in the doorstep's projection, the far face up and to the right. Each is
   scaled from its measured ink to stand the same height (88 of the frame's 112, or as wide as 160
-  for a long thing like the bike) and set flush left, its ground as wide as it is, so a row of
+  for a long thing) and set flush left, its ground as wide as it is, so a row of
   cards matches and every drawing starts where its card's words do. No outline, no gradient, no shadow but the ground's.
   Decorative: the card's words carry the meaning.
 

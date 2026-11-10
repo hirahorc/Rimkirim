@@ -230,7 +230,7 @@ const id = {
         suitcase: "Koper atau tas",
         plastic: "Dibungkus plastik atau bubble wrap",
         crate: "Peti kayu",
-        other: "Lainnya (kotak sepeda, hard case)",
+        other: "Lainnya (hard case, tas golf)",
       },
       surcharge: "Kemasan selain kardus dikenai biaya handling.",
       weight: "Berat",
@@ -444,10 +444,14 @@ const id = {
           value: "Kardus kecil",
           body: "Bagi ke beberapa kardus kecil, supaya tiap koli tidak terlalu berat.",
         },
+        stat: {
+          lead: "Bea masuk",
+          label: "untuk buku cetak lewat barang kiriman pribadi",
+        },
         duty: {
           label: "Bea masuk",
           value: "Bea masuk 0%",
-          body: "Sebagai barang kiriman, buku bebas bea masuk dan PPh. Sebagai barang pindahan, buku memang bebas bea.",
+          body: "Sebagai barang kiriman pribadi, buku cetak bebas bea masuk (BM) dan PPh. PPN mungkin tetap berlaku, tergantung jenis bukunya. Kalau kamu memenuhi syarat barang pindahan, buku juga bebas bea.",
         },
       },
       home: {
@@ -490,28 +494,6 @@ const id = {
           body: "Barang dengan baterai atau gas, misalnya drone atau tabung selam, wajib dikonfirmasi ke tim kami dulu.",
         },
       },
-      bike: {
-        title: "Sepeda",
-        answer: "Sepedamu bisa ikut, asal dipacking dengan benar.",
-        more: "Kemasan, harga, dan e-bike",
-        packing: {
-          label: "Kemasan",
-          value: "Masuk bike box",
-          body: "Lepas pedal, putar atau lepas setang, lalu masukkan ke bike box atau kardus sepeda.",
-        },
-        price: {
-          label: "Harga",
-          value: "Biasanya dari ukuran box",
-          body: "Box sepeda besar, jadi berat volumenya biasanya lebih tinggi dari berat aktual. Masukkan dimensi box yang sebenarnya saat minta harga.",
-        },
-        battery: {
-          label: "Konfirmasi dulu",
-          value: "E-bike",
-          body: "E-bike atau sepeda dengan baterai wajib dikonfirmasi ke tim kami dulu.",
-        },
-        cta: "Minta panduan packing sepeda di WhatsApp",
-        wa: "Halo Rimkirim, saya relokasi ke Indonesia dan mau kirim sepeda. Boleh minta panduan packing sepedanya?",
-      },
       other: {
         title: "Barang lainnya",
         answer: "Barangmu tidak ada di daftar? Tanya kami dulu.",
@@ -540,11 +522,12 @@ const id = {
         special: {
           title: "Kemasan khusus",
           rule: "Sesuai bentuk barangnya",
-          body: "Bike box untuk sepeda, hard case untuk alat musik, crate atau wrapping untuk furnitur. Masukkan dimensi persis kemasannya saat minta harga.",
+          body: "Hard case untuk alat musik, crate atau wrapping untuk furnitur. Masukkan dimensi persis kemasannya saat minta harga.",
         },
         claim: "Kalau ada barang yang tiba rusak dan kemasannya tidak sesuai panduan ini, klaimnya tidak bisa diganti sesuai nilai yang kamu deklarasikan.",
         furniture: {
           title: "Cara mengemas furnitur, langkah demi langkah",
+          hint: "Enam langkah, dari mengosongkan laci sampai memberi label tiap koli.",
           lead: "Seperti barang lainnya, furnitur kamu kemas sendiri. Furnitur bisa dikirim kalau carrier partner kami punya layanannya, dan kami konfirmasi dulu sebelum kamu mulai.",
           prep: {
             title: "Siapkan dulu",
@@ -838,6 +821,17 @@ const id = {
         msg2: "Makasih, wine-nya sudah saya keluarkan. Pickup hari Kamis tetap jalan?",
         msg3: "Tetap, kurir datang Kamis 12 November, antara 09.00 dan 12.00.",
         booked: "Pickup terkonfirmasi",
+      },
+      packed: {
+        coats: "Mantel musim dingin",
+        jeans: "Celana jeans",
+        trainers: "Sepatu kets",
+      },
+      asks: {
+        a: "Teleskop?",
+        b: "Piringan hitam?",
+        c: "Mesin kopi?",
+        d: "Mesin jahit?",
       },
     },
     photos: {
@@ -2506,7 +2500,7 @@ const en: Messages = {
         suitcase: "Suitcase or bag",
         plastic: "Plastic or bubble wrap",
         crate: "Wooden crate",
-        other: "Something else (bike box, hard case)",
+        other: "Something else (hard case, golf bag)",
       },
       surcharge: "Anything not in a cardboard box adds a handling surcharge.",
       weight: "Weight",
@@ -2718,10 +2712,14 @@ const en: Messages = {
           value: "In small boxes",
           body: "Spread them over a few small boxes, so no single box gets too heavy.",
         },
+        stat: {
+          lead: "Import duty",
+          label: "on printed books sent as a personal shipment",
+        },
         duty: {
           label: "Import duty",
           value: "0% import duty",
-          body: "Sent as a personal shipment, books pay no import duty and no income tax. As relocation goods, they're duty-free anyway.",
+          body: "Sent as a personal shipment, printed books pay no import duty (BM) and no income tax (PPh). VAT (PPN) may still apply depending on the type of book. If you qualify for relocation goods, they're duty-free too.",
         },
       },
       home: {
@@ -2764,28 +2762,6 @@ const en: Messages = {
           body: "Anything with a battery or gas, like a drone or a diving tank, needs our team's OK first.",
         },
       },
-      bike: {
-        title: "Bicycles",
-        answer: "Your bike can come too, as long as it's packed properly.",
-        more: "Packing, price and e-bikes",
-        packing: {
-          label: "Packing",
-          value: "In a bike box",
-          body: "Take off the pedals, turn or remove the handlebars, then pack it in a bike box or carton.",
-        },
-        price: {
-          label: "Price",
-          value: "Usually by box size",
-          body: "A bike box is big, so its volumetric weight is usually more than its real weight. Give us its real dimensions when you ask for a price.",
-        },
-        battery: {
-          label: "Check first",
-          value: "E-bikes",
-          body: "E-bikes, and any bike with a battery, need our team's OK first.",
-        },
-        cta: "Get our bike packing guide on WhatsApp",
-        wa: "Hi Rimkirim, I'm relocating to Indonesia and want to ship my bike. Could you send me your bike packing guide?",
-      },
       other: {
         title: "Anything else",
         answer: "Not on the list? Ask us first.",
@@ -2814,11 +2790,12 @@ const en: Messages = {
         special: {
           title: "Special packaging",
           rule: "Made for the piece",
-          body: "A bike box for a bike, a hard case for instruments, a crate or wrapping for furniture. Give us its exact dimensions when you ask for a price.",
+          body: "A hard case for instruments, a crate or wrapping for furniture. Give us its exact dimensions when you ask for a price.",
         },
         claim: "If something arrives damaged and wasn't packed to this guide, it can't be claimed at the value you declared.",
         furniture: {
           title: "How to pack furniture, step by step",
+          hint: "Six steps, from emptying the drawers to labelling every piece.",
           lead: "Like everything else, furniture is packed by you. It ships where our carrier partner offers it, and we confirm that before you start.",
           prep: {
             title: "Get it ready",
@@ -3110,6 +3087,17 @@ const en: Messages = {
         msg2: "Thanks, the wine's out. Is Thursday's pickup still on?",
         msg3: "It is: the courier comes on Thursday 12 November, between 9:00 and 12:00.",
         booked: "Pickup confirmed",
+      },
+      packed: {
+        coats: "Winter coats",
+        jeans: "Jeans",
+        trainers: "Trainers",
+      },
+      asks: {
+        a: "A telescope?",
+        b: "Vinyl records?",
+        c: "A coffee machine?",
+        d: "A sewing machine?",
       },
     },
     photos: {

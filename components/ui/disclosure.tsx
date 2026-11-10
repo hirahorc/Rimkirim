@@ -143,20 +143,27 @@ export function CollapseHeight({
  * from the content height (autoDuration above), the chevron is swapped —
  * never rotated — and the open header carries no colour change; the icon
  * alone marks the state. The hit box is squared off and spans exactly the
- * divider width; the answer indents 12px past the question.
+ * divider width; the answer indents 12px past the question. A `tile` is
+ * the one that stands alone, outside a ruled list.
  */
 export function Disclosure({
   id,
   question,
   strong = false,
+  tile = false,
   children,
 }: {
   /** DOM id on the <details> — /faq deep-links rely on it; optional elsewhere */
   id?: string;
-  question: string;
+  /** a string, or for a tile the row's own words, set by the caller */
+  question: React.ReactNode;
   /** a question that is the section's content, not an aside: one step up the
    *  scale, semibold, more air (a landing's FAQ) */
   strong?: boolean;
+  /** a disclosure on its own, not in a ruled list (the packing guide's
+   *  furniture steps): its own panel on Panel 3, the chevron in a white
+   *  ring, so the row reads as something to open, not a line of text */
+  tile?: boolean;
   children: React.ReactNode;
 }) {
   const detailsRef = React.useRef<HTMLDetailsElement>(null);
@@ -255,26 +262,54 @@ export function Disclosure({
 
   const Chevron = open ? ChevronUp : ChevronDown;
   return (
-    <details ref={detailsRef} id={id} className="scroll-mt-24" onToggle={onToggle}>
+    <details
+      ref={detailsRef}
+      id={id}
+      className={cn("scroll-mt-24", tile && "overflow-hidden rounded-lg bg-surface-3")}
+      onToggle={onToggle}
+    >
       {/* hover fills the row, focus-visible fills it harder (the system's
-          panel-fill idiom); the open header stays uncoloured on purpose */}
+          panel-fill idiom); the open header stays uncoloured on purpose. A
+          tile deepens toward its chapter's ink instead, and only while
+          closed (the attribute, which holds through the closing motion):
+          open, a deeper header would cut a band across the tile, so the
+          chevron's ring alone answers the pointer. Its focus ring is drawn
+          inside, since the tile clips anything outside */}
       <summary
         onClick={(e) => {
           e.preventDefault();
           toggle();
         }}
         className={cn(
-          "flex cursor-pointer list-none items-center justify-between gap-4 px-2 text-foreground transition-colors hover:bg-surface-2/70 focus-visible:bg-surface-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/50 [&::-webkit-details-marker]:hidden",
-          strong ? "py-5 font-display text-base font-semibold tracking-tight" : "py-4 text-sm font-medium",
+          "flex cursor-pointer list-none items-center justify-between gap-4 text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/50 [&::-webkit-details-marker]:hidden",
+          tile
+            ? "group/tile px-5 py-4 focus-visible:ring-inset sm:px-6 sm:py-5 [details:not([open])>&]:hover:bg-[color-mix(in_oklab,var(--surface-3),var(--tone-ink)_6%)]"
+            : cn(
+                "px-2 hover:bg-surface-2/70 focus-visible:bg-surface-2",
+                strong ? "py-5 font-display text-base font-semibold tracking-tight" : "py-4 text-sm font-medium",
+              ),
         )}
       >
-        <span>{question}</span>
-        <Chevron aria-hidden className="size-4 shrink-0 text-muted-2" />
+        <span className="min-w-0">{question}</span>
+        {tile ? (
+          <span
+            aria-hidden
+            className="grid size-9 shrink-0 place-items-center rounded-full bg-background transition-colors group-hover/tile:bg-[color-mix(in_oklab,var(--background),var(--tone-ink)_10%)]"
+          >
+            <Chevron className="size-4" />
+          </span>
+        ) : (
+          <Chevron aria-hidden className="size-4 shrink-0 text-muted-2" />
+        )}
       </summary>
       <div ref={panelRef} className="overflow-hidden" style={{ height: 0 }}>
         {/* the answer steps in past the question (8px padding + 12px indent):
-            the extra level reads as "belongs to the row above", not a sibling */}
-        <div ref={innerRef} className={cn("pb-4 pl-5 pr-2", strong && "pb-5 leading-relaxed text-muted")}>
+            the extra level reads as "belongs to the row above", not a sibling;
+            a tile's starts on the tile's own edge */}
+        <div
+          ref={innerRef}
+          className={cn(tile ? "px-5 pb-6 sm:px-6" : "pb-4 pl-5 pr-2", strong && "pb-5 leading-relaxed text-muted")}
+        >
           {children}
         </div>
       </div>

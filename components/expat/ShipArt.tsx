@@ -18,7 +18,6 @@ export type ShipArtName =
   | "books"
   | "home"
   | "hobby"
-  | "bike"
   | "other"
   | "suitcases"
   | "boxes"
@@ -292,42 +291,6 @@ function Hobby() {
   );
 }
 
-function Bike() {
-  return (
-    <>
-      {/* the wheels */}
-      {[40, 126].map((cx) => (
-        <g key={cx}>
-          <path
-            d={`M${cx} 67V99M${cx - 16} 83H${cx + 16}M${cx - 11.3} 71.7L${cx + 11.3} 94.3M${cx + 11.3} 71.7L${cx - 11.3} 94.3`}
-            className="stroke-(--art-metal)"
-            strokeWidth={1}
-          />
-          <circle cx={cx} cy={83} r={17} fill="none" className="stroke-(--art-ink)" strokeWidth={4} />
-          <circle cx={cx} cy={83} r={2.6} className={INK_SIDE} />
-        </g>
-      ))}
-      {/* the frame, the chainring at its foot */}
-      <circle cx={78} cy={84} r={7} fill="none" className="stroke-(--art-ink-side)" strokeWidth={2} />
-      <path
-        d="M40 83H78L72 50ZM72 50H112L78 84"
-        fill="none"
-        className="stroke-(--art-hue)"
-        strokeWidth={4.5}
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <path d="M113 47L116.5 60" className="stroke-(--art-ink)" strokeWidth={5} strokeLinecap="round" />
-      <path d="M116.5 60L126 83" className="stroke-(--art-ink-side)" strokeWidth={3.4} strokeLinecap="round" />
-      {/* the saddle, and the bars */}
-      <path d="M72 50L69.5 41" className="stroke-(--art-ink-side)" strokeWidth={3} strokeLinecap="round" />
-      <path d="M58 40.5q11-5 22 0l-1.5 3.5H60Z" className={INK} />
-      <path d="M113 47L110.5 39" className="stroke-(--art-ink-side)" strokeWidth={3} strokeLinecap="round" />
-      <path d="M103 38.5H113.5q5 0 5 5" fill="none" className="stroke-(--art-ink)" strokeWidth={3.2} strokeLinecap="round" />
-    </>
-  );
-}
-
 function Other() {
   return (
     <>
@@ -384,7 +347,6 @@ const ART: Record<ShipArtName, { Art: ComponentType; ink: readonly [number, numb
   books: { Art: Books, ink: [8, 16, 138, 102] },
   home: { Art: Home, ink: [6, 14, 150.5, 102] },
   hobby: { Art: Hobby, ink: [36, 2, 150.7, 102] },
-  bike: { Art: Bike, ink: [21, 36.9, 145, 102] },
   other: { Art: Other, ink: [26, 4, 146, 102] },
   suitcases: { Art: Suitcases, ink: [26, 5, 146, 102] },
   boxes: { Art: Boxes, ink: [28, 3, 136, 102] },
