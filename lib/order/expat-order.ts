@@ -279,8 +279,8 @@ export interface Pin {
 }
 
 export interface DetailsInput {
-  originDetail: string;
-  originPin?: Pin;
+  /** the destination's only: pickup goes by the origin Address as Check Rate
+   *  has it */
   destinationDetail: string;
   destinationPin?: Pin;
   fullName: string;
@@ -295,7 +295,6 @@ export interface DetailsInput {
 }
 
 export const EMPTY_DETAILS: DetailsInput = {
-  originDetail: "",
   destinationDetail: "",
   fullName: "",
   email: "",
@@ -332,13 +331,12 @@ export function todayIso(now = new Date()): string {
 }
 
 export function detailsProgress(d: DetailsInput) {
-  const origin = d.originDetail.trim().length > 0 && !!d.originPin;
   const destination = d.destinationDetail.trim().length > 0 && !!d.destinationPin;
   const name = d.fullName.trim().length > 0;
   const email = emailValid(d.email);
   const phone = !!d.dialIso && phoneValid(d.phone);
   const pickup = !!d.pickupDate && pickupDayAllowed(d.pickupDate);
-  return { origin, destination, name, email, phone, pickup, done: origin && destination && name && email && phone && pickup };
+  return { destination, name, email, phone, pickup, done: destination && name && email && phone && pickup };
 }
 
 /* -------------------------------------------------------------------- Booking */

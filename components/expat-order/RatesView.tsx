@@ -134,7 +134,7 @@ function RatesForm() {
                     ariaLabel={`${r("to")}: ${r("country")}`}
                   />
                 </Field>
-                <Field label={r("address")} hint={destErr ? undefined : r("addressHint")} error={destErr}>
+                <Field label={r("address")} hint={destErr ? undefined : r("addressHintTo")} error={destErr}>
                   <AddressField
                     country="ID"
                     value={check.destination}

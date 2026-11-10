@@ -80,7 +80,6 @@ export function bookingFacts(b: ExpatBooking, t: T) {
     from: {
       country: getCountry(check.originCountry)?.name ?? check.originCountry,
       address: placeLine(check.origin),
-      detail: d.originDetail.trim(),
     },
     to: {
       country: "Indonesia",

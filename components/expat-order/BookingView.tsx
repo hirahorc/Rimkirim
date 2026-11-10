@@ -70,7 +70,6 @@ export function BookingView({ number }: { number: string }) {
               <Row label={bk("route")}>
                 <p className="font-medium">{f.from.country}</p>
                 <p className="text-muted">{f.from.address}</p>
-                {f.from.detail && <p className="text-muted">{f.from.detail}</p>}
                 <p className="pt-2 font-medium">{f.to.country}</p>
                 <p className="text-muted">{f.to.address}</p>
                 {f.to.detail && <p className="text-muted">{f.to.detail}</p>}

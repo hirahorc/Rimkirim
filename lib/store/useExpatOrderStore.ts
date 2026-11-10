@@ -26,8 +26,9 @@ import {
   type PackingInput,
 } from "@/lib/order/expat-order";
 
-/** which side's Address changed since its Detail Address was given */
-export type AddressChange = { origin: boolean; destination: boolean };
+/** whether the destination Address changed since its Detail Address was
+ *  given (the origin has no Detail Address to keep in step) */
+export type AddressChange = { destination: boolean };
 
 interface ExpatOrderState {
   /** the order being filled in, kept across reloads until it's submitted */
@@ -36,7 +37,7 @@ interface ExpatOrderState {
   eligibility: EligibilityAnswers;
   packing: PackingInput;
   details: DetailsInput;
-  /** set when a changed Address cleared that side's detail and pin */
+  /** set when a changed destination Address cleared its detail and pin */
   addressChanged: AddressChange;
   /** every submitted booking: the internal system's tickets (mock) */
   bookings: ExpatBooking[];
@@ -59,24 +60,17 @@ export const useExpatOrderStore = create<ExpatOrderState>()(
       eligibility: EMPTY_ELIGIBILITY,
       packing: EMPTY_PACKING,
       details: EMPTY_DETAILS,
-      addressChanged: { origin: false, destination: false },
+      addressChanged: { destination: false },
       bookings: [],
 
       setCheck: (next) => {
         const { check, details, addressChanged } = get();
-        // a new place on one side clears that side's detail and pin, so the
-        // courier is never sent to a pin set for the old Address; a new
-        // origin country also moves the dial code, unless it was picked
-        const originMoved =
-          next.originCountry !== check.originCountry || next.origin?.id !== check.origin?.id;
+        // a new destination clears its detail and pin, so the courier is
+        // never sent to a pin set for the old Address; a new origin country
+        // also moves the dial code, unless it was picked
         const destinationMoved = next.destination?.id !== check.destination?.id;
         const patch: Partial<DetailsInput> = {};
         const changed = { ...addressChanged };
-        if (originMoved && (details.originDetail || details.originPin)) {
-          patch.originDetail = "";
-          patch.originPin = undefined;
-          changed.origin = true;
-        }
         if (destinationMoved && (details.destinationDetail || details.destinationPin)) {
           patch.destinationDetail = "";
           patch.destinationPin = undefined;
@@ -104,7 +98,6 @@ export const useExpatOrderStore = create<ExpatOrderState>()(
       setDetails: (patch) =>
         set((s) => {
           const changed = { ...s.addressChanged };
-          if (patch.originDetail !== undefined || patch.originPin !== undefined) changed.origin = false;
           if (patch.destinationDetail !== undefined || patch.destinationPin !== undefined) changed.destination = false;
           return { details: { ...s.details, ...patch }, addressChanged: changed };
         }),
@@ -144,7 +137,7 @@ export const useExpatOrderStore = create<ExpatOrderState>()(
           eligibility: EMPTY_ELIGIBILITY,
           packing: EMPTY_PACKING,
           details: EMPTY_DETAILS,
-          addressChanged: { origin: false, destination: false },
+          addressChanged: { destination: false },
         });
         return booking;
       },

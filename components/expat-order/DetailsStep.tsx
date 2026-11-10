@@ -55,7 +55,7 @@ function ReadOnlyRoute({
   );
 }
 
-/** one side's Detail Address: the words, then the pin, both required */
+/** the Detail Address: the words, then the pin, both required */
 function DetailAddress({
   label,
   place,
@@ -114,11 +114,12 @@ function DetailAddress({
 }
 
 /**
- * Personal Information, the epic's fields: where from and where to as Check
- * Rate set them (read only; only the destination links back), both Detail
- * Addresses with their pins, then name, email, phone and the Pickup Date.
- * Every field is required; an error shows once a field is left, not on every
- * keystroke.
+ * Personal Information, the epic's fields but one: where from and where to
+ * as Check Rate set them (read only; only the destination links back), the
+ * destination's Detail Address with its pin, then name, email, phone and the
+ * Pickup Date. The origin's Detail Address isn't asked (the team dropped
+ * it), so pickup goes by the origin Address above. Every field is required;
+ * an error shows once a field is left, not on every keystroke.
  */
 export function DetailsStep({
   check,
@@ -147,20 +148,8 @@ export function DetailsStep({
         <ReadOnlyRoute label={d("to")} country="ID" place={check.destination} changeable />
       </div>
 
-      <div className="grid gap-6 border-t border-border pt-6">
-        {check.origin && (
-          <DetailAddress
-            label={d("originDetail")}
-            place={check.origin}
-            detail={value.originDetail}
-            pin={value.originPin}
-            changed={changed.origin}
-            changedNote={d("originChanged")}
-            onDetail={(originDetail) => onChange({ originDetail })}
-            onPin={(originPin) => onChange({ originPin })}
-          />
-        )}
-        {check.destination && (
+      {check.destination && (
+        <div className="border-t border-border pt-6">
           <DetailAddress
             label={d("destinationDetail")}
             place={check.destination}
@@ -171,8 +160,8 @@ export function DetailsStep({
             onDetail={(destinationDetail) => onChange({ destinationDetail })}
             onPin={(destinationPin) => onChange({ destinationPin })}
           />
-        )}
-      </div>
+        </div>
+      )}
 
       <div className="grid gap-5 border-t border-border pt-6 sm:grid-cols-2">
         <div className="sm:col-span-2">

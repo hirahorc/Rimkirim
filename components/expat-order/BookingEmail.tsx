@@ -63,7 +63,6 @@ export function BookingEmail({ facts: f, t }: { facts: BookingFacts; t: T }) {
                       <tbody>
                         <Row label={bk("route")}>
                           <strong>{f.from.country}</strong>, {f.from.address}
-                          {f.from.detail && <span style={{ color: MUTED }}> ({f.from.detail})</span>}
                           <br />
                           <strong>{f.to.country}</strong>, {f.to.address}
                           {f.to.detail && <span style={{ color: MUTED }}> ({f.to.detail})</span>}

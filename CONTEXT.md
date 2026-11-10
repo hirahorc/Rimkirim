@@ -19,7 +19,7 @@ Where an order starts, ahead of the plan's steps (it isn't one of the stepper's)
 _Avoid_: Calculator, quote (for this step)
 
 **Address**:
-The place picked from map suggestions at Check Rate on each side of the move, specific enough to carry a postal code; it's what the rate is priced on, and the Detail Address completes it later.
+The place picked from map suggestions at Check Rate on each side of the move, specific enough to carry a postal code; it's what the rate is priced on. On the destination side the Detail Address completes it later; the origin Address stands as picked.
 _Avoid_: City, location, detail address (at Check Rate)
 
 **Special Rate**:
@@ -91,7 +91,7 @@ _Avoid_: Regular shipment, courier shipment
 ## Personal Information
 
 **Detail Address**:
-The full street address, pinned on a map, that the customer gives in Personal Information for pickup abroad and delivery in Indonesia.
+The full street address, pinned on a map, that the customer gives in Personal Information for delivery in Indonesia. The origin has none: pickup abroad goes by the origin Address.
 _Avoid_: Full address, street address
 
 **Arrival Date**:
@@ -99,5 +99,5 @@ The day a customer still abroad expects to land in Indonesia, asked in the Eligi
 _Avoid_: Moving date, relocation date
 
 **Pickup Date**:
-The weekday, tomorrow at the earliest, when Rimkirim collects the belongings at the origin Detail Address; asked in Personal Information as "When are you planning to relocate".
+The weekday, tomorrow at the earliest, when Rimkirim collects the belongings at the origin Address; asked in Personal Information as "When are you planning to relocate".
 _Avoid_: Relocation date, moving date, departure date
