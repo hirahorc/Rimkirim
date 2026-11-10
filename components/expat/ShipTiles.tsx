@@ -4,23 +4,24 @@ import { ChevronUp } from "lucide-react";
 import { useT } from "@/lib/i18n/LanguageProvider";
 import { cn } from "@/lib/utils/cn";
 import { at, Bar } from "./SceneParts";
-import { ShipArt } from "./ShipArt";
+import { BooksObjects, ClothesObjects, HOBBY_MEASURE, HobbyObjects, HomeObjects, RecordPlayerObjects } from "./ShipObjects";
 
 /**
- * The pictures of What you can send's bento (WhatYouCanShip), one kind per
- * tile so no two neighbours say the same thing the same way (the stageshow
- * bento rules): the Packing List's own package, clothes listed in it (the
- * hero); the one number books are about (BooksStat, page text); the home's
- * things, drawn (ShipArt); the size rule as a measured case (a diagram);
- * and what people ask about (a collection). Each is drawn at 1:1 in px and
- * pinned to its tile's edge, so a wider tile shows more ground or more of
- * a bleed, never larger type. The pieces carry the journey's entrances
+ * The pictures of What you can send's bento (WhatYouCanShip): on every tile
+ * the things themselves, drawn in the round (ShipObjects), and beside them
+ * the one thing the tile says, a different kind on each so no two
+ * neighbours say it the same way (the stageshow bento rules): the Packages
+ * step's own package, its clothes listed (the hero); the one number books
+ * are about (BooksStat, page text); the size rule measured on a guitar;
+ * what people ask about (a collection). Home's things stand alone. Text
+ * is pinned to its tile's edge at 1:1, so a wider tile shows more ground,
+ * never larger type. The pieces carry the journey's entrances
  * (`.jr-*`, `at(ms)`) and build once, on the tile's SceneStage; everything
  * but the stat is decorative, since the tile's words carry the meaning.
  */
 
 /* ------------------------------------------------------------------ */
-/*  Clothes: a package of the Packing List, its clothes listed          */
+/*  Clothes: a package of the Packages step, its clothes listed        */
 /* ------------------------------------------------------------------ */
 
 /** what's in it, as a customer lists it: by name, how many, each one's
@@ -43,7 +44,7 @@ const ROW = "grid grid-cols-[minmax(0,1fr)_2.5rem_5rem] items-center gap-3";
 
 /**
  * Clothes, folded and listed per box (the card's customs rule), on the
- * Packing List's own package, open: its head with what it's packed in,
+ * Packages step's own package, open: its head with what it's packed in,
  * then what's inside, a row at a time. From md it hangs off the tile's
  * right edge, beside the words, and runs off its foot; stacked over them,
  * it's inset and fades out at the picture's foot (the hero tile's mask).
@@ -92,6 +93,24 @@ export function PackedPicture() {
   );
 }
 
+/**
+ * The clothes themselves, in front of the package (WhatYouCanShip lays them
+ * on a stage of their own, past the package's fade): from md under the
+ * list's left edge, between it and the words; stacked, at the picture's
+ * foot on the right, over the rows still to fill. They land once the
+ * list has filled.
+ */
+export function ClothesPicture() {
+  return (
+    <div
+      className="jr jr-rise absolute bottom-1 right-3 w-[13rem] md:right-auto md:left-[calc(max(20rem,44%)_-_7rem)] md:w-[18rem]"
+      style={at(700)}
+    >
+      <ClothesObjects className="h-auto w-full" />
+    </div>
+  );
+}
+
 /* ------------------------------------------------------------------ */
 /*  Books: the one number                                              */
 /* ------------------------------------------------------------------ */
@@ -112,14 +131,26 @@ export function BooksStat() {
   );
 }
 
+/** the books themselves, beside the number in the tile's top right corner,
+ *  clear of its line and of the words under it (WhatYouCanShip lays them on
+ *  a stage of their own over the stat) */
+export function BooksPicture() {
+  return (
+    <div className="jr jr-rise absolute right-5 top-7 w-[9.5rem] sm:w-[10rem]" style={at(200)}>
+      <BooksObjects className="h-auto w-full" />
+    </div>
+  );
+}
+
 /* ------------------------------------------------------------------ */
 /*  Home: the things themselves                                        */
 /* ------------------------------------------------------------------ */
 
+/** the home's things, standing on the words: a lamp, bowls, a pot */
 export function HomePicture() {
   return (
-    <div className="jr jr-rise absolute left-6 top-6" style={at(0)}>
-      <ShipArt name="home" className="h-[8.5rem] w-[12.75rem] sm:h-[9.5rem] sm:w-[14.25rem]" />
+    <div className="jr jr-rise absolute bottom-3 left-6 w-[17rem] max-w-[calc(100%-3rem)] sm:w-[18rem]" style={at(0)}>
+      <HomeObjects className="h-auto w-full" />
     </div>
   );
 }
@@ -128,39 +159,23 @@ export function HomePicture() {
 /*  Sports & hobbies: the size rule, measured                          */
 /* ------------------------------------------------------------------ */
 
-/** where the case starts, where 121 cm falls, and the case's middle line,
- *  in the picture's px */
-const CASE = { x: 24, mark: 236, y: 112 };
-
-/** a guitar's hard case, lying head to the right, its middle line at 0: the
- *  lower bout, the waist, the upper bout, the shoulders into the neck, and
- *  the head's flare at the far end, one outline mirrored top to bottom */
-const GUITAR_CASE =
-  "M0 0C0-24 18-40 42-40C62-40 72-30 88-30C102-30 110-35 126-34C150-33 158-14 178-13" +
-  "H436C440-13 442-18 448-18H500Q512-18 512-6V6Q512 18 500 18H448C442 18 440 13 436 13" +
-  "H178C158 14 150 33 126 34C110 35 102 30 88 30C72 30 62 40 42 40C18 40 0 24 0 0Z";
-
 /**
- * A guitar's hard case lying along a measure: 121 cm runs from its end to
- * a mark, and the case goes on past the mark and off the tile. The rule a
- * long thing meets, shown on the thing.
+ * The size rule on the thing: an acoustic guitar laid along a measure, the
+ * measure running from its end to 121 cm, so the guitar (about 104 cm)
+ * stops short of the mark. A racket, a shuttlecock and a golf ball lie in
+ * front of it. The measure is page text over the drawing, so it reads at
+ * one size on every tile.
  */
 export function RulerPicture() {
-  const { x, mark, y } = CASE;
+  const { mark } = HOBBY_MEASURE;
   return (
-    <>
-      <svg
-        viewBox="0 0 560 176"
-        className="jr jr-rise ship-art absolute left-0 top-0 h-[176px] w-[560px]"
-        style={at(0)}
-        aria-hidden
-      >
-        <ellipse cx={x + 250} cy={y + 41} rx={250} ry={4} className="fill-(--art-ground)" />
-        <path d={GUITAR_CASE} transform={`translate(${x} ${y})`} className="fill-(--art-ink)" />
-      </svg>
-      {/* the measure: from the case's end to 121 cm, with the mark's line
-          dropped through the case */}
-      <div className="absolute" style={{ left: x, top: 34, width: mark - x }}>
+    <div className="absolute left-6 top-0 h-[170px] w-[270px]">
+      <div className="jr jr-rise absolute inset-0" style={at(0)}>
+        <HobbyObjects />
+      </div>
+      {/* the measure: from the guitar's end to 121 cm, with the mark's line
+          dropped past its head */}
+      <div className="absolute" style={{ left: 0, top: 6, width: mark }}>
         <span className="jr jr-rise block text-center font-display text-sm font-semibold text-tone-ink" style={at(900)}>
           121 cm
         </span>
@@ -172,9 +187,9 @@ export function RulerPicture() {
       </div>
       <span
         className="jr jr-drop absolute w-0 border-l border-dashed border-tone-ink/60"
-        style={{ left: mark - 0.5, top: 58, height: 112, ...at(800) }}
+        style={{ left: mark - 0.5, top: 30, height: 104, ...at(800) }}
       />
-    </>
+    </div>
   );
 }
 
@@ -189,24 +204,34 @@ const ASKS = [
   { keys: ["d"], indent: "0.75rem" },
 ] as const;
 
+/**
+ * What people ask about, as the questions themselves, and one of the odd
+ * things they ask about in the corner: a record player. On a tile too
+ * narrow for both (under 20rem) the questions keep the room.
+ */
 export function AsksPicture() {
   const t = useT();
   let n = 0;
   return (
-    <div className="absolute left-6 right-6 top-6 grid gap-2.5">
-      {ASKS.map((row, i) => (
-        <div key={i} className="flex gap-2" style={{ paddingLeft: row.indent }}>
-          {row.keys.map((k) => (
-            <span
-              key={k}
-              className="jr jr-drop whitespace-nowrap rounded-full bg-background px-3.5 py-2 text-sm shadow-float"
-              style={at(250 + n++ * 140)}
-            >
-              {t(`expat.scenes.asks.${k}`)}
-            </span>
-          ))}
-        </div>
-      ))}
-    </div>
+    <>
+      <div className="jr jr-rise absolute bottom-1 right-4 w-[9.5rem] @max-xs:hidden" style={at(0)}>
+        <RecordPlayerObjects className="h-auto w-full" />
+      </div>
+      <div className="absolute left-6 right-6 top-6 grid gap-2.5">
+        {ASKS.map((row, i) => (
+          <div key={i} className="flex gap-2" style={{ paddingLeft: row.indent }}>
+            {row.keys.map((k) => (
+              <span
+                key={k}
+                className="jr jr-drop whitespace-nowrap rounded-full bg-background px-3.5 py-2 text-sm shadow-float"
+                style={at(250 + n++ * 140)}
+              >
+                {t(`expat.scenes.asks.${k}`)}
+              </span>
+            ))}
+          </div>
+        ))}
+      </div>
+    </>
   );
 }

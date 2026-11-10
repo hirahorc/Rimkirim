@@ -2,9 +2,9 @@ import type { ComponentType } from "react";
 import { cn } from "@/lib/utils/cn";
 
 /**
- * The drawings of What you can send: the home's things on the bento's home
- * tile (ShipTiles), and what it all travels in under the packing guide
- * (suitcases, boxes, special packaging): each thing drawn flat and simple
+ * The drawings of What you can send's packing guide, what it all travels in
+ * (suitcases, boxes, special packaging; the bento's things are drawn in the
+ * round, ShipObjects): each thing drawn flat and simple
  * so it reads at a glance, in the chapter's hue (globals.css, .ship-art:
  * the hue in three values, its ink in two, its wash) and the doorstep's
  * kraft (JourneyScenes). Boxes and anything with depth are
@@ -14,11 +14,7 @@ import { cn } from "@/lib/utils/cn";
  * cards lines up and each drawing starts where its card's words do.
  * Decorative: the card's words carry the meaning.
  */
-export type ShipArtName =
-  | "home"
-  | "suitcases"
-  | "boxes"
-  | "special";
+export type ShipArtName = "suitcases" | "boxes" | "special";
 
 /** the doorstep's kraft, its front, side and lid, and the tape on each */
 const KRAFT = {
@@ -150,33 +146,6 @@ function Suitcases() {
   );
 }
 
-function Home() {
-  return (
-    <>
-      {/* a standing lamp */}
-      <rect x={25.5} y={40} width={3} height={53} className={INK_SIDE} />
-      <rect x={15} y={92} width={24} height={10} rx={5} className={INK} />
-      <path d="M14 14H40L48 42H6Z" className={HUE} />
-      <path d="M6.6 40H47.4L48 42H6Z" className={HUE_SIDE} />
-      {/* plates stacked, a bowl on top */}
-      {[97.5, 92.5, 87.5, 82.5, 77.5].map((y) => (
-        <g key={y}>
-          <rect x={54} y={y} width={38} height={4.5} rx={2.25} className={HUE_TOP} />
-          <rect x={56} y={y + 3.3} width={34} height={1.2} rx={0.6} className={HUE_SIDE} />
-        </g>
-      ))}
-      <path d="M60 65H86Q84.5 77.5 73 77.5Q61.5 77.5 60 65Z" fill={KRAFT.front} />
-      <rect x={58.5} y={63} width={29} height={3.4} rx={1.7} fill={KRAFT.lid} />
-      {/* and a kettle, its handle over the lid */}
-      <path d="M104 64C104 42 132 42 132 64" fill="none" className="stroke-(--art-ink-side)" strokeWidth={3.4} strokeLinecap="round" />
-      <path d="M134 74L146.5 63.5Q149.5 61.5 150.5 64.5L139 90Z" className={INK} />
-      <rect x={100} y={64} width={36} height={38} rx={8} className={INK} />
-      <path d="M106 64.5q12-9 24 0Z" className={HUE_TOP} />
-      <rect x={114.5} y={55} width={7} height={4} rx={2} className={INK_SIDE} />
-    </>
-  );
-}
-
 function Special() {
   return (
     <>
@@ -205,7 +174,6 @@ function Special() {
 /** each drawing, and its ink in its own units (left, top, right, bottom,
  *  strokes included): measure it again whenever a drawing changes */
 const ART: Record<ShipArtName, { Art: ComponentType; ink: readonly [number, number, number, number] }> = {
-  home: { Art: Home, ink: [6, 14, 150.5, 102] },
   suitcases: { Art: Suitcases, ink: [26, 5, 146, 102] },
   boxes: { Art: Boxes, ink: [28, 3, 136, 102] },
   special: { Art: Special, ink: [20, 7, 153.4, 102] },

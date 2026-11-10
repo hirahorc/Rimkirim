@@ -32,15 +32,16 @@ import { SectionHead } from "./SectionHead";
 import { ReviewNote } from "./ReviewNote";
 import { ShipArt } from "./ShipArt";
 import { SceneStage } from "./SceneStage";
-import { AsksPicture, BooksStat, HomePicture, PackedPicture, RulerPicture } from "./ShipTiles";
+import { AsksPicture, BooksPicture, BooksStat, ClothesPicture, HomePicture, PackedPicture, RulerPicture } from "./ShipTiles";
 import { revealOrder as order, useSectionReveal } from "./useSectionReveal";
 
 /** what a card's details end on: the price check, or a word with the team
  *  on WhatsApp that already says what it's about */
 type Action = "price" | "wa";
 
-/** a tile's picture, one kind per tile (ShipTiles): the hero's package, the
- *  one number, the things drawn, the rule measured, the questions asked */
+/** a tile's picture (ShipTiles): the things themselves on every tile, beside
+ *  the hero's package, the one number, the rule measured, the questions
+ *  asked; the home's things alone */
 type Picture = "packed" | "stat" | "home" | "ruler" | "asks";
 
 const PICTURES: Record<Exclude<Picture, "stat">, () => React.ReactNode> = {
@@ -50,14 +51,23 @@ const PICTURES: Record<Exclude<Picture, "stat">, () => React.ReactNode> = {
   asks: AsksPicture,
 };
 
+/** what stands in front of a picture, on a stage of its own so the
+ *  picture's fade never reaches it: the clothes before the hero's package,
+ *  the books beside the number */
+const FRONTS: Partial<Record<Picture, () => React.ReactNode>> = {
+  packed: ClothesPicture,
+  stat: BooksPicture,
+};
+
 type CardKey = "clothes" | "books" | "home" | "hobby" | "other";
 
 /** what our customers send most, in ops' order, the one that needs a word
  *  first last. Each opens onto its facts, a label, the rule and why. A
  *  bento, hero and strip: clothes, what's sent most, takes two columns,
- *  and no tile sits beside or over one of its own kind at three across or
- *  at two (the hero over the stat and the drawing, the stat over the
- *  measure, the drawing over the questions) */
+ *  and no tile's second picture sits beside or over one of its own kind at
+ *  three across or at two (the package over the number and the home's
+ *  things, the number over the measure, the home's things over the
+ *  questions) */
 const CARDS: readonly { key: CardKey; facts: readonly string[]; action: Action; picture: Picture }[] = [
   { key: "clothes", facts: ["packing", "inside", "customs"], action: "price", picture: "packed" },
   { key: "books", facts: ["price", "packing", "duty"], action: "price", picture: "stat" },
@@ -99,7 +109,7 @@ const FACT_COLS: Record<number, string> = { 2: "md:grid-cols-2", 3: "md:grid-col
  * service, and stops the wrong ones expecting a removal van. Ops' own
  * outline, in three parts that answer a household's questions in the order
  * it asks them. What can I send: a card for each kind of thing our
- * customers send most, its drawing (ShipArt), its name and one line that
+ * customers send most, the things drawn (ShipObjects), its name and one line that
  * says what's in it, after sendmybag.com's "What you can send". The details
  * are behind the card, named for what they hold ("Weight, packing and
  * duty", never "Show more"), and open under the card's row as one panel
@@ -186,8 +196,8 @@ export function WhatYouCanShip() {
             the chapter's Panel 3, filled, so each reads as a tile off the
             desk without a hairline; what differs is the picture over them.
             Anything else, the one that asks rather than tells, is set apart
-            on the chapter's wash: it has no drawing, so nothing in it is
-            drawn in the wash and lost */}
+            on the chapter's wash; its record player is cream and black, so
+            nothing in it is lost in the wash */}
         <div
           ref={gridRef}
           data-ship-grid
@@ -200,6 +210,7 @@ export function WhatYouCanShip() {
             const hero = picture === "packed";
             const apart = picture === "asks";
             const Picture = picture === "stat" ? null : PICTURES[picture];
+            const Front = FRONTS[picture];
             return (
               <React.Fragment key={key}>
                 <div data-card={key} className={cn("jr-reveal pb-4", hero && "sm:col-span-2")} style={order(1 + i)}>
@@ -231,10 +242,30 @@ export function WhatYouCanShip() {
                         >
                           <Picture />
                         </SceneStage>
+                        {Front && (
+                          <SceneStage
+                            ground="none"
+                            buildWith="[data-ship-grid]"
+                            delay={i * 110}
+                            className="pointer-events-none absolute inset-0"
+                          >
+                            <Front />
+                          </SceneStage>
+                        )}
                       </div>
                     ) : (
-                      <div className="flex-1">
+                      <div className="relative flex-1">
                         <BooksStat />
+                        {Front && (
+                          <SceneStage
+                            ground="none"
+                            buildWith="[data-ship-grid]"
+                            delay={i * 110}
+                            className="pointer-events-none absolute inset-0"
+                          >
+                            <Front />
+                          </SceneStage>
+                        )}
                       </div>
                     )}
                     <div className={cn("flex min-w-0 flex-col px-6 pb-6", !Picture && "pt-6", hero && "md:max-w-[19rem]")}>

@@ -1081,17 +1081,23 @@ in ink it stays neutral and lime stays the one colour in the action row.
   chapter's Panel 3, filled and with no hairline, so it reads off the white desk, with the `lg`
   corner, three across from `lg`, two from `sm`; clothes, what's sent most, takes two columns, so
   no row is left with a hole. Every tile shares that one ground except **anything else**, the one
-  that asks rather than tells, set apart on the chapter's wash (it has no drawing, so nothing
-  drawn in the wash is lost on it); no other tile, the books stat included, gets a ground of its
-  own. Each leads with its own kind of picture (`ShipTiles`), so no tile sits beside or over one
-  of its own kind at three across or at two: clothes listed in the Packing List's own package
+  that asks rather than tells, set apart on the chapter's wash (its record player is cream and
+  black, so nothing in it is lost in the wash); no other tile, the books stat included, gets a
+  ground of its own. Every tile shows the things themselves, drawn in the round (`ShipObjects`,
+  below), so the bento says "what you can send" at a glance; beside them each says its one thing
+  in its own kind of picture (`ShipTiles`), so no tile's second picture sits beside or over one
+  of its own kind at three across or at two: clothes listed in the Packages step's own package
   (the hero, hung off the tile's right edge beside its words from `md`, inset and fading out at
-  its foot over the rows still to fill when stacked), the books' one number (0%, page text at the
-  Display role's top size, not a picture), the home's things drawn (`ShipArt`, below), the size
-  rule as a guitar case measured to 121 cm and running on off the tile, and what people ask about
-  as white chips. Each picture is drawn at 1:1 and pinned to its tile's edge, so a wider tile
-  shows more ground or more of a bleed, never larger type, and builds once as the grid comes into
-  view, one small beat a tile, 110ms apart (`SceneStage`). Then its name at the Title role, then
+  its foot over the rows still to fill when stacked), the folded clothes, trainers and a cap set
+  before it on a stage of their own, past the fade, low enough that no listed row is covered; the
+  books' one number (0%, page text at the Display role's top size, not a picture) with the books
+  stacked in the corner beside it; the home's things alone, standing on the words; the size rule
+  as an acoustic guitar laid along a measure from its end to 121 cm, stopping short of the mark as
+  a real one (about 104 cm) does, a racket, a shuttlecock and a golf ball in front; and what people
+  ask about as white chips, a record player in the corner, which gives way to the chips on a tile
+  under 20rem. Text in a picture is pinned at 1:1, so a wider tile shows more ground, never larger
+  type, and each picture builds once as the grid comes into view, one small beat a tile, 110ms
+  apart (`SceneStage`). Then its name at the Title role, then
   one Dim Grey line that says what's in it, held to two lines from `sm` so a row's titles share a
   line. The toggle at the foot names what the details hold ("Weight, packing and duty",
   never "Show more"), with the disclosure's swapped chevron, and the whole card is its hit area.
@@ -1141,7 +1147,20 @@ in ink it stays neutral and lime stays the one colour in the action row.
   personal shipment pays, a real table (what's inside, its duty as the one number at the Title
   role, the tax on top), its title and footnote in the left third from `lg`, then one WhatsApp
   link.
-- **The item drawings** (`ShipArt`, on the home tile and on what it all travels in): flat
+- **The bento's things** (`ShipObjects`, on every item tile): the things people send drawn in the
+  round, as the doorstep's door is (plain SVG, after a reference: a 3D render of the bento):
+  every surface its own gradient lit from the top left, matte, a soft blurred shadow in the
+  chapter's ink where each thing meets the floor and a thin one where it rests on another, no
+  outline. Painted and dyed things (the pot's enamel, the denim, a cap, a book's cloth, a guitar's
+  top) take the chapter's hue pulled toward its ink (`color-mix`, so they read as paint, not
+  plastic); everything else is the colour of the thing: cream ceramic and knit, white leather,
+  brass, wood, a black record. Anything with depth is in the doorstep's projection made steeper
+  (0.6 up for each one across), so a book's cover or a turntable's deck reads as one; what lies on
+  a deck is drawn in plan and sheared onto it. The bento's one lime is the books' ribbon, the
+  brand's mark, not a "press this" (The One-Voice Rule); the record's label is the chapter's
+  blue. Under a mouse the things lift off their shadows (`.ship-art-lift`, `.ship-art-ground`).
+  Decorative: the tile's words carry the meaning.
+- **The item drawings** (`ShipArt`, on what it all travels in): flat
   things on one ground line in one 168 × 112 frame, in the chapter's hue in three values, its ink
   in two, its wash (`.ship-art`, all mixed from the chapter) and the doorstep's kraft;
   anything with depth in the doorstep's projection, the far face up and to the right. Each is
