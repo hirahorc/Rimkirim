@@ -230,8 +230,10 @@ The expat landing walks its own identity, the `.nav-expat` gradient (sky `#21b1e
 | --- | --- | --- | --- | --- |
 | Sky | `#21b1ec` | hero, reviews, what you can ship | `#c8e8fb` | `#0e668a` |
 | Violet (the gradient's midpoint) | `#7a66e9` | who does what, why Rimkirim, pricing | `#dfdefd` | `#5c4db3` |
-| Magenta | `#d41ce6` | how it works, FAQ | `#fadafc` | `#a213b0` |
+| Magenta | `#d41ce6` | how it works, customs | `#fadafc` | `#a213b0` |
 | Dusk | `#4a1e67` | the closing ticket | — | `#ead6fc` (soft) |
+
+The FAQ sits outside the chapters, on the daylight neutrals: reference text, not a stop on the trip.
 
 Departure in daylight blue, arrival at dusk: the page reads as the trip it sells.
 
@@ -538,7 +540,7 @@ The expat page runs:
 6. Pricing (band, violet)
 7. How it works (desk, magenta)
 8. What to expect at customs (band, magenta), once the reader has seen how a shipment runs
-9. FAQ (desk, magenta): on the content edge like the rest, the head and the way to ask in a
+9. FAQ (desk, neutral): on the content edge like the rest, the head and the way to ask in a
    column of their own from `lg` (sticky), the questions beside it ruled one from the next,
    each one step up the scale (`Disclosure strong`)
 10. The dusk ticket (see Components)

@@ -29,8 +29,9 @@ export function ExpatFaq() {
 
   return (
     // on the desk, after the customs band: the questions read as a page of
-    // their own, not one more sheet
-    <section id="faq" aria-labelledby="faq-heading" data-tone="magenta" className="scroll-mt-24">
+    // their own, not one more sheet. Outside the chapters, on the daylight
+    // neutrals, so the questions read as plain reference, not one more stop
+    <section id="faq" aria-labelledby="faq-heading" className="scroll-mt-24">
       {/* on the page's content edge like every other section, the heading
           and the way to ask in a column of their own from lg, the questions
           beside them, ruled one from the next */}
