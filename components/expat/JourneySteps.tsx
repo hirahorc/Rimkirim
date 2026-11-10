@@ -258,7 +258,7 @@ export function JourneySteps({
               type="button"
               onClick={control}
               aria-label={t(mode === "auto" ? "expat.steps.pause" : mode === "done" ? "expat.steps.replay" : "expat.steps.play")}
-              className="jr-control absolute right-3 top-3 grid size-9 place-items-center rounded-full sm:size-10 bg-background text-foreground transition-colors hover:text-tone-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/40 sm:right-4 sm:top-4"
+              className="jr-control tap-target absolute right-3 top-3 grid size-9 place-items-center rounded-full sm:size-10 bg-background text-foreground transition-colors hover:text-tone-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/40 sm:right-4 sm:top-4"
             >
               <svg viewBox="0 0 40 40" className="absolute inset-0 -rotate-90" aria-hidden>
                 <circle cx="20" cy="20" r="18.5" fill="none" stroke="var(--border)" strokeWidth="2" />

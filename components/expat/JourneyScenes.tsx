@@ -69,7 +69,7 @@ export function DetailsScene() {
   const k = useScene();
   return (
     <>
-      <div className="absolute inset-x-[3.2em] top-[4em] flex flex-col gap-[0.65em] @max-[30rem]:inset-x-[1.6em]">
+      <div className="absolute inset-x-[3.2em] bottom-0 top-[4em] flex flex-col gap-[0.65em] @max-[30rem]:inset-x-[1.6em]">
         {/* no title of its own: the step it pictures is named beside it, and
             the room goes to the estimate below */}
         <div className="jr jr-arrive rounded-[1.1em] bg-background px-[1.4em] pb-[1.2em] pt-[1.5em] shadow-float @max-[30rem]:p-[1.15em]" style={at(0)}>
@@ -104,14 +104,20 @@ export function DetailsScene() {
           </div>
         </div>
         {/* the estimate, once the form is full: the flow's own lead card,
-            running off the crop on any stage */}
-        <div
-          inert
-          aria-hidden
-          className="tone-none jr jr-lift min-h-[26em] rounded-[1.1em] bg-background p-[1.25em] shadow-float @max-[30rem]:p-[1.15em]"
-          style={at(1650)}
-        >
-          <RateCard rate={PICTURE_RATE} origin="GB" display stacked plain />
+            running off the crop on any stage. Beside the steps (lg) the crop
+            falls under the price; stacked over them the stage is another
+            shape and it fell through a line of type, so there the card
+            dissolves into the stage's foot instead. The frame takes what's
+            left of the stage and lets the card's shadow out at its sides */}
+        <div className="-mx-[1.6em] -mt-[0.65em] min-h-0 flex-1 px-[1.6em] pt-[0.65em] max-lg:[mask-image:linear-gradient(to_bottom,#000_calc(100%-2em),transparent)]">
+          <div
+            inert
+            aria-hidden
+            className="tone-none jr jr-lift min-h-[26em] rounded-[1.1em] bg-background p-[1.25em] shadow-float @max-[30rem]:p-[1.15em]"
+            style={at(1650)}
+          >
+            <RateCard rate={PICTURE_RATE} origin="GB" display stacked plain />
+          </div>
         </div>
       </div>
       {/* the time it takes, over the form: centred on its top edge, half

@@ -134,6 +134,7 @@ export function PhotoDeck({
             type="button"
             variant="ghost"
             size="icon-sm"
+            className="tap-target relative"
             aria-label={t("expat.photos.prev")}
             onClick={(e) => go(-1, e.detail === 0)}
           >
@@ -146,6 +147,7 @@ export function PhotoDeck({
             type="button"
             variant="ghost"
             size="icon-sm"
+            className="tap-target relative"
             aria-label={t("expat.photos.next")}
             onClick={(e) => go(1, e.detail === 0)}
           >

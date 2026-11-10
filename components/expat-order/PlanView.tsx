@@ -17,6 +17,7 @@ import {
 } from "@/lib/order/expat-order";
 import { useExpatOrderHydrated, useExpatOrderStore } from "@/lib/store/useExpatOrderStore";
 import { useT } from "@/lib/i18n/LanguageProvider";
+import { cn } from "@/lib/utils/cn";
 import { CustomsPaths } from "./CustomsPaths";
 import { DetailsStep } from "./DetailsStep";
 import { EligibilityStep } from "./EligibilityStep";
@@ -88,10 +89,15 @@ export function PlanView() {
       <div className="mx-auto max-w-5xl px-4 pt-8 sm:px-6 sm:pt-10">
         <ReviewNote note={ORDER_REVIEW_NOTES[step]} className="mb-6" />
         <FlowStepper current={step} />
-        <h1 className="mt-8 text-balance font-display text-3xl font-bold tracking-tight sm:text-4xl">{p("title")}</h1>
-        <p className="mt-3 max-w-xl text-pretty text-muted">{p("subtitle")}</p>
+        {/* on a phone the title opens the plan once: repeated over the steps
+            after it, it pushed each form a screen down, and the stepper
+            already names all three */}
+        <div className={cn(step !== "eligibility" && "max-sm:sr-only")}>
+          <h1 className="mt-8 text-balance font-display text-3xl font-bold tracking-tight sm:text-4xl">{p("title")}</h1>
+          <p className="mt-3 max-w-xl text-pretty text-muted">{p("subtitle")}</p>
+        </div>
 
-        <div className="mt-8 grid gap-8 lg:grid-cols-[minmax(0,1fr)_20rem] lg:items-start lg:gap-12">
+        <div className="mt-6 grid gap-4 sm:mt-8 sm:gap-8 lg:grid-cols-[minmax(0,1fr)_20rem] lg:items-start lg:gap-12">
           {/* on a phone the service comes first, as a strip over the form */}
           <div className="lg:sticky lg:top-24 lg:order-2">
             <SelectedService check={check} rate={pricing.rate} packed={pricing.packed} />

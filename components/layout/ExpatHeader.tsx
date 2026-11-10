@@ -83,7 +83,8 @@ export function ExpatHeader() {
               heroDoor ? "pointer-events-none translate-y-1 opacity-0 motion-reduce:translate-y-0" : "opacity-100",
             )}
           >
-            <Button asChild size="sm">
+            {/* the bar's height keeps it `sm`; its hit area is 44px all the same */}
+            <Button asChild size="sm" className="tap-target relative">
               <a href={EXPAT_QUOTE_URL}>{t("expat.cta")}</a>
             </Button>
           </span>

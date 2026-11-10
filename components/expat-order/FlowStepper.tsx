@@ -13,19 +13,25 @@ const STEPS: { key: FlowStep; href: string }[] = [
   { key: "packing", href: "/expat-relocation/plan?step=packing" },
 ];
 
+/** a step's dot and its word: the word under the dot on a phone, beside it
+ *  from sm */
+const PAIR = "flex flex-col items-start gap-1.5 sm:flex-row sm:items-center sm:gap-2";
+
 /**
  * The plan's three steps, in the status stepper's encoding (DESIGN.md,
  * Status stepper): a step behind you is a lime dot with an Ink check and
  * links back to itself, the current one is framed in Ink with a lime core,
  * the ones ahead are Hairline on Panel 2. The track is lime up to where you
- * are. Check Rate comes before the plan and isn't one of its steps.
+ * are. Check Rate comes before the plan and isn't one of its steps. Every
+ * step keeps its word at every width: on a phone the three stand in columns,
+ * each word under its dot, so what's done and what's next can be read.
  */
 export function FlowStepper({ current, className }: { current: FlowStep; className?: string }) {
   const t = useT();
   const at = STEPS.findIndex((s) => s.key === current);
   return (
     <nav aria-label={t("expatOrder.stepper.label")} className={className}>
-      <ol className="flex items-center gap-2">
+      <ol className="grid grid-cols-[1fr_1fr_auto] sm:flex sm:items-center sm:gap-2">
         {STEPS.map((s, i) => {
           const done = i < at;
           const here = i === at;
@@ -47,10 +53,8 @@ export function FlowStepper({ current, className }: { current: FlowStep; classNa
           const text = (
             <span
               className={cn(
-                "whitespace-nowrap text-sm",
+                "whitespace-nowrap text-xs sm:text-sm",
                 here ? "font-semibold text-foreground" : "text-muted",
-                // on a phone only the current step keeps its word
-                !here && "hidden sm:inline",
               )}
             >
               {label}
@@ -58,26 +62,36 @@ export function FlowStepper({ current, className }: { current: FlowStep; classNa
             </span>
           );
           return (
-            <li key={s.key} className="flex min-w-0 items-center gap-2">
-              {i > 0 && (
-                <span
-                  aria-hidden
-                  className={cn("h-0.5 w-6 shrink-0 rounded-full sm:w-10", i <= at ? "bg-brand" : "bg-border-strong")}
-                />
-              )}
+            <li key={s.key} className="relative min-w-0 sm:flex sm:items-center sm:gap-2">
               {done ? (
                 <Link
                   href={s.href}
-                  className="tap-row relative flex items-center gap-2 rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/50"
+                  // its own height, not .tap-row: that centres a column's
+                  // children, and the dot stays flush left over its word
+                  className={cn(
+                    PAIR,
+                    "rounded-sm transition-opacity active:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/50 pointer-coarse:min-h-11",
+                  )}
                 >
                   {dot}
                   {text}
                 </Link>
               ) : (
-                <span className="flex items-center gap-2" aria-current={here ? "step" : undefined}>
+                <span className={PAIR} aria-current={here ? "step" : undefined}>
                   {dot}
                   {text}
                 </span>
+              )}
+              {/* the track to the next step: along the dots' row on a phone,
+                  a gap clear of each dot; in the line from sm */}
+              {i < STEPS.length - 1 && (
+                <span
+                  aria-hidden
+                  className={cn(
+                    "absolute left-8 right-2 top-3 h-0.5 -translate-y-1/2 rounded-full sm:static sm:w-10 sm:shrink-0 sm:translate-y-0",
+                    i < at ? "bg-brand" : "bg-border-strong",
+                  )}
+                />
               )}
             </li>
           );

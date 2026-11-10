@@ -62,7 +62,7 @@ export function QuoteFactors() {
                         then the other logistic costs */}
                     {f === "surcharge" && (
                       <SurchargeInfoDialog>
-                        <button type="button" className="link-mark mt-1.5 block text-left">
+                        <button type="button" className="link-mark tap-target relative mt-1.5 block w-fit text-left">
                           {t("expat.pricing.surchargeCta")}
                         </button>
                       </SurchargeInfoDialog>
@@ -76,7 +76,7 @@ export function QuoteFactors() {
             </p>
             {/* the button rises inside a wrapper, so the reveal never holds
                 the button's own press */}
-            <div className="jr-reveal mt-5 w-fit" style={order(3 + FACTORS.length)}>
+            <div className="jr-reveal mt-5 sm:w-fit" style={order(3 + FACTORS.length)}>
               <Button asChild size="lg" className="w-full sm:w-auto">
                 <a href={EXPAT_QUOTE_URL}>
                   {t("expat.cta")} <ArrowRight />

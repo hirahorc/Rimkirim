@@ -27,6 +27,14 @@ export function ExpatFaq() {
     return () => window.removeEventListener("hashchange", adoptHash);
   }, []);
 
+  // the way to ask: under the heading from lg, after the questions on a
+  // phone, where "still have a question?" before the first one read backwards
+  const ask = (
+    <a href={WA_URL} target="_blank" rel="noreferrer" className="link-mark tap-row relative text-sm">
+      {t("expat.faq.wa")}
+    </a>
+  );
+
   return (
     // on the desk, after the customs band: the questions read as a page of
     // their own, not one more sheet. Outside the chapters, on the daylight
@@ -40,11 +48,7 @@ export function ExpatFaq() {
           <ReviewNote note={REVIEW_NOTES.faq} className="mb-8" />
           <div className="lg:sticky lg:top-28">
             <SectionHead id="faq-heading" eyebrow={t("expat.faq.eyebrow")} title={t("expat.faq.heading")} />
-            <p className="mt-6">
-              <a href={WA_URL} target="_blank" rel="noreferrer" className="link-mark tap-row relative text-sm">
-                {t("expat.faq.wa")}
-              </a>
-            </p>
+            <p className="mt-6 hidden lg:block">{ask}</p>
           </div>
         </div>
         <div className="divide-y divide-border border-y border-border">
@@ -54,6 +58,7 @@ export function ExpatFaq() {
             </Disclosure>
           ))}
         </div>
+        <p className="lg:hidden">{ask}</p>
       </div>
     </section>
   );

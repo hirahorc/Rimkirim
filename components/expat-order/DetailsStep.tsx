@@ -44,7 +44,7 @@ function ReadOnlyRoute({
       <div className="flex items-baseline justify-between gap-3">
         <p className="text-xs font-medium text-muted">{label}</p>
         {changeable && (
-          <Link href="/expat-relocation/rates" className="link-mark tap-row relative text-xs">
+          <Link href="/expat-relocation/rates" className="link-mark tap-target relative text-xs">
             {t("expatOrder.details.change")}
           </Link>
         )}
@@ -95,13 +95,13 @@ function DetailAddress({
             <span className="inline-flex items-center gap-1.5 text-sm font-medium">
               <Check aria-hidden className="size-4 text-success" strokeWidth={3} /> {d("pinned")}
             </span>
-            <Button type="button" variant="ghost" size="sm" onClick={() => setOpen(true)}>
+            <Button type="button" variant="ghost" size="sm" className="tap-target relative" onClick={() => setOpen(true)}>
               {d("editPin")}
             </Button>
           </>
         ) : (
           <>
-            <Button type="button" variant="secondary" size="sm" onClick={() => setOpen(true)}>
+            <Button type="button" variant="secondary" size="sm" className="tap-target relative" onClick={() => setOpen(true)}>
               <MapPin /> {d("pin")}
             </Button>
             <span className="text-xs text-muted">{d("pinMissing")}</span>

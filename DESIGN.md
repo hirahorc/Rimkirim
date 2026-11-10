@@ -263,7 +263,8 @@ untouched. The rest of the product stays on daylight neutrals.
 **Every "Check your rate" is the primary button.** The hero's lime `lg` with its arrow appears in the hero,
 under the comparison, under pricing, under the steps and on the ticket, always worded "Check
 your rate" (never "quote": the figure it opens is an Estimate, CONTEXT.md). The bar keeps the `sm`
-size its height allows, and waits until the hero's pair has scrolled away. On a phone every one
+size its height allows (its hit area is 44px all the same, `.tap-target`), and waits until the
+hero's pair has scrolled away. On a phone every one
 is full width, as the hero's is. It is one door, Check Rate, repeated wherever a reader might
 decide, so a second lime "Check your rate" never splits the voice. A different action never takes
 lime.
@@ -543,7 +544,8 @@ The expat page runs:
 7. How it works (desk, magenta)
 8. What to expect at customs (band, magenta), once the reader has seen how a shipment runs
 9. FAQ (desk, neutral): on the content edge like the rest, the head and the way to ask in a
-   column of their own from `lg` (sticky), the questions beside it ruled one from the next,
+   column of their own from `lg` (sticky; below `lg` the way to ask comes after the questions,
+   where "still have a question?" belongs), the questions beside it ruled one from the next,
    each one step up the scale (`Disclosure strong`)
 10. The dusk ticket (see Components)
 
@@ -595,7 +597,8 @@ only.
 off), and a control that only changes when the finger lifts reads as lag. So everything tappable
 that isn't a button answers the press itself, in colour, with the look its hover has: a choice
 card and a picker's field dip to the next panel, a disclosure row and a picker's row take their
-hover fill, a link darkens (`.link-mark:active`). Hover styles themselves stay a mouse's: Tailwind's
+hover fill, a bento tile tints under the whole card, a link darkens (`.link-mark:active`), a
+finished step in the flow stepper dims. Hover styles themselves stay a mouse's: Tailwind's
 `hover:` is already gated on `(hover: hover)`, and a hand-written `:hover` is wrapped the same
 way, or it stays lit after a tap until something else is tapped.
 
@@ -804,7 +807,9 @@ home hero's floating verdicts and the expat hero's departure board. Treat any ot
   form sets them, each Address under its country, then the estimated weight, and "A few minutes"
   over it, a chip centred on its top edge, half outside, its ring running while the form fills and
   closing into a check once full; once full, the estimate rises from the crop below, drawn by the
-  order flow's own rate card (`RateCard`, shown and inert, `stacked` and `plain`); 02 is two cards
+  order flow's own rate card (`RateCard`, shown and inert, `stacked` and `plain`), the crop falling
+  under its price beside the steps and, where the stage stands over them (below `lg`) and would
+  cut through a line of type, the card dissolving into the stage's foot instead; 02 is two cards
   at one width in the order the team works, the packing list checked line by line (a phone marked
   "Likely taxed", the wine to "Take out"), then the quotation rising from the crop under it and
   building to its total, marked an estimate whose final price comes on the invoice; 03 is the tracking card, GBR to IDN on the departure
@@ -1412,8 +1417,12 @@ like the landing, and keeps the landing's bar, which trades the lime "Check your
 - **The flow stepper:** Eligibility, Your details, Packages, in the status stepper's encoding (a
   step behind is lime with an Ink check and links back, the current one is Ink-framed with a lime
   core, the ones ahead are Hairline on Panel 2). It counts the plan's steps only: Check Rate
-  comes before it and wears none, so that page opens on its title. On a phone only the current
-  step keeps its word.
+  comes before it and wears none, so that page opens on its title. Every step keeps its word at
+  every width: on a phone the three stand in columns across the page, each word (12px) under its
+  dot and the track running between the dots, so what's done and what's next are named.
+- **The plan's head on a phone:** the title and its line open the plan on the first step only;
+  over the steps after it they're kept for screen readers and not shown, since repeated they
+  pushed each form a screen down and the stepper already names all three.
 - **Check Rate:** one white card, Moving from beside Moving to, then the weight and the button
   under a hairline. Fields are the system's Panel 2 inputs.
 - **The rate card:** the offer card (below), the same one Back For Good's Cek Tarif shows, with
@@ -1440,7 +1449,8 @@ like the landing, and keeps the landing's bar, which trades the lime "Check your
   repeats there, since the Selected Service beside it carries it. Declared values read as a code
   and an amount ("AUD 300") to match the inputs' prefix.
 - **Selected Service:** a white card beside every plan step, sticky from lg; on a phone a
-  one-line strip (service and price) that opens to the rest. Once the packages are measured,
+  strip over the form that opens to the rest: the service on a line of its own so its name reads
+  whole, then the Special Rate mark and the price under it. Once the packages are measured,
   the weight and estimate are theirs, and the weight says "from your packages".
 - **The Booking Summary:** a white card with the received head (the success check, who the
   summary went to) over the booking number on a Panel 2 strip with its copy button, then the

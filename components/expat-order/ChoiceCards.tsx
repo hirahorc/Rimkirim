@@ -7,7 +7,9 @@ import { cn } from "@/lib/utils/cn";
 /** the card both choices share: a white plane that frames in Ink when chosen */
 const card = (on: boolean) =>
   cn(
-    "flex w-full items-center gap-3 rounded-md border bg-background px-4 py-3 text-left text-sm transition-colors",
+    // pressed, the plane dips to Panel 2 at once: the answer itself only
+    // lands when the finger lifts
+    "flex w-full items-center gap-3 rounded-md border bg-background px-4 py-3 text-left text-sm transition-colors active:bg-surface-2",
     "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/50",
     on
       ? "border-foreground font-medium text-foreground shadow-[inset_0_0_0_1px_var(--foreground)]"

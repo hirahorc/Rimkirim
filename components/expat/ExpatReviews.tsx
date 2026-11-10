@@ -281,7 +281,7 @@ function ReviewQuote({ quote, highlights }: { quote: string; highlights?: string
           aria-expanded={open}
           aria-controls={id}
           onClick={() => setOpen((o) => !o)}
-          className="link-mark mt-2 self-start rounded-sm text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/40"
+          className="link-mark tap-row relative mt-2 self-start rounded-sm text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/40"
         >
           {t(open ? "expat.reviews.less" : "expat.reviews.more")}
         </button>

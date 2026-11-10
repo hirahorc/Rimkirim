@@ -132,6 +132,7 @@ export function PackingStep({
               type="button"
               variant="ghost"
               size="sm"
+              className="tap-target relative"
               onClick={() => setCollapsed(anyOpen ? new Set(value.packages.map((pk) => pk.id)) : new Set())}
             >
               {anyOpen ? <ChevronUp /> : <ChevronDown />}
@@ -304,7 +305,7 @@ function PackageBlock({
           onClick={onToggle}
           aria-expanded={open}
           aria-controls={regionId}
-          className="-my-2 flex min-w-0 flex-1 items-center gap-2 rounded-sm py-2 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/50"
+          className="-my-3 flex min-w-0 flex-1 items-center gap-2 rounded-sm py-3 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/50"
         >
           {/* swap, never rotate: the shared disclosure idiom */}
           {open ? (
@@ -322,7 +323,7 @@ function PackageBlock({
             size="sm"
             onClick={onRemove}
             aria-label={p("removePackage").replace("{n}", String(n))}
-            className="-my-2 shrink-0 text-muted hover:bg-surface-3 hover:text-danger"
+            className="tap-target relative -my-2 shrink-0 text-muted hover:bg-surface-3 hover:text-danger"
           >
             <Trash2 /> {p("remove")}
           </Button>

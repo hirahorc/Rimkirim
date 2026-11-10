@@ -19,7 +19,7 @@ import { cn } from "@/lib/utils/cn";
  * the estimated price, read only. Once the packages are measured, the
  * weight and price are the packages' (packedPricing), and the weight says so.
  * A white card on the field that stays in view on a wide screen; on a phone a
- * one-line strip over the form (service and price) that opens to the rest.
+ * strip over the form (the service, then the price) that opens to the rest.
  */
 export function SelectedService({
   check,
@@ -87,20 +87,33 @@ export function SelectedService({
         {s("title")}
       </h2>
 
-      {/* a phone: the service and price on one line, the rest folded */}
+      {/* a phone: the service on a line of its own, so its name reads whole,
+          the price under it; the rest folded */}
       <div className="lg:hidden">
         <button
           type="button"
           aria-expanded={open}
           aria-controls="service-details"
           onClick={() => setOpen((o) => !o)}
-          className="mt-3 flex w-full items-center justify-between gap-3 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/50"
+          className="mt-3 flex w-full flex-col gap-2 rounded-sm text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/50"
         >
-          {head}
-          <span className="flex shrink-0 items-center gap-2">
-            <span className="font-display text-base font-bold tabular-nums">{formatIDR(rate.total)}</span>
-            <ChevronDown aria-hidden className={cn("size-4 text-muted-2 transition-transform", open && "rotate-180")} />
+          <span className="flex items-center justify-between gap-3">
+            <span className="flex min-w-0 items-center gap-2.5">
+              <CarrierLogo carrier={rate.carrier} k={rate.carrier === "UPS" ? 22 : 18} />
+              <span className="font-display text-sm font-semibold">{rate.service}</span>
+            </span>
+            <ChevronDown aria-hidden className={cn("size-4 shrink-0 text-muted-2 transition-transform", open && "rotate-180")} />
             <span className="sr-only">{open ? s("hide") : s("show")}</span>
+          </span>
+          <span className="flex items-center justify-between gap-3">
+            <span>
+              {rate.special && (
+                <Badge variant="brand">
+                  <BadgePercent aria-hidden className="size-3.5" /> {t("expatOrder.rates.special")}
+                </Badge>
+              )}
+            </span>
+            <span className="font-display text-base font-bold tabular-nums">{formatIDR(rate.total)}</span>
           </span>
         </button>
         <CollapseHeight open={open} id="service-details">
