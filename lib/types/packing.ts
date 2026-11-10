@@ -22,6 +22,8 @@ export interface ItemRow {
 
 export interface PackageRow {
   packaging: string;
+  /** what it's packed in, typed, when packaging is "other" (the expat flow) */
+  packagingOther?: string;
   weight: number;
   length: number;
   width: number;

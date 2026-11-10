@@ -26,7 +26,7 @@ import { MissingPhotosDialog, PackingStep, type PackingStepHandle } from "./Pack
 import { SelectedService } from "./SelectedService";
 
 /**
- * The plan: the Eligibility Check, the Packing List, then Personal
+ * The plan: the Eligibility Check, the Packages, then Personal
  * Information, on one route (the app's field, a white card per column) with
  * the step in the URL, so the browser's Back moves between them instead of
  * leaving. The Selected Service stays beside all three, priced on the

@@ -31,7 +31,7 @@ function Row({ label, children }: { label: string; children: React.ReactNode }) 
 /**
  * The Booking Summary, on the app's field like the steps before it: a white
  * card with the received head and the booking number, then the summary as
- * rows (route, shipping, what's shipping, the packing list, pickup, contact). Beside it, what
+ * rows (route, shipping, what's shipping, the packages, pickup, contact). Beside it, what
  * happens next, the other answers and the documents each Customs Path needs,
  * folded, and a way to ask. The Customs Category never shows.
  */

@@ -16,7 +16,7 @@ import { cn } from "@/lib/utils/cn";
 /**
  * The picked rate beside every plan step, after the live page's "Selected
  * service": carrier and service, from and to, transit, the charged weight and
- * the estimated price, read only. Once the Packing List is measured, the
+ * the estimated price, read only. Once the packages are measured, the
  * weight and price are the packages' (packedPricing), and the weight says so.
  * A white card on the field that stays in view on a wide screen; on a phone a
  * one-line strip over the form (service and price) that opens to the rest.
@@ -28,7 +28,7 @@ export function SelectedService({
 }: {
   check: CheckRateInput;
   rate: ExpatRate;
-  /** the rate was priced again on the Packing List's weight */
+  /** the rate was priced again on the packages' weight */
   packed?: boolean;
 }) {
   const t = useT();

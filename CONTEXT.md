@@ -31,16 +31,16 @@ A carrier's standard price per kg for the route; the cheapest one is shown first
 _Avoid_: 3PL rate, regular rate
 
 **Estimate**:
-The price shown at Check Rate for the entered weight, and priced again on the Packing List's chargeable weight once every package is measured; the first of two estimates before the Invoice.
+The price shown at Check Rate for the entered weight, and priced again on the Packages' chargeable weight once every package is measured; the first of two estimates before the Invoice.
 _Avoid_: Quote, price (unqualified)
 
 **Quotation**:
-The team's estimate of the shipping cost, sent after reviewing a booking and its Packing List; still not the final price, and never a promise on duty or tax, which only customs decides.
+The team's estimate of the shipping cost, sent after reviewing a booking and its Packages; still not the final price, and never a promise on duty or tax, which only customs decides.
 _Avoid_: Final price, official price, quote (for the Check Rate figure)
 
-**Packing List**:
-The itemised list of what's in each package (items, quantities, values, and each package's packaging, weight and size), given in the flow between the Eligibility Check and Personal Information, that the team reviews before pickup to flag Take Outs and potential duty and tax.
-_Avoid_: Item list, inventory, manifest
+**Packages**:
+The customer's list of what they're sending, package by package (each one's packaging, weight and size, and the items inside with quantities and values), given in the flow between the Eligibility Check and Personal Information, that the team reviews before pickup to flag Take Outs and potential duty and tax.
+_Avoid_: Packing list (that names the customs document, the Commercial Invoice/Packing List), item list, inventory, manifest
 
 **Packing Guide**:
 Rimkirim's rules for how the customer packs every item, furniture included, based on FedEx's packing guidelines; the customer always packs, Rimkirim never packs or repacks, and a damaged piece not packed to it can't be claimed at its declared value.
@@ -51,7 +51,7 @@ An item the customer removes from the shipment before pickup on the team's advic
 _Avoid_: Removed item, excluded item
 
 **Potential Duty**:
-The team's read, from the Packing List, of which items customs is likely to tax; guidance only, since customs alone sets duty and tax.
+The team's read, from the Packages, of which items customs is likely to tax; guidance only, since customs alone sets duty and tax.
 _Avoid_: Duty estimate, tax quote
 
 **Invoice**:

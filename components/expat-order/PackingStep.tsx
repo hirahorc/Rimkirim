@@ -26,6 +26,7 @@ import {
   newPackingPackage,
   packageCharge,
   packageMeasured,
+  packagingDescribed,
   packingCurrency,
   packingTotals,
   type PackingInput,
@@ -51,8 +52,8 @@ export interface PackingStepHandle {
 }
 
 /**
- * The Packing List, the WNI flow's Items & Packages in the plan's dress: each
- * package a Panel 2 block (packed in, weight and three sides, what's inside,
+ * The Packages step, the WNI flow's Items & Packages in the plan's dress: each
+ * package a Panel 2 block (packaging, weight and three sides, what's inside,
  * the measurement photos), then the values' currency and the totals. The
  * estimate lives in the Selected Service beside it and follows the packages
  * once they're measured (packedPricing); this step says so under the totals.
@@ -276,12 +277,13 @@ function PackageBlock({
     );
   };
 
+  const other = pkg.packaging === "other";
   const count = pkg.items.reduce((s, it) => s + (Number.parseFloat(it.quantity) || 0), 0);
-  const done = packageMeasured(pkg) && pkg.items.every(itemDescribed);
+  const done = packageMeasured(pkg) && packagingDescribed(pkg) && pkg.items.every(itemDescribed);
   const touched = !!(pkg.weight || pkg.length || pkg.width || pkg.height || pkg.items.some((it) => it.name.trim()));
   const summary = done
     ? [
-        p(`types.${pkg.packaging}`),
+        other ? pkg.packagingOther!.trim() : p(`types.${pkg.packaging}`),
         `${kg(Number.parseFloat(pkg.weight))} kg`,
         `${pkg.length} × ${pkg.width} × ${pkg.height} cm`,
         count === 1 ? p("itemsOne") : p("itemsMany").replace("{n}", String(count)),
@@ -329,15 +331,33 @@ function PackageBlock({
 
       <CollapseHeight open={open} id={regionId}>
         <div className="space-y-6 pt-5">
-          <Field label={p("packaging")} hint={pkg.packaging !== "box" ? p("surcharge") : undefined}>
-            <SelectField
-              value={pkg.packaging}
-              onChange={(packaging) => onChange({ packaging })}
-              ariaLabel={p("packaging")}
-              wrapperClassName="sm:max-w-xs"
-              options={PACKAGING_TYPES.map((o) => ({ value: o.value, label: p(`types.${o.value}`) }))}
-            />
-          </Field>
+          {/* Others asks what it's packed in, beside the choice from sm, as
+              Moving from sits beside Moving to */}
+          <div className="grid items-start gap-3 sm:grid-cols-2">
+            <Field label={p("packaging")} hint={pkg.packaging !== "box" ? p("surcharge") : undefined}>
+              <SelectField
+                value={pkg.packaging}
+                onChange={(packaging) => onChange({ packaging, ...(packaging === "other" ? {} : { packagingOther: "" }) })}
+                ariaLabel={p("packaging")}
+                options={PACKAGING_TYPES.map((o) => ({ value: o.value, label: p(`types.${o.value}`) }))}
+              />
+            </Field>
+            {other && (
+              <Field
+                label={p("packagingOther")}
+                hint={p("packagingOtherHint")}
+                error={left[`${pkg.id}.packagingOther`] && !packagingDescribed(pkg) ? p("required") : undefined}
+              >
+                <Input
+                  value={pkg.packagingOther ?? ""}
+                  onChange={(e) => onChange({ packagingOther: e.target.value })}
+                  onBlur={leave(`${pkg.id}.packagingOther`)}
+                  placeholder={p("packagingOtherPh")}
+                  maxLength={60}
+                />
+              </Field>
+            )}
+          </div>
 
           <div>
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">

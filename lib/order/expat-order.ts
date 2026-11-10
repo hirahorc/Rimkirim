@@ -109,7 +109,7 @@ export function customsCategory(a: EligibilityAnswers): CustomsCategory {
   return "eligible_pindahan";
 }
 
-/* --------------------------------------------------------------- Packing List */
+/* ------------------------------------------------------------------- Packages */
 
 /** the measurement photos, by what each one shows; a file name once added */
 export type PackingPhotos = { weight?: string; length?: string; width?: string; height?: string };
@@ -134,6 +134,9 @@ export interface PackingPackage {
   id: string;
   /** a PACKAGING_TYPES value */
   packaging: string;
+  /** what it's packed in, typed, when packaging is "other"; absent on drafts
+   *  saved before it was asked */
+  packagingOther?: string;
   /** kg */
   weight: string;
   /** cm */
@@ -157,6 +160,7 @@ export const newPackingItem = (): PackingItem => ({ id: key(), name: "", quantit
 export const newPackingPackage = (): PackingPackage => ({
   id: key(),
   packaging: "box",
+  packagingOther: "",
   weight: "",
   length: "",
   width: "",
@@ -196,9 +200,14 @@ export function packageCharge(p: PackingPackage): { kg: number; by: "weight" | "
 
 export const itemDescribed = (it: PackingItem) => it.name.trim().length > 0 && num(it.quantity) >= 1;
 
+/** Others asks what it's packed in */
+export const packagingDescribed = (p: PackingPackage) => p.packaging !== "other" || !!p.packagingOther?.trim();
+
 export function packingProgress(p: PackingInput) {
   const measured = p.packages.length > 0 && p.packages.every(packageMeasured);
-  const described = p.packages.length > 0 && p.packages.every((pk) => pk.items.length > 0 && pk.items.every(itemDescribed));
+  const described =
+    p.packages.length > 0 &&
+    p.packages.every((pk) => packagingDescribed(pk) && pk.items.length > 0 && pk.items.every(itemDescribed));
   return { measured, described, done: measured && described };
 }
 
@@ -229,7 +238,7 @@ export interface PackedPricing {
 }
 
 /**
- * The estimate on the Packing List: once every package is measured, the
+ * The estimate on the Packages step: once every package is measured, the
  * Selected Rate's own service priced again at the packages' chargeable
  * weight, so the one estimate on screen follows the best numbers there are.
  * Until then, or when that service isn't offered at that weight (a Special
@@ -250,6 +259,7 @@ export function toItemsData(p: PackingInput, originCountry: string): ItemsData {
     packages: p.packages.map(
       (pk): PackageRow => ({
         packaging: pk.packaging,
+        ...(pk.packaging === "other" ? { packagingOther: pk.packagingOther?.trim() } : {}),
         weight: num(pk.weight),
         length: num(pk.length),
         width: num(pk.width),
@@ -339,10 +349,10 @@ export interface ExpatBooking {
   /** ISO timestamp */
   createdAt: string;
   check: CheckRateInput & { origin: Place; destination: Place; weightKg: number };
-  /** the Selected Rate, priced on the Packing List when it could be */
+  /** the Selected Rate, priced on the packages when it could be */
   rate: ExpatRate;
   eligibility: EligibilityAnswers;
-  /** absent on bookings made before the Packing List step */
+  /** absent on bookings made before the Packages step */
   packing?: ItemsData;
   details: DetailsInput;
   /** internal only: never rendered to the customer, nor in the email */

@@ -21,7 +21,7 @@ import { useT } from "@/lib/i18n/LanguageProvider";
 /**
  * The internal system's view of expat bookings (mock): each ticket with its
  * provisional Customs Category, the full eligibility payload and contact the
- * epic carries into the ticket, the Packing List with each item's value and
+ * epic carries into the ticket, the packages with each item's value and
  * how many photos came with it, who the confirmation went to, and the email
  * itself. The one place the Customs Category is shown, because it's ops'.
  */

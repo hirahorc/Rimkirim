@@ -51,7 +51,7 @@ export function bookingFacts(b: ExpatBooking, t: T) {
     [bk("reason"), a.reason === "others" ? `${e("reasons.others")}: ${a.reasonOther.trim()}` : a.reason ? e(`reasons.${a.reason}`) : ""],
   ];
 
-  // the Packing List, absent on bookings made before it was asked
+  // the packages, absent on bookings made before they were asked
   const list = b.packing?.packages ?? [];
   const currency = b.packing?.currency ?? "";
   const declared = list.reduce((s, p) => s + p.items.reduce((v, it) => v + it.quantity * it.value, 0), 0);
@@ -63,7 +63,7 @@ export function bookingFacts(b: ExpatBooking, t: T) {
           ...(declared > 0 ? [bk("declared").replace("{value}", declaredValue(declared, currency))] : []),
         ].join(" · "),
         packages: list.map((p, i) => ({
-          title: `${pk("packageN").replace("{n}", String(i + 1))} · ${pk(`types.${p.packaging}`)}`,
+          title: `${pk("packageN").replace("{n}", String(i + 1))} · ${p.packaging === "other" && p.packagingOther ? p.packagingOther : pk(`types.${p.packaging}`)}`,
           measures: `${kg(p.weight)} kg · ${p.length} × ${p.width} × ${p.height} cm`,
           items: p.items.map((it) => ({
             name: it.name,
