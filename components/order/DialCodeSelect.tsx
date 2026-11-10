@@ -5,7 +5,7 @@ import { Command } from "cmdk";
 import { Check, ChevronDown, Search } from "lucide-react";
 import { ALL_COUNTRIES, COUNTRIES, getCountry } from "@/lib/data/countries";
 import { DIAL_BY_ISO, dialCodeFor } from "@/lib/data/dial-codes";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Picker, PickerContent, PickerTrigger } from "@/components/ui/popover";
 import { Flag } from "@/components/shared/Flag";
 import { useT } from "@/lib/i18n/LanguageProvider";
 import { cn } from "@/lib/utils/cn";
@@ -41,7 +41,7 @@ export function DialCodeSelect({
       }}
       className={cn(
         "flex cursor-pointer items-center gap-2.5 rounded-sm px-2.5 py-2 text-sm text-foreground",
-        "data-[selected=true]:bg-surface-3 aria-selected:bg-surface-3",
+        "active:bg-surface-3 data-[selected=true]:bg-surface-3 aria-selected:bg-surface-3",
       )}
     >
       <Flag code={code} size={14} />
@@ -52,15 +52,15 @@ export function DialCodeSelect({
   );
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
+    <Picker open={open} onOpenChange={setOpen}>
+      <PickerTrigger asChild>
         <button
           type="button"
           role="combobox"
           aria-expanded={open}
           className={cn(
             "flex h-11 w-full items-center justify-between gap-1 rounded-md border border-border bg-surface-2 px-2.5 text-sm transition-colors",
-            "hover:border-border-strong focus-visible:outline-none focus-visible:border-foreground focus-visible:ring-2 focus-visible:ring-foreground/40",
+            "hover:border-border-strong active:bg-surface-3 focus-visible:outline-none focus-visible:border-foreground focus-visible:ring-2 focus-visible:ring-foreground/40",
           )}
         >
           <span className="flex min-w-0 items-center gap-1.5">
@@ -69,8 +69,8 @@ export function DialCodeSelect({
           </span>
           <ChevronDown className="size-4 shrink-0 text-muted-2" />
         </button>
-      </PopoverTrigger>
-      <PopoverContent className="p-0">
+      </PickerTrigger>
+      <PickerContent title={t("country.dial")} className="p-0">
         <Command
           className="w-full"
           filter={(val, search) =>
@@ -81,7 +81,7 @@ export function DialCodeSelect({
             <Search className="size-4 text-muted-2" />
             <Command.Input
               placeholder={t("country.search")}
-              className="h-10 w-full bg-transparent text-sm text-foreground placeholder:text-muted-2 focus:outline-none"
+              className="h-10 w-full bg-transparent text-sm text-foreground placeholder:text-muted-2 focus:outline-none pointer-coarse:h-11 pointer-coarse:text-base"
             />
           </div>
           <Command.List className="scroll-thin max-h-64 overflow-y-auto p-1">
@@ -104,7 +104,7 @@ export function DialCodeSelect({
             </Command.Group>
           </Command.List>
         </Command>
-      </PopoverContent>
-    </Popover>
+      </PickerContent>
+    </Picker>
   );
 }

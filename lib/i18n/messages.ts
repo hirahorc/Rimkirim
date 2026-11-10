@@ -1129,6 +1129,7 @@ const id = {
   country: {
     placeholder: "Pilih negara",
     search: "Cari negara…",
+    dial: "Kode telepon negara",
     empty: "Negara tidak ditemukan.",
     popular: "Negara Populer",
     all: "Semua Negara",
@@ -3376,6 +3377,7 @@ const en: Messages = {
   country: {
     placeholder: "Select country",
     search: "Search country…",
+    dial: "Country dial code",
     empty: "No country found.",
     popular: "Popular Countries",
     all: "All Countries",

@@ -176,7 +176,7 @@ export function Faq() {
             onChange={(e) => setQuery(e.target.value)}
             aria-label={t("faq.searchPlaceholder")}
             placeholder={t("faq.searchPlaceholder")}
-            className="h-11 w-full rounded-md border border-border bg-surface-2 pl-10 pr-10 text-sm text-foreground transition-colors placeholder:text-muted-2 focus-visible:border-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/40 [&::-webkit-search-cancel-button]:hidden"
+            className="h-11 w-full rounded-md border border-border bg-surface-2 pl-10 pr-10 text-sm text-foreground transition-colors pointer-coarse:text-base placeholder:text-muted-2 focus-visible:border-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/40 [&::-webkit-search-cancel-button]:hidden"
           />
           {query && (
             <Button

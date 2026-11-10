@@ -283,9 +283,9 @@ export function Disclosure({
         className={cn(
           "flex cursor-pointer list-none items-center justify-between gap-4 text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/50 [&::-webkit-details-marker]:hidden",
           tile
-            ? "group/tile px-5 py-4 focus-visible:ring-inset sm:px-6 sm:py-5 [details:not([open])>&]:hover:bg-[color-mix(in_oklab,var(--surface-3),var(--tone-ink)_6%)]"
+            ? "group/tile px-5 py-4 focus-visible:ring-inset sm:px-6 sm:py-5 active:bg-[color-mix(in_oklab,var(--surface-3),var(--tone-ink)_6%)] [details:not([open])>&]:hover:bg-[color-mix(in_oklab,var(--surface-3),var(--tone-ink)_6%)]"
             : cn(
-                "px-2 hover:bg-surface-2/70 focus-visible:bg-surface-2",
+                "px-2 hover:bg-surface-2/70 active:bg-surface-2 focus-visible:bg-surface-2",
                 strong ? "py-5 font-display text-base font-semibold tracking-tight" : "py-4 text-sm font-medium",
               ),
         )}

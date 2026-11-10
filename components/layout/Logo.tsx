@@ -25,7 +25,7 @@ export function Logo({
     <Link
       href={href}
       className={cn(
-        "inline-flex items-center rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/50",
+        "tap-target relative inline-flex items-center rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/50",
         className,
       )}
       aria-label={ariaLabel ?? t("nav.homeAria")}

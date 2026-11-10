@@ -12,7 +12,7 @@ import { cn } from "@/lib/utils/cn";
    From `sm` up it is the centred Radix modal it always was. One API, so call
    sites never choose. */
 
-function useIsMobile() {
+export function useIsMobile() {
   const [mobile, setMobile] = React.useState(false);
   React.useEffect(() => {
     const mq = window.matchMedia("(max-width: 639px)");

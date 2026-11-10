@@ -38,7 +38,9 @@ export function SocialLinks({ label, className }: { label: string; className?: s
             target="_blank"
             rel="noopener noreferrer"
             aria-label={name}
-            className="grid size-9 place-items-center rounded-full text-muted transition-colors hover:bg-surface-3 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/40"
+            // four in a row, 4px apart: the hit area grows to 40 × 44, as far
+            // as it can without one stealing its neighbour's taps
+            className="relative grid size-9 place-items-center rounded-full text-muted transition-colors after:absolute after:-inset-x-0.5 after:-inset-y-1 hover:bg-surface-3 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/40"
           >
             <svg viewBox="0 0 24 24" aria-hidden className="size-[1.125rem] fill-current">
               <path d={path} />

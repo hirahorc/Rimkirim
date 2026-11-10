@@ -535,9 +535,17 @@ body:has(main > [data-field]) {
   transition: color 0.2s cubic-bezier(0.4, 0, 0.2, 1),
     text-decoration-color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
-.link-mark:hover {
+/* a press answers as a hover does. The hover itself is a mouse's: on touch
+   it would stay on after the tap, until something else is tapped */
+.link-mark:active {
   color: color-mix(in srgb, var(--info) 80%, black);
   text-decoration-color: currentColor;
+}
+@media (hover: hover) {
+  .link-mark:hover {
+    color: color-mix(in srgb, var(--info) 80%, black);
+    text-decoration-color: currentColor;
+  }
 }
 /* keyboard focus wears the buttons' ring (ink at 60%, 2px, a 2px gap), not
    the browser's, which hugs the glyphs and any icon in the link */
@@ -551,8 +559,13 @@ body:has(main > [data-field]) {
 .band .link-mark {
   color: color-mix(in srgb, var(--info) 80%, black);
 }
-.band .link-mark:hover {
+.band .link-mark:active {
   color: color-mix(in srgb, var(--info) 70%, black);
+}
+@media (hover: hover) {
+  .band .link-mark:hover {
+    color: color-mix(in srgb, var(--info) 70%, black);
+  }
 }
 
 /* The highlighter: the one phrase we mark. Lime is a FILL behind dark ink —

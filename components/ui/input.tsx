@@ -10,7 +10,9 @@ export const Input = React.forwardRef<
       ref={ref}
       type={type}
       className={cn(
-        "flex h-11 w-full rounded-md border border-border bg-surface-2 px-3 py-2 text-sm text-foreground",
+        // 16px under a finger: iOS zooms the page into any field set smaller
+        // and never zooms back out (DESIGN.md, Inputs)
+        "flex h-11 w-full rounded-md border border-border bg-surface-2 px-3 py-2 text-sm text-foreground pointer-coarse:text-base",
         "placeholder:text-muted-2 transition-colors",
         "focus-visible:outline-none focus-visible:border-foreground focus-visible:ring-2 focus-visible:ring-foreground/40",
         "disabled:cursor-not-allowed disabled:opacity-50",
@@ -33,7 +35,7 @@ export const Textarea = React.forwardRef<
       ref={ref}
       rows={rows}
       className={cn(
-        "flex min-h-24 w-full resize-y rounded-md border border-border bg-surface-2 px-3 py-2 text-sm leading-relaxed text-foreground",
+        "flex min-h-24 w-full resize-y rounded-md border border-border bg-surface-2 px-3 py-2 text-sm leading-relaxed text-foreground pointer-coarse:text-base",
         "placeholder:text-muted-2 transition-colors",
         "focus-visible:outline-none focus-visible:border-foreground focus-visible:ring-2 focus-visible:ring-foreground/40",
         "disabled:cursor-not-allowed disabled:opacity-50",

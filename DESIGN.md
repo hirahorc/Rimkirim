@@ -591,6 +591,14 @@ colour shift under `motion-reduce` so the affordance survives with animation off
 user is already making, never decoration. Under reduced motion the press answers in colour
 only.
 
+**A press answers at once.** A finger gets no hover and no tap flash (the browser's highlight is
+off), and a control that only changes when the finger lifts reads as lag. So everything tappable
+that isn't a button answers the press itself, in colour, with the look its hover has: a choice
+card and a picker's field dip to the next panel, a disclosure row and a picker's row take their
+hover fill, a link darkens (`.link-mark:active`). Hover styles themselves stay a mouse's: Tailwind's
+`hover:` is already gated on `(hover: hover)`, and a hand-written `:hover` is wrapped the same
+way, or it stays lit after a tap until something else is tapped.
+
 **Earned motion.** A milestone the user just reached may play one animation, once: the check
 that draws itself on a just-completed module (`check-draw`), the hub progress bar filling to
 its new count, a status banner easing in when its state changes (`banner-enter`), the
@@ -670,6 +678,12 @@ home hero's floating verdicts and the expat hero's departure board. Treat any ot
   The sheet carries **no close button**: it dismisses by swipe, scrim tap, or Esc, and an X
   would fight the grab-handle row. The X belongs to the modal presentation (no drag
   affordance) and to the mobile nav slide-over, which has no handle either.
+  **A picker is a sheet there too** (`Picker` in `ui/popover.tsx`: the country, dial code and
+  currency lists, any searchable `SelectField`): under its field the panel showed seven rows of
+  two hundred, where the keyboard comes up. As a sheet the list fills up to 85dvh, each row a
+  full 44px, the search on top and not focused on open, so the list is seen before the keyboard
+  rises. From `sm` it stays the popover. A short select (a handful of options) stays under its
+  field at every width.
   Dialog actions live in **`DialogFooter`**: stacked full-width on the sheet (primary on
   top — DOM order [secondary, primary] through `flex-col-reverse`), a right-aligned row in
   the modal, with `env(safe-area-inset-bottom)` added below so the bottom button clears the
@@ -1207,6 +1221,9 @@ the vertical space it saves.
 ### Inputs / Fields
 - **Style:** `h-11` (2.75rem), `rounded-md`, Panel-2 fill, Hairline border, `text-sm`; labels are
   Dim-Grey `text-xs` above the field; errors in Stop Red below.
+- **Under a finger, 16px:** every text field, a picker's search included, sets `text-base` on
+  `pointer: coarse`. iOS zooms the page into any field set smaller and never zooms back out;
+  the answer is the type size, never `maximum-scale`.
 - **Focus:** border shifts to Ink and a `ring-2 ring-foreground/40` appears (no lift).
 - **Disabled:** `opacity-50`, `cursor-not-allowed`.
 
@@ -1305,9 +1322,10 @@ eyebrow names the service right below.
   surface.
 - **`.link-mark`** — inline links: conventional link blue (`--info`, mixed 8% toward black so it
   clears 4.5:1 on `--surface`; 20% inside a band, whose tinted wash would drop it to about 4.1:1)
-  with a soft underline that darkens on hover; keyboard focus wears the buttons' ink ring as an
-  outline (2px, ink at 60%, 2px off the text). Lime is never used
-  to mark a link. On touch, a link that stands alone on its line also wears `.tap-row`.
+  with a soft underline that darkens on hover (a mouse's only) and under a press; keyboard focus
+  wears the buttons' ink ring as an outline (2px, ink at 60%, 2px off the text). Lime is never used
+  to mark a link. On touch, a link that stands alone on its line also wears `.tap-row`, or
+  `.tap-target` where the taller row would push its neighbours apart.
 - **Tooltip (`InfoTip`)** — an 18px help-circle trigger (muted, 70% → 100% on hover/focus,
   28px hit target on mouse and 44px on touch, `cursor: help`) opening an Ink bubble: white 14px text, 6px radius, small
   arrow, soft shadow, `max-width: 16rem`, above by default and shifted/flipped off the viewport

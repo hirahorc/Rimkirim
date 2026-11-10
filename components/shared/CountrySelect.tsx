@@ -10,7 +10,7 @@ import {
   getCountry,
   type Country,
 } from "@/lib/data/countries";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Picker, PickerContent, PickerTrigger } from "@/components/ui/popover";
 import { Flag } from "@/components/shared/Flag";
 import { useT } from "@/lib/i18n/LanguageProvider";
 import { cn } from "@/lib/utils/cn";
@@ -77,7 +77,7 @@ export function CountrySelect({
       }}
       className={cn(
         "flex cursor-pointer items-center gap-2.5 rounded-sm px-2.5 py-2 text-sm text-foreground",
-        "data-[selected=true]:bg-surface-3 aria-selected:bg-surface-3",
+        "active:bg-surface-3 data-[selected=true]:bg-surface-3 aria-selected:bg-surface-3",
       )}
     >
       <Flag code={c.code} size={14} />
@@ -92,8 +92,8 @@ export function CountrySelect({
   );
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
+    <Picker open={open} onOpenChange={setOpen}>
+      <PickerTrigger asChild>
         <button
           type="button"
           role="combobox"
@@ -101,7 +101,7 @@ export function CountrySelect({
           aria-label={ariaLabel}
           className={cn(
             "flex h-11 w-full items-center justify-between rounded-md border border-border bg-surface-2 px-3 text-sm transition-colors",
-            "hover:border-border-strong focus-visible:outline-none focus-visible:border-foreground focus-visible:ring-2 focus-visible:ring-foreground/40",
+            "hover:border-border-strong active:bg-surface-3 focus-visible:outline-none focus-visible:border-foreground focus-visible:ring-2 focus-visible:ring-foreground/40",
           )}
         >
           {selected ? (
@@ -114,8 +114,8 @@ export function CountrySelect({
           )}
           <ChevronDown className="size-4 shrink-0 text-muted-2" />
         </button>
-      </PopoverTrigger>
-      <PopoverContent className="p-0">
+      </PickerTrigger>
+      <PickerContent title={ariaLabel ?? ph} className="p-0">
         <Command
           className="w-full"
           filter={(val, search) =>
@@ -127,7 +127,7 @@ export function CountrySelect({
             <Command.Input
               placeholder={t("country.search")}
               aria-label={t("country.search")}
-              className="h-10 w-full bg-transparent text-sm text-foreground placeholder:text-muted-2 focus:outline-none"
+              className="h-10 w-full bg-transparent text-sm text-foreground placeholder:text-muted-2 focus:outline-none pointer-coarse:h-11 pointer-coarse:text-base"
             />
           </div>
           <Command.List className="scroll-thin max-h-64 overflow-y-auto p-1">
@@ -150,7 +150,7 @@ export function CountrySelect({
             </Command.Group>
           </Command.List>
         </Command>
-      </PopoverContent>
-    </Popover>
+      </PickerContent>
+    </Picker>
   );
 }
