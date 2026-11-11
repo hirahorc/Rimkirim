@@ -1,6 +1,7 @@
 "use client";
 
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Check } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 import { OfferCard } from "@/components/rates/OfferCard";
 import type { ExpatRate } from "@/lib/pricing/expat-rates";
 import { useT } from "@/lib/i18n/LanguageProvider";
@@ -12,11 +13,14 @@ import { useT } from "@/lib/i18n/LanguageProvider";
  * The landing shows this very card in its pictures: `display` drops the
  * button, `stacked` keeps the phone's one-column layout at any width, and
  * `plain` drops the card's own frame where the picture's card is the frame.
+ * Where the service is changed on the plan, `selected` marks the rate the
+ * order carries: it says so beside the carrier and has no button of its own.
  */
 export function RateCard({
   rate,
   origin,
   onSelect,
+  selected = false,
   display = false,
   stacked = false,
   plain = false,
@@ -27,6 +31,7 @@ export function RateCard({
   /** kept for the lead card's call site; every card wears the same button */
   lead?: boolean;
   onSelect?: () => void;
+  selected?: boolean;
   display?: boolean;
   stacked?: boolean;
   plain?: boolean;
@@ -44,10 +49,17 @@ export function RateCard({
       perKg={rate.perKg}
       total={{ kind: "estimated", amount: rate.total, kg: rate.chargedKg }}
       special={rate.special}
+      badges={
+        selected ? (
+          <Badge variant="brand">
+            <Check aria-hidden className="size-3.5" strokeWidth={3} /> {t("expatOrder.service.selected")}
+          </Badge>
+        ) : undefined
+      }
       stacked={stacked}
       plain={plain}
       cta={
-        display || !onSelect
+        display || selected || !onSelect
           ? undefined
           : {
               label: (

@@ -603,8 +603,8 @@ keyboard focus has to land at once.
 off), and a control that only changes when the finger lifts reads as lag. So everything tappable
 that isn't a button answers the press itself, in colour, with the look its hover has: a choice
 card and a picker's field dip to the next panel, a disclosure row and a picker's row take their
-hover fill, a bento tile tints under the whole card, a link darkens (`.link-mark:active`), a
-finished step in the flow stepper dims. Hover styles themselves stay a mouse's: Tailwind's
+hover fill, a bento tile and a folded part of the plan tint under the whole card or line, a
+link darkens (`.link-mark:active`). Hover styles themselves stay a mouse's: Tailwind's
 `hover:` is already gated on `(hover: hover)`, and a hand-written `:hover` is wrapped the same
 way, or it stays lit after a tap until something else is tapped.
 
@@ -1448,17 +1448,29 @@ on daylight neutrals, as every order screen does. The landing's chapter tones, b
 ticket stay on the landing; the flow shares the system's corners, type and buttons, and nothing
 else of the landing's dress, so no field or panel takes a chapter's tint. It speaks English only,
 like the landing, and keeps the landing's bar, which trades the lime "Check your rate" for a quiet
-"Need help?" on WhatsApp, since each step's own button is that screen's one lime.
+"Need help?" on WhatsApp, since each screen's own action is its one lime.
 
-- **The flow stepper:** Eligibility, Your details, Packages, in the status stepper's encoding (a
-  step behind is lime with an Ink check and links back, the current one is Ink-framed with a lime
-  core, the ones ahead are Hairline on Panel 2). It counts the plan's steps only: Check Rate
-  comes before it and wears none, so that page opens on its title. Every step keeps its word at
-  every width: on a phone the three stand in columns across the page, each word (12px) under its
-  dot and the track running between the dots, so what's done and what's next are named.
-- **The plan's head on a phone:** the title and its line open the plan on the first step only;
-  over the steps after it they're kept for screen readers and not shown, since repeated they
-  pushed each form a screen down and the stepper already names all three.
+- **The plan, one page:** the Eligibility Check, Your details and the Packages are three parts
+  down a single sheet, a white card each, one open at a time; there is no stepper and no page
+  between them. Each part's head carries a dot in the status stepper's encoding (done is lime
+  with an Ink check, the one in hand Ink-framed with a lime core, one still ahead Hairline on
+  Panel 2 with its number), its title, and one line under it: what it asks while open or ahead
+  (whole, never cut), itself said back once it's folded ("Alex Morgan · +61 412 345 678 · Pickup
+  Mon, 16 Nov"), in two lines at most (`line-clamp-2`), the date in its short form so it's the
+  last thing to go. A
+  finished part folds (the disclosure's height motion) and the next opens under it, brought to
+  the top; a folded part reopens from its whole line, marked "Edit" (or "Open", if it's still to
+  do); a part whose earlier parts aren't in stands at 60% and doesn't open. Check Rate comes
+  before the plan and isn't one of its parts; the way back to it is the quiet Back under them.
+- **The plan's one action:** a single lime button runs the page, reading Continue until the last
+  part is in, then Confirm application; it waits (Panel fill) while the part in hand is
+  incomplete, and one line says why. On a wide screen it sits under the Selected Service,
+  sticky beside the parts. On a phone it rides a bar fixed to the foot of the screen
+  (`bg-background/95`, hairline above, padded for the home indicator) with the estimate beside
+  it, so the price and the way on are always under a thumb; the reason it waits is read at the
+  foot of the open part there. An amount is never cut: when the estimate and the button can't
+  share the line (a 320px phone, a nine-figure estimate, "Confirm application"), the bar wraps
+  and the button takes the line under the estimate, full width.
 - **Check Rate:** one white card, Moving from beside Moving to, then the weight and the button
   under a hairline. Fields are the system's Panel 2 inputs.
 - **The rate card:** the offer card (below), the same one Back For Good's Cek Tarif shows, with
@@ -1469,6 +1481,24 @@ like the landing, and keeps the landing's bar, which trades the lime "Check your
   as a doubled hairline) when chosen. A single choice shows the stepper's dot (Ink ring, lime
   core); a multiple choice shows the system checkbox (lime with an Ink tick). Neither fills with
   lime. Follow-ups sit on Panel 2 under the answer that asks them.
+- **Your details, in three groups:** the address cards, then "About you" (name, email, phone),
+  then "Pickup", each group under a hairline with its title in the display face at 16px.
+- **The address cards** (Your details): where from and where to are two Panel 2 cards side by
+  side from sm, each with its country, its Address and its Detail Address once given, and a
+  quiet "Change". Change turns the card into its own editor in place: a white plane with a
+  hairline (so its Panel 2 fields read), across both columns, holding the Address search
+  (inside its country) and the Detail Address, then Cancel and a secondary "Save address"
+  (never lime: the page's one lime is the plan's action). Nothing is a page away and nothing
+  is kept until Save. Each side's Detail Address is required and no field on the page asks for
+  it, so until it's in the card asks: a white "Add detail address" button and a line saying
+  what it's for. There is no map and no pin.
+- **The pickup group** (Your details): the WNI flow's Pickup Schedule, asked in the expat
+  flow's own controls. Who hands the packages over is a pair of choice cards ("I will" chosen
+  to begin with; "Someone else" opens their name and number on a Panel 2 block under it, as an
+  Eligibility follow-up does). The building type is a select; anything but a house opens two
+  yes/no follow-ups side by side (freight elevator, receptionist). Notes for the courier are a
+  textarea, optional. The Pickup Date keeps its field; the pickup time is five windows as
+  choice cards, three across from sm. The WNI flow's re-pickup standby isn't asked.
 - **Notices, not errors:** the packing notice (you pack everything yourself) stands under the
   first question for every customer, so it wears the info tint, as the changed-address notice
   does; ticking furniture only adds to its words and points its link at furniture's own steps.
@@ -1483,11 +1513,19 @@ like the landing, and keeps the landing's bar, which trades the lime "Check your
   photos. "Add a package" is the dashed button across the card. The currency and the totals
   (packages, chargeable weight, declared value) sit under hairlines below; the price never
   repeats there, since the Selected Service beside it carries it. Declared values read as a code
-  and an amount ("AUD 300") to match the inputs' prefix.
-- **Selected Service:** a white card beside every plan step, sticky from lg; on a phone a
-  strip over the form that opens to the rest: the service on a line of its own so its name reads
+  and an amount ("AUD 300") to match the inputs' prefix. Past three packages the finished ones
+  open folded, so a house listed package by package is a screen of lines, not dozens of forms;
+  the ones still to fill stay open. A size or weight that reads like the wrong unit (a side over
+  3 m, a package over 500 kg) is asked about in the info tint under the measures, never refused.
+- **Selected Service:** a white card beside the plan, sticky from lg; on a phone a
+  strip over the parts that opens to the rest: the service on a line of its own so its name reads
   whole, then the Special Rate mark and the price under it. Once the packages are measured,
-  the weight and estimate are theirs, and the weight says "from your packages".
+  the weight and estimate are theirs, and the weight says "from your packages". "Change", a
+  text link beside the title, opens the rates without leaving the plan: a dialog (the mobile
+  sheet on a phone) of Check Rate's own rate cards, hairlined on the dialog's surface. The rate
+  in hand is framed in Ink (2px, as a chosen answer is) and marked "Selected" beside its
+  carrier, with no button; every other card carries "Select this rate", and picking one closes
+  the dialog.
 - **The Booking Summary:** a white card with the received head (the success check, who the
   summary went to) over the booking number on a Panel 2 strip with its copy button, then the
   summary as label-and-value rows between hairlines. What happens next, the other answers and

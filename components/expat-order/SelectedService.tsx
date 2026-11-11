@@ -14,22 +14,27 @@ import { useT } from "@/lib/i18n/LanguageProvider";
 import { cn } from "@/lib/utils/cn";
 
 /**
- * The picked rate beside every plan step, after the live page's "Selected
+ * The picked rate beside the plan, after the live page's "Selected
  * service": carrier and service, from and to, transit, the charged weight and
- * the estimated price, read only. Once the packages are measured, the
- * weight and price are the packages' (packedPricing), and the weight says so.
- * A white card on the field that stays in view on a wide screen; on a phone a
- * strip over the form (the service, then the price) that opens to the rest.
+ * the estimated price. Once the packages are measured, the weight and price
+ * are the packages' (packedPricing), and the weight says so. The card itself
+ * is read only; the service changes from `action`, beside its title (the
+ * plan's ServicePicker). A white card on the field that stays in view on a
+ * wide screen; on a phone a strip over the form (the service, then the
+ * price) that opens to the rest.
  */
 export function SelectedService({
   check,
   rate,
   packed = false,
+  action,
 }: {
   check: CheckRateInput;
   rate: ExpatRate;
   /** the rate was priced again on the packages' weight */
   packed?: boolean;
+  /** what changes the service, beside the title */
+  action?: React.ReactNode;
 }) {
   const t = useT();
   const s = (k: string) => t(`expatOrder.service.${k}`);
@@ -83,9 +88,12 @@ export function SelectedService({
       aria-labelledby="selected-service"
       className="rounded-lg border border-[var(--card-border,var(--border))] bg-[var(--card-surface,var(--surface))] px-5 py-5"
     >
-      <h2 id="selected-service" className="text-xs font-medium text-muted">
-        {s("title")}
-      </h2>
+      <div className="flex items-baseline justify-between gap-3">
+        <h2 id="selected-service" className="text-xs font-medium text-muted">
+          {s("title")}
+        </h2>
+        {action}
+      </div>
 
       {/* a phone: the service on a line of its own, so its name reads whole,
           the price under it; the rest folded */}

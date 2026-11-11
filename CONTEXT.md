@@ -15,7 +15,7 @@ _Avoid_: BFG (in copy), returning home
 ## Check Rate
 
 **Check Rate**:
-Where an order starts, ahead of the plan's steps (it isn't one of the stepper's): the customer enters where they're moving from, where to, and an estimated weight, and gets an estimated price.
+Where an order starts, ahead of the plan (it isn't one of the plan's parts): the customer enters where they're moving from, where to, and an estimated weight, and gets an estimated price.
 _Avoid_: Calculator, quote (for this step)
 
 **Address**:
@@ -39,7 +39,7 @@ The team's estimate of the shipping cost, sent after reviewing a booking and its
 _Avoid_: Final price, official price, quote (for the Check Rate figure)
 
 **Packages**:
-The customer's list of what they're sending, package by package (each one's packaging, weight and size, and the items inside with quantities and values), given in the flow's last step, after Personal Information, that the team reviews before pickup to flag Take Outs and potential duty and tax.
+The customer's list of what they're sending, package by package (each one's packaging, weight and size, and the items inside with quantities and values), given in the plan's last part, after Personal Information, that the team reviews before pickup to flag Take Outs and potential duty and tax.
 _Avoid_: Packing list (that names the customs document, the Commercial Invoice/Packing List), item list, inventory, manifest
 
 **Packing Guide**:
@@ -59,7 +59,7 @@ The final price, issued once the packages reach Rimkirim's warehouse and have be
 _Avoid_: Final quotation, bill
 
 **Selected Rate**:
-The one rate the customer picks at Check Rate, Special or Normal, which the order carries from then on.
+The one rate the order carries, Special or Normal: picked at Check Rate, and changed from the plan's Selected Service ("Change") without leaving the plan.
 _Avoid_: Chosen plan, package
 
 ## Eligibility and customs
@@ -91,12 +91,20 @@ _Avoid_: Regular shipment, courier shipment
 ## Personal Information
 
 **Detail Address**:
-The full street address, pinned on a map, that the customer gives in Personal Information for delivery in Indonesia. The origin has none: pickup abroad goes by the origin Address.
+The unit, building and landmarks of an Address, which the customer gives in Personal Information from that side's card ("Change"). Required on both sides: it's the courier's way to each door. There is no map pin.
 _Avoid_: Full address, street address
 
 **Arrival Date**:
 The day a customer still abroad expects to land in Indonesia, asked in the Eligibility Check; recorded for ops, never a gate.
 _Avoid_: Moving date, relocation date
+
+**Pickup Window**:
+The four-hour span of the Pickup Date in which the courier comes, one of the WNI flow's five (10:00–14:00 to 14:00–18:00), in local time at the pickup address.
+_Avoid_: Time slot, pickup hour
+
+**Handover**:
+Who gives the packages to the courier on the Pickup Date: the customer, or someone they name with a phone number.
+_Avoid_: PIC (the WNI flow's and ops' word; the customer never sees it)
 
 **Pickup Date**:
 The weekday, tomorrow at the earliest, when Rimkirim collects the belongings at the origin Address; asked in Personal Information as "When are you planning to relocate".

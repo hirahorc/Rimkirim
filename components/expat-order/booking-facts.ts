@@ -28,6 +28,14 @@ export function longDate(iso: string | undefined): string {
   return new Intl.DateTimeFormat("en-GB", { weekday: "long", day: "numeric", month: "long", year: "numeric" }).format(d);
 }
 
+/** "Mon, 16 Nov", for a line with little room: the plan's folded parts */
+export function shortDate(iso: string | undefined): string {
+  const m = iso && /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso);
+  if (!m) return "";
+  const d = new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
+  return new Intl.DateTimeFormat("en-GB", { weekday: "short", day: "numeric", month: "short" }).format(d);
+}
+
 /**
  * What a Booking Summary says, worked out once for the page and the email so
  * the two can never disagree. Never the Customs Category: it stays internal.
@@ -80,6 +88,7 @@ export function bookingFacts(b: ExpatBooking, t: T) {
     from: {
       country: getCountry(check.originCountry)?.name ?? check.originCountry,
       address: placeLine(check.origin),
+      detail: d.originDetail?.trim() ?? "",
     },
     to: {
       country: "Indonesia",
@@ -97,7 +106,25 @@ export function bookingFacts(b: ExpatBooking, t: T) {
     packing,
     checkedKg: kg(check.weightKg),
     packReminder: bk("packReminder").replace("{furniture}", a.items.includes("furniture") ? bk("packFurniture") : ""),
-    pickup: longDate(d.pickupDate),
+    pickup: [longDate(d.pickupDate), d.pickupWindow?.replace("-", "–")].filter(Boolean).join(" · "),
+    // the pickup's answers, a line each; none on a booking made before they were asked
+    pickupLines: [
+      d.handover === "other" && d.picName?.trim()
+        ? `${bk("handedBy")} ${d.picName.trim()} · ${`${dialCodeFor(d.picDialIso ?? "") ?? ""} ${d.picPhone?.trim() ?? ""}`.trim()}`
+        : "",
+      d.buildingType
+        ? [
+            t(`expatOrder.details.buildings.${d.buildingType}`),
+            ...(d.buildingType === "house"
+              ? []
+              : [
+                  `${bk("freight")}: ${yesNo(d.freightElevator)}`,
+                  `${bk("receptionist")}: ${yesNo(d.receptionist)}`,
+                ]),
+          ].join(" · ")
+        : "",
+      d.courierNotes?.trim() ? `${bk("courierNotes")}: ${d.courierNotes.trim()}` : "",
+    ].filter(Boolean),
     contact: {
       name: d.fullName.trim(),
       email: d.email.trim(),

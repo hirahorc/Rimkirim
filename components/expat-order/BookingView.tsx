@@ -1,6 +1,6 @@
 "use client";
 
-import type * as React from "react";
+import * as React from "react";
 import Link from "next/link";
 import { ArrowLeft, BadgePercent, MessageCircle, PackageOpen } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -16,6 +16,9 @@ import { bookingFacts } from "./booking-facts";
 import { BookingHead } from "./BookingHead";
 import { CustomsPaths } from "./CustomsPaths";
 import { FlowLoading } from "./FlowLoading";
+
+/** how many packages the summary lists before it folds the rest */
+const PACKAGES_SHOWN = 5;
 
 /** one row of the summary: its label on the left, what it holds beside it,
  *  a hairline between rows (the app's line-item reading) */
@@ -40,6 +43,8 @@ export function BookingView({ number }: { number: string }) {
   const bk = (k: string) => t(`expatOrder.booking.${k}`);
   const hydrated = useExpatOrderHydrated();
   const booking = useExpatOrderStore((s) => s.bookings.find((b) => b.number === number));
+  // a long list shows its first few packages until it's asked for whole
+  const [allPackages, setAllPackages] = React.useState(false);
 
   if (!hydrated) return <FlowLoading />;
 
@@ -61,8 +66,12 @@ export function BookingView({ number }: { number: string }) {
     <div data-field className="mx-auto max-w-5xl px-4 pb-20 pt-8 sm:px-6 sm:pt-10">
       <ReviewNote note={ORDER_REVIEW_NOTES.booking} className="mb-6" />
 
-      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_22rem] lg:items-start">
-        <Card className="px-5 py-6 sm:px-8 sm:py-8">
+      {/* what the customer typed is shown as typed, and some of it can't
+          wrap by itself (an email, a long word in an address): it may break
+          anywhere, and the column is stated (minmax(0, 1fr)) so nothing
+          unbreakable can widen the summary past the screen */}
+      <div className="grid grid-cols-1 gap-6 [overflow-wrap:anywhere] lg:grid-cols-[minmax(0,1fr)_22rem] lg:items-start">
+        <Card className="min-w-0 px-5 py-6 sm:px-8 sm:py-8">
           <article aria-labelledby="booking-heading">
             <BookingHead number={f.number} email={f.contact.email} headingId="booking-heading" />
 
@@ -70,6 +79,7 @@ export function BookingView({ number }: { number: string }) {
               <Row label={bk("route")}>
                 <p className="font-medium">{f.from.country}</p>
                 <p className="text-muted">{f.from.address}</p>
+                {f.from.detail && <p className="text-muted">{f.from.detail}</p>}
                 <p className="pt-2 font-medium">{f.to.country}</p>
                 <p className="text-muted">{f.to.address}</p>
                 {f.to.detail && <p className="text-muted">{f.to.detail}</p>}
@@ -103,8 +113,8 @@ export function BookingView({ number }: { number: string }) {
               {f.packing && (
                 <Row label={bk("packing")}>
                   <p className="font-medium">{f.packing.summary}</p>
-                  <ol className="space-y-2 pt-2">
-                    {f.packing.packages.map((pk) => (
+                  <ol id="booking-packages" className="space-y-2 pt-2">
+                    {(allPackages ? f.packing.packages : f.packing.packages.slice(0, PACKAGES_SHOWN)).map((pk) => (
                       <li key={pk.title}>
                         <p>{pk.title}</p>
                         <p className="tabular-nums text-muted">{pk.measures}</p>
@@ -112,10 +122,28 @@ export function BookingView({ number }: { number: string }) {
                       </li>
                     ))}
                   </ol>
+                  {f.packing.packages.length > PACKAGES_SHOWN && (
+                    <button
+                      type="button"
+                      aria-expanded={allPackages}
+                      aria-controls="booking-packages"
+                      onClick={() => setAllPackages((v) => !v)}
+                      className="link-mark tap-row relative mt-1"
+                    >
+                      {allPackages
+                        ? bk("packagesFewer")
+                        : bk("packagesAll").replace("{n}", String(f.packing.packages.length))}
+                    </button>
+                  )}
                 </Row>
               )}
               <Row label={bk("pickup")}>
                 <p className="font-medium">{f.pickup}</p>
+                {f.pickupLines.map((line) => (
+                  <p key={line} className="text-muted">
+                    {line}
+                  </p>
+                ))}
               </Row>
               <Row label={bk("contact")}>
                 <p className="font-medium">{f.contact.name}</p>

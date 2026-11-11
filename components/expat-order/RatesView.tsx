@@ -34,8 +34,7 @@ function addressError(p: Place | null, t: (k: string) => string): string | undef
  * on Panel 2, as every order screen sits): the form, and once checked the
  * one rate the epic asks for under it, the rest behind "See more rates". The form writes straight
  * into the draft, so a changed input reprices at once and a reload keeps it.
- * It comes before the plan, so it wears no stepper: the steps start once a
- * rate is picked.
+ * It comes before the plan, which starts once a rate is picked.
  */
 export function RatesView() {
   const hydrated = useExpatOrderHydrated();
@@ -284,6 +283,8 @@ function WeightInput({
         inputMode="decimal"
         value={value}
         placeholder={placeholder}
+        // a bound on what's typed, not a rule: the most a shipment may weigh is ops' to set
+        maxLength={7}
         onChange={(e) => onChange(e.target.value.replace(/[^0-9.,]/g, ""))}
         className={cn("pr-10 tabular-nums", invalid && "border-danger")}
       />

@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   alternates: { canonical: "/expat-relocation/rates" },
 };
 
-/** Check Rate and Select Rate, where the expat order flow starts, ahead of the plan's steps */
+/** Check Rate and Select Rate, where the expat order flow starts, ahead of the plan */
 export default function ExpatRatesPage() {
   return <RatesView />;
 }

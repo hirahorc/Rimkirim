@@ -7,7 +7,7 @@
 
 import { defaultCurrencyFor } from "@/lib/data/currencies";
 import type { Place } from "@/lib/data/expat-places";
-import { chargedWeight, expatRates, type ExpatRate } from "@/lib/pricing/expat-rates";
+import { chargedWeight, expatRates, type ExpatRate, type ExpatRates } from "@/lib/pricing/expat-rates";
 import type { ItemsData, PackageRow } from "@/lib/types/packing";
 import { chargeableWeight, volumetricWeight } from "@/lib/utils/chargeable-weight";
 
@@ -252,6 +252,28 @@ export function packedPricing(originCountry: string, rate: ExpatRate, p: Packing
   return same ? { rate: same, packed: true, kg } : { rate, packed: false, kg, specialFromKg: priced.specialFromKg };
 }
 
+/**
+ * What the plan offers when the service is changed there: Check Rate's own
+ * list, priced at the weight the estimate follows (the packages' once
+ * they're all measured, else the weight checked), so a card's figure is the
+ * one the Selected Service shows once it's picked.
+ */
+export function serviceOptions(check: CheckRateInput, pricing: PackedPricing): ExpatRates {
+  return expatRates(check.originCountry, pricing.kg || check.weightKg || pricing.rate.chargedKg);
+}
+
+/**
+ * The rate the order carries for a service picked on the plan: that service
+ * as Check Rate prices it, at the weight checked, so the packages go on
+ * repricing it as they do a rate picked there. A Special Rate that only
+ * starts above the weight checked has no such price, and is carried as
+ * picked, at the packages' weight.
+ */
+export function checkedRate(check: CheckRateInput, picked: ExpatRate): ExpatRate {
+  if (!check.weightKg) return picked;
+  return expatRates(check.originCountry, check.weightKg).rates.find((r) => r.id === picked.id) ?? picked;
+}
+
 /** the list in the shared Packing List shape, for the booking */
 export function toItemsData(p: PackingInput, originCountry: string): ItemsData {
   return {
@@ -273,16 +295,15 @@ export function toItemsData(p: PackingInput, originCountry: string): ItemsData {
 
 /* ------------------------------------------------------- Personal Information */
 
-export interface Pin {
-  lat: number;
-  lng: number;
-}
+/** how the pickup is handed over: by the customer, or someone they name */
+export type Handover = "me" | "other";
 
 export interface DetailsInput {
-  /** the destination's only: pickup goes by the origin Address as Check Rate
-   *  has it */
+  /** each side's Detail Address: the unit, building and landmarks of its
+   *  Address, the courier's way to the door. Both required. The origin's is
+   *  absent on drafts saved while it wasn't asked */
   destinationDetail: string;
-  destinationPin?: Pin;
+  originDetail?: string;
   fullName: string;
   email: string;
   /** ISO country code of the dial code; follows the origin until changed */
@@ -292,6 +313,25 @@ export interface DetailsInput {
   phone: string;
   /** "YYYY-MM-DD": the day the belongings are collected */
   pickupDate?: string;
+
+  /* The pickup, as the WNI flow's Pickup Schedule asks it, so the courier
+     collects without a second trip. Every field is absent on a draft saved
+     before these were asked. */
+  /** who hands the packages over; unset reads as the customer */
+  handover?: Handover;
+  /** the person named, when it isn't the customer */
+  picName?: string;
+  picDialIso?: string;
+  picPhone?: string;
+  /** a BUILDING_TYPES value (components/order/module-options) */
+  buildingType?: string;
+  /** a shared building's access, asked for anything but a house */
+  freightElevator?: boolean;
+  receptionist?: boolean;
+  /** for the courier, optional */
+  courierNotes?: string;
+  /** a PICKUP_WINDOWS value, in the origin's local time */
+  pickupWindow?: string;
 }
 
 export const EMPTY_DETAILS: DetailsInput = {
@@ -331,12 +371,33 @@ export function todayIso(now = new Date()): string {
 }
 
 export function detailsProgress(d: DetailsInput) {
-  const destination = d.destinationDetail.trim().length > 0 && !!d.destinationPin;
+  const origin = (d.originDetail ?? "").trim().length > 0;
+  const destination = d.destinationDetail.trim().length > 0;
   const name = d.fullName.trim().length > 0;
   const email = emailValid(d.email);
   const phone = !!d.dialIso && phoneValid(d.phone);
+  // the customer hands over unless they name someone, who then needs a name
+  // and a number the courier can call
+  const handover =
+    (d.handover ?? "me") === "me" || (!!d.picName?.trim() && !!d.picDialIso && phoneValid(d.picPhone ?? ""));
+  // a house has no shared access to ask about
+  const building =
+    !!d.buildingType &&
+    (d.buildingType === "house" || (d.freightElevator !== undefined && d.receptionist !== undefined));
   const pickup = !!d.pickupDate && pickupDayAllowed(d.pickupDate);
-  return { destination, name, email, phone, pickup, done: destination && name && email && phone && pickup };
+  const window = !!d.pickupWindow;
+  return {
+    origin,
+    destination,
+    name,
+    email,
+    phone,
+    handover,
+    building,
+    pickup,
+    window,
+    done: origin && destination && name && email && phone && handover && building && pickup && window,
+  };
 }
 
 /* -------------------------------------------------------------------- Booking */

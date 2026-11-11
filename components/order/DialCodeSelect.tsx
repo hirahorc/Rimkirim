@@ -18,18 +18,26 @@ import { cn } from "@/lib/utils/cn";
 export function DialCodeSelect({
   value,
   onChange,
+  showPopular = true,
 }: {
   value: string;
   onChange: (iso: string) => void;
+  /** the "Popular" group of Rimkirim's focus markets over the rest (default
+   *  on); off, the list is one alphabetical run with no group headings, as
+   *  CountrySelect's is */
+  showPopular?: boolean;
 }) {
   const t = useT();
   const [open, setOpen] = React.useState(false);
   const selected = getCountry(value);
   const dial = dialCodeFor(value);
 
-  // Only countries that have a known dial code, priority markets first.
-  const priority = COUNTRIES.filter((c) => c.priority && DIAL_BY_ISO[c.code]);
-  const rest = ALL_COUNTRIES.filter((c) => !c.priority && DIAL_BY_ISO[c.code]);
+  // Only countries that have a known dial code, priority markets first
+  // unless the list is plain.
+  const priority = showPopular ? COUNTRIES.filter((c) => c.priority && DIAL_BY_ISO[c.code]) : [];
+  const rest = showPopular
+    ? ALL_COUNTRIES.filter((c) => !c.priority && DIAL_BY_ISO[c.code])
+    : ALL_COUNTRIES.filter((c) => DIAL_BY_ISO[c.code]).sort((a, b) => a.name.localeCompare(b.name));
 
   const renderItem = (code: string, name: string) => (
     <Command.Item
@@ -97,7 +105,7 @@ export function DialCodeSelect({
               </Command.Group>
             )}
             <Command.Group
-              heading={t("country.all")}
+              heading={showPopular ? t("country.all") : undefined}
               className="[&_[cmdk-group-heading]]:px-2.5 [&_[cmdk-group-heading]]:py-1.5 [&_[cmdk-group-heading]]:text-[10px] [&_[cmdk-group-heading]]:font-semibold [&_[cmdk-group-heading]]:uppercase [&_[cmdk-group-heading]]:tracking-wider [&_[cmdk-group-heading]]:text-muted-2"
             >
               {rest.map((c) => renderItem(c.code, c.name))}

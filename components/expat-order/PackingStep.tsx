@@ -46,6 +46,15 @@ function decimal(s: string): string {
 const digits = (s: string) => s.replace(/[^0-9]/g, "");
 const kg = (n: number) => formatNumber(n, 1, "en");
 
+/** past this many packages, the finished ones open folded */
+const FOLD_FROM = 3;
+
+/** a size or weight past these is far likelier a slip of a unit (millimetres,
+ *  grams) than a package: it's asked about, never refused. Stand-ins for ops
+ *  to set (ORDER_REVIEW_NOTES.packing) */
+const ODD_SIDE_CM = 300;
+const ODD_WEIGHT_KG = 500;
+
 export interface PackingStepHandle {
   /** open a package and bring its photos into view */
   reveal: (id: string) => void;
@@ -70,7 +79,7 @@ export function PackingStep({
   value: PackingInput;
   onChange: (next: PackingInput) => void;
   originCountry: string;
-  /** the weight the Selected Rate was priced on at Check Rate */
+  /** the weight checked at Check Rate, as it's priced (rounded up) */
   checkedKg: number;
   pricing: PackedPricing;
   handleRef?: React.Ref<PackingStepHandle>;
@@ -79,7 +88,17 @@ export function PackingStep({
   const p = (k: string) => t(`expatOrder.packing.${k}`);
   const [left, setLeft] = React.useState<Record<string, boolean>>({});
   const leave = (k: string) => () => setLeft((s) => ({ ...s, [k]: true }));
-  const [collapsed, setCollapsed] = React.useState<Set<string>>(() => new Set());
+  // a short list opens whole. A long one (a house, package by package) would
+  // run to dozens of screens, so its finished packages start folded and the
+  // ones still to fill stay open
+  const [collapsed, setCollapsed] = React.useState<Set<string>>(
+    () =>
+      new Set(
+        value.packages.length > FOLD_FROM
+          ? value.packages.filter((pk) => packageMeasured(pk) && packagingDescribed(pk) && pk.items.every(itemDescribed)).map((pk) => pk.id)
+          : [],
+      ),
+  );
   const photoRefs = React.useRef<Record<string, HTMLDivElement | null>>({});
 
   const currency = packingCurrency(value, originCountry);
@@ -208,7 +227,9 @@ export function PackingStep({
         {pricing.specialFromKg ? (
           <p role="status" className="mt-5 flex gap-2 rounded-md bg-info/10 px-3 py-2.5 text-sm">
             <Info aria-hidden className="mt-0.5 size-4 shrink-0 text-info" />
-            {p("estimateNoSpecial").replace("{min}", kg(pricing.specialFromKg)).replace("{kg}", kg(checkedKg))}
+            {/* the weight the standing estimate is priced on: the one
+                checked, unless the Special Rate was picked on the plan */}
+            {p("estimateNoSpecial").replace("{min}", kg(pricing.specialFromKg)).replace("{kg}", kg(pricing.rate.chargedKg))}
           </p>
         ) : (
           <p className="mt-5 text-xs leading-relaxed text-muted">
@@ -273,6 +294,7 @@ function PackageBlock({
           onChange={(e) => onChange({ [side]: decimal(e.target.value) })}
           onBlur={leave(k)}
           placeholder="0"
+          maxLength={7}
         />
       </Field>
     );
@@ -293,6 +315,8 @@ function PackageBlock({
       ? p("unfinished")
       : p("empty");
   const charge = packageMeasured(pkg) ? packageCharge(pkg) : null;
+  const longest = Math.max(...(["length", "width", "height"] as const).map((s) => Number.parseFloat(pkg[s]) || 0));
+  const heavy = (Number.parseFloat(pkg.weight) || 0) > ODD_WEIGHT_KG;
 
   const setItem = (id: string, patch: Partial<PackingItem>) =>
     onChange({ items: pkg.items.map((it) => (it.id === id ? { ...it, ...patch } : it)) });
@@ -372,6 +396,19 @@ function PackageBlock({
                 {p(charge.by === "size" ? "chargeSize" : "chargeWeight").replace("{kg}", kg(charge.kg))}
               </p>
             )}
+            {/* a number that looks like the wrong unit: asked about, not
+                refused, since the estimate follows it at once */}
+            {(longest > ODD_SIDE_CM || heavy) && (
+              <p role="status" className="mt-3 flex gap-2 rounded-md bg-info/10 px-3 py-2.5 text-sm">
+                <Info aria-hidden className="mt-0.5 size-4 shrink-0 text-info" />
+                <span>
+                  {longest > ODD_SIDE_CM &&
+                    p("oddSize").replace("{cm}", kg(longest)).replace("{m}", kg(longest / 100))}
+                  {longest > ODD_SIDE_CM && heavy && " "}
+                  {heavy && p("oddWeight").replace("{kg}", kg(Number.parseFloat(pkg.weight)))}
+                </span>
+              </p>
+            )}
           </div>
 
           <fieldset>
@@ -413,6 +450,7 @@ function PackageBlock({
                         onChange={(e) => setItem(it.id, { value: decimal(e.target.value) })}
                         inputMode="decimal"
                         placeholder="0"
+                        maxLength={12}
                       />
                     </Field>
                     {/* the label's height (16px line, 6px gap), so the button
@@ -451,8 +489,10 @@ function PackageBlock({
             </p>
             <p className="mt-0.5 text-xs leading-relaxed text-muted">{p("photosHint")}</p>
             {/* one column on a phone: two upload boxes side by side leave no
-                room for the file's name */}
-            <div className="mt-3 grid gap-3 sm:grid-cols-2">
+                room for the file's name. A stated column (minmax(0, 1fr)),
+                not the implicit one: that grew to a long file name's width
+                and pushed every upload past the package */}
+            <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
               {PHOTO_SIDES.map((side) => (
                 <Field key={side} label={<span className="text-xs">{p(`photoSides.${side}`)}</span>}>
                   <FileUpload
