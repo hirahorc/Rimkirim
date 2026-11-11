@@ -183,8 +183,6 @@ function Plan({
     const dp = detailsProgress(details);
     // in the order the page asks
     const missing: [boolean, string][] = [
-      [dp.origin, "detailsOrigin"],
-      [dp.destination, "detailsAddress"],
       [dp.name, "detailsName"],
       [dp.email, "detailsEmail"],
       [dp.phone, "detailsPhone"],

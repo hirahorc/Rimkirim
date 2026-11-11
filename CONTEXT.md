@@ -91,7 +91,7 @@ _Avoid_: Regular shipment, courier shipment
 ## Personal Information
 
 **Detail Address**:
-The unit, building and landmarks of an Address, which the customer gives in Personal Information from that side's card ("Change"). Required on both sides: it's the courier's way to each door. There is no map pin.
+The unit, building and landmarks of an Address, which the customer gives in Personal Information from that side's card ("Change"). Optional on both sides (the team's call; the epic marks it required): it's the courier's way to each door, and an order goes on without it. There is no map pin.
 _Avoid_: Full address, street address
 
 **Arrival Date**:

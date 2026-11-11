@@ -288,8 +288,9 @@ export function toItemsData(p: PackingInput, originCountry: string): ItemsData {
 
 export interface DetailsInput {
   /** each side's Detail Address: the unit, building and landmarks of its
-   *  Address, the courier's way to the door. Both required. The origin's is
-   *  absent on drafts saved while it wasn't asked */
+   *  Address, the courier's way to the door. Both optional (the team's call;
+   *  the epic marks them required). The origin's is absent on drafts saved
+   *  while it wasn't asked */
   destinationDetail: string;
   originDetail?: string;
   fullName: string;
@@ -340,13 +341,11 @@ export function todayIso(now = new Date()): string {
 }
 
 export function detailsProgress(d: DetailsInput) {
-  const origin = (d.originDetail ?? "").trim().length > 0;
-  const destination = d.destinationDetail.trim().length > 0;
   const name = d.fullName.trim().length > 0;
   const email = emailValid(d.email);
   const phone = !!d.dialIso && phoneValid(d.phone);
   const pickup = !!d.pickupDate && pickupDayAllowed(d.pickupDate);
-  return { origin, destination, name, email, phone, pickup, done: origin && destination && name && email && phone && pickup };
+  return { name, email, phone, pickup, done: name && email && phone && pickup };
 }
 
 /* -------------------------------------------------------------------- Booking */

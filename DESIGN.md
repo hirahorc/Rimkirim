@@ -1487,9 +1487,9 @@ like the landing, and keeps the landing's bar, which trades the lime "Check your
   hairline (so its Panel 2 fields read), across both columns, holding the Address search
   (inside its country) and the Detail Address, then Cancel and a secondary "Save address"
   (never lime: the page's one lime is the plan's action). Nothing is a page away and nothing
-  is kept until Save. Each side's Detail Address is required and no field on the page asks for
-  it, so until it's in the card asks: a white "Add detail address" button and a line saying
-  what it's for. There is no map and no pin.
+  is kept until Save. Each side's Detail Address is optional and no field on the page asks for
+  it, so until it's in the card offers it: a white "Add detail address" button and a line saying
+  it's optional and what it's for. It never holds the plan's action. There is no map and no pin.
 - **Notices, not errors:** the packing notice (you pack everything yourself) stands under the
   first question for every customer, so it wears the info tint, as the changed-address notice
   does; ticking furniture only adds to its words and points its link at furniture's own steps.

@@ -130,8 +130,8 @@ function AddressEditor({
  * it, with its Detail Address once it's given. "Change" turns the card into
  * its own editor, in place and across both columns (AddressEditor), so an
  * Address is changed here, not back on Check Rate. Each side's Detail
- * Address is required and nothing else on the page asks for it, so until
- * it's in the card asks, with the way to give it.
+ * Address is optional and nothing else on the page asks for it, so until
+ * it's in the card offers it, with what it's for.
  */
 function AddressCard({
   side,
@@ -221,8 +221,8 @@ function AddressCard({
 
 /**
  * Personal Information: where from and where to as cards, each changed in
- * place (AddressCard: the Address and its Detail Address, both sides
- * required), then name, email, phone and the Pickup Date. The origin country
+ * place (AddressCard: the Address and its Detail Address, optional on both
+ * sides), then name, email, phone and the Pickup Date. The origin country
  * isn't changed here: it set the rate, so it changes on Check Rate. An error
  * shows once a field is left, not on every keystroke.
  */
