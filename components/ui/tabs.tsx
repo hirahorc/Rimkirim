@@ -66,7 +66,8 @@ export const TabsTrigger = React.forwardRef<
   <TabsPrimitive.Trigger
     ref={ref}
     className={cn(
-      "text-sm font-medium transition-all hover:text-foreground focus-visible:outline-none",
+      // named, never `all`, which faded the focus ring in as well (Button)
+      "text-sm font-medium transition-[color,border-color,font-weight] hover:text-foreground focus-visible:outline-none",
       variant === "underline"
         ? "-mb-0.5 flex-1 rounded-none border-b-2 border-transparent px-2 py-2 text-center text-muted-2 focus-visible:ring-0 data-[state=active]:border-foreground data-[state=active]:text-foreground"
         : // `relative` so the trigger paints above the absolutely-positioned

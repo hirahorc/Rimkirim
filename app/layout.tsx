@@ -6,6 +6,7 @@ import { AppFooter } from "@/components/layout/AppFooter";
 import { Toaster } from "@/components/ui/toaster";
 import { LoginDialog } from "@/components/auth/LoginDialog";
 import { EnvBadge } from "@/components/system/EnvBadge";
+import { ScrollLanding } from "@/components/system/ScrollLanding";
 import { LanguageProvider } from "@/lib/i18n/LanguageProvider";
 import { IS_PRODUCTION } from "@/lib/env";
 
@@ -69,7 +70,9 @@ export default function RootLayout({
       lang="id"
       // Next 16 no longer forces scroll-behavior:auto during SPA navigations;
       // this attribute restores that override so the CSS smooth scroll below
-      // only ever applies to same-page anchor jumps (globals.css, motion-safe)
+      // only ever applies to same-page anchor jumps (globals.css, motion-safe).
+      // A page opened at a #fragment lands at once as well: the smooth scroll
+      // waits for data-landed, which ScrollLanding sets once the page is up
       data-scroll-behavior="smooth"
       className={`${spaceGrotesk.variable} ${geist.variable} ${geistMono.variable} h-full antialiased`}
     >
@@ -81,6 +84,7 @@ export default function RootLayout({
           <Toaster />
           <LoginDialog />
           <EnvBadge />
+          <ScrollLanding />
         </LanguageProvider>
       </body>
     </html>

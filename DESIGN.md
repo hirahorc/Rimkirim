@@ -304,7 +304,11 @@ point of use.
   on hover. It is the one place gradient carries identity rather than decoration, and it reserves
   its hover width up front so neighbours never nudge. While hovered the gradient keeps flowing
   (1.8s alternate loop) — a deliberate exception to the one-loop rule, kept because it runs only
-  under the pointer, never on idle UI, and stops the moment the hover ends.
+  under the pointer, never on idle UI, and stops the moment the hover ends. The hover is a
+  link's and a mouse's only (`a.nav-expat`, inside `(hover: hover) and (pointer: fine)`): the
+  expat bar wears the same gradient on its service name, which is a label, so there it stays
+  still (a label that stirs under the pointer promises a click that does nothing), and on touch
+  nothing is left flowing after a tap.
 - **The journey's stage** (`.jr-sky`, `.jr-dusk`, `.jr-grain`, expat "How it works"): the ground
   the step illustrations stand on is the page's own trip, two soft radial washes in the chapter
   hues over the magenta wash, daylight sky (`#21b1ec`) top left at step 01, dusk magenta
@@ -591,7 +595,9 @@ colour shift under `motion-reduce` so the affordance survives with animation off
 **Press is the second sanctioned geometry channel.** Every button scales to 0.98 while held
 (`motion-safe:active:scale-[0.98]`, 150ms on the system easing) — feedback for a press the
 user is already making, never decoration. Under reduced motion the press answers in colour
-only.
+only. A button's transition names what it moves (`color`, `background-color`, `border-color`,
+`opacity`, `scale`), never `all`: under `all` the focus ring faded in over the same 150ms, and
+keyboard focus has to land at once.
 
 **A press answers at once.** A finger gets no hover and no tap flash (the browser's highlight is
 off), and a control that only changes when the finger lifts reads as lag. So everything tappable
@@ -665,10 +671,12 @@ home hero's floating verdicts and the expat hero's departure board. Treat any ot
   `CollapseHeight` carries the identical motion to every state-driven collapsible — the package
   rows in the order form and tracking summary, and the article ToC — and marks the closed region
   `inert` so hidden form fields can never be tabbed into): the answer's height is the only
-  animated property — no fade, no slide — on the system easing, and the *duration is computed
-  from the content height* (Material's `getAutoHeightDuration`: a short panel snaps at ~200ms, a
-  long one glides at ~330ms, hard-capped at 340ms — past that a tall panel reads as slow, not
-  smooth — so perceived speed stays constant where a fixed 300ms cannot).
+  animated property — no fade, no slide — on the hover scale's strong ease-out (`--ease-hover`,
+  not the system easing: that one eases in, so the answer hesitated at the click, an eighth of
+  the way open a fifth of the way through its time, where this one is two thirds open), and the
+  *duration is computed from the content height* (Material's `getAutoHeightDuration`: a short
+  panel snaps at ~200ms, a long one glides, hard-capped at 300ms, the budget for any UI motion,
+  so perceived speed stays constant where a fixed duration cannot).
   Height lands on `auto` after opening so growing content never clips. The chevron is swapped
   down↔up, never rotated, and it swaps on the click, not after the motion; the open header
   carries no colour change — the icon alone marks the state. Instant under reduced motion.
@@ -709,8 +717,11 @@ home hero's floating verdicts and the expat hero's departure board. Treat any ot
   (a bare `<Icon />` as first child auto-lays-out as the size-5 glyph beside the words).
   Writing these paddings by hand at a call site is a smell: extend the primitive instead. Under reduced motion the transition collapses to instant; the drag
   itself is the user's own motion and stays.
-- **Popovers and tooltips exit too.** `pop-out` retreats toward the trigger (120ms, the exit
-  curve) so no panel ends on a jump cut; the tooltip keeps its 100ms out. And inside a
+- **Popovers and tooltips exit too.** `pop-out` retreats toward the trigger (120ms) so no panel
+  ends on a jump cut; the tooltip keeps its 100ms out. Every exit (popover, tooltip, the dialog's
+  panel and overlay, the mobile nav sheet) is shorter than its entrance and on the same ease-out
+  (`--ease-out-soft`), never an ease-in: an exit that gathers speed first reads as the interface
+  hesitating after Esc or a click. And inside a
   skip-delay sweep, the second and later tooltips open **instantly — no delay, no animation**
   (`data-state="instant-open"`): ceremony belongs to the first bubble only.
 - **The floating verdicts** (the one idle loop, `.hero-verdict-float`): three one-word customer
