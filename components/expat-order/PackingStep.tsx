@@ -6,20 +6,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { SelectField } from "@/components/ui/select-field";
 import { CollapseHeight } from "@/components/ui/disclosure";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 import { Field } from "@/components/shared/forms/Field";
-import { FileUpload } from "@/components/order/FileUpload";
 import { PACKAGING_TYPES } from "@/components/order/module-options";
 import { CURRENCIES } from "@/lib/data/currencies";
 import {
-  PHOTO_SIDES,
   declaredValue,
   itemDescribed,
   newPackingItem,
@@ -55,17 +45,12 @@ const FOLD_FROM = 3;
 const ODD_SIDE_CM = 300;
 const ODD_WEIGHT_KG = 500;
 
-export interface PackingStepHandle {
-  /** open a package and bring its photos into view */
-  reveal: (id: string) => void;
-}
-
 /**
- * The Packages step, the WNI flow's Items & Packages in the plan's dress: each
- * package a Panel 2 block (packaging, weight and three sides, what's inside,
- * the measurement photos), then the values' currency and the totals. The
- * estimate lives in the Selected Service beside it and follows the packages
- * once they're measured (packedPricing); this step says so under the totals.
+ * The Packages step, the WNI flow's Items & Packages in the plan's dress: the
+ * values' currency first, then each package a Panel 2 block (packaging,
+ * weight and three sides, what's inside), then the totals. The estimate
+ * lives in the Selected Service beside it and follows the packages once
+ * they're measured (packedPricing); this step says so under the totals.
  * Errors show once a field is left, as on Your details.
  */
 export function PackingStep({
@@ -74,7 +59,6 @@ export function PackingStep({
   originCountry,
   checkedKg,
   pricing,
-  handleRef,
 }: {
   value: PackingInput;
   onChange: (next: PackingInput) => void;
@@ -82,7 +66,6 @@ export function PackingStep({
   /** the weight checked at Check Rate, as it's priced (rounded up) */
   checkedKg: number;
   pricing: PackedPricing;
-  handleRef?: React.Ref<PackingStepHandle>;
 }) {
   const t = useT();
   const p = (k: string) => t(`expatOrder.packing.${k}`);
@@ -99,33 +82,11 @@ export function PackingStep({
           : [],
       ),
   );
-  const photoRefs = React.useRef<Record<string, HTMLDivElement | null>>({});
 
   const currency = packingCurrency(value, originCountry);
   const totals = packingTotals(value);
   const many = value.packages.length > 1;
   const anyOpen = value.packages.some((pk) => !collapsed.has(pk.id));
-
-  React.useImperativeHandle(handleRef, () => ({
-    reveal: (id) => {
-      const wasOpen = !collapsed.has(id);
-      setCollapsed((s) => {
-        const next = new Set(s);
-        next.delete(id);
-        return next;
-      });
-      // a closed block opens first (CollapseHeight caps its motion at 340ms);
-      // then the photos come into view and the first upload takes focus
-      window.setTimeout(
-        () => {
-          const el = photoRefs.current[id];
-          el?.scrollIntoView({ behavior: "smooth", block: "center" });
-          el?.querySelector<HTMLButtonElement>("button")?.focus({ preventScroll: true });
-        },
-        wasOpen ? 0 : 360,
-      );
-    },
-  }));
 
   const setPackage = (id: string, patch: Partial<PackingPackage>) =>
     onChange({ ...value, packages: value.packages.map((pk) => (pk.id === id ? { ...pk, ...patch } : pk)) });
@@ -143,6 +104,20 @@ export function PackingStep({
         <Ruler aria-hidden className="mt-0.5 size-4 shrink-0" />
         {p("guess")}
       </p>
+
+      {/* before the packages: every value typed in them wears it */}
+      <Field label={p("currency")}>
+        <SelectField
+          value={currency}
+          onChange={(c) => onChange({ ...value, currency: c })}
+          ariaLabel={p("currency")}
+          wrapperClassName="sm:max-w-xs"
+          searchable
+          searchPlaceholder={p("currencySearch")}
+          emptyText={p("currencyEmpty")}
+          options={CURRENCIES.map((c) => ({ value: c.code, label: `${c.code} – ${c.name}` }))}
+        />
+      </Field>
 
       <div className="space-y-3">
         {many && (
@@ -172,9 +147,6 @@ export function PackingStep({
                 onRemove={many ? () => onChange({ ...value, packages: value.packages.filter((x) => x.id !== pk.id) }) : undefined}
                 left={left}
                 leave={leave}
-                photosRef={(el) => {
-                  photoRefs.current[pk.id] = el;
-                }}
               />
             </li>
           ))}
@@ -187,21 +159,6 @@ export function PackingStep({
         >
           <Plus /> {p("addPackage")}
         </Button>
-      </div>
-
-      <div className="border-t border-border pt-6">
-        <Field label={p("currency")} hint={p("currencyHint")}>
-          <SelectField
-            value={currency}
-            onChange={(c) => onChange({ ...value, currency: c })}
-            ariaLabel={p("currency")}
-            wrapperClassName="sm:max-w-xs"
-            searchable
-            searchPlaceholder={p("currencySearch")}
-            emptyText={p("currencyEmpty")}
-            options={CURRENCIES.map((c) => ({ value: c.code, label: `${c.code} – ${c.name}` }))}
-          />
-        </Field>
       </div>
 
       <div className="border-t border-border pt-6">
@@ -265,7 +222,6 @@ function PackageBlock({
   onRemove,
   left,
   leave,
-  photosRef,
 }: {
   n: number;
   pkg: PackingPackage;
@@ -276,7 +232,6 @@ function PackageBlock({
   onRemove?: () => void;
   left: Record<string, boolean>;
   leave: (k: string) => () => void;
-  photosRef: (el: HTMLDivElement | null) => void;
 }) {
   const t = useT();
   const p = (k: string) => t(`expatOrder.packing.${k}`);
@@ -480,31 +435,7 @@ function PackageBlock({
             >
               <Plus aria-hidden className="size-4" /> {p("addItem")}
             </button>
-            <p className="mt-3 text-xs text-muted">{p("valuesHint")}</p>
           </fieldset>
-
-          <div ref={photosRef} className="scroll-mt-24">
-            <p className="text-sm font-medium">
-              {p("photos")} <span className="font-normal text-muted">· {p("photosOptional")}</span>
-            </p>
-            <p className="mt-0.5 text-xs leading-relaxed text-muted">{p("photosHint")}</p>
-            {/* one column on a phone: two upload boxes side by side leave no
-                room for the file's name. A stated column (minmax(0, 1fr)),
-                not the implicit one: that grew to a long file name's width
-                and pushed every upload past the package */}
-            <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
-              {PHOTO_SIDES.map((side) => (
-                <Field key={side} label={<span className="text-xs">{p(`photoSides.${side}`)}</span>}>
-                  <FileUpload
-                    accept="image/*"
-                    label={`${p("photos")}: ${p(`photoSides.${side}`)}`}
-                    value={pkg.photos[side]}
-                    onChange={(name) => onChange({ photos: { ...pkg.photos, [side]: name || undefined } })}
-                  />
-                </Field>
-              ))}
-            </div>
-          </div>
         </div>
       </CollapseHeight>
     </div>
@@ -521,54 +452,5 @@ function PrefixedInput({ prefix, className, ...props }: { prefix: string } & Rea
       </span>
       <Input {...props} className={cn("pl-12 tabular-nums", className)} />
     </div>
-  );
-}
-
-/** the WNI flow's warning, kept: photos never block, but confirming without
- *  them is a choice the customer makes knowingly */
-export function MissingPhotosDialog({
-  open,
-  onOpenChange,
-  onAdd,
-  onContinue,
-}: {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  onAdd: () => void;
-  onContinue: () => void;
-}) {
-  const t = useT();
-  const p = (k: string) => t(`expatOrder.packing.${k}`);
-  // going to add photos hands focus to the first upload, not back to Confirm
-  const adding = React.useRef(false);
-  return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent
-        className="max-w-md"
-        onCloseAutoFocus={(e) => {
-          if (adding.current) e.preventDefault();
-          adding.current = false;
-        }}
-      >
-        <DialogHeader>
-          <DialogTitle>{p("photoWarnTitle")}</DialogTitle>
-          <DialogDescription>{p("photoWarnBody")}</DialogDescription>
-        </DialogHeader>
-        <DialogFooter>
-          <Button type="button" variant="secondary" onClick={onContinue}>
-            {p("photoWarnContinue")}
-          </Button>
-          <Button
-            type="button"
-            onClick={() => {
-              adding.current = true;
-              onAdd();
-            }}
-          >
-            {p("photoWarnAdd")}
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
   );
 }

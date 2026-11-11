@@ -18,7 +18,6 @@ import {
   packedPricing,
   packingProgress,
   packingTotals,
-  photosMissing,
   type DetailsInput,
   type EligibilityAnswers,
   type PackingInput,
@@ -32,7 +31,7 @@ import { CustomsPaths } from "./CustomsPaths";
 import { DetailsStep } from "./DetailsStep";
 import { EligibilityStep } from "./EligibilityStep";
 import { FlowLoading } from "./FlowLoading";
-import { MissingPhotosDialog, PackingStep, type PackingStepHandle } from "./PackingStep";
+import { PackingStep } from "./PackingStep";
 import { SelectedService } from "./SelectedService";
 import { ServicePicker } from "./ServicePicker";
 
@@ -149,8 +148,6 @@ function Plan({
   const router = useRouter();
   const { check, eligibility, packing, details, addressChanged, setCheck, selectRate, setEligibility, setPacking, setDetails, submit } =
     useExpatOrderStore();
-  const [photoCheck, setPhotoCheck] = React.useState(false);
-  const packingRef = React.useRef<PackingStepHandle>(null);
   const cards = React.useRef<Record<Part, HTMLElement | null>>({ eligibility: null, details: null, packing: null });
 
   const done: Record<Part, boolean> = {
@@ -206,8 +203,6 @@ function Plan({
   };
   const act = () => {
     if (todo) show(todo);
-    // photos never block; confirming without them is asked once
-    else if (packing.packages.some(photosMissing)) setPhotoCheck(true);
     else confirm();
   };
   const action = (
@@ -336,7 +331,6 @@ function Plan({
                               originCountry={check.originCountry}
                               checkedKg={check.weightKg ? chargedWeight(check.weightKg) : rate.chargedKg}
                               pricing={pricing}
-                              handleRef={packingRef}
                             />
                           )}
                           {/* why the action waits: read on a phone, where the
@@ -380,24 +374,6 @@ function Plan({
           <div className="flex-1">{action}</div>
         </div>
       </div>
-
-      <MissingPhotosDialog
-        open={photoCheck}
-        onOpenChange={setPhotoCheck}
-        onAdd={() => {
-          setPhotoCheck(false);
-          const first = packing.packages.find(photosMissing);
-          const wasOpen = open === "packing";
-          setOpen("packing");
-          // a folded part opens first (CollapseHeight, 340ms at most); then
-          // the package's photos come into view
-          if (first) window.setTimeout(() => packingRef.current?.reveal(first.id), wasOpen ? 0 : 380);
-        }}
-        onContinue={() => {
-          setPhotoCheck(false);
-          confirm();
-        }}
-      />
     </div>
   );
 }

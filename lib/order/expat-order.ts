@@ -111,10 +111,6 @@ export function customsCategory(a: EligibilityAnswers): CustomsCategory {
 
 /* ------------------------------------------------------------------- Packages */
 
-/** the measurement photos, by what each one shows; a file name once added */
-export type PackingPhotos = { weight?: string; length?: string; width?: string; height?: string };
-export const PHOTO_SIDES = ["weight", "length", "width", "height"] as const;
-
 export interface PackingItem {
   /** a list key, never shown */
   id: string;
@@ -144,7 +140,6 @@ export interface PackingPackage {
   width: string;
   height: string;
   items: PackingItem[];
-  photos: PackingPhotos;
 }
 
 export interface PackingInput {
@@ -166,7 +161,6 @@ export const newPackingPackage = (): PackingPackage => ({
   width: "",
   height: "",
   items: [newPackingItem()],
-  photos: {},
 });
 
 export const EMPTY_PACKING: PackingInput = {
@@ -210,8 +204,6 @@ export function packingProgress(p: PackingInput) {
     p.packages.every((pk) => packagingDescribed(pk) && pk.items.length > 0 && pk.items.every(itemDescribed));
   return { measured, described, done: measured && described };
 }
-
-export const photosMissing = (p: PackingPackage) => PHOTO_SIDES.some((s) => !p.photos[s]);
 
 export function packingTotals(p: PackingInput) {
   let kg = 0;
@@ -287,7 +279,6 @@ export function toItemsData(p: PackingInput, originCountry: string): ItemsData {
         width: num(pk.width),
         height: num(pk.height),
         items: pk.items.map((it) => ({ name: it.name.trim(), quantity: num(it.quantity), value: num(it.value) })),
-        photos: { ...pk.photos },
       }),
     ),
   };

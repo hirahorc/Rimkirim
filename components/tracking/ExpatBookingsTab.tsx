@@ -21,9 +21,8 @@ import { useT } from "@/lib/i18n/LanguageProvider";
 /**
  * The internal system's view of expat bookings (mock): each ticket with its
  * provisional Customs Category, the full eligibility payload and contact the
- * epic carries into the ticket, the packages with each item's value and
- * how many photos came with it, who the confirmation went to, and the email
- * itself. The one place the Customs Category is shown, because it's ops'.
+ * epic carries into the ticket, the packages with each item's value, who
+ * the confirmation went to, and the email itself. The one place the Customs Category is shown, because it's ops'.
  */
 export function ExpatBookingsTab() {
   const t = useT();
@@ -97,7 +96,7 @@ export function ExpatBookingsTab() {
                     <li key={pk.title} className="text-sm">
                       <p className="font-medium">{pk.title}</p>
                       <p className="text-xs tabular-nums text-muted">
-                        {pk.measures} · {t("expatOrder.ops.photos").replace("{n}", String(pk.photos))}
+                        {pk.measures}
                       </p>
                       <ul className="mt-1 space-y-0.5">
                         {pk.items.map((it, i) => (

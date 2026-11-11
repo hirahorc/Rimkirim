@@ -99,5 +99,5 @@ The day a customer still abroad expects to land in Indonesia, asked in the Eligi
 _Avoid_: Moving date, relocation date
 
 **Pickup Date**:
-The weekday, tomorrow at the earliest, when Rimkirim collects the belongings at the origin Address; asked in Personal Information as "When are you planning to relocate".
+The weekday, tomorrow at the earliest, when Rimkirim collects the belongings at the origin Address; asked in Personal Information as "Pickup date" (the epic's "When are you planning to relocate").
 _Avoid_: Relocation date, moving date, departure date

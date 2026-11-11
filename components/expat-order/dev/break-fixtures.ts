@@ -89,7 +89,6 @@ const box = (id: string, over: Partial<PackingPackage> = {}): PackingPackage => 
   width: "40",
   height: "40",
   items: [{ id: `${id}-a`, name: "Winter coats", quantity: "3", value: "120" }],
-  photos: {},
   ...over,
 });
 
@@ -213,7 +212,7 @@ const worst: Order = {
   packing: {
     currency: WORST_CURRENCY,
     packages: [
-      // "Others" at its 60 characters, heavy and odd-sized, file names as cameras write them
+      // "Others" at its 60 characters, heavy and odd-sized
       box("w0", {
         packaging: "other",
         packagingOther: "Custom plywood flight case with foam inserts, for a cello",
@@ -232,11 +231,6 @@ const worst: Order = {
           // a quantity at its five digits
           { id: "w0-b", name: "Spare screws and fittings", quantity: "99999", value: "250.5" },
         ],
-        photos: {
-          weight: "IMG_20250914_183022_HDR_portrait_edited_edited.HEIC",
-          length: "Q3 Board Deck — FINAL (revised) v12 [approved by legal].pdf",
-          width: "a.jpg",
-        },
       }),
       // the smallest a package can be said to be
       box("w1", {

@@ -78,7 +78,6 @@ export function bookingFacts(b: ExpatBooking, t: T) {
             quantity: it.quantity,
             value: it.value > 0 ? declaredValue(it.value, currency) : "",
           })),
-          photos: Object.values(p.photos ?? {}).filter(Boolean).length,
         })),
       }
     : null;

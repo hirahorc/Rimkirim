@@ -1500,9 +1500,11 @@ like the landing, and keeps the landing's bar, which trades the lime "Check your
   closes it with the swapped chevron and names it in one line while closed. Inside: its
   packaging (Others opens what it's packed in beside it from sm, its examples in the placeholder
   and the hint, as the Eligibility Check's Others does under its answer), the weight and three sides with their units worn in the inputs and one line on what
-  it's charged on, the items as rows between hairlines (de-boxed, so no third tone), and the
-  photos. "Add a package" is the dashed button across the card. The currency and the totals
-  (packages, chargeable weight, declared value) sit under hairlines below; the price never
+  it's charged on, and the items as rows between hairlines (de-boxed, so no third tone). There are no
+  measurement photos. "Add a package" is the dashed button across the card. The values' currency is
+  chosen above the packages, with no hint under it (every value typed in a package wears it as
+  its prefix, so it comes first); the totals (packages, chargeable weight, declared value) sit
+  under a hairline below; the price never
   repeats there, since the Selected Service beside it carries it. Declared values read as a code
   and an amount ("AUD 300") to match the inputs' prefix. Past three packages the finished ones
   open folded, so a house listed package by package is a screen of lines, not dozens of forms;
