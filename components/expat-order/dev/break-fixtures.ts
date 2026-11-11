@@ -124,11 +124,6 @@ const demo: Order = {
     dialTouched: false,
     phone: "412 345 678",
     pickupDate: pickup(() => true),
-    handover: "me",
-    buildingType: "apartment",
-    freightElevator: true,
-    receptionist: true,
-    pickupWindow: "10:00-14:00",
   },
   packing: {
     currency: "",
@@ -214,18 +209,6 @@ const worst: Order = {
     phone: "784 4567 8901 2345 678",
     // the longest a date reads: a Wednesday in September
     pickupDate: pickup((d) => d.getDay() === 3 && d.getMonth() === 8),
-    // someone else hands over, with a name and number as long as the customer's
-    handover: "other",
-    picName: "Bartholomew Fitzgerald-Montgomery de la Fuente y Cumberbatch-Ollivierre",
-    picDialIso: "VC",
-    picPhone: "784 9876 5432 1098 765",
-    buildingType: "coliving",
-    freightElevator: false,
-    receptionist: false,
-    // 300 characters, the field's limit
-    courierNotes:
-      "The lane is too narrow for a van, so park on Murray's Road by the bakery and walk in. Ring the top bell twice. If Mr Fitzgerald-Montgomery is out, Mrs Cumberbatch at number 14 has the key and knows which boxes go. Please call ten minutes ahead; the dog barks but is friendly. Mind the loose step.",
-    pickupWindow: "14:00-18:00",
   },
   packing: {
     currency: WORST_CURRENCY,
@@ -337,9 +320,6 @@ const one: Order = {
     dialTouched: false,
     phone: "1",
     pickupDate: pickup(() => true),
-    handover: "me",
-    buildingType: "house",
-    pickupWindow: "10:00-14:00",
   },
   packing: {
     currency: "",

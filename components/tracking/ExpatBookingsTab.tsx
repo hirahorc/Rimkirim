@@ -84,11 +84,6 @@ export function ExpatBookingsTab() {
                 <p className="mt-3 text-sm text-muted">
                   {englishT("expatOrder.booking.pickup")}: {f.pickup}
                 </p>
-                {f.pickupLines.map((line) => (
-                  <p key={line} className="text-sm text-muted">
-                    {line}
-                  </p>
-                ))}
               </div>
             </div>
 

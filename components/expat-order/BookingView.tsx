@@ -139,11 +139,6 @@ export function BookingView({ number }: { number: string }) {
               )}
               <Row label={bk("pickup")}>
                 <p className="font-medium">{f.pickup}</p>
-                {f.pickupLines.map((line) => (
-                  <p key={line} className="text-muted">
-                    {line}
-                  </p>
-                ))}
               </Row>
               <Row label={bk("contact")}>
                 <p className="font-medium">{f.contact.name}</p>
