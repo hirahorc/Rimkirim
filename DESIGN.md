@@ -304,7 +304,11 @@ point of use.
   on hover. It is the one place gradient carries identity rather than decoration, and it reserves
   its hover width up front so neighbours never nudge. While hovered the gradient keeps flowing
   (1.8s alternate loop) — a deliberate exception to the one-loop rule, kept because it runs only
-  under the pointer, never on idle UI, and stops the moment the hover ends.
+  under the pointer, never on idle UI, and stops the moment the hover ends. The hover is a
+  link's and a mouse's only (`a.nav-expat`, inside `(hover: hover) and (pointer: fine)`): the
+  expat bar wears the same gradient on its service name, which is a label, so there it stays
+  still (a label that stirs under the pointer promises a click that does nothing), and on touch
+  nothing is left flowing after a tap.
 - **The journey's stage** (`.jr-sky`, `.jr-dusk`, `.jr-grain`, expat "How it works"): the ground
   the step illustrations stand on is the page's own trip, two soft radial washes in the chapter
   hues over the magenta wash, daylight sky (`#21b1ec`) top left at step 01, dusk magenta
@@ -591,7 +595,9 @@ colour shift under `motion-reduce` so the affordance survives with animation off
 **Press is the second sanctioned geometry channel.** Every button scales to 0.98 while held
 (`motion-safe:active:scale-[0.98]`, 150ms on the system easing) — feedback for a press the
 user is already making, never decoration. Under reduced motion the press answers in colour
-only.
+only. A button's transition names what it moves (`color`, `background-color`, `border-color`,
+`opacity`, `scale`), never `all`: under `all` the focus ring faded in over the same 150ms, and
+keyboard focus has to land at once.
 
 **A press answers at once.** A finger gets no hover and no tap flash (the browser's highlight is
 off), and a control that only changes when the finger lifts reads as lag. So everything tappable
@@ -618,17 +624,19 @@ home hero's floating verdicts and the expat hero's departure board. Treat any ot
 - **Entrance** (time-based, on load): the header drops in, hero children cascade up on a
   0.05s-per-item stagger, the headline arrives word by word, and the calculator pops in last.
   Under ~0.7s total. The expat hero, which has more to say and a pile of photos beside it,
-  arrives **in tiers** instead, each starting as the one before it settles, so the eye is led
-  rather than hit with everything at once (`ExpatHero`, `TIERS`; `.hero-in` with its start in
-  `--at`): the message first (the board, then the headline word by word, `Words` at its own
-  pace), the marked phrase taped on as its words land (`TapeMark`: each line's strip pulled
-  across left to right, 460ms, 170ms apart, as WAAPI on the words' own clock so it lands with
-  them however late the page hydrates),
-  the subtitle, the way in (the lime "Check your rate", then the secondary "See how it works"), and
-  last the proof: the photo pile dealt in back to front (`.deck-deal`, on `translate` and
-  opacity so it never fights the cards' own `transform`, each print opaque a quarter of the way
-  in so the pile never ghosts), then its satellite dropping onto it (`.hero-drop`). About 1.8s from the first word to the
-  last print; the door is up within a second. The tiers fill `backwards` only,
+  arrives **in tiers** instead, so the eye is led rather than hit with everything at once
+  (`ExpatHero`, `TIERS`; `.hero-in` with its start in `--at`), with one rule over the order:
+  **the way in never waits for the rest.** The top photo stands from the first paint (it is the
+  page's largest paint, so nothing holds it back), and the lime "Check your rate" rises at 0.3s,
+  the secondary "See how it works" a beat after it, while the headline is still landing word by
+  word (the board, then `Words` at its own pace). Then the subtitle (0.45s); the two prints
+  behind the top one dealt out from under it (0.55s; `.deck-deal`, each starting tucked in at
+  the top print's own place and sliding to where it rests, on `translate` and `rotate` so it
+  never fights the cards' own `transform`, and never on opacity, so nothing fades in); the
+  marked phrase taped on as its words land (`TapeMark`: each line's strip pulled across left to
+  right, 460ms, 170ms apart, as WAAPI on the words' own clock so it lands with them however late
+  the page hydrates); and last the pile's satellite dropping onto it (`.hero-drop`, 1.05s). The
+  door is up by 0.85s and the last piece has landed by 1.6s. The tiers fill `backwards` only,
   so a risen button's press scale still works. Under reduced motion all of it simply stands.
 - **The hero settle** (scroll-linked): across the first 35vh the hero text drifts up 56px at
   full ink, the grid backdrop trails 32px behind it, and the calculator closes a 52px gap —
@@ -665,12 +673,15 @@ home hero's floating verdicts and the expat hero's departure board. Treat any ot
   `CollapseHeight` carries the identical motion to every state-driven collapsible — the package
   rows in the order form and tracking summary, and the article ToC — and marks the closed region
   `inert` so hidden form fields can never be tabbed into): the answer's height is the only
-  animated property — no fade, no slide — on the system easing, and the *duration is computed
-  from the content height* (Material's `getAutoHeightDuration`: a short panel snaps at ~200ms, a
-  long one glides at ~330ms, hard-capped at 340ms — past that a tall panel reads as slow, not
-  smooth — so perceived speed stays constant where a fixed 300ms cannot).
+  animated property — no fade, no slide — on the hover scale's strong ease-out (`--ease-hover`,
+  not the system easing: that one eases in, so the answer hesitated at the click, an eighth of
+  the way open a fifth of the way through its time, where this one is two thirds open), and the
+  *duration is computed from the content height* (Material's `getAutoHeightDuration`: a short
+  panel snaps at ~200ms, a long one glides, hard-capped at 300ms, the budget for any UI motion,
+  so perceived speed stays constant where a fixed duration cannot).
   Height lands on `auto` after opening so growing content never clips. The chevron is swapped
-  down↔up, never rotated, and it swaps on the click, not after the motion; the open header
+  down↔up, never rotated (every disclosure, the customs cards' document lists on a phone
+  included), and it swaps on the click, not after the motion; the open header
   carries no colour change — the icon alone marks the state. Instant under reduced motion.
   Rows keep the panel-fill hover idiom, one step harder on focus-visible.
 - **The segmented thumb** slides between segments (`transform`/`width`, 200ms, system easing) —
@@ -709,8 +720,11 @@ home hero's floating verdicts and the expat hero's departure board. Treat any ot
   (a bare `<Icon />` as first child auto-lays-out as the size-5 glyph beside the words).
   Writing these paddings by hand at a call site is a smell: extend the primitive instead. Under reduced motion the transition collapses to instant; the drag
   itself is the user's own motion and stays.
-- **Popovers and tooltips exit too.** `pop-out` retreats toward the trigger (120ms, the exit
-  curve) so no panel ends on a jump cut; the tooltip keeps its 100ms out. And inside a
+- **Popovers and tooltips exit too.** `pop-out` retreats toward the trigger (120ms) so no panel
+  ends on a jump cut; the tooltip keeps its 100ms out. Every exit (popover, tooltip, the dialog's
+  panel and overlay, the mobile nav sheet) is shorter than its entrance and on the same ease-out
+  (`--ease-out-soft`), never an ease-in: an exit that gathers speed first reads as the interface
+  hesitating after Esc or a click. And inside a
   skip-delay sweep, the second and later tooltips open **instantly — no delay, no animation**
   (`data-state="instant-open"`): ceremony belongs to the first bubble only.
 - **The floating verdicts** (the one idle loop, `.hero-verdict-float`): three one-word customer
@@ -764,8 +778,14 @@ home hero's floating verdicts and the expat hero's departure board. Treat any ot
 - **The photo deck** (`.photo-deck`, expat hero): real shipment photos as a pile of prints, one
   5:4 card on top and two peeking behind it (rotated ±3–4°, offsets in % of the card so the pile
   keeps its shape at every width; the same 5:4 on phone and desktop). Click or tap sends the top
-  card to the back and a swipe goes either way: transform and opacity transitions on the hover
-  scale (below), so a quick second click retargets mid-flight instead of restarting. The
+  card to the back, and the top print can be dragged: held, it follows the finger one to one,
+  leaning 0.03° for every pixel it is pulled, so the pile answers while the gesture is still
+  being made (no transition while held; `PhotoDeck` writes the print's own `transform`). Let go
+  40px to the side, or flicked faster than 0.11px/ms however short the pull, it goes on (left
+  for the next photo, right for the one before); short of that it settles home; a second finger
+  put down mid-drag is ignored. Either way it leaves from where it was let go, on the same
+  transform and opacity transitions on the hover scale (below) as a click, so a quick second
+  click retargets mid-flight instead of restarting. The
   prev/next buttons are the keyboard and screen-reader way in, and a keyboard press swaps
   instantly. **Hover fans the pile open** (±7°): the second written-down exception to "hover moves
   colour, not geometry", after the rating arrow, kept because it is how a mouse discovers there is
@@ -854,10 +874,15 @@ home hero's floating verdicts and the expat hero's departure board. Treat any ot
   under the stage and out of sight while the scene plays, the stage carries the progress itself:
   one segment per step level with the control, the past ones full, the active one filling over its
   hold on the ring's clock and pausing with it, as a story's bars do. After 04 it rests on the
-  doorstep. A scene rebuilds each time it comes up.
-  **A click (or Enter) on a step takes over**: that step comes up and the playing stops; the
+  doorstep. A scene rebuilds each time it comes up while the steps play.
+  **A click (or Enter) on a step takes over**: that step comes up and the playing stops. A step
+  chosen by hand is a question, so it is answered at once: the stage turns to it in 240ms on the
+  hover curve (`.jr-root[data-manual]`) and its scene stands built, where the tour's builds
+  itself over two and a half seconds; chosen from the keyboard, nothing moves at all
+  (`data-instant`). A step chosen in the beat before the tour starts keeps its place. The
   control pauses, resumes and replays (WCAG 2.2.2: content that moves on its own for more than
-  five seconds must be pausable). The playing holds while a mouse rests on the stage (only
+  five seconds must be pausable); playing on from a step chosen by hand builds the scene on
+  stage as the tour would have. The playing holds while a mouse rests on the stage (only
   the stage: the section fills the screen, so a pointer parked anywhere on it would stop it
   for good), while the section is off screen and while the tab is hidden. It is not a loop: one
   pass, then still. Scenes are `aria-hidden`; the steps' words carry the meaning, and each row
@@ -895,6 +920,12 @@ home hero's floating verdicts and the expat hero's departure board. Treat any ot
   out, then the way to ask), each rising 1rem on a 70ms stagger, when the section's top is 30% up the viewport, since
   a band as tall as Who does what (the pickups and the carriers follow its lists) would leave its
   head on screen and unseen waiting for 30% of it to show.
+  A section the reader is already on as the page comes up is not revealed at all (a link to
+  something in it, such as the order flow's packing guide at `#packing`, or a reload scrolled to
+  it or past it): the server painted it standing, so it stands (`alreadyThere`,
+  `data-revealed="instant"`; the journey too). And the page lands on a fragment at once rather
+  than travelling to it from the top: smooth scrolling waits for `html[data-landed]`, which
+  `ScrollLanding` sets once the page has loaded, so same-page anchors still travel.
   The closing stub gives each step its screen, white cards straight on the ticket (the ticket is
   their ground, so no stage of their own), their column's width, fading out at the foot over their
   empty end on an eased mask (`.scene-fade`, square at the foot, since a dissolving edge has no
@@ -921,7 +952,9 @@ drawing lifts 4px off its ground and the ground under it draws in to 0.88; a car
 the open one slides the caret across on `--dur-follow`), the WhatsApp phone's and the pricing calculator's cards
 (`SceneStage glint`, after x.ai's product cards: the scene leans in to 1.02 and one glint of light
 crosses the card, on the way in only; the lean on `--dur-hover`/`--dur-hover-out`, the glint, which
-crosses rather than settles, on `--dur-follow`). A new one joins the scale, never its own numbers. Colour-only hovers keep the system's 0.2s; entrances,
+crosses rather than settles, on `--dur-follow`). The curve also carries two answers to a click:
+the disclosure open (its duration its own, from the content's height) and the journey's stage
+when a step is chosen by hand (`--dur-hover-out`). A new one joins the scale, never its own numbers. Colour-only hovers keep the system's 0.2s; entrances,
 builds and the journey keep their own, longer, timing, because they are read, not answered.
 
 **The Never-Delay-The-Calculator Rule.** The landing exists to get someone into the rate
@@ -1268,12 +1301,15 @@ the active link is a Panel-2 pill instead. Same principle, inverted fill.
 
 **The expat landing wears its own chrome.** `/expat-relocation` swaps the capsule and the site
 footer for `ExpatHeader` / `ExpatFooter` (`isExpatRoute`), after the live rimkirim.com/relocation
-page: a plain full-width sticky bar (`bg-background/95`, hairline below; at the capsule's /85 the
-content ghosted through a bar this wide) holding the wordmark, a hairline divider and the service
+page: a plain full-width sticky bar (solid `bg-background`, hairline below, no blur: glass is for
+chrome that floats, and through a bar this wide the content only ghosted, a grey slab over the
+dusk ticket even at /95) holding the wordmark, a hairline divider and the service
 name in the `.nav-expat` gradient, and one lime "Check your rate" that opens the order flow, like
 every other rate button on the page. On the landing it waits, hidden and inert, while the hero's
 own pair is in view, and arrives (a fade and a 4px rise on the hover curve) once it has scrolled
-away, so two limes saying the same thing never show at once. Inside the flow it gives way to
+away, so two limes saying the same thing never show at once; it gives way again to the closing
+ticket's button, the page's last ask (`data-door` marks both). Past the mid-page buttons it
+stays: a button coming and going all the way down would be its own noise. Inside the flow it gives way to
 "Need help?". The page is English only (LanguageProvider
 forces the locale on this route, whatever the visitor saved), so neither bar nor footer carries a
 language switch. No site menu, no sign-in, no bell: expat orders run in their own flow, not the

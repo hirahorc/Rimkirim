@@ -53,7 +53,9 @@ export const SegmentedItem = React.forwardRef<
     className={cn(
       // `relative` so the item is positioned and paints above the absolutely-
       // positioned indicator pill (positioned elements always beat static ones)
-      "tap-row relative flex flex-1 items-center justify-center gap-2 rounded-full px-3 py-2 text-sm font-medium transition-all",
+      // the transition is named, never `all`, which faded the focus ring in
+      // as well (Button)
+      "tap-row relative flex flex-1 items-center justify-center gap-2 rounded-full px-3 py-2 text-sm font-medium transition-[color,font-weight]",
       "text-muted hover:text-foreground",
       // the selected segment lifts off the track instead of filling with lime:
       // on daylight a full lime pill is far too much area for a mere state

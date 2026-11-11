@@ -1,12 +1,11 @@
 "use client";
 
 import * as React from "react";
-import { ChevronDown, FileText, MessageCircle } from "lucide-react";
+import { ChevronDown, ChevronUp, FileText, MessageCircle } from "lucide-react";
 import { CollapseHeight } from "@/components/ui/disclosure";
 import { REVIEW_NOTES } from "@/lib/data/expat";
 import { waLink } from "@/lib/contact";
 import { useT } from "@/lib/i18n/LanguageProvider";
-import { cn } from "@/lib/utils/cn";
 import { SectionHead } from "./SectionHead";
 import { ReviewNote } from "./ReviewNote";
 import { revealOrder as order, useSectionReveal } from "./useSectionReveal";
@@ -118,6 +117,9 @@ export function ExpatCustoms() {
         <div className="mt-8 grid gap-4 sm:mt-12 lg:grid-cols-3 lg:gap-y-0">
           {CUSTOMS_ROUTES.map(({ key, docs }, i) => {
             const k = (path: string) => t(`expat.customs.${key}.${path}`);
+            // swapped, never rotated, as every disclosure on the page is
+            // (DESIGN.md, Motion, The disclosure open)
+            const Chevron = docsOpen.has(key) ? ChevronUp : ChevronDown;
             return (
               <article
                 key={key}
@@ -155,10 +157,7 @@ export function ExpatCustoms() {
                     <span>
                       {t("expat.customs.needed")} <span className="font-normal text-muted">· {docs.length}</span>
                     </span>
-                    <ChevronDown
-                      aria-hidden
-                      className={cn("size-4 text-muted-2 transition-transform", docsOpen.has(key) && "rotate-180")}
-                    />
+                    <Chevron aria-hidden className="size-4 text-muted-2" />
                   </button>
                   <div className="lg:hidden">
                     <CollapseHeight open={docsOpen.has(key)} id={`customs-${key}-docs`}>

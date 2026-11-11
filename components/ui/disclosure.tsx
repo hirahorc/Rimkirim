@@ -8,17 +8,24 @@ import { cn } from "@/lib/utils/cn";
  * Material's getAutoHeightDuration: the open/close duration is derived from
  * the travel distance, so a short panel snaps and a long one glides — the
  * *perceived speed* stays constant where a fixed `transition: height 300ms`
- * cannot. Replicated from the measured reference accordion (392px ⇒ 334ms).
+ * cannot. Replicated from the measured reference accordion (150px ⇒ 263ms).
  */
 const autoDuration = (h: number) => {
   if (!h) return 0;
   const c = h / 36;
-  // capped at 340ms: past that a tall panel reads as slow, not as smooth
-  return Math.min(340, Math.round((4 + 15 * Math.pow(c, 0.25) + c / 5) * 10));
+  // capped at 300ms, the budget for any UI motion (PRODUCT.md): past that a
+  // tall panel reads as slow, not as smooth
+  return Math.min(300, Math.round((4 + 15 * Math.pow(c, 0.25) + c / 5) * 10));
 };
 
-/** the system's one standard easing (DESIGN.md, Motion) */
-const EASE = "cubic-bezier(0.4, 0, 0.2, 1)";
+/**
+ * The hover scale's strong ease-out (globals.css, --ease-hover), not the
+ * system's standard curve: that one eases in, so a fifth of the way through
+ * its time a panel had covered an eighth of its travel, and the answer
+ * hesitated at the click, the one moment the eye is on it. On this one it
+ * is two thirds open by then.
+ */
+const EASE = "var(--ease-hover)";
 
 /**
  * Controlled sibling of Disclosure for collapsibles whose open state lives in

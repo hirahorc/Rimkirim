@@ -143,9 +143,12 @@ html {
 /* Same-page anchors travel instead of teleporting (hero nav, the order
    page's docs-todo link). Route transitions stay instant: the layout's
    data-scroll-behavior="smooth" tells Next 16 to force auto during SPA
-   navigations. Reduced motion gets the plain jump. */
+   navigations. Arriving on a page at a #fragment lands at once too: smooth
+   scrolling only switches on once the page has loaded (ScrollLanding sets
+   data-landed), or the browser would travel to the fragment from the top,
+   past everything in between. Reduced motion gets the plain jump. */
 @media (prefers-reduced-motion: no-preference) {
-  html {
+  html[data-landed] {
     scroll-behavior: smooth;
   }
 }
@@ -504,7 +507,7 @@ body:has(main > [data-field]) {
   animation: none;
 }
 .tip-bubble[data-state="closed"] {
-  animation: tip-out 100ms cubic-bezier(0.11, 0, 0.5, 0) both;
+  animation: tip-out 100ms var(--ease-out-soft) both;
 }
 
 @keyframes banner-enter {
@@ -700,25 +703,36 @@ body:has(main > [data-field]) {
   z-index: 1;
   color: var(--brand-ink);
 }
-/* the photo pile dealt in, back print first: on `translate` and opacity,
-   never `transform`, which the cards' depth and hover already own */
+/* the photo pile on load: the top print stands from the first paint, and
+   the two behind it are dealt out from under it. Each starts tucked in at
+   the top print's own place, its depth's offset and tilt cancelled (the
+   --tuck values, worked out from .deck-card[data-depth] below, so it hides
+   whole behind the top print), and slides to where it rests. On `translate`
+   and `rotate`, never `transform`, which the cards' depth and hover already
+   own, and never opacity: nothing fades in, and the top photo, the page's
+   largest paint, is never held back */
 @keyframes deck-deal {
   from {
-    opacity: 0;
-    translate: 0 8%;
-  }
-  /* a print is opaque almost at once, so the pile never ghosts through
-     itself while it is dealt */
-  25% {
-    opacity: 1;
+    translate: var(--tuck-x) var(--tuck-y);
+    rotate: var(--tuck-r);
   }
 }
 .deck-deal {
   animation: deck-deal 0.6s var(--ease-out-soft) backwards;
   animation-delay: var(--at, 0s);
 }
-/* not in the reduced-motion list below: its opacity and transform resets
-   would flatten the pile, so the deal just doesn't play */
+.deck-deal[data-deal="1"] {
+  --tuck-x: -3.85%;
+  --tuck-y: 3.3%;
+  --tuck-r: -3.5deg;
+}
+.deck-deal[data-deal="2"] {
+  --tuck-x: 3.8%;
+  --tuck-y: 5.25%;
+  --tuck-r: 3deg;
+}
+/* not in the reduced-motion list below: its transform resets would
+   flatten the pile, so the deal just doesn't play */
 @media (prefers-reduced-motion: reduce) {
   .deck-deal {
     animation: none;
@@ -1009,9 +1023,9 @@ body:has(main > [data-field]) {
   to { opacity: 0; transform: translateY(4px) scale(0.98); }
 }
 .dlg-overlay[data-state="open"] { animation: dlg-overlay-in 200ms ease-out both; }
-.dlg-overlay[data-state="closed"] { animation: dlg-overlay-out 150ms ease-in both; }
+.dlg-overlay[data-state="closed"] { animation: dlg-overlay-out 150ms ease-out both; }
 .dlg-panel[data-state="open"] { animation: dlg-panel-in 260ms var(--ease-out-soft) both; }
-.dlg-panel[data-state="closed"] { animation: dlg-panel-out 150ms cubic-bezier(0.11, 0, 0.5, 0) both; }
+.dlg-panel[data-state="closed"] { animation: dlg-panel-out 150ms var(--ease-out-soft) both; }
 
 /* Popover panels (selects, date picker): a short lift from the trigger side. */
 @keyframes pop-in {
@@ -1027,8 +1041,9 @@ body:has(main > [data-field]) {
   from { opacity: 0; transform: translateY(4px) scale(0.98); }
   to { opacity: 1; transform: none; }
 }
-/* the exit retreats toward the trigger — shorter and accelerating, so the
-   panel answers the close without a jump cut */
+/* the exit retreats toward the trigger: shorter than the entrance and on
+   the same ease-out, never an ease-in, so the panel moves the moment it is
+   dismissed instead of gathering speed first */
 @keyframes pop-out {
   from { opacity: 1; transform: none; }
   to { opacity: 0; transform: translateY(-2px) scale(0.99); }
@@ -1037,11 +1052,11 @@ body:has(main > [data-field]) {
   from { opacity: 1; transform: none; }
   to { opacity: 0; transform: translateY(2px) scale(0.99); }
 }
-.pop-panel[data-state="closed"] { animation: pop-out 120ms cubic-bezier(0.11, 0, 0.5, 0) both; }
+.pop-panel[data-state="closed"] { animation: pop-out 120ms var(--ease-out-soft) both; }
 .pop-panel[data-side="top"][data-state="closed"] { animation-name: pop-out-up; }
 
 /* Mobile nav sheet: slides in from the right edge it lives on; the exit is
-   shorter and accelerating (the same asymmetry as the dialog panel). */
+   shorter, on the same ease-out (the same asymmetry as the dialog panel). */
 @keyframes nav-sheet-in {
   from { transform: translateX(100%); }
   to { transform: none; }
@@ -1051,7 +1066,7 @@ body:has(main > [data-field]) {
   to { transform: translateX(100%); }
 }
 .nav-sheet[data-state="open"] { animation: nav-sheet-in 300ms var(--ease-out-soft) both; }
-.nav-sheet[data-state="closed"] { animation: nav-sheet-out 200ms cubic-bezier(0.11, 0, 0.5, 0) both; }
+.nav-sheet[data-state="closed"] { animation: nav-sheet-out 200ms var(--ease-out-soft) both; }
 
 /* Route-card radio: the lime check pops in (scale from the dot) in 100ms,
    same clock as the tooltip, so choosing a route feels like a stamp landing. */
@@ -1157,14 +1172,23 @@ body:has(main > [data-field]) {
   visibility: hidden;
   pointer-events: none;
 }
-.nav-expat:hover,
-.nav-expat:focus-visible {
+/* only where it is a link: the expat bar wears the gradient on its service
+   name, a label, and a label that stirs under the pointer promises a click
+   that does nothing. And the hover is a mouse's: on touch it would stay on,
+   flowing, after the tap */
+a.nav-expat:focus-visible {
   background-position: 100% 50%;
   /* Geist is a variable font, so the weight glides rather than snaps */
   font-weight: 600;
 }
-@media (prefers-reduced-motion: no-preference) {
-  .nav-expat:hover {
+@media (hover: hover) and (pointer: fine) {
+  a.nav-expat:hover {
+    background-position: 100% 50%;
+    font-weight: 600;
+  }
+}
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  a.nav-expat:hover {
     animation: nav-expat-flow 1.8s ease-in-out infinite alternate;
   }
 }
@@ -1191,6 +1215,12 @@ body:has(main > [data-field]) {
   transition:
     transform var(--dur-hover) var(--ease-hover),
     opacity var(--dur-hover-out) var(--ease-hover);
+}
+/* held, the top print follows the finger itself (PhotoDeck writes its
+   transform), so nothing eases between the two; let go, the transition is
+   back and carries it on from wherever it was left */
+.deck-card[data-dragging] {
+  transition: none;
 }
 .deck-card[data-depth="0"] {
   z-index: 4;
@@ -1748,6 +1778,34 @@ body:has(main > [data-field]) {
 .jr-slot[data-place="shown"] {
   transition-delay: 0s;
 }
+/* a step chosen by hand is a question, not the tour: the stage answers on
+   the hover scale's leaving clock instead of the conveyor's, its ground
+   turns with it, and the scene stands built (below) rather than building
+   piece by piece again. Playing on (the control) takes the manual away,
+   and the scene on stage builds as it would have */
+.jr-root[data-manual] .jr-slot {
+  transition-duration: var(--dur-hover-out), var(--dur-hover-out), 0s;
+  transition-timing-function: var(--ease-hover), var(--ease-hover), linear;
+  transition-delay: 0s, 0s, var(--dur-hover-out);
+}
+.jr-root[data-manual] .jr-slot[data-place="shown"] {
+  transition-delay: 0s;
+}
+.jr-root[data-manual] .jr-dusk {
+  transition: opacity var(--dur-hover-out) var(--ease-hover);
+}
+.jr-root[data-manual] .jr-scene[data-built] .jr {
+  animation-name: none;
+}
+/* chosen from the keyboard, nothing moves at all (PRODUCT.md): the stage,
+   the highlight and the rail are simply there, the tile neither flips nor
+   pulses */
+.jr-root[data-instant] :is(.jr-slot, .jr-glide, .jr-rail-fill, .jr-dusk) {
+  transition: none;
+}
+.jr-root[data-instant] :is(.jr-tile, .jr-pulse) {
+  animation: none;
+}
 /* the highlight glides from step to step, and the rail fills behind it;
    on a strong ease-out, so the move starts the moment the run touches the
    next step rather than easing in after it */
@@ -1874,7 +1932,10 @@ body:has(main > [data-field]) {
   :is([data-journey-ready], [data-reveal-ready]):not([data-revealed]) .jr-reveal {
     opacity: 0;
   }
-  [data-revealed] .jr-reveal {
+  /* "instant" is a section the reader was already on as the page loaded (a
+     link to something in it, a reload): it was painted standing, so it
+     stands, with nothing to reveal (useSectionReveal, alreadyThere) */
+  [data-revealed]:not([data-revealed="instant"]) .jr-reveal {
     animation: jr-reveal 640ms var(--ease-out-soft) both;
     animation-delay: calc(var(--i, 0) * 70ms);
   }
