@@ -1,4 +1,4 @@
-import * as React from "react";
+import type * as React from "react";
 import { WA_URL } from "@/lib/contact";
 import type { BookingFacts } from "./booking-facts";
 
@@ -96,15 +96,7 @@ export function BookingEmail({ facts: f, t }: { facts: BookingFacts; t: T }) {
                             ))}
                           </Row>
                         )}
-                        <Row label={bk("pickup")}>
-                          {f.pickup}
-                          {f.pickupLines.map((line) => (
-                            <React.Fragment key={line}>
-                              <br />
-                              <span style={{ color: MUTED }}>{line}</span>
-                            </React.Fragment>
-                          ))}
-                        </Row>
+                        <Row label={bk("pickup")}>{f.pickup}</Row>
                         <Row label={bk("contact")}>
                           {f.contact.name}
                           <br />

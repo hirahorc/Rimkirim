@@ -1481,8 +1481,6 @@ like the landing, and keeps the landing's bar, which trades the lime "Check your
   as a doubled hairline) when chosen. A single choice shows the stepper's dot (Ink ring, lime
   core); a multiple choice shows the system checkbox (lime with an Ink tick). Neither fills with
   lime. Follow-ups sit on Panel 2 under the answer that asks them.
-- **Your details, in three groups:** the address cards, then "About you" (name, email, phone),
-  then "Pickup", each group under a hairline with its title in the display face at 16px.
 - **The address cards** (Your details): where from and where to are two Panel 2 cards side by
   side from sm, each with its country, its Address and its Detail Address once given, and a
   quiet "Change". Change turns the card into its own editor in place: a white plane with a
@@ -1492,13 +1490,6 @@ like the landing, and keeps the landing's bar, which trades the lime "Check your
   is kept until Save. Each side's Detail Address is required and no field on the page asks for
   it, so until it's in the card asks: a white "Add detail address" button and a line saying
   what it's for. There is no map and no pin.
-- **The pickup group** (Your details): the WNI flow's Pickup Schedule, asked in the expat
-  flow's own controls. Who hands the packages over is a pair of choice cards ("I will" chosen
-  to begin with; "Someone else" opens their name and number on a Panel 2 block under it, as an
-  Eligibility follow-up does). The building type is a select; anything but a house opens two
-  yes/no follow-ups side by side (freight elevator, receptionist). Notes for the courier are a
-  textarea, optional. The Pickup Date keeps its field; the pickup time is five windows as
-  choice cards, three across from sm. The WNI flow's re-pickup standby isn't asked.
 - **Notices, not errors:** the packing notice (you pack everything yourself) stands under the
   first question for every customer, so it wears the info tint, as the changed-address notice
   does; ticking furniture only adds to its words and points its link at furniture's own steps.

@@ -98,14 +98,6 @@ _Avoid_: Full address, street address
 The day a customer still abroad expects to land in Indonesia, asked in the Eligibility Check; recorded for ops, never a gate.
 _Avoid_: Moving date, relocation date
 
-**Pickup Window**:
-The four-hour span of the Pickup Date in which the courier comes, one of the WNI flow's five (10:00–14:00 to 14:00–18:00), in local time at the pickup address.
-_Avoid_: Time slot, pickup hour
-
-**Handover**:
-Who gives the packages to the courier on the Pickup Date: the customer, or someone they name with a phone number.
-_Avoid_: PIC (the WNI flow's and ops' word; the customer never sees it)
-
 **Pickup Date**:
 The weekday, tomorrow at the earliest, when Rimkirim collects the belongings at the origin Address; asked in Personal Information as "When are you planning to relocate".
 _Avoid_: Relocation date, moving date, departure date

@@ -4,12 +4,10 @@ import * as React from "react";
 import Link from "next/link";
 import { Info, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input, Textarea } from "@/components/ui/input";
+import { Input } from "@/components/ui/input";
 import { DatePicker } from "@/components/ui/date-picker";
-import { SelectField } from "@/components/ui/select-field";
 import { Field } from "@/components/shared/forms/Field";
 import { DialCodeSelect } from "@/components/order/DialCodeSelect";
-import { PICKUP_WINDOWS } from "@/components/order/module-options";
 import { getCountry } from "@/lib/data/countries";
 import { placeLine, type Place } from "@/lib/data/expat-places";
 import {
@@ -25,7 +23,6 @@ import type { AddressChange } from "@/lib/store/useExpatOrderStore";
 import { useT } from "@/lib/i18n/LanguageProvider";
 import { cn } from "@/lib/utils/cn";
 import { AddressField } from "./AddressField";
-import { RadioCards } from "./ChoiceCards";
 
 type Side = "origin" | "destination";
 
@@ -34,14 +31,6 @@ interface AddressDraft {
   place: Place | null;
   detail: string;
 }
-
-/** the building types the pickup asks, the WNI flow's own values
- *  (BUILDING_TYPES) so the data keeps one shape, in the order an expat
- *  most often answers */
-const BUILDINGS = ["apartment", "house", "coliving", "dorm", "other"] as const;
-
-/** a field's label, for a group of choices a <label> can't name */
-const LABEL = "mb-1.5 block text-xs font-medium text-muted";
 
 /**
  * A side's Address being changed, in the card's own place: the Address
@@ -230,31 +219,12 @@ function AddressCard({
   );
 }
 
-/** a question asked under the answer that calls for it, stepped in on Panel
- *  2 as the Eligibility Check's follow-ups are */
-function FollowUp({ id, title, children }: { id?: string; title?: string; children: React.ReactNode }) {
-  return (
-    <div className="rounded-md bg-surface-2 px-4 py-4">
-      {title && (
-        <p id={id} className="mb-3 text-sm font-medium">
-          {title}
-        </p>
-      )}
-      {children}
-    </div>
-  );
-}
-
 /**
- * Personal Information, in three groups. Where from and where to are cards,
- * each changed in place (AddressCard: the Address and its Detail Address,
- * both sides required); then who the customer is; then the pickup, asked as
- * the WNI flow's Pickup Schedule asks it, so the courier collects without a
- * second trip: who hands the packages over, the kind of building and its
- * access, notes for the courier, the Pickup Date and its time window (its
- * re-pickup standby isn't asked). The origin country isn't changed here:
- * it set the rate, so it changes on Check Rate. An error shows once a field
- * is left, not on every keystroke.
+ * Personal Information: where from and where to as cards, each changed in
+ * place (AddressCard: the Address and its Detail Address, both sides
+ * required), then name, email, phone and the Pickup Date. The origin country
+ * isn't changed here: it set the rate, so it changes on Check Rate. An error
+ * shows once a field is left, not on every keystroke.
  */
 export function DetailsStep({
   check,
@@ -273,24 +243,12 @@ export function DetailsStep({
 }) {
   const t = useT();
   const d = (k: string) => t(`expatOrder.details.${k}`);
-  const e = (k: string) => t(`expatOrder.eligibility.${k}`);
   const [left, setLeft] = React.useState<Record<string, boolean>>({});
   const leave = (k: string) => () => setLeft((s) => ({ ...s, [k]: true }));
 
   const nameErr = left.name && !value.fullName.trim() ? d("required") : undefined;
   const emailErr = left.email && !emailValid(value.email) ? (value.email.trim() ? d("emailErr") : d("required")) : undefined;
   const phoneErr = left.phone && !phoneValid(value.phone) ? (value.phone.trim() ? d("phoneErr") : d("required")) : undefined;
-
-  const other = value.handover === "other";
-  const picPhone = value.picPhone ?? "";
-  const picNameErr = left.picName && !value.picName?.trim() ? d("required") : undefined;
-  const picPhoneErr = left.picPhone && !phoneValid(picPhone) ? (picPhone.trim() ? d("phoneErr") : d("required")) : undefined;
-  // a house has no shared access to ask about
-  const shared = !!value.buildingType && value.buildingType !== "house";
-  const yesNo = [
-    { value: true, label: e("yes") },
-    { value: false, label: e("no") },
-  ];
 
   return (
     <div className="space-y-8">
@@ -319,184 +277,53 @@ export function DetailsStep({
         />
       </div>
 
-      <section aria-labelledby="details-about" className="border-t border-border pt-6">
-        <h3 id="details-about" className="font-display text-base font-semibold tracking-tight">
-          {d("aboutTitle")}
-        </h3>
-        <div className="mt-5 grid gap-5 sm:grid-cols-2">
-          <div className="sm:col-span-2">
-            <Field label={d("fullName")} error={nameErr}>
-              <Input
-                value={value.fullName}
-                onChange={(ev) => onChange({ fullName: ev.target.value })}
-                onBlur={leave("name")}
-                placeholder={d("fullNamePh")}
-                autoComplete="name"
-                maxLength={120}
-              />
-            </Field>
-          </div>
-          <Field label={d("email")} error={emailErr}>
+      <div className="grid gap-5 border-t border-border pt-6 sm:grid-cols-2">
+        <div className="sm:col-span-2">
+          <Field label={d("fullName")} error={nameErr}>
             <Input
-              type="email"
-              value={value.email}
-              onChange={(ev) => onChange({ email: ev.target.value })}
-              onBlur={leave("email")}
-              placeholder={d("emailPh")}
-              autoComplete="email"
-              inputMode="email"
-              // the longest an address can be
-              maxLength={254}
-            />
-          </Field>
-          <Field label={d("phone")} error={phoneErr}>
-            <PhoneField
-              dialIso={value.dialIso}
-              phone={value.phone}
-              placeholder={d("phonePh")}
-              autoComplete="tel-national"
-              onDial={(dialIso) => onChange({ dialIso, dialTouched: true })}
-              onPhone={(phone) => onChange({ phone })}
-              onBlur={leave("phone")}
+              value={value.fullName}
+              onChange={(e) => onChange({ fullName: e.target.value })}
+              onBlur={leave("name")}
+              placeholder={d("fullNamePh")}
+              autoComplete="name"
+              maxLength={120}
             />
           </Field>
         </div>
-      </section>
-
-      <section aria-labelledby="details-pickup" className="border-t border-border pt-6">
-        <h3 id="details-pickup" className="font-display text-base font-semibold tracking-tight">
-          {d("pickupTitle")}
-        </h3>
-        <p className="mt-1 text-sm text-muted">{d("pickupLead")}</p>
-
-        <div className="mt-5 grid gap-5">
-          <div className="space-y-3">
-            <div>
-              <p id="details-handover" className={LABEL}>
-                {d("handover")}
-              </p>
-              <RadioCards
-                labelledBy="details-handover"
-                value={value.handover ?? "me"}
-                onChange={(handover) =>
-                  onChange(
-                    handover === "other"
-                      ? // their number most often shares the customer's country code
-                        { handover, picDialIso: value.picDialIso || value.dialIso }
-                      : { handover, picName: "", picPhone: "" },
-                  )
-                }
-                options={[
-                  { value: "me" as const, label: d("handoverMe") },
-                  { value: "other" as const, label: d("handoverOther") },
-                ]}
-              />
-            </div>
-            {other && (
-              <FollowUp>
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <Field label={d("picName")} error={picNameErr}>
-                    <Input
-                      value={value.picName ?? ""}
-                      onChange={(ev) => onChange({ picName: ev.target.value })}
-                      onBlur={leave("picName")}
-                      placeholder={d("picNamePh")}
-                      maxLength={120}
-                      className="bg-background"
-                    />
-                  </Field>
-                  <Field label={d("picPhone")} error={picPhoneErr}>
-                    <PhoneField
-                      dialIso={value.picDialIso ?? ""}
-                      phone={picPhone}
-                      placeholder={d("phonePh")}
-                      onDial={(picDialIso) => onChange({ picDialIso })}
-                      onPhone={(next) => onChange({ picPhone: next })}
-                      onBlur={leave("picPhone")}
-                      onPanel
-                    />
-                  </Field>
-                </div>
-              </FollowUp>
-            )}
-          </div>
-
-          <div className="space-y-3">
-            <div className="sm:max-w-sm">
-              <Field label={d("building")}>
-                <SelectField
-                  value={value.buildingType ?? ""}
-                  onChange={(buildingType) =>
-                    // a house retires the access questions, and their answers with them
-                    onChange(
-                      buildingType === "house"
-                        ? { buildingType, freightElevator: undefined, receptionist: undefined }
-                        : { buildingType },
-                    )
-                  }
-                  ariaLabel={d("building")}
-                  placeholder={d("buildingPh")}
-                  options={BUILDINGS.map((b) => ({ value: b, label: d(`buildings.${b}`) }))}
-                />
-              </Field>
-            </div>
-            {shared && (
-              <div className="grid gap-3 sm:grid-cols-2">
-                <FollowUp id="details-freight" title={d("freightElevator")}>
-                  <RadioCards
-                    labelledBy="details-freight"
-                    value={value.freightElevator}
-                    onChange={(freightElevator) => onChange({ freightElevator })}
-                    options={yesNo}
-                  />
-                </FollowUp>
-                <FollowUp id="details-receptionist" title={d("receptionist")}>
-                  <RadioCards
-                    labelledBy="details-receptionist"
-                    value={value.receptionist}
-                    onChange={(receptionist) => onChange({ receptionist })}
-                    options={yesNo}
-                  />
-                </FollowUp>
-              </div>
-            )}
-          </div>
-
-          <Field label={d("courierNotes")} hint={d("optional")}>
-            <Textarea
-              value={value.courierNotes ?? ""}
-              onChange={(ev) => onChange({ courierNotes: ev.target.value })}
-              placeholder={d("courierNotesPh")}
-              maxLength={300}
+        <Field label={d("email")} error={emailErr}>
+          <Input
+            type="email"
+            value={value.email}
+            onChange={(e) => onChange({ email: e.target.value })}
+            onBlur={leave("email")}
+            placeholder={d("emailPh")}
+            autoComplete="email"
+            inputMode="email"
+            // the longest an address can be
+            maxLength={254}
+          />
+        </Field>
+        <Field label={d("phone")} error={phoneErr}>
+          <PhoneField
+            dialIso={value.dialIso}
+            phone={value.phone}
+            placeholder={d("phonePh")}
+            onDial={(dialIso) => onChange({ dialIso, dialTouched: true })}
+            onPhone={(phone) => onChange({ phone })}
+            onBlur={leave("phone")}
+          />
+        </Field>
+        <div className="sm:col-span-2 sm:max-w-sm">
+          <Field label={d("pickup")} hint={d("pickupHint")}>
+            <PickupPicker
+              value={value.pickupDate}
+              onChange={(pickupDate) => onChange({ pickupDate })}
+              placeholder={d("pickupPh")}
+              ariaLabel={d("pickup")}
             />
           </Field>
-
-          <div className="sm:max-w-sm">
-            <Field label={d("pickup")} hint={d("pickupHint")}>
-              <PickupPicker
-                value={value.pickupDate}
-                onChange={(pickupDate) => onChange({ pickupDate })}
-                placeholder={d("pickupPh")}
-                ariaLabel={d("pickup")}
-              />
-            </Field>
-          </div>
-
-          <div>
-            <p id="details-window" className={LABEL}>
-              {d("window")}
-            </p>
-            <RadioCards
-              labelledBy="details-window"
-              columns={3}
-              value={value.pickupWindow}
-              onChange={(pickupWindow) => onChange({ pickupWindow })}
-              options={PICKUP_WINDOWS.map((w) => ({ value: w as string, label: w.replace("-", "–") }))}
-            />
-            <p className="mt-1.5 text-xs text-muted">{d("windowHint")}</p>
-          </div>
         </div>
-      </section>
+      </div>
     </div>
   );
 }
@@ -506,22 +333,17 @@ function PhoneField({
   dialIso,
   phone,
   placeholder,
-  autoComplete,
   onDial,
   onPhone,
   onBlur,
-  onPanel = false,
   ...wiring
 }: {
   dialIso: string;
   phone: string;
   placeholder: string;
-  autoComplete?: string;
   onDial: (iso: string) => void;
   onPhone: (v: string) => void;
   onBlur: () => void;
-  /** it sits on a Panel 2 block, so the number goes white to read */
-  onPanel?: boolean;
 } & Pick<React.InputHTMLAttributes<HTMLInputElement>, "id" | "aria-invalid" | "aria-describedby">) {
   return (
     <div className="flex gap-2">
@@ -532,14 +354,14 @@ function PhoneField({
       </div>
       <Input
         {...wiring}
-        className={cn("flex-1 tabular-nums", onPanel && "bg-background")}
+        className="flex-1 tabular-nums"
         type="tel"
         inputMode="tel"
-        autoComplete={autoComplete}
+        autoComplete="tel-national"
         // a number is 15 digits at most; the rest is room for its spaces
         maxLength={20}
         value={phone}
-        onChange={(ev) => onPhone(ev.target.value.replace(/[^0-9 ]/g, ""))}
+        onChange={(e) => onPhone(e.target.value.replace(/[^0-9 ]/g, ""))}
         onBlur={onBlur}
         placeholder={placeholder}
       />

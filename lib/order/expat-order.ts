@@ -295,9 +295,6 @@ export function toItemsData(p: PackingInput, originCountry: string): ItemsData {
 
 /* ------------------------------------------------------- Personal Information */
 
-/** how the pickup is handed over: by the customer, or someone they name */
-export type Handover = "me" | "other";
-
 export interface DetailsInput {
   /** each side's Detail Address: the unit, building and landmarks of its
    *  Address, the courier's way to the door. Both required. The origin's is
@@ -313,25 +310,6 @@ export interface DetailsInput {
   phone: string;
   /** "YYYY-MM-DD": the day the belongings are collected */
   pickupDate?: string;
-
-  /* The pickup, as the WNI flow's Pickup Schedule asks it, so the courier
-     collects without a second trip. Every field is absent on a draft saved
-     before these were asked. */
-  /** who hands the packages over; unset reads as the customer */
-  handover?: Handover;
-  /** the person named, when it isn't the customer */
-  picName?: string;
-  picDialIso?: string;
-  picPhone?: string;
-  /** a BUILDING_TYPES value (components/order/module-options) */
-  buildingType?: string;
-  /** a shared building's access, asked for anything but a house */
-  freightElevator?: boolean;
-  receptionist?: boolean;
-  /** for the courier, optional */
-  courierNotes?: string;
-  /** a PICKUP_WINDOWS value, in the origin's local time */
-  pickupWindow?: string;
 }
 
 export const EMPTY_DETAILS: DetailsInput = {
@@ -376,28 +354,8 @@ export function detailsProgress(d: DetailsInput) {
   const name = d.fullName.trim().length > 0;
   const email = emailValid(d.email);
   const phone = !!d.dialIso && phoneValid(d.phone);
-  // the customer hands over unless they name someone, who then needs a name
-  // and a number the courier can call
-  const handover =
-    (d.handover ?? "me") === "me" || (!!d.picName?.trim() && !!d.picDialIso && phoneValid(d.picPhone ?? ""));
-  // a house has no shared access to ask about
-  const building =
-    !!d.buildingType &&
-    (d.buildingType === "house" || (d.freightElevator !== undefined && d.receptionist !== undefined));
   const pickup = !!d.pickupDate && pickupDayAllowed(d.pickupDate);
-  const window = !!d.pickupWindow;
-  return {
-    origin,
-    destination,
-    name,
-    email,
-    phone,
-    handover,
-    building,
-    pickup,
-    window,
-    done: origin && destination && name && email && phone && handover && building && pickup && window,
-  };
+  return { origin, destination, name, email, phone, pickup, done: origin && destination && name && email && phone && pickup };
 }
 
 /* -------------------------------------------------------------------- Booking */

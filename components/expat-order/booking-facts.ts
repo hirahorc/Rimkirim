@@ -106,25 +106,7 @@ export function bookingFacts(b: ExpatBooking, t: T) {
     packing,
     checkedKg: kg(check.weightKg),
     packReminder: bk("packReminder").replace("{furniture}", a.items.includes("furniture") ? bk("packFurniture") : ""),
-    pickup: [longDate(d.pickupDate), d.pickupWindow?.replace("-", "–")].filter(Boolean).join(" · "),
-    // the pickup's answers, a line each; none on a booking made before they were asked
-    pickupLines: [
-      d.handover === "other" && d.picName?.trim()
-        ? `${bk("handedBy")} ${d.picName.trim()} · ${`${dialCodeFor(d.picDialIso ?? "") ?? ""} ${d.picPhone?.trim() ?? ""}`.trim()}`
-        : "",
-      d.buildingType
-        ? [
-            t(`expatOrder.details.buildings.${d.buildingType}`),
-            ...(d.buildingType === "house"
-              ? []
-              : [
-                  `${bk("freight")}: ${yesNo(d.freightElevator)}`,
-                  `${bk("receptionist")}: ${yesNo(d.receptionist)}`,
-                ]),
-          ].join(" · ")
-        : "",
-      d.courierNotes?.trim() ? `${bk("courierNotes")}: ${d.courierNotes.trim()}` : "",
-    ].filter(Boolean),
+    pickup: longDate(d.pickupDate),
     contact: {
       name: d.fullName.trim(),
       email: d.email.trim(),

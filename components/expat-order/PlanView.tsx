@@ -72,9 +72,7 @@ function saidBack(
     details: line([
       d.fullName.trim(),
       d.phone.trim() ? `${dialCodeFor(d.dialIso) ?? ""} ${d.phone.trim()}`.trim() : "",
-      d.pickupDate
-        ? `${bk("pickup")} ${shortDate(d.pickupDate)}${d.pickupWindow ? `, ${d.pickupWindow.replace("-", "–")}` : ""}`
-        : "",
+      d.pickupDate ? `${bk("pickup")} ${shortDate(d.pickupDate)}` : "",
     ]),
     packing:
       totals.kg > 0
@@ -193,10 +191,7 @@ function Plan({
       [dp.name, "detailsName"],
       [dp.email, "detailsEmail"],
       [dp.phone, "detailsPhone"],
-      [dp.handover, "detailsHandover"],
-      [dp.building, "detailsBuilding"],
       [dp.pickup, "detailsPickup"],
-      [dp.window, "detailsWindow"],
     ];
     return p(missing.find(([ok]) => !ok)?.[1] ?? HINT.details);
   };
