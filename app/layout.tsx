@@ -6,9 +6,10 @@ import { AppFooter } from "@/components/layout/AppFooter";
 import { Toaster } from "@/components/ui/toaster";
 import { LoginDialog } from "@/components/auth/LoginDialog";
 import { EnvBadge } from "@/components/system/EnvBadge";
+import { BreakData } from "@/components/expat-order/dev/BreakData";
 import { ScrollLanding } from "@/components/system/ScrollLanding";
 import { LanguageProvider } from "@/lib/i18n/LanguageProvider";
-import { IS_PRODUCTION } from "@/lib/env";
+import { APP_ENV, IS_PRODUCTION } from "@/lib/env";
 
 const spaceGrotesk = Space_Grotesk({
   variable: "--font-space-grotesk",
@@ -84,6 +85,8 @@ export default function RootLayout({
           <Toaster />
           <LoginDialog />
           <EnvBadge />
+          {/* the break-ui data toggle for the expat order flow: local dev only */}
+          {APP_ENV === "development" && <BreakData />}
           <ScrollLanding />
         </LanguageProvider>
       </body>
