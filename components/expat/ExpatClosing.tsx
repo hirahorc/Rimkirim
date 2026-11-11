@@ -53,13 +53,16 @@ export function ExpatClosing() {
             <p className="mt-4 max-w-xl text-pretty text-dusk-soft sm:text-lg">{t("expat.closing.subtitle")}</p>
           </div>
           {/* the house ring is ink with a white offset: on the ticket it
-              turns over, a white ring with a dusk gap */}
+              turns over, a white ring with a dusk gap. The bar's own button
+              gives way while this one is in view (ExpatHeader, data-door):
+              the last ask is the one place lime is meant to be loudest, and
+              a second lime 40px over it said the same words */}
           <Button
             asChild
             size="lg"
             className="w-full focus-visible:ring-background focus-visible:ring-offset-dusk sm:w-auto sm:self-start lg:self-auto"
           >
-            <a href={EXPAT_QUOTE_URL}>
+            <a href={EXPAT_QUOTE_URL} data-door>
               {t("expat.cta")} <ArrowRight />
             </a>
           </Button>

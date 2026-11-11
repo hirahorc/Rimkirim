@@ -703,25 +703,36 @@ body:has(main > [data-field]) {
   z-index: 1;
   color: var(--brand-ink);
 }
-/* the photo pile dealt in, back print first: on `translate` and opacity,
-   never `transform`, which the cards' depth and hover already own */
+/* the photo pile on load: the top print stands from the first paint, and
+   the two behind it are dealt out from under it. Each starts tucked in at
+   the top print's own place, its depth's offset and tilt cancelled (the
+   --tuck values, worked out from .deck-card[data-depth] below, so it hides
+   whole behind the top print), and slides to where it rests. On `translate`
+   and `rotate`, never `transform`, which the cards' depth and hover already
+   own, and never opacity: nothing fades in, and the top photo, the page's
+   largest paint, is never held back */
 @keyframes deck-deal {
   from {
-    opacity: 0;
-    translate: 0 8%;
-  }
-  /* a print is opaque almost at once, so the pile never ghosts through
-     itself while it is dealt */
-  25% {
-    opacity: 1;
+    translate: var(--tuck-x) var(--tuck-y);
+    rotate: var(--tuck-r);
   }
 }
 .deck-deal {
   animation: deck-deal 0.6s var(--ease-out-soft) backwards;
   animation-delay: var(--at, 0s);
 }
-/* not in the reduced-motion list below: its opacity and transform resets
-   would flatten the pile, so the deal just doesn't play */
+.deck-deal[data-deal="1"] {
+  --tuck-x: -3.85%;
+  --tuck-y: 3.3%;
+  --tuck-r: -3.5deg;
+}
+.deck-deal[data-deal="2"] {
+  --tuck-x: 3.8%;
+  --tuck-y: 5.25%;
+  --tuck-r: 3deg;
+}
+/* not in the reduced-motion list below: its transform resets would
+   flatten the pile, so the deal just doesn't play */
 @media (prefers-reduced-motion: reduce) {
   .deck-deal {
     animation: none;
@@ -1204,6 +1215,12 @@ a.nav-expat:focus-visible {
   transition:
     transform var(--dur-hover) var(--ease-hover),
     opacity var(--dur-hover-out) var(--ease-hover);
+}
+/* held, the top print follows the finger itself (PhotoDeck writes its
+   transform), so nothing eases between the two; let go, the transition is
+   back and carries it on from wherever it was left */
+.deck-card[data-dragging] {
+  transition: none;
 }
 .deck-card[data-depth="0"] {
   z-index: 4;
@@ -1761,6 +1778,34 @@ a.nav-expat:focus-visible {
 .jr-slot[data-place="shown"] {
   transition-delay: 0s;
 }
+/* a step chosen by hand is a question, not the tour: the stage answers on
+   the hover scale's leaving clock instead of the conveyor's, its ground
+   turns with it, and the scene stands built (below) rather than building
+   piece by piece again. Playing on (the control) takes the manual away,
+   and the scene on stage builds as it would have */
+.jr-root[data-manual] .jr-slot {
+  transition-duration: var(--dur-hover-out), var(--dur-hover-out), 0s;
+  transition-timing-function: var(--ease-hover), var(--ease-hover), linear;
+  transition-delay: 0s, 0s, var(--dur-hover-out);
+}
+.jr-root[data-manual] .jr-slot[data-place="shown"] {
+  transition-delay: 0s;
+}
+.jr-root[data-manual] .jr-dusk {
+  transition: opacity var(--dur-hover-out) var(--ease-hover);
+}
+.jr-root[data-manual] .jr-scene[data-built] .jr {
+  animation-name: none;
+}
+/* chosen from the keyboard, nothing moves at all (PRODUCT.md): the stage,
+   the highlight and the rail are simply there, the tile neither flips nor
+   pulses */
+.jr-root[data-instant] :is(.jr-slot, .jr-glide, .jr-rail-fill, .jr-dusk) {
+  transition: none;
+}
+.jr-root[data-instant] :is(.jr-tile, .jr-pulse) {
+  animation: none;
+}
 /* the highlight glides from step to step, and the rail fills behind it;
    on a strong ease-out, so the move starts the moment the run touches the
    next step rather than easing in after it */
@@ -1887,7 +1932,10 @@ a.nav-expat:focus-visible {
   :is([data-journey-ready], [data-reveal-ready]):not([data-revealed]) .jr-reveal {
     opacity: 0;
   }
-  [data-revealed] .jr-reveal {
+  /* "instant" is a section the reader was already on as the page loaded (a
+     link to something in it, a reload): it was painted standing, so it
+     stands, with nothing to reveal (useSectionReveal, alreadyThere) */
+  [data-revealed]:not([data-revealed="instant"]) .jr-reveal {
     animation: jr-reveal 640ms var(--ease-out-soft) both;
     animation-delay: calc(var(--i, 0) * 70ms);
   }

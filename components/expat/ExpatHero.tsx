@@ -29,24 +29,25 @@ import { ReviewNote } from "./ReviewNote";
  * its end. It speaks to the visitor, never about the shipment in a photo, so
  * no claim rides on a real picture (ClearedNotice).
  *
- * It arrives in tiers, each starting as the one before it settles, so the
- * eye is led instead of hit with everything at once (DESIGN.md, Motion,
- * Entrance): the message (the board, then the headline word by word), the
- * marked phrase taped on line by line as its words land (TapeMark), the subtitle,
- * the way in (the quote, then how it works), and last the proof, the photo
- * pile dealt back to front, then the message dropping in on it. TIERS holds
- * the times.
+ * It arrives in tiers, so the eye is led instead of hit with everything at
+ * once (DESIGN.md, Motion, Entrance), but the way in never waits for the
+ * rest of it: the top photo stands from the first paint, and "Check your
+ * rate" is up while the headline is still landing (the board, then the
+ * words one by one). Then the subtitle, the two prints behind the top one
+ * dealt out from under it, the marked phrase taped on line by line as its
+ * words land (TapeMark), and last the message dropping onto the pile.
+ * TIERS holds the times; the last piece has landed by 1.6s.
  */
 /** when each tier starts, in seconds from load */
 const TIERS = {
   words: 0.12,
   wordStep: 0.055,
+  quote: 0.3,
+  how: 0.38,
+  subtitle: 0.45,
+  deck: 0.55,
   tape: 0.72,
-  subtitle: 0.8,
-  quote: 0.95,
-  how: 1.03,
-  deck: 1.05,
-  notice: 1.75,
+  notice: 1.05,
 };
 
 const at = (s: number) => ({ "--at": `${s}s` }) as React.CSSProperties;
@@ -94,19 +95,27 @@ export function ExpatHero() {
       <div className="relative mx-auto w-full max-w-6xl px-4 pb-16 pt-10 sm:px-6 sm:pt-14 lg:py-16">
         <ReviewNote note={REVIEW_NOTES.hero} className="mb-3" />
         <ReviewNote note={REVIEW_NOTES.cta} className="mb-6" />
-        <div className="grid items-center gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,30rem)] lg:gap-14">
+        {/* the deck's column is 26rem until xl: at lg's narrow end a 30rem
+            deck left the copy 440px, where "belongings with you." broke
+            onto a fifth line and a third strip of tape */}
+        <div className="grid items-center gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,26rem)] lg:gap-14 xl:grid-cols-[minmax(0,1fr)_minmax(0,30rem)]">
           <div>
             {/* the eyebrow is a departures board, origin flipping to IDN;
                 how the route is travelled is the subtitle's to say */}
             <RouteBoard className="hero-in" style={at(0)} />
             {/* looser than the home hero's 1.05: here the tape runs over two
                 lines, and tighter its strips would swallow the descenders
-                above them. Capped at 52px so, beside the 30rem photo deck, the
+                above them. Capped at 52px so, beside the photo deck, the
                 headline stays within four lines and the button stays above the
                 fold. Words arrive one by one, the brand's hero entrance (as on
                 the home page); the marked phrase is taped on behind them as
-                they land, line by line (TapeMark; `relative` holds its strips) */}
-            <h1 className="hero-headline relative mt-5 text-balance font-display text-[clamp(2.25rem,4.6vw,3.25rem)] font-medium leading-[1.18] tracking-[-0.02em]">
+                they land, line by line (TapeMark; `relative` holds its strips).
+                Beside the deck its measure is held to 10.75em, wide enough
+                for "belongings with you." (9.74em) and too narrow for
+                "Relocating to Indonesia?" on one line (11.52em): in the
+                wider column the 26rem deck leaves, that line ran out under
+                the message hanging off the pile */}
+            <h1 className="hero-headline relative mt-5 text-balance font-display text-[clamp(2.25rem,4.6vw,3.25rem)] font-medium leading-[1.18] tracking-[-0.02em] lg:max-w-[10.75em]">
               <span className="block">
                 <Words text={title1} startIndex={0} base={TIERS.words} step={TIERS.wordStep} />
               </span>
@@ -131,8 +140,8 @@ export function ExpatHero() {
                 phone, where the pair won't fit one row, they stack at full
                 width, the door on top */}
             {/* the bar's own button waits until this pair has scrolled away
-                (ExpatHeader, data-hero-door), so two limes never show at once */}
-            <div data-hero-door className="mt-8 grid gap-3 sm:flex sm:flex-wrap sm:items-center">
+                (ExpatHeader, data-door), so two limes never show at once */}
+            <div data-door className="mt-8 grid gap-3 sm:flex sm:flex-wrap sm:items-center">
               <DoorButton href={EXPAT_QUOTE_URL} className="hero-in" style={at(TIERS.quote)}>
                 {t("expat.cta")}
               </DoorButton>
@@ -150,7 +159,8 @@ export function ExpatHero() {
             </div>
           </div>
 
-          {/* one 5:4 pile at every width, dealt in after the way in, the
+          {/* one 5:4 pile at every width: its top print there from the
+              start, the two behind it dealt out once the way in is up, the
               message landing on it last */}
           <div className="relative">
             <PhotoDeck dealAt={TIERS.deck} />

@@ -5,6 +5,7 @@ import { Pause, Play, RotateCcw } from "lucide-react";
 import { useT } from "@/lib/i18n/LanguageProvider";
 import { cn } from "@/lib/utils/cn";
 import { DetailsScene, DoorScene, FlightScene, QuoteScene } from "./JourneyScenes";
+import { alreadyThere } from "./useSectionReveal";
 
 const SCENES = [DetailsScene, QuoteScene, FlightScene, DoorScene];
 
@@ -45,8 +46,13 @@ const order = (i: number) => ({ "--i": i }) as React.CSSProperties;
  * on the doorstep.
  *
  * A click (or Enter) on a step takes over: that step comes up and the
- * playing stops. The round control on the stage pauses, resumes and
- * replays, and the playing also holds while a mouse rests on the stage
+ * playing stops. A step chosen by hand is a question, so it is answered at
+ * once: the stage turns to it on the hover scale's clock and its scene
+ * stands built, where the tour's builds itself over two seconds and more;
+ * chosen from the keyboard, nothing moves at all (PRODUCT.md). The round
+ * control on the stage pauses, resumes and replays (playing on from a step
+ * chosen by hand builds its scene, as the tour would have), and the
+ * playing also holds while a mouse rests on the stage
  * (only the stage: the section fills the screen, so a pointer parked
  * anywhere on it would stop the playing for good), while the section is off
  * screen and while the tab is hidden. Under
@@ -83,6 +89,8 @@ export function JourneySteps({
    *  the run's place at once instead of growing again over what the run
    *  just drew */
   const [snap, setSnap] = React.useState(false);
+  /** the step was chosen from the keyboard: it comes up without motion */
+  const [instant, setInstant] = React.useState(false);
 
   const go = React.useCallback((i: number) => {
     const prev = activeRef.current;
@@ -97,6 +105,9 @@ export function JourneySteps({
     const root = rootRef.current;
     const list = listRef.current;
     if (!root || !list) return;
+    // a reader already on the section as the page comes up finds it
+    // standing; the steps still play once it is in view
+    if (alreadyThere(root)) root.dataset.revealed = "instant";
     root.dataset.journeyReady = "";
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     let started = false;
@@ -112,13 +123,15 @@ export function JourneySteps({
         applyHold();
         if (!started && e.intersectionRatio >= 0.3) {
           started = true;
-          root.dataset.revealed = "";
+          if (!("revealed" in root.dataset)) root.dataset.revealed = "";
           if (reduce) {
             go(0);
             setMode("manual");
           } else {
-            // let the reveal land before the first step plays
+            // let the reveal land before the first step plays; a reader who
+            // chose a step in that beat keeps it, and the tour stands down
             startTimer = window.setTimeout(() => {
+              if (activeRef.current >= 0) return;
               go(0);
               setMode((m) => (m === "idle" ? "auto" : m));
             }, 650);
@@ -160,12 +173,14 @@ export function JourneySteps({
       go(active + 1);
     } else setMode("done");
   };
-  const choose = (i: number) => {
+  const choose = (i: number, fromKeyboard: boolean) => {
     setSnap(false);
+    setInstant(fromKeyboard);
     go(i);
     setMode("manual");
   };
   const control = () => {
+    setInstant(false);
     if (mode === "auto") setMode("paused");
     else if (mode === "paused") setMode("auto");
     else {
@@ -195,6 +210,10 @@ export function JourneySteps({
       className="jr-root"
       data-timing={timing || undefined}
       data-paused={mode === "paused" || undefined}
+      // a step chosen by hand: the stage answers at once (globals.css,
+      // .jr-root[data-manual]), without any motion from the keyboard
+      data-manual={mode === "manual" || undefined}
+      data-instant={instant || undefined}
       style={{ "--dwell": `${DWELL_MS}ms`, "--run-delay": `${RUN_DELAY_MS}ms` } as React.CSSProperties}
     >
       <div className="jr-reveal" style={order(0)}>
@@ -340,7 +359,8 @@ export function JourneySteps({
                     stays a heading */}
                 <button
                   type="button"
-                  onClick={() => choose(i)}
+                  // a keyboard press has no pointer behind it (detail 0)
+                  onClick={(e) => choose(i, e.detail === 0)}
                   aria-current={isActive ? "step" : undefined}
                   aria-label={s.title}
                   className="absolute inset-0 z-20 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/40 pointer-fine:cursor-pointer"

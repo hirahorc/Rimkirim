@@ -17,34 +17,47 @@ import { cn } from "@/lib/utils/cn";
  * (expat orders run in their own flow, not the account system), and the logo
  * stays on this page; the way back to the main site is the footer's service
  * links. A plain sticky bar rather than the site's
- * floating capsule, so the page reads as its own service at a glance; the
- * translucency is the same functional one as the capsule's (DESIGN.md, The
- * No-Gradient Rule). Inside the order flow (rates, plan, booking) the
- * visitor is already through the door, so the lime button gives way to a
- * quiet "Need help?" on WhatsApp: each step's own button is its one lime.
+ * floating capsule, so the page reads as its own service at a glance, and
+ * a solid one: the capsule's glass is for chrome that floats, and a bar
+ * this wide only smeared what passed under it. Inside the order flow
+ * (rates, plan, booking) the visitor is already through the door, so the
+ * lime button gives way to a quiet "Need help?" on WhatsApp: each step's
+ * own button is its one lime.
  */
 export function ExpatHeader() {
   const t = useT();
   const inFlow = usePathname() !== "/expat-relocation";
-  // on the landing the bar's button waits while the hero's own pair is in
-  // view, then arrives (a fade and a 4px rise, 200ms ease-out): two limes
-  // saying the same thing at once split the voice
-  const [heroDoor, setHeroDoor] = React.useState(true);
+  // on the landing the bar's button waits while one of the page's own doors
+  // is in view, then arrives (a fade and a 4px rise, 200ms ease-out): two
+  // limes saying the same thing at once split the voice. The doors it gives
+  // way to (data-door) are the page's first and last asks, the hero's pair
+  // and the closing ticket's; past the mid-page buttons it stays, since a
+  // button coming and going all the way down would be its own noise
+  const [doorInView, setDoorInView] = React.useState(true);
   React.useEffect(() => {
     if (inFlow) return;
-    const door = document.querySelector("[data-hero-door]");
-    if (!door) return;
-    // the latest entry wins: a fast scroll can deliver several at once
-    const io = new IntersectionObserver((entries) => setHeroDoor(entries[entries.length - 1].isIntersecting), {
-      rootMargin: "-64px 0px 0px 0px",
-    });
-    io.observe(door);
+    const doors = document.querySelectorAll("[data-door]");
+    if (doors.length === 0) return;
+    // every entry counts: a fast scroll can deliver several at once
+    const inView = new Set<Element>();
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) {
+          if (e.isIntersecting) inView.add(e.target);
+          else inView.delete(e.target);
+        }
+        setDoorInView(inView.size > 0);
+      },
+      { rootMargin: "-64px 0px 0px 0px" },
+    );
+    doors.forEach((door) => io.observe(door));
     return () => io.disconnect();
   }, [inFlow]);
   return (
-    // /95, as on the live page: a full-width bar shows whatever scrolls under
-    // it, and at the capsule's /85 the content ghosted through as blotches
-    <header className="reveal-down sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur-xl">
+    // opaque: at /95 with a blur, as on the live page, the dusk ticket and
+    // the pickup photos still showed through as a grey slab the width of
+    // whatever was under it, too faint to read as glass
+    <header className="reveal-down sticky top-0 z-40 border-b border-border bg-background">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-2 px-4 sm:px-6">
         <div className="flex min-w-0 items-center gap-2.5 sm:gap-3">
           <Logo href="/expat-relocation" ariaLabel={t("expat.headerHome")} height={26} />
@@ -76,11 +89,11 @@ export function ExpatHeader() {
           </a>
         ) : (
           <span
-            inert={heroDoor || undefined}
-            aria-hidden={heroDoor || undefined}
+            inert={doorInView || undefined}
+            aria-hidden={doorInView || undefined}
             className={cn(
               "shrink-0 transition-[opacity,translate] duration-200 ease-(--ease-hover) motion-reduce:transition-none",
-              heroDoor ? "pointer-events-none translate-y-1 opacity-0 motion-reduce:translate-y-0" : "opacity-100",
+              doorInView ? "pointer-events-none translate-y-1 opacity-0 motion-reduce:translate-y-0" : "opacity-100",
             )}
           >
             {/* the bar's height keeps it `sm`; its hit area is 44px all the same */}
