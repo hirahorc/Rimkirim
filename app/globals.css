@@ -524,6 +524,25 @@ body:has(main > [data-field]) {
   animation: banner-enter 0.35s var(--ease-out-soft) both;
 }
 
+/* The estimate answering a change of what it's priced on (the packages'
+   weight coming in, another service picked): one wash of lime behind the
+   figure, colour only, then quiet. */
+@keyframes estimate-flash {
+  0%,
+  20% {
+    background-color: color-mix(in srgb, var(--brand) 60%, transparent);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--brand) 60%, transparent);
+  }
+  100% {
+    background-color: transparent;
+    box-shadow: 0 0 0 4px transparent;
+  }
+}
+.estimate-flash {
+  border-radius: 4px;
+  animation: estimate-flash 0.6s var(--ease-out-soft) both;
+}
+
 /* Inline text links. Lime can't be a text colour on daylight, so the accent
    moves to the underline stroke: dark ink, lime marker beneath. */
 /* Inline links read as links: conventional blue with an underline. */
@@ -1123,6 +1142,7 @@ body:has(main > [data-field]) {
   .testi-card,
   .check-draw,
   .banner-enter,
+  .estimate-flash,
   .tip-bubble {
     animation: none !important;
     opacity: 1 !important;

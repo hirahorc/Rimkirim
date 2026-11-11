@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { useRouter } from "next/navigation";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, ChevronUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -12,7 +12,7 @@ import { Field } from "@/components/shared/forms/Field";
 import { ReviewNote } from "@/components/expat/ReviewNote";
 import { ORDER_REVIEW_NOTES } from "@/lib/data/expat-order-notes";
 import { INDONESIA } from "@/lib/data/countries";
-import { expatRates } from "@/lib/pricing/expat-rates";
+import { expatRates, type ExpatRate } from "@/lib/pricing/expat-rates";
 import { checkComplete, type CheckRateInput } from "@/lib/order/expat-order";
 import { useExpatOrderHydrated, useExpatOrderStore } from "@/lib/store/useExpatOrderStore";
 import type { Place } from "@/lib/data/expat-places";
@@ -21,6 +21,7 @@ import { cn } from "@/lib/utils/cn";
 import { AddressField } from "./AddressField";
 import { FlowLoading } from "./FlowLoading";
 import { RateCard } from "./RateCard";
+import { useDraftWelcome } from "./visit";
 
 /** a picked Address's error, once the customer has tried to check */
 function addressError(p: Place | null, t: (k: string) => string): string | undefined {
@@ -34,10 +35,19 @@ function addressError(p: Place | null, t: (k: string) => string): string | undef
  * on Panel 2, as every order screen sits): the form, and once checked the
  * one rate the epic asks for under it, the rest behind "See more rates". The form writes straight
  * into the draft, so a changed input reprices at once and a reload keeps it.
- * It comes before the plan, which starts once a rate is picked.
+ * It comes before the plan, which starts once a rate is picked. Checking
+ * answers where the eye should go next: to the first field that's wrong, or
+ * to the estimate.
  */
 export function RatesView() {
+  const t = useT();
   const hydrated = useExpatOrderHydrated();
+  const check = useExpatOrderStore((s) => s.check);
+  useDraftWelcome(
+    hydrated,
+    !!(check.originCountry || check.origin || check.destination || check.weightKg),
+    t("expatOrder.plan.restored"),
+  );
   // the form mounts on the loaded draft, so its first state is the draft's
   if (!hydrated) return <FlowLoading />;
   return <RatesForm />;
@@ -55,9 +65,35 @@ function RatesForm() {
   const [tried, setTried] = React.useState(false);
   const [shown, setShown] = React.useState(() => checkComplete(check));
   const [more, setMore] = React.useState(false);
+  // the rate that was picked, while the plan is on its way
+  const [going, startGoing] = React.useTransition();
+  const [picked, setPicked] = React.useState<string | null>(null);
+  const form = React.useRef<HTMLFormElement>(null);
+  const results = React.useRef<HTMLElement>(null);
+  const resultsHead = React.useRef<HTMLHeadingElement>(null);
   const [weightText, setWeightText] = React.useState(() => (check.weightKg ? String(check.weightKg) : ""));
 
   const update = (patch: Partial<CheckRateInput>) => setCheck({ ...check, ...patch });
+  const select = (rate: ExpatRate) => {
+    setPicked(rate.id);
+    selectRate(rate);
+    startGoing(() => router.push("/expat-relocation/plan"));
+  };
+  // Check rate, answered where the eye should go next (once its render has
+  // landed): the first field that's wrong, or the estimate, which on a phone
+  // comes up below what's on the screen
+  const settle = (ok: boolean) =>
+    window.requestAnimationFrame(() => {
+      const still = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      if (ok) {
+        results.current?.scrollIntoView({ behavior: still ? "auto" : "smooth", block: "start" });
+        resultsHead.current?.focus({ preventScroll: true });
+        return;
+      }
+      const wrong = form.current?.querySelector<HTMLElement>('[aria-invalid="true"], [data-invalid]');
+      wrong?.scrollIntoView({ behavior: still ? "auto" : "smooth", block: "center" });
+      (wrong?.matches("input, button") ? wrong : wrong?.querySelector<HTMLElement>("input, button"))?.focus({ preventScroll: true });
+    });
   const complete = checkComplete(check);
   const result = React.useMemo(
     () => (complete && check.weightKg ? expatRates(check.originCountry, check.weightKg) : null),
@@ -89,11 +125,13 @@ function RatesForm() {
       <p className="mt-3 max-w-xl text-pretty text-muted">{r("subtitle")}</p>
 
       <form
+        ref={form}
         noValidate
         onSubmit={(e) => {
           e.preventDefault();
           setTried(true);
           if (complete) setShown(true);
+          settle(complete);
         }}
         className="mt-8"
       >
@@ -168,9 +206,15 @@ function RatesForm() {
       </form>
 
       {shown && result && lead && (
-        <section aria-labelledby="estimate-heading" className="mt-10">
+        <section ref={results} aria-labelledby="estimate-heading" className="mt-10 scroll-mt-24">
           <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1">
-            <h2 id="estimate-heading" className="font-display text-2xl font-semibold tracking-tight">
+            <h2
+              ref={resultsHead}
+              id="estimate-heading"
+              // takes focus when Check rate brings the estimate up (settle)
+              tabIndex={-1}
+              className="font-display text-2xl font-semibold tracking-tight outline-none"
+            >
               {r("resultsTitle")}
             </h2>
             {rounded && (
@@ -183,10 +227,8 @@ function RatesForm() {
               rate={lead}
               origin={check.originCountry}
               lead
-              onSelect={() => {
-                selectRate(lead);
-                router.push("/expat-relocation/plan");
-              }}
+              loading={going && picked === lead.id}
+              onSelect={() => select(lead)}
             />
           </div>
           {result.specialFromKg && (
@@ -208,7 +250,8 @@ function RatesForm() {
                 className="tap-row relative inline-flex items-center gap-2 font-display text-sm font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/50"
               >
                 {more ? r("seeLess") : r("seeMore").replace("{n}", String(rest.length))}
-                <ChevronDown aria-hidden className={cn("size-4 transition-transform", more && "rotate-180")} />
+                {/* swap, never rotate: the shared disclosure idiom */}
+                {more ? <ChevronUp aria-hidden className="size-4" /> : <ChevronDown aria-hidden className="size-4" />}
               </button>
               <CollapseHeight open={more} id="more-rates">
                 <ul className="grid gap-3 pt-5">
@@ -217,10 +260,8 @@ function RatesForm() {
                       <RateCard
                         rate={rate}
                         origin={check.originCountry}
-                        onSelect={() => {
-                          selectRate(rate);
-                          router.push("/expat-relocation/plan");
-                        }}
+                        loading={going && picked === rate.id}
+                        onSelect={() => select(rate)}
                       />
                     </li>
                   ))}
@@ -237,7 +278,9 @@ function RatesForm() {
 /** CountrySelect is named by `ariaLabel`, not by an id, so Field's wiring
  *  lands on a wrapper and the rest is dropped. Check Rate's list is plain:
  *  every country A to Z, no region beside each and no "Popular" group, and
- *  never Indonesia as the origin (the service imports to it) */
+ *  never Indonesia as the origin (the service imports to it). Its error is
+ *  marked on the wrapper (`data-invalid`), where Check rate looks for the
+ *  first thing wrong */
 function CountrySelectField({
   id,
   value,
@@ -246,9 +289,10 @@ function CountrySelectField({
   placeholder,
   ariaLabel,
   exclude,
-}: React.ComponentProps<typeof CountrySelect> & { id?: string }) {
+  "aria-invalid": invalid,
+}: React.ComponentProps<typeof CountrySelect> & { id?: string; "aria-invalid"?: React.AriaAttributes["aria-invalid"] }) {
   return (
-    <div id={id}>
+    <div id={id} data-invalid={invalid ? true : undefined}>
       <CountrySelect
         value={value}
         onChange={onChange}

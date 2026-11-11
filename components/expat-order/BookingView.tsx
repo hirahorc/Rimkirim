@@ -16,6 +16,7 @@ import { bookingFacts } from "./booking-facts";
 import { BookingHead } from "./BookingHead";
 import { CustomsPaths } from "./CustomsPaths";
 import { FlowLoading } from "./FlowLoading";
+import { clearJustBooked, justBooked } from "./visit";
 
 /** how many packages the summary lists before it folds the rest */
 const PACKAGES_SHOWN = 5;
@@ -45,6 +46,12 @@ export function BookingView({ number }: { number: string }) {
   const booking = useExpatOrderStore((s) => s.bookings.find((b) => b.number === number));
   // a long list shows its first few packages until it's asked for whole
   const [allPackages, setAllPackages] = React.useState(false);
+  // arrived from Confirm application, not a reload or a link back to it
+  const [fresh] = React.useState(() => justBooked() === number);
+  React.useEffect(() => {
+    const id = window.setTimeout(clearJustBooked, 2000);
+    return () => window.clearTimeout(id);
+  }, []);
 
   if (!hydrated) return <FlowLoading />;
 
@@ -73,7 +80,7 @@ export function BookingView({ number }: { number: string }) {
       <div className="grid grid-cols-1 gap-6 [overflow-wrap:anywhere] lg:grid-cols-[minmax(0,1fr)_22rem] lg:items-start">
         <Card className="min-w-0 px-5 py-6 sm:px-8 sm:py-8">
           <article aria-labelledby="booking-heading">
-            <BookingHead number={f.number} email={f.contact.email} headingId="booking-heading" />
+            <BookingHead number={f.number} email={f.contact.email} headingId="booking-heading" fresh={fresh} />
 
             <dl className="mt-6">
               <Row label={bk("route")}>

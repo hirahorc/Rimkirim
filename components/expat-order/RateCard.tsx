@@ -20,6 +20,7 @@ export function RateCard({
   rate,
   origin,
   onSelect,
+  loading = false,
   selected = false,
   display = false,
   stacked = false,
@@ -31,6 +32,8 @@ export function RateCard({
   /** kept for the lead card's call site; every card wears the same button */
   lead?: boolean;
   onSelect?: () => void;
+  /** the rate was picked and its next page is on the way */
+  loading?: boolean;
   selected?: boolean;
   display?: boolean;
   stacked?: boolean;
@@ -68,6 +71,7 @@ export function RateCard({
                 </>
               ),
               onClick: onSelect,
+              loading,
             }
       }
     />

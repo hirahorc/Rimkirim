@@ -4,6 +4,7 @@ import * as React from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, ArrowRight, Check } from "lucide-react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { CollapseHeight } from "@/components/ui/disclosure";
@@ -34,10 +35,16 @@ import { FlowLoading } from "./FlowLoading";
 import { PackingStep } from "./PackingStep";
 import { SelectedService } from "./SelectedService";
 import { ServicePicker } from "./ServicePicker";
+import { markJustBooked, useDraftWelcome } from "./visit";
 
 /** the plan's three parts, in the order they're asked */
 const PARTS = ["eligibility", "details", "packing"] as const;
 type Part = (typeof PARTS)[number];
+
+/** what a part marks as still to give once the action was pressed: a field
+ *  in error, or an answer group left open */
+const MISSING = '[aria-invalid="true"], [data-missing]';
+const FOCUSABLE = "input, button, select, textarea, [tabindex]";
 
 /** why the action waits, for the part in hand */
 const HINT: Record<Part, string> = {
@@ -87,6 +94,14 @@ function saidBack(
  *  stepper): done is lime with an Ink check, the one in hand is Ink-framed
  *  with a lime core, one still ahead is Hairline on Panel 2 with its number */
 function PartDot({ state, n, className }: { state: "done" | "here" | "ahead"; n: number; className?: string }) {
+  // earned motion: the check draws itself for a part just finished, never
+  // for one a draft brought finished. The latest change of state decides
+  const [was, setWas] = React.useState(state);
+  const [earned, setEarned] = React.useState(false);
+  if (was !== state) {
+    setWas(state);
+    setEarned(state === "done");
+  }
   return (
     <span
       aria-hidden
@@ -98,7 +113,22 @@ function PartDot({ state, n, className }: { state: "done" | "here" | "ahead"; n:
         className,
       )}
     >
-      {state === "done" && <Check className="size-3.5" strokeWidth={3} />}
+      {state === "done" &&
+        (earned ? (
+          <svg
+            viewBox="0 0 24 24"
+            className="size-3.5"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth={3}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path className="check-draw" d="M4 12.5l5 5L20 6.5" />
+          </svg>
+        ) : (
+          <Check className="size-3.5" strokeWidth={3} />
+        ))}
       {state === "here" && <span className="size-2 rounded-full bg-brand" />}
       {state === "ahead" && n}
     </span>
@@ -114,19 +144,28 @@ function PartDot({ state, n, className }: { state: "done" | "here" | "ahead"; n:
  * estimate, where a thumb is: a bar at the foot of a phone, beside the form
  * with the Selected Service on a wide screen. It reads Continue until the
  * last part is in, then Confirm application, which registers the ticket and
- * opens its Booking Summary. Arriving without a rate goes back to Check Rate.
+ * opens its Booking Summary. It's never disabled: pressed while its part
+ * still waits, it names everything missing where it is, goes to the first of
+ * it and counts what's left in a toast. Arriving without a rate goes back to
+ * Check Rate, and says why.
  */
 export function PlanView() {
+  const t = useT();
   const router = useRouter();
   const hydrated = useExpatOrderHydrated();
   const rate = useExpatOrderStore((s) => s.rate);
+  useDraftWelcome(hydrated, !!rate, t("expatOrder.plan.restored"));
   // confirming clears the draft, the rate with it: the way on from there is
   // the Booking Summary, not back to Check Rate
   const [sending, setSending] = React.useState(false);
 
   React.useEffect(() => {
-    if (hydrated && !rate && !sending) router.replace("/expat-relocation/rates");
-  }, [hydrated, rate, sending, router]);
+    if (!hydrated || rate || sending) return;
+    // said, since the page asked for isn't the one that opens (an id, so an
+    // effect run twice still says it once)
+    toast.info(t("expatOrder.plan.needRate"), { id: "expat-need-rate" });
+    router.replace("/expat-relocation/rates");
+  }, [hydrated, rate, sending, router, t]);
 
   // the plan mounts on the loaded draft, so it opens on the part that draft
   // has reached
@@ -149,6 +188,10 @@ function Plan({
   const { check, eligibility, packing, details, addressChanged, setCheck, selectRate, setEligibility, setPacking, setDetails, submit } =
     useExpatOrderStore();
   const cards = React.useRef<Record<Part, HTMLElement | null>>({ eligibility: null, details: null, packing: null });
+  const heads = React.useRef<Record<Part, HTMLElement | null>>({ eligibility: null, details: null, packing: null });
+  // how often the action was pressed while a part still waited: from the
+  // first, that part shows everything it's missing
+  const [tried, setTried] = React.useState<Record<Part, number>>({ eligibility: 0, details: 0, packing: 0 });
 
   const done: Record<Part, boolean> = {
     eligibility: eligibilityProgress(eligibility).done,
@@ -160,17 +203,32 @@ function Plan({
   const [open, setOpen] = React.useState<Part | null>(todo);
 
   // the fold runs first (CollapseHeight, 340ms at most), then the part that
-  // opened comes to the top
+  // opened comes to the top and its title takes focus: what was pressed is
+  // gone (the action's part folded, a folded part's line became a title), so
+  // a keyboard and a screen reader go where the eye was taken
   const show = (part: Part | null) => {
     setOpen(part);
     if (!part) return;
     window.setTimeout(() => {
       const still = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       cards.current[part]?.scrollIntoView({ behavior: still ? "auto" : "smooth", block: "start" });
+      heads.current[part]?.focus({ preventScroll: true });
     }, 360);
   };
 
   const pricing = packedPricing(check.originCountry, rate, packing);
+  // the estimate changed what it's priced on (the packages' weight came in
+  // or went, another service was picked): the figure washes once and the
+  // change is said. Its moving as a weight is typed is no news
+  const basis = `${pricing.rate.id}:${pricing.packed}`;
+  const [seenBasis, setSeenBasis] = React.useState(basis);
+  const [flash, setFlash] = React.useState(0);
+  const [announced, setAnnounced] = React.useState("");
+  if (seenBasis !== basis) {
+    setSeenBasis(basis);
+    setFlash((n) => n + 1);
+    setAnnounced(p("estimateUpdated").replace("{price}", formatIDR(pricing.rate.total)));
+  }
   const said = saidBack(t, eligibility, details, packing);
   // a part opens once the ones above it are in
   const reachable = (part: Part) => PARTS.slice(0, PARTS.indexOf(part)).every((k) => done[k]);
@@ -196,18 +254,50 @@ function Plan({
   const confirm = () => {
     onSending(true);
     const booking = submit();
-    if (booking) router.push(`/expat-relocation/booking/${booking.number}`);
-    else onSending(false);
+    if (booking) {
+      markJustBooked(booking.number);
+      router.push(`/expat-relocation/booking/${booking.number}`);
+    } else {
+      // nothing was registered, and the draft is as it was
+      onSending(false);
+      toast.error(p("confirmFailed"));
+    }
+  };
+  // The action pressed while its part still waits. It isn't disabled: a
+  // dead button can't say what it wants. Everything missing is named where
+  // it is (`tried`), the first of it is brought into view and into hand, and
+  // a toast counts what's left
+  const nudge = (part: Part) => {
+    setTried((s) => ({ ...s, [part]: s[part] + 1 }));
+    const go = () => {
+      const first = cards.current[part]?.querySelector<HTMLElement>(MISSING);
+      if (!first) return true;
+      const target = first.matches(FOCUSABLE) ? first : first.querySelector<HTMLElement>(FOCUSABLE);
+      const still = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      first.scrollIntoView({ behavior: still ? "auto" : "smooth", block: "center" });
+      target?.focus({ preventScroll: true });
+      return document.activeElement === target;
+    };
+    // once the errors are on the page
+    window.requestAnimationFrame(() => {
+      const n = cards.current[part]?.querySelectorAll(MISSING).length ?? 0;
+      // one toast, replaced by the next press
+      toast.error(n === 1 ? p("missingOne") : n > 1 ? p("missingMany").replace("{n}", String(n)) : why(part), {
+        id: "expat-plan-missing",
+      });
+      // a folded package is still unfolding: its field takes focus once it's open
+      if (!go()) window.setTimeout(go, 360);
+    });
   };
   const act = () => {
-    if (todo) show(todo);
+    if (open && !done[open]) nudge(open);
+    else if (todo) show(todo);
     else confirm();
   };
   const action = (
     <Button
       type="button"
       size="lg"
-      disabled={blocked}
       loading={sending}
       aria-describedby={blocked ? "plan-hint" : undefined}
       onClick={act}
@@ -219,8 +309,10 @@ function Plan({
 
   return (
     // the app's field, as Check Rate sits: white cards on Panel 2, with room
-    // at the foot of a phone for the bar, two lines tall at its most
-    <div data-field className="pb-44 lg:pb-20">
+    // at the foot of a phone for the bar, two lines tall at its most. A field
+    // in error wears Stop Red on its edge, so what the action counted can be
+    // found down a long part
+    <div data-field className="pb-44 lg:pb-20 [&_input[aria-invalid=true]]:border-danger">
       <div className="mx-auto max-w-5xl px-4 pt-8 sm:px-6 sm:pt-10">
         <h1 className="text-balance font-display text-3xl font-bold tracking-tight sm:text-4xl">{p("title")}</h1>
         <p className="mt-3 max-w-xl text-pretty text-muted">{p("subtitle")}</p>
@@ -233,12 +325,18 @@ function Plan({
               check={check}
               rate={pricing.rate}
               packed={pricing.packed}
+              flash={flash}
               // the service changes here, in place; the answers stay
               action={
                 <ServicePicker
                   check={check}
                   pricing={pricing}
-                  onSelect={(picked) => selectRate(checkedRate(check, picked))}
+                  onSelect={(picked) => {
+                    selectRate(checkedRate(check, picked));
+                    // said in a toast: on a phone, deep in the form, the
+                    // card that changed is off the screen
+                    toast.success(t("expatOrder.service.changed").replace("{service}", `${picked.carrier} ${picked.service}`));
+                  }}
                 />
               }
             />
@@ -272,7 +370,14 @@ function Plan({
                       <div className="relative flex items-start gap-3 py-5 sm:py-6">
                         <PartDot state={isDone ? "done" : isOpen ? "here" : "ahead"} n={i + 1} className="mt-1" />
                         <div className="min-w-0 flex-1">
-                          <h2 className="font-display text-xl font-semibold tracking-tight">
+                          <h2
+                            ref={(el) => {
+                              heads.current[part] = el;
+                            }}
+                            // takes focus when its part opens (show)
+                            tabIndex={-1}
+                            className="font-display text-xl font-semibold tracking-tight outline-none"
+                          >
                             {foldable ? (
                               // the whole line reopens the part
                               <button
@@ -306,7 +411,7 @@ function Plan({
                           <ReviewNote note={ORDER_REVIEW_NOTES[part]} className="mb-6" />
                           {part === "eligibility" && (
                             <>
-                              <EligibilityStep value={eligibility} onChange={setEligibility} />
+                              <EligibilityStep value={eligibility} tried={tried.eligibility > 0} onChange={setEligibility} />
                               <div className="mt-8">
                                 <CustomsPaths id="customs-paths" title={t("expatOrder.customs.title")} />
                               </div>
@@ -317,6 +422,7 @@ function Plan({
                               check={check}
                               value={details}
                               changed={addressChanged}
+                              tried={tried.details > 0}
                               onChange={setDetails}
                               // an Address changes in place: within its country it never moves the rate
                               onAddress={(side, place) => setCheck({ ...check, [side]: place })}
@@ -329,6 +435,7 @@ function Plan({
                               originCountry={check.originCountry}
                               checkedKg={check.weightKg ? chargedWeight(check.weightKg) : rate.chargedKg}
                               pricing={pricing}
+                              tried={tried.packing}
                             />
                           )}
                           {/* why the action waits: read on a phone, where the
@@ -366,12 +473,19 @@ function Plan({
           <div className="shrink-0">
             <p className="text-xs text-muted">{t("expatOrder.service.estimate")}</p>
             <p className="whitespace-nowrap font-display text-lg font-bold tracking-tight tabular-nums">
-              {formatIDR(pricing.rate.total)}
+              <span key={flash} className={flash ? "estimate-flash" : undefined}>
+                {formatIDR(pricing.rate.total)}
+              </span>
             </p>
           </div>
           <div className="flex-1">{action}</div>
         </div>
       </div>
+
+      {/* the estimate's change of basis, for who can't see the figure wash */}
+      <p role="status" className="sr-only">
+        {announced}
+      </p>
     </div>
   );
 }

@@ -1463,8 +1463,13 @@ like the landing, and keeps the landing's bar, which trades the lime "Check your
   do); a part whose earlier parts aren't in stands at 60% and doesn't open. Check Rate comes
   before the plan and isn't one of its parts; the way back to it is the quiet Back under them.
 - **The plan's one action:** a single lime button runs the page, reading Continue until the last
-  part is in, then Confirm application; it waits (Panel fill) while the part in hand is
-  incomplete, and one line says why. On a wide screen it sits under the Selected Service,
+  part is in, then Confirm application. It is never disabled: a dead button can't say what it
+  wants. One line under it says what the part in hand still needs, and pressed while that part
+  is incomplete it answers in three ways at once: everything missing is named where it is (a
+  field's error, "Choose an answer." under an open question; a folded package it waits on
+  unfolds), the first of it is brought to the middle of the screen and takes focus, and one
+  error toast counts what's left ("3 things are still missing."), replaced by the next press.
+  On a wide screen it sits under the Selected Service,
   sticky beside the parts. On a phone it rides a bar fixed to the foot of the screen
   (`bg-background/95`, hairline above, padded for the home indicator) with the estimate beside
   it, so the price and the way on are always under a thumb; the reason it waits is read at the
@@ -1494,7 +1499,33 @@ like the landing, and keeps the landing's bar, which trades the lime "Check your
   first question for every customer, so it wears the info tint, as the changed-address notice
   does; ticking furniture only adds to its words and points its link at furniture's own steps.
   Nothing in the flow turns a customer away, so no verdict
-  there wears Stop Red (the Special Rate tab is an offer mark, not a verdict). Field errors appear once a field is left, never on every keystroke.
+  there wears Stop Red (the Special Rate tab is an offer mark, not a verdict). Field errors appear once a field is left, never on every keystroke,
+  or all at once when the action is pressed; a field in error wears Stop Red on its edge. A
+  Pickup Date that can no longer be picked (a draft from days ago) says so at once.
+- **Feedback, said once and where it happens:**
+  - *Done marks.* A finished part's dot draws its check once (`check-draw`), only for a part
+    just finished, never for one a draft brought finished. An answered question's number and a
+    finished package's head take the same mark (lime, an Ink check), still: what's left to do
+    is what still wears a number.
+  - *A chosen answer* lands with the route card's 100ms pop (`radio-check-in`), only for an
+    answer just given.
+  - *The estimate.* When what it's priced on changes (the packages' weight comes in or goes,
+    another service is picked), the figure is washed once in lime (`estimate-flash`, 0.6s,
+    colour only) wherever it shows, and the change is said in a polite live region. Its moving
+    while a weight is typed is no news, and gets neither.
+  - *Toasts* (the app's one transient ping, never a button in them): an answer kept from an
+    earlier visit, once a visit (plain); the plan opened without a rate, before it goes to
+    Check Rate (info); another service picked (success); what the action still waits on
+    (error); an application that couldn't be confirmed (error).
+  - *Focus follows the eye.* Check rate goes to the first field that's wrong or, checked, to
+    the estimate's title; a part that opens gives its title focus; a new package or item takes
+    it; a removed package hands it to "Add a package".
+  - *Removing a package* that has something typed in it asks first (the app's delete dialog,
+    Stop Red on the confirming button); an empty one just goes.
+  - *The Booking Summary's check* draws itself the once, on arriving from Confirm application,
+    never on a reload.
+  - A notice that an edit brings (a size that reads like the wrong unit, a Special Rate that no
+    longer applies) eases in (`banner-enter`); one a draft arrived with stands.
 - **The Packages step:** inside the step's white card, each package is a Panel 2 block with no
   outline (`rounded-md`, a notch down from the card, The Step-Down Rule), whose head opens and
   closes it with the swapped chevron and names it in one line while closed. Inside: its

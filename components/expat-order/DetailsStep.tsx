@@ -224,18 +224,21 @@ function AddressCard({
  * place (AddressCard: the Address and its Detail Address, optional on both
  * sides), then name, email, phone and the Pickup Date. The origin country
  * isn't changed here: it set the rate, so it changes on Check Rate. An error
- * shows once a field is left, not on every keystroke.
+ * shows once a field is left, not on every keystroke; `tried` (the plan's
+ * action pressed while a field was still open) shows them all.
  */
 export function DetailsStep({
   check,
   value,
   changed,
+  tried = false,
   onChange,
   onAddress,
 }: {
   check: CheckRateInput;
   value: DetailsInput;
   changed: AddressChange;
+  tried?: boolean;
   onChange: (patch: Partial<DetailsInput>) => void;
   /** a side's Address picked again; before `onChange`, since a moved
    *  Address clears the detail it had */
@@ -246,9 +249,26 @@ export function DetailsStep({
   const [left, setLeft] = React.useState<Record<string, boolean>>({});
   const leave = (k: string) => () => setLeft((s) => ({ ...s, [k]: true }));
 
-  const nameErr = left.name && !value.fullName.trim() ? d("required") : undefined;
-  const emailErr = left.email && !emailValid(value.email) ? (value.email.trim() ? d("emailErr") : d("required")) : undefined;
-  const phoneErr = left.phone && !phoneValid(value.phone) ? (value.phone.trim() ? d("phoneErr") : d("required")) : undefined;
+  const shown = (k: string) => left[k] || tried;
+  const nameErr = shown("name") && !value.fullName.trim() ? d("required") : undefined;
+  const emailErr = shown("email") && !emailValid(value.email) ? (value.email.trim() ? d("emailErr") : d("required")) : undefined;
+  const phoneErr =
+    shown("phone") && !phoneValid(value.phone)
+      ? value.phone.trim()
+        ? d("phoneErr")
+        : d("required")
+      : tried && !value.dialIso
+        ? d("required")
+        : undefined;
+  // a date that can no longer be picked (a draft from days ago) is said at
+  // once, as an Address without a postal code is: the field shows a date,
+  // so nothing else would say why the plan still waits
+  const pickupErr =
+    value.pickupDate && !pickupDayAllowed(value.pickupDate)
+      ? d("pickupPast")
+      : tried && !value.pickupDate
+        ? d("required")
+        : undefined;
 
   return (
     <div className="space-y-8">
@@ -314,7 +334,7 @@ export function DetailsStep({
           />
         </Field>
         <div className="sm:col-span-2 sm:max-w-sm">
-          <Field label={d("pickup")} hint={d("pickupHint")}>
+          <Field label={d("pickup")} hint={pickupErr ? undefined : d("pickupHint")} error={pickupErr}>
             <PickupPicker
               value={value.pickupDate}
               onChange={(pickupDate) => onChange({ pickupDate })}
@@ -376,22 +396,29 @@ function PickupPicker({
   placeholder,
   ariaLabel,
   id,
+  "aria-invalid": invalid,
 }: {
   value?: string;
   onChange: (v: string) => void;
   placeholder: string;
   ariaLabel: string;
   id?: string;
+  "aria-invalid"?: React.AriaAttributes["aria-invalid"];
 }) {
   return (
-    <DatePicker
-      id={id}
-      value={value}
-      onChange={onChange}
-      min={firstPickupIso()}
-      isDateDisabled={(iso) => !pickupDayAllowed(iso)}
-      placeholder={placeholder}
-      ariaLabel={ariaLabel}
-    />
+    // the picker's field is a button, not an input: the wrapper carries the
+    // mark the plan's action looks for
+    <div data-missing={invalid ? true : undefined}>
+      <DatePicker
+        id={id}
+        value={value}
+        onChange={onChange}
+        min={firstPickupIso()}
+        isDateDisabled={(iso) => !pickupDayAllowed(iso)}
+        placeholder={placeholder}
+        ariaLabel={ariaLabel}
+        className={invalid ? "border-danger" : undefined}
+      />
+    </div>
   );
 }

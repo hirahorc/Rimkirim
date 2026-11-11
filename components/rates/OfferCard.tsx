@@ -32,7 +32,7 @@ export interface OfferCardProps {
   /** value badges beside the carrier (Cheapest, Fastest) */
   badges?: React.ReactNode;
   /** the order button; absent when ordering is blocked or the card is only shown */
-  cta?: { label: React.ReactNode; onClick: () => void };
+  cta?: { label: React.ReactNode; onClick: () => void; loading?: boolean };
   /** extra content between the price and the button (a breakdown, a regions table) */
   children?: React.ReactNode;
   /** one column at any width (the landing's small pictures of this card) */
@@ -177,7 +177,7 @@ export function OfferCard({
       {children}
 
       {cta && (
-        <Button type="button" size="lg" className="mt-5 w-full" onClick={cta.onClick}>
+        <Button type="button" size="lg" className="mt-5 w-full" onClick={cta.onClick} loading={cta.loading}>
           {cta.label}
         </Button>
       )}

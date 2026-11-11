@@ -10,17 +10,20 @@ import { cn } from "@/lib/utils/cn";
  * check, who the summary went to, and the booking number as the one figure
  * to keep, on its own Panel 2 strip with the copy button. The landing's
  * closing ticket shows this very head in its last picture, `compact` and
- * without the copy button.
+ * without the copy button. `fresh` is the moment the application was
+ * confirmed: the check draws itself, that once.
  */
 export function BookingHead({
   number,
   email,
   compact = false,
+  fresh = false,
   headingId,
 }: {
   number: string;
   email: string;
   compact?: boolean;
+  fresh?: boolean;
   /** set on the page, where "Booking received" names it */
   headingId?: string;
 }) {
@@ -35,7 +38,24 @@ export function BookingHead({
             compact ? "size-9" : "size-11",
           )}
         >
-          <CircleCheck aria-hidden className={compact ? "size-5" : "size-6"} />
+          {fresh ? (
+            // CircleCheck's own drawing, its tick as a stroke that can be drawn
+            <svg
+              viewBox="0 0 24 24"
+              className={compact ? "size-5" : "size-6"}
+              fill="none"
+              stroke="currentColor"
+              strokeWidth={2}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden
+            >
+              <circle cx="12" cy="12" r="10" />
+              <path className="check-draw" pathLength={24} d="m9 12 2 2 4-4" />
+            </svg>
+          ) : (
+            <CircleCheck aria-hidden className={compact ? "size-5" : "size-6"} />
+          )}
         </span>
         <div className="min-w-0">
           <h1

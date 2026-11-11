@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { BadgePercent, ChevronDown } from "lucide-react";
+import { BadgePercent, ChevronDown, ChevronUp } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { CollapseHeight } from "@/components/ui/disclosure";
 import { CarrierLogo } from "@/components/rates/CarrierMark";
@@ -11,7 +11,6 @@ import type { ExpatRate } from "@/lib/pricing/expat-rates";
 import type { CheckRateInput } from "@/lib/order/expat-order";
 import { formatIDR } from "@/lib/utils/currency";
 import { useT } from "@/lib/i18n/LanguageProvider";
-import { cn } from "@/lib/utils/cn";
 
 /**
  * The picked rate beside the plan, after the live page's "Selected
@@ -21,18 +20,21 @@ import { cn } from "@/lib/utils/cn";
  * is read only; the service changes from `action`, beside its title (the
  * plan's ServicePicker). A white card on the field that stays in view on a
  * wide screen; on a phone a strip over the form (the service, then the
- * price) that opens to the rest.
+ * price) that opens to the rest. `flash` counts the times the estimate
+ * changed what it's priced on: each one washes the figure once.
  */
 export function SelectedService({
   check,
   rate,
   packed = false,
+  flash = 0,
   action,
 }: {
   check: CheckRateInput;
   rate: ExpatRate;
   /** the rate was priced again on the packages' weight */
   packed?: boolean;
+  flash?: number;
   /** what changes the service, beside the title */
   action?: React.ReactNode;
 }) {
@@ -78,7 +80,11 @@ export function SelectedService({
   const price = (
     <div className="rounded-md bg-surface-2 px-4 py-3">
       <p className="text-xs text-muted">{s("estimate")}</p>
-      <p className="mt-0.5 font-display text-2xl font-bold tracking-tight tabular-nums">{formatIDR(rate.total)}</p>
+      <p className="mt-0.5 font-display text-2xl font-bold tracking-tight tabular-nums">
+        <span key={flash} className={flash ? "estimate-flash" : undefined}>
+          {formatIDR(rate.total)}
+        </span>
+      </p>
       <p className="mt-1 text-xs leading-relaxed text-muted">{s("note")}</p>
     </div>
   );
@@ -110,7 +116,12 @@ export function SelectedService({
               <CarrierLogo carrier={rate.carrier} k={rate.carrier === "UPS" ? 22 : 18} />
               <span className="font-display text-sm font-semibold">{rate.service}</span>
             </span>
-            <ChevronDown aria-hidden className={cn("size-4 shrink-0 text-muted-2 transition-transform", open && "rotate-180")} />
+            {/* swap, never rotate: the shared disclosure idiom */}
+            {open ? (
+              <ChevronUp aria-hidden className="size-4 shrink-0 text-muted-2" />
+            ) : (
+              <ChevronDown aria-hidden className="size-4 shrink-0 text-muted-2" />
+            )}
             <span className="sr-only">{open ? s("hide") : s("show")}</span>
           </span>
           <span className="flex items-center justify-between gap-3">
@@ -121,7 +132,11 @@ export function SelectedService({
                 </Badge>
               )}
             </span>
-            <span className="font-display text-base font-bold tabular-nums">{formatIDR(rate.total)}</span>
+            <span className="font-display text-base font-bold tabular-nums">
+              <span key={flash} className={flash ? "estimate-flash" : undefined}>
+                {formatIDR(rate.total)}
+              </span>
+            </span>
           </span>
         </button>
         <CollapseHeight open={open} id="service-details">

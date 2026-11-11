@@ -36,10 +36,16 @@ export function RadioCards<T extends string | boolean>({
   columns?: 2 | 3 | 4;
 }) {
   const refs = React.useRef<(HTMLButtonElement | null)[]>([]);
+  // the dot pops in for an answer just given, never for one a draft brought
+  const [picked, setPicked] = React.useState(false);
+  const pick = (v: T) => {
+    setPicked(true);
+    onChange(v);
+  };
   const at = options.findIndex((o) => o.value === value);
   const move = (from: number, dir: 1 | -1) => {
     const next = (from + dir + options.length) % options.length;
-    onChange(options[next].value);
+    pick(options[next].value);
     refs.current[next]?.focus();
   };
   return (
@@ -65,7 +71,7 @@ export function RadioCards<T extends string | boolean>({
             role="radio"
             aria-checked={on}
             tabIndex={at === -1 ? (i === 0 ? 0 : -1) : on ? 0 : -1}
-            onClick={() => onChange(o.value)}
+            onClick={() => pick(o.value)}
             onKeyDown={(e) => {
               if (e.key === "ArrowRight" || e.key === "ArrowDown") {
                 e.preventDefault();
@@ -84,7 +90,7 @@ export function RadioCards<T extends string | boolean>({
                 on ? "border-2 border-foreground" : "border border-border-strong bg-surface-2",
               )}
             >
-              {on && <span className="size-2 rounded-full bg-brand" />}
+              {on && <span className={cn("size-2 rounded-full bg-brand", picked && "radio-check-in")} />}
             </span>
             {o.label}
           </button>
@@ -112,6 +118,8 @@ export function CheckCards<T extends string>({
   /** one column at any width (the landing's picture of this question) */
   single?: boolean;
 }) {
+  // as the radio's dot: only an answer just given pops in
+  const [picked, setPicked] = React.useState(false);
   return (
     <div role="group" aria-labelledby={labelledBy} className={cn("grid gap-2", !single && "sm:grid-cols-2")}>
       {options.map((o) => {
@@ -122,7 +130,10 @@ export function CheckCards<T extends string>({
             type="button"
             role="checkbox"
             aria-checked={on}
-            onClick={() => onChange(on ? value.filter((v) => v !== o.value) : [...value, o.value])}
+            onClick={() => {
+              setPicked(true);
+              onChange(on ? value.filter((v) => v !== o.value) : [...value, o.value]);
+            }}
             className={card(on)}
           >
             <span
@@ -132,7 +143,7 @@ export function CheckCards<T extends string>({
                 on ? "border-brand bg-brand text-brand-ink" : "border-border-strong bg-surface-2",
               )}
             >
-              {on && <Check className="size-3.5" strokeWidth={3} />}
+              {on && <Check className={cn("size-3.5", picked && "radio-check-in")} strokeWidth={3} />}
             </span>
             {o.label}
           </button>

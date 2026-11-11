@@ -21,6 +21,15 @@ The draft lives in `lib/store/useExpatOrderStore.ts` (localStorage key `rimkirim
 
 In local development every page of the flow carries a small data toggle (`components/expat-order/dev/`, the break-ui skill): **Demo data**, **Worst case** (the longest values each field accepts, an email that can't wrap, sizes typed in the wrong unit), **Empty**, **One**, and **40 packages**. It swaps the stored draft and its booking, so the screens render the data untouched; `?data=worst` on any flow URL does the same, and **Off** puts your own draft back. It never renders outside development. Keep the worst-case dataset as the check for the next change to these screens.
 
+## Feedback
+
+What the flow says back is in DESIGN.md (The expat order flow, "The plan's one action" and "Feedback"). For dev:
+
+- Toasts are Sonner, through the app's one `<Toaster />`; each call that can fire from an effect carries an `id`, so it's said once. They fire in `PlanView.tsx` (what the action waits on, the plan opened without a rate, a service changed, a failed confirm) and `visit.ts` (answers kept from an earlier visit).
+- `visit.ts` keeps two facts for the visit in `sessionStorage`, neither of which the order depends on: that the kept-answers toast was settled, and the booking Confirm application just made (so its Booking Summary draws its check once).
+- The plan's action finds what's missing in the DOM: a part marks it with `aria-invalid="true"` (a field) or `data-missing` (an answer group, the date field). A new required thing only needs one of those marks to be counted and focused.
+- **Still to build, once the real services are in** (today the rates and the address suggestions are local and instant, so there's nothing to wait on or fail): a loading state on "Check rate" and on the address search, a failed-request message with a way to try again, "no service for this route", and a failed Confirm application that says what the server said (the toast for it is there; `submit()` can only fail on an incomplete draft today).
+
 ## Stand-ins to replace
 
 | What | Prototype | Replace with | Where |

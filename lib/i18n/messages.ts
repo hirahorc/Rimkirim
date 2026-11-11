@@ -145,6 +145,12 @@ const id = {
       detailsEmail: "Isi email yang valid untuk lanjut.",
       detailsPhone: "Pilih kode negara dan isi nomor teleponmu untuk lanjut.",
       detailsPickup: "Pilih tanggal pickup untuk lanjut.",
+      missingOne: "Masih ada 1 isian yang belum lengkap.",
+      missingMany: "Masih ada {n} isian yang belum lengkap.",
+      needRate: "Cek tarifmu dulu, lalu rencanakan kepindahanmu.",
+      confirmFailed: "Aplikasimu belum bisa dikonfirmasi. Cek lagi jawabanmu, lalu coba lagi.",
+      restored: "Selamat datang kembali. Jawabanmu masih tersimpan.",
+      estimateUpdated: "Estimasi diperbarui: {price}",
     },
     service: {
       title: "Layanan terpilih",
@@ -164,6 +170,7 @@ const id = {
       changeLead: "Semua layanan untuk rutemu, dihitung untuk {kg} kg.",
       changeLeadPacked: "Semua layanan untuk rutemu, dihitung untuk {kg} kg dari paketmu.",
       selected: "Terpilih",
+      changed: "Layanan diganti ke {service}.",
     },
     eligibility: {
       title: "Cek kelayakan",
@@ -214,6 +221,10 @@ const id = {
       reasonOther: "Ceritakan alasanmu",
       reasonOtherPh: "mis. ikut pasangan",
       otherRequired: "Ceritakan dalam beberapa kata.",
+      chooseOne: "Pilih satu jawaban.",
+      chooseSome: "Pilih minimal satu.",
+      chooseDate: "Pilih tanggal.",
+      required: "Wajib diisi.",
     },
     customs: {
       title: "Bagaimana barangmu melewati bea cukai",
@@ -229,6 +240,10 @@ const id = {
       packageN: "Paket {n}",
       remove: "Hapus",
       removePackage: "Hapus paket {n}",
+      removeTitle: "Hapus paket {n}?",
+      removeBody: "Ukuran dan semua isi yang sudah kamu tulis di paket ini ikut terhapus.",
+      removeConfirm: "Ya, hapus",
+      removeCancel: "Batal",
       packaging: "Kemasan",
       types: {
         box: "Kardus",
@@ -305,6 +320,7 @@ const id = {
       pickup: "Tanggal pickup",
       pickupHint: "Hanya hari kerja, paling cepat besok.",
       pickupPh: "Pilih tanggal",
+      pickupPast: "Tanggal ini sudah tidak tersedia. Pilih tanggal lain.",
       required: "Wajib diisi.",
     },
     booking: {
@@ -2392,6 +2408,12 @@ const en: Messages = {
       detailsEmail: "Enter a valid email to continue.",
       detailsPhone: "Choose a country code and enter your phone number to continue.",
       detailsPickup: "Choose a pickup date to continue.",
+      missingOne: "One thing is still missing.",
+      missingMany: "{n} things are still missing.",
+      needRate: "Check your rate first, then plan your relocation.",
+      confirmFailed: "We couldn't confirm your application. Check your answers and try again.",
+      restored: "Welcome back. Your answers are still here.",
+      estimateUpdated: "Estimate updated: {price}",
     },
     service: {
       title: "Selected service",
@@ -2411,6 +2433,7 @@ const en: Messages = {
       changeLead: "Every service for your route, priced for {kg} kg.",
       changeLeadPacked: "Every service for your route, priced for the {kg} kg in your packages.",
       selected: "Selected",
+      changed: "Service changed to {service}.",
     },
     eligibility: {
       title: "Eligibility check",
@@ -2461,6 +2484,10 @@ const en: Messages = {
       reasonOther: "Tell us your reason",
       reasonOtherPh: "e.g. joining my partner",
       otherRequired: "Tell us in a few words.",
+      chooseOne: "Choose an answer.",
+      chooseSome: "Choose at least one.",
+      chooseDate: "Choose a date.",
+      required: "Required.",
     },
     customs: {
       title: "How your belongings clear customs",
@@ -2476,6 +2503,10 @@ const en: Messages = {
       packageN: "Package {n}",
       remove: "Remove",
       removePackage: "Remove package {n}",
+      removeTitle: "Remove package {n}?",
+      removeBody: "Its measurements and everything you listed inside it go with it.",
+      removeConfirm: "Yes, remove",
+      removeCancel: "Cancel",
       packaging: "Packaging",
       types: {
         box: "Cardboard box",
@@ -2552,6 +2583,7 @@ const en: Messages = {
       pickup: "Pickup date",
       pickupHint: "Weekdays only, from tomorrow.",
       pickupPh: "Choose a date",
+      pickupPast: "This date is no longer available. Choose another.",
       required: "Required.",
     },
     booking: {

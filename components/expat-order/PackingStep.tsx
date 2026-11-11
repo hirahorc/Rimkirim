@@ -1,11 +1,19 @@
 "use client";
 
 import * as React from "react";
-import { ChevronDown, ChevronUp, Info, Plus, Ruler, Trash2, X } from "lucide-react";
+import { Check, ChevronDown, ChevronUp, Info, Plus, Ruler, Trash2, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { SelectField } from "@/components/ui/select-field";
 import { CollapseHeight } from "@/components/ui/disclosure";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Field } from "@/components/shared/forms/Field";
 import { PACKAGING_TYPES } from "@/components/order/module-options";
 import { CURRENCIES } from "@/lib/data/currencies";
@@ -39,6 +47,14 @@ const kg = (n: number) => formatNumber(n, 1, "en");
 /** past this many packages, the finished ones open folded */
 const FOLD_FROM = 3;
 
+/** nothing left to ask of it */
+const complete = (pk: PackingPackage) => packageMeasured(pk) && packagingDescribed(pk) && pk.items.every(itemDescribed);
+/** something typed that removing it would take along */
+const hasContent = (pk: PackingPackage) =>
+  !!(pk.weight || pk.length || pk.width || pk.height || pk.packagingOther?.trim() || pk.items.some((it) => it.name.trim() || it.value));
+/** after the click's render has landed */
+const onceRendered = (run: () => void) => window.requestAnimationFrame(run);
+
 /** a size or weight past these is far likelier a slip of a unit (millimetres,
  *  grams) than a package: it's asked about, never refused. Stand-ins for ops
  *  to set (ORDER_REVIEW_NOTES.packing) */
@@ -51,7 +67,10 @@ const ODD_WEIGHT_KG = 500;
  * weight and three sides, what's inside), then the totals. The estimate
  * lives in the Selected Service beside it and follows the packages once
  * they're measured (packedPricing); this step says so under the totals.
- * Errors show once a field is left, as on Your details.
+ * Errors show once a field is left, as on Your details; `tried` (a count of
+ * the plan's action pressed while a package was still open) shows them all
+ * and unfolds the packages it waits on. A package with something typed in
+ * it asks before it's removed.
  */
 export function PackingStep({
   value,
@@ -59,6 +78,7 @@ export function PackingStep({
   originCountry,
   checkedKg,
   pricing,
+  tried = 0,
 }: {
   value: PackingInput;
   onChange: (next: PackingInput) => void;
@@ -66,6 +86,7 @@ export function PackingStep({
   /** the weight checked at Check Rate, as it's priced (rounded up) */
   checkedKg: number;
   pricing: PackedPricing;
+  tried?: number;
 }) {
   const t = useT();
   const p = (k: string) => t(`expatOrder.packing.${k}`);
@@ -78,18 +99,46 @@ export function PackingStep({
     () =>
       new Set(
         value.packages.length > FOLD_FROM
-          ? value.packages.filter((pk) => packageMeasured(pk) && packagingDescribed(pk) && pk.items.every(itemDescribed)).map((pk) => pk.id)
+          ? value.packages.filter(complete).map((pk) => pk.id)
           : [],
       ),
   );
+  // the action was pressed again: a folded package can't say what it's
+  // missing, so the ones it waits on unfold
+  const [seenTried, setSeenTried] = React.useState(tried);
+  if (seenTried !== tried) {
+    setSeenTried(tried);
+    setCollapsed((s) => new Set([...s].filter((id) => value.packages.some((pk) => pk.id === id && complete(pk)))));
+  }
+  // a notice that comes of an edit eases in; one a draft arrived with stands
+  const [edited, setEdited] = React.useState(false);
+  // the package asked about before it goes, and its number while the dialog closes
+  const [removing, setRemoving] = React.useState<string | null>(null);
+  const [removingN, setRemovingN] = React.useState(1);
+  const addRef = React.useRef<HTMLButtonElement>(null);
 
   const currency = packingCurrency(value, originCountry);
   const totals = packingTotals(value);
   const many = value.packages.length > 1;
   const anyOpen = value.packages.some((pk) => !collapsed.has(pk.id));
 
-  const setPackage = (id: string, patch: Partial<PackingPackage>) =>
+  const setPackage = (id: string, patch: Partial<PackingPackage>) => {
+    setEdited(true);
     onChange({ ...value, packages: value.packages.map((pk) => (pk.id === id ? { ...pk, ...patch } : pk)) });
+  };
+  const remove = (id: string) => onChange({ ...value, packages: value.packages.filter((x) => x.id !== id) });
+  const addPackage = () => {
+    const pk = newPackingPackage();
+    onChange({ ...value, packages: [...value.packages, pk] });
+    // the new one comes into view with its first control in hand, so it's
+    // seen to have been added however long the list above it
+    onceRendered(() => {
+      const region = document.getElementById(`package-${pk.id}`);
+      region?.querySelector<HTMLElement>("button, input")?.focus({ preventScroll: true });
+      const still = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      region?.closest("li")?.scrollIntoView({ behavior: still ? "auto" : "smooth", block: "center" });
+    });
+  };
   const toggle = (id: string) =>
     setCollapsed((s) => {
       const next = new Set(s);
@@ -144,19 +193,25 @@ export function PackingStep({
                 open={!collapsed.has(pk.id)}
                 onToggle={() => toggle(pk.id)}
                 onChange={(patch) => setPackage(pk.id, patch)}
-                onRemove={many ? () => onChange({ ...value, packages: value.packages.filter((x) => x.id !== pk.id) }) : undefined}
+                onRemove={
+                  many
+                    ? () => {
+                        // an empty one just goes; one with something in it asks first
+                        if (!hasContent(pk)) return remove(pk.id);
+                        setRemovingN(i + 1);
+                        setRemoving(pk.id);
+                      }
+                    : undefined
+                }
                 left={left}
                 leave={leave}
+                tried={tried > 0}
+                enter={edited}
               />
             </li>
           ))}
         </ol>
-        <Button
-          type="button"
-          variant="dashed"
-          className="w-full"
-          onClick={() => onChange({ ...value, packages: [...value.packages, newPackingPackage()] })}
-        >
+        <Button ref={addRef} type="button" variant="dashed" className="w-full" onClick={addPackage}>
           <Plus /> {p("addPackage")}
         </Button>
       </div>
@@ -182,7 +237,7 @@ export function PackingStep({
           </div>
         </dl>
         {pricing.specialFromKg ? (
-          <p role="status" className="mt-5 flex gap-2 rounded-md bg-info/10 px-3 py-2.5 text-sm">
+          <p role="status" className={cn("mt-5 flex gap-2 rounded-md bg-info/10 px-3 py-2.5 text-sm", edited && "banner-enter")}>
             <Info aria-hidden className="mt-0.5 size-4 shrink-0 text-info" />
             {/* the weight the standing estimate is priced on: the one
                 checked, unless the Special Rate was picked on the plan */}
@@ -194,6 +249,18 @@ export function PackingStep({
           </p>
         )}
       </div>
+
+      <RemovePackageDialog
+        n={removingN}
+        open={removing !== null}
+        onOpenChange={(o) => !o && setRemoving(null)}
+        onConfirm={() => {
+          if (removing) remove(removing);
+          setRemoving(null);
+        }}
+        // its Remove button went with the package: focus lands on the way to add one
+        focusAfter={addRef}
+      />
     </div>
   );
 }
@@ -222,6 +289,8 @@ function PackageBlock({
   onRemove,
   left,
   leave,
+  tried,
+  enter,
 }: {
   n: number;
   pkg: PackingPackage;
@@ -232,15 +301,20 @@ function PackageBlock({
   onRemove?: () => void;
   left: Record<string, boolean>;
   leave: (k: string) => () => void;
+  /** the plan's action was pressed: every error shows, left or not */
+  tried: boolean;
+  /** notices ease in (they come of an edit, not of a draft) */
+  enter: boolean;
 }) {
   const t = useT();
   const p = (k: string) => t(`expatOrder.packing.${k}`);
   const regionId = `package-${pkg.id}`;
+  const seen = (k: string) => left[k] || tried;
 
   const measure = (side: "weight" | "length" | "width" | "height") => {
     const k = `${pkg.id}.${side}`;
     const v = Number.parseFloat(pkg[side]);
-    const error = left[k] && !(v > 0) ? (pkg[side] ? p("aboveZero") : p("required")) : undefined;
+    const error = seen(k) && !(v > 0) ? (pkg[side] ? p("aboveZero") : p("required")) : undefined;
     return (
       <Field label={p(side)} error={error}>
         <UnitInput
@@ -257,7 +331,7 @@ function PackageBlock({
 
   const other = pkg.packaging === "other";
   const count = pkg.items.reduce((s, it) => s + (Number.parseFloat(it.quantity) || 0), 0);
-  const done = packageMeasured(pkg) && packagingDescribed(pkg) && pkg.items.every(itemDescribed);
+  const done = complete(pkg);
   const touched = !!(pkg.weight || pkg.length || pkg.width || pkg.height || pkg.items.some((it) => it.name.trim()));
   const summary = done
     ? [
@@ -293,6 +367,13 @@ function PackageBlock({
             <ChevronDown aria-hidden className="size-4 shrink-0 text-muted-2" />
           )}
           <span className="shrink-0 font-display text-sm font-semibold">{p("packageN").replace("{n}", String(n))}</span>
+          {/* nothing left to ask of it: the plan's done mark, small */}
+          {done && (
+            <span className="grid size-4 shrink-0 place-items-center rounded-full bg-brand text-brand-ink">
+              <Check aria-hidden className="size-2.5" strokeWidth={3.5} />
+              <span className="sr-only">{t("expatOrder.plan.done")}</span>
+            </span>
+          )}
           {!open && <span className="truncate text-sm text-muted">{summary}</span>}
         </button>
         {onRemove && (
@@ -326,7 +407,7 @@ function PackageBlock({
               <Field
                 label={p("packagingOther")}
                 hint={p("packagingOtherHint")}
-                error={left[`${pkg.id}.packagingOther`] && !packagingDescribed(pkg) ? p("required") : undefined}
+                error={seen(`${pkg.id}.packagingOther`) && !packagingDescribed(pkg) ? p("required") : undefined}
               >
                 <Input
                   value={pkg.packagingOther ?? ""}
@@ -354,7 +435,7 @@ function PackageBlock({
             {/* a number that looks like the wrong unit: asked about, not
                 refused, since the estimate follows it at once */}
             {(longest > ODD_SIDE_CM || heavy) && (
-              <p role="status" className="mt-3 flex gap-2 rounded-md bg-info/10 px-3 py-2.5 text-sm">
+              <p role="status" className={cn("mt-3 flex gap-2 rounded-md bg-info/10 px-3 py-2.5 text-sm", enter && "banner-enter")}>
                 <Info aria-hidden className="mt-0.5 size-4 shrink-0 text-info" />
                 <span>
                   {longest > ODD_SIDE_CM &&
@@ -370,11 +451,12 @@ function PackageBlock({
             <legend className="text-sm font-medium">{p("inside")}</legend>
             <ul className="mt-1 divide-y divide-border">
               {pkg.items.map((it, j) => {
-                const nameErr = left[`${it.id}.name`] && !it.name.trim() ? p("required") : undefined;
-                const qtyErr = left[`${it.id}.qty`] && !(Number.parseFloat(it.quantity) >= 1) ? p("required") : undefined;
+                const nameErr = seen(`${it.id}.name`) && !it.name.trim() ? p("required") : undefined;
+                const qtyErr = seen(`${it.id}.qty`) && !(Number.parseFloat(it.quantity) >= 1) ? p("required") : undefined;
                 return (
                   <li
                     key={it.id}
+                    data-item={it.id}
                     className="grid grid-cols-[4.5rem_minmax(0,1fr)_2.75rem] items-start gap-x-3 gap-y-3 py-3 sm:grid-cols-[minmax(0,1fr)_4.5rem_9rem_2.75rem]"
                   >
                     <div className="col-span-3 sm:col-span-1">
@@ -430,7 +512,12 @@ function PackageBlock({
             </ul>
             <button
               type="button"
-              onClick={() => onChange({ items: [...pkg.items, newPackingItem()] })}
+              onClick={() => {
+                const it = newPackingItem();
+                onChange({ items: [...pkg.items, it] });
+                // the new row's name is what's typed next
+                onceRendered(() => document.querySelector<HTMLElement>(`[data-item="${it.id}"] input`)?.focus());
+              }}
               className="link-mark tap-row relative mt-1 inline-flex items-center gap-1.5 text-sm"
             >
               <Plus aria-hidden className="size-4" /> {p("addItem")}
@@ -452,5 +539,59 @@ function PrefixedInput({ prefix, className, ...props }: { prefix: string } & Rea
       </span>
       <Input {...props} className={cn("pl-12 tabular-nums", className)} />
     </div>
+  );
+}
+
+/** Removing a package that has something typed in it takes that along, and
+ *  nothing brings it back: asked first, as the app asks before every delete.
+ *  Once it's gone its own Remove button is too, so focus goes to `focusAfter`. */
+function RemovePackageDialog({
+  n,
+  open,
+  onOpenChange,
+  onConfirm,
+  focusAfter,
+}: {
+  n: number;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onConfirm: () => void;
+  focusAfter: React.RefObject<HTMLButtonElement | null>;
+}) {
+  const t = useT();
+  const p = (k: string) => t(`expatOrder.packing.${k}`);
+  const removed = React.useRef(false);
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent
+        className="max-w-md"
+        onCloseAutoFocus={(e) => {
+          if (!removed.current) return;
+          removed.current = false;
+          e.preventDefault();
+          focusAfter.current?.focus();
+        }}
+      >
+        <DialogHeader>
+          <DialogTitle>{p("removeTitle").replace("{n}", String(n))}</DialogTitle>
+          <DialogDescription>{p("removeBody")}</DialogDescription>
+        </DialogHeader>
+        <DialogFooter>
+          <Button type="button" variant="secondary" onClick={() => onOpenChange(false)}>
+            {p("removeCancel")}
+          </Button>
+          <Button
+            type="button"
+            variant="danger"
+            onClick={() => {
+              removed.current = true;
+              onConfirm();
+            }}
+          >
+            {p("removeConfirm")}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }
