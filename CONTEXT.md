@@ -55,7 +55,7 @@ The team's read, from the Packages, of which items customs is likely to tax; gui
 _Avoid_: Duty estimate, tax quote
 
 **Invoice**:
-The final price, issued once the packages reach Rimkirim's warehouse and have been measured and weighed again.
+The final price, issued late: once the packages have reached Indonesia, cleared customs, arrived at Rimkirim's warehouse and been measured and weighed again there. The customer pays it before Rimkirim delivers to the destination Address. It never comes at pickup.
 _Avoid_: Final quotation, bill
 
 **Selected Rate**:
@@ -73,7 +73,7 @@ The provisional internal flag an order carries from its Eligibility Check answer
 _Avoid_: Clearance type, eligibility result, channel (in copy)
 
 **Customs Path**:
-One of the three ways Expat Relocation belongings clear Indonesian customs: Relocation Goods, Passenger Goods or Personal Shipment, each with the documents it needs. The web explains all three but never asks the customer to pick; at review ops recommends the most favourable one their documents allow, and the customer decides.
+One of the three ways Expat Relocation belongings clear Indonesian customs: Relocation Goods, Passenger Goods or Personal Shipment, each with the documents it needs. The web explains all three but never asks the customer to pick; at review ops recommends the one that suits the booking best, and only then asks for its documents (none have been sent, so none are checked, before that); the customer decides.
 _Avoid_: Clearance option, route (for customs)
 
 **Relocation Goods**:

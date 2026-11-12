@@ -191,6 +191,8 @@ export function BookingView({ number }: { number: string }) {
                   </li>
                 ))}
               </ol>
+              {/* not a step: when the invoice comes, under the steps and apart from the pickup */}
+              <p className="mt-5 border-t border-border pt-4 text-sm leading-relaxed text-muted">{f.invoice}</p>
             </section>
           </Card>
 

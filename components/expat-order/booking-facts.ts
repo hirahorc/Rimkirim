@@ -120,6 +120,10 @@ export function bookingFacts(b: ExpatBooking, t: T) {
         body: bk("next3Body").replace("{date}", longDate(d.pickupDate)),
       },
     ],
+    // The steps stop at pickup. When the invoice comes is said apart from
+    // them, so it's never read as part of the pickup: it's sent once the
+    // packages have arrived at Rimkirim's warehouse in Indonesia
+    invoice: bk("nextInvoice"),
   };
 }
 

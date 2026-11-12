@@ -120,6 +120,7 @@ export function BookingEmail({ facts: f, t }: { facts: BookingFacts; t: T }) {
                         <span style={{ color: MUTED }}>{n.body}</span>
                       </p>
                     ))}
+                    <p style={{ margin: "16px 0 0", color: MUTED, fontSize: 14, lineHeight: "21px" }}>{f.invoice}</p>
                   </td>
                 </tr>
                 <tr>
