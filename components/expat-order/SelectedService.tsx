@@ -15,7 +15,7 @@ import { cn } from "@/lib/utils/cn";
 
 /**
  * The picked rate beside the plan, after the live page's "Selected
- * service": carrier and service, from and to, transit, the charged weight and
+ * service": carrier and service, from and to, transit, the chargeable weight and
  * the estimated price. Once the packages are measured, the weight and price
  * are the packages' (packedPricing), and the weight says so. The card itself
  * is read only; the service changes from `action`, beside its title (the

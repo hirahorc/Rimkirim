@@ -34,6 +34,18 @@ _Avoid_: 3PL rate, regular rate
 The price shown at Check Rate for the entered weight, and priced again on the Packages' chargeable weight once every package is measured; the first of two estimates before the Invoice.
 _Avoid_: Quote, price (unqualified)
 
+**Actual Weight**:
+What a packed piece weighs on a scale.
+_Avoid_: Real weight, gross weight
+
+**Volumetric Weight**:
+A packed piece's size turned into kilos: length × width × height in cm ÷ 5000.
+_Avoid_: Size weight, dimensional weight, "by size"
+
+**Chargeable Weight**:
+What a piece is priced on: the higher of its Actual Weight and its Volumetric Weight. A shipment's is its pieces' added up; the price is that times the rate per kg, plus a handling surcharge on any piece that needs one.
+_Avoid_: Charged weight, billable weight
+
 **Quotation**:
 The team's estimate of the shipping cost, sent after reviewing a booking and its Packages; still not the final price, and never a promise on duty or tax, which only customs decides.
 _Avoid_: Final price, official price, quote (for the Check Rate figure)

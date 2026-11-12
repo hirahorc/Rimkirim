@@ -69,13 +69,16 @@ export function ExpatClosing() {
         </div>
 
         {/* the tear line: dashes inset to the text, a notch punched out of
-            each edge where the desk shows through. It draws left to right
-            as it arrives, the way the hero's route does, just before the
-            stub's rails (globals.css, .ticket-tear) */}
+            each edge where the desk shows through. Each notch is a half
+            disc inside the edge: a whole one hung half outside it reached
+            past a phone's screen, where the ticket sits 8px from the side,
+            and the page slid sideways. The line draws left to right as it
+            arrives, the way the hero's route does, just before the stub's
+            rails (globals.css, .ticket-tear) */}
         <div aria-hidden className="ticket-tear relative">
           <div className="ticket-tear-line mx-5 border-t border-dashed border-background/25 sm:mx-10 lg:mx-14" />
-          <span className="absolute left-0 top-0 size-6 -translate-x-1/2 -translate-y-1/2 rounded-full bg-background" />
-          <span className="absolute right-0 top-0 size-6 -translate-y-1/2 translate-x-1/2 rounded-full bg-background" />
+          <span className="absolute left-0 top-0 h-6 w-3 -translate-y-1/2 rounded-r-full bg-background" />
+          <span className="absolute right-0 top-0 h-6 w-3 -translate-y-1/2 rounded-l-full bg-background" />
         </div>
 
         <div className="px-5 pb-10 pt-8 sm:px-10 lg:px-14 lg:pb-14">

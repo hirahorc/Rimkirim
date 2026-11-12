@@ -20,10 +20,12 @@ const YOURS = ["you1", "you2", "you3"] as const;
  * promise that shipping is easy: what we do, and the three things that stay
  * with the customer. Someone comparing providers can assess that, and sales
  * stops answering the same basic questions. Two de-boxed lists, not cards;
- * ours are ticked, theirs are numbered because they are a to-do, and beside
- * them the team on WhatsApp walking a customer through all three, on the
- * customer's iPhone (ThreadScene), which is how "One team on WhatsApp"
- * works. Then the
+ * ours are ticked, theirs are numbered because they are a to-do. Each point
+ * is one line with nothing under it, so it has to say the whole of it
+ * ("Send the documents we ask for", not "Have your documents ready"); the
+ * detail is the FAQ's. Beside them the team on WhatsApp walking a customer
+ * through all three, on the customer's iPhone (ThreadScene), which is how
+ * "One team on WhatsApp" works. Then the
  * proof: real pickups for Rimkirim customers (PickupPhotos, a row of
  * slices), and the carriers who fly it close the band, proof for
  * "Air shipping" above, where as a section of their own they read as one
@@ -48,10 +50,11 @@ export function WhatWeCoordinate() {
           />
         </div>
 
-        {/* the lists one above the other and the phone beside them, held
-            still as they scroll past it (the CIPL's arrangement in "What you
-            can ship"); side by side, the lists left the phone a column of
-            its own twice as tall as theirs */}
+        {/* the lists one above the other and the phone beside them (the
+            CIPL's arrangement in "What you can ship"): a line a point, the
+            two together stand about as tall as the phone, which holds still
+            if they ever grow past it; side by side, the lists left the phone
+            a column of its own twice as tall as theirs */}
         <div className="mt-8 grid gap-12 sm:mt-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,28rem)] lg:gap-14">
           <div>
             <h3
@@ -66,10 +69,7 @@ export function WhatWeCoordinate() {
                   <span className="mt-0.5 grid size-5 shrink-0 place-items-center rounded-full bg-tone-ink text-background">
                     <Check aria-hidden className="size-3" strokeWidth={3} />
                   </span>
-                  <div>
-                    <p className="font-medium">{t(`expat.coordinate.${k}Title`)}</p>
-                    <p className="mt-0.5 text-sm leading-relaxed text-muted">{t(`expat.coordinate.${k}Body`)}</p>
-                  </div>
+                  <p className="text-balance font-medium">{t(`expat.coordinate.${k}`)}</p>
                 </li>
               ))}
             </ul>
@@ -86,10 +86,7 @@ export function WhatWeCoordinate() {
                   <span className="mt-0.5 grid size-5 shrink-0 place-items-center rounded-full border border-border-strong text-xs font-medium tabular-nums text-muted">
                     {i + 1}
                   </span>
-                  <div>
-                    <p className="font-medium">{t(`expat.coordinate.${k}Title`)}</p>
-                    <p className="mt-0.5 text-sm leading-relaxed text-muted">{t(`expat.coordinate.${k}Body`)}</p>
-                  </div>
+                  <p className="text-balance font-medium">{t(`expat.coordinate.${k}`)}</p>
                 </li>
               ))}
             </ol>

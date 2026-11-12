@@ -532,7 +532,9 @@ line; never a centred label over marks pushed to the band's two edges.
 
 **Each section in the viewport.** The hero owns the first screen from `lg`: it fills the viewport
 under the bar, less a 1.5rem peek of the reviews' sheet (capped for very tall screens). Short
-sections (pricing, the FAQ, the closing ticket) fit one desktop screen; long ones (what you can
+sections (the FAQ, the closing ticket) fit one desktop screen; pricing runs a little over one
+since it became the sum's four steps, and its example holds still beside them as they scroll
+(`lg:sticky`); long ones (what you can
 send, who does what, the comparison, customs) read as a scroll with their own landmarks, a
 sub-head between hairlines every screen or so. No section is forced to a full screen: snapping a
 long page into screens hides content behind its own crop.
@@ -920,10 +922,12 @@ home hero's floating verdicts and the expat hero's departure board. Treat any ot
   shows it, framed and built as the journey's scenes are, from the same pieces (`SceneParts`:
   the filler line, the flag, the chat card) on the same ground, so the page's
   illustrations are one figure language. One hero surface a gutter from the top and sides, off the
-  bottom, at most one satellite. Pricing is two pieces as the warehouse weighs them before the
-  invoice ("Weighed at our warehouse", the readout: real, by size, charged), a box charged by its
-  size beside a suitcase charged by its weight, then the charged weight, the one big number; it replaced the line
-  drawings of the size guide, whose rule and tip are now the caption under it.
+  bottom, at most one satellite. Pricing is the section's sum on an example ("Example: one box,
+  one suitcase", the readout: actual, volumetric, chargeable): a box charged on its volumetric
+  weight beside a suitcase charged on its actual weight and marked for a handling surcharge, then
+  the chargeable weight, the one big number, and under it the rest of the sum in words where a
+  figure would be (times the rate per kilo, plus the suitcase's surcharge): the page quotes neither.
+  It has no caption: the rule is the section's step 1 and what brings a surcharge its step 4.
   Who does what is the team on WhatsApp after reviewing the packing list (the wine to take out,
   the new phone likely taxed), then confirming the pickup on the day the customer chose, on the
   customer's phone: the
@@ -936,10 +940,11 @@ home hero's floating verdicts and the expat hero's departure board. Treat any ot
   in another product's colours, because it is that product on a phone, and only inside the screen.
   It ends on "Pickup confirmed". The phone is four fifths of a wide stage and nearly all of a compact
   one, so its 17pt type reads at 12 to 15px; the stage is portrait (8/9, 4/5 on a phone), beside
-  the two lists, stacked, and held still as they scroll (`lg:sticky`).
+  the two lists, stacked. Each point is one line with no description under it, so the two lists
+  together stand about as tall as the phone; it holds still (`lg:sticky`) if they grow past it.
   Pricing, What you can ship, Who does what and the customs section each reveal once as the
   journey does (`.jr-reveal`, `useSectionReveal`): the head, the illustration, then the section's
-  own pieces one by one (Pricing's four factors in the order a price is built from them, its
+  own pieces one by one (Pricing's four steps in the order the sum is done, its
   promise and its button; What you can ship's six cards in reading order, what it all travels in,
   then what to check before sending;
   Who does what's two lists; the customs section's three routes, the rates, what catches people
@@ -1427,8 +1432,9 @@ with white words and the `lg` corner, and it sits inside the text column.
 - **Above the tear line, the ask:** the closing headline at up to 48px, one line under it in
   `text-dusk-soft`, and the lime "Check your rate", which is at its loudest on dusk.
 - **The tear line:** a dashed hairline at white 25%, inset to the text, with a 24px notch punched
-  out of each edge where the desk shows through. The notches are white circles, so the ticket
-  must sit on the white desk.
+  out of each edge where the desk shows through. The notches are white half discs set inside
+  the edge, so the ticket must sit on the white desk; a whole circle hung half outside the edge
+  reaches past a phone's screen, where the ticket sits 8px from the side.
 - **Below it, the stub:** what happens next, on the step rail in white at 20%, each step with its
   screen above its words (The section scenes, Motion): white cards straight on the dusk, fading
   out at the foot, the chapter's magenta for their accents. On a phone the stub is the house scroll strip,
@@ -1509,7 +1515,7 @@ like the landing, and keeps the landing's bar, which trades the lime "Check your
   read at 50%, can't be selected, a line over it says to check again, and the button is lime
   again.
 - **The rate card:** the offer card (below), the same one Back For Good's Cek Tarif shows, with
-  "Estimated … for 30 kg" under the price for the charged weight. Every card carries the lime
+  "Estimated … for 30 kg" under the price for the chargeable weight. Every card carries the lime
   "Select this rate" (The One-Voice Rule's one list); on the field the plain cards are white with
   no outline, and a Special Rate wears the red tab and its fading border.
 - **Choice cards** (the Eligibility Check): white planes with a hairline that frame in Ink (2px,

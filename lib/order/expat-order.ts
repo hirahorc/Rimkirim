@@ -223,7 +223,7 @@ export interface PackedPricing {
   /** the rate the estimate stands on: repriced when `packed` */
   rate: ExpatRate;
   packed: boolean;
-  /** the packages' charged weight once they're all measured, else 0 */
+  /** the packages' chargeable weight once they're all measured, else 0 */
   kg: number;
   /** set when a Special Rate couldn't be repriced: where it starts */
   specialFromKg?: number;
