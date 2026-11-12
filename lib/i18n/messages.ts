@@ -118,6 +118,8 @@ const id = {
       weightPh: "mis. 30",
       weightHint: "Perkiraan total sudah cukup untuk sekarang. Berat dan ukuran tiap paket kamu isi nanti.",
       weightErr: "Isi berat di atas 0 kg.",
+      checking: "Mengecek…",
+      stale: "Ada yang kamu ubah. Cek tarif lagi untuk estimasi baru.",
       required: "Wajib diisi.",
       submit: "Cek tarif",
       resultsTitle: "Estimasimu",
@@ -151,6 +153,7 @@ const id = {
       confirmFailed: "Aplikasimu belum bisa dikonfirmasi. Cek lagi jawabanmu, lalu coba lagi.",
       restored: "Selamat datang kembali. Jawabanmu masih tersimpan.",
       estimateUpdated: "Estimasi diperbarui: {price}",
+      confirming: "Mengonfirmasi…",
     },
     service: {
       title: "Layanan terpilih",
@@ -171,6 +174,7 @@ const id = {
       changeLeadPacked: "Semua layanan untuk rutemu, dihitung untuk {kg} kg dari paketmu.",
       selected: "Terpilih",
       changed: "Layanan diganti ke {service}.",
+      updating: "Memperbarui…",
     },
     eligibility: {
       title: "Cek kelayakan",
@@ -2381,6 +2385,8 @@ const en: Messages = {
       weightPh: "e.g. 30",
       weightHint: "A rough total is fine for now. You'll add each package's weight and size later.",
       weightErr: "Enter a weight above 0 kg.",
+      checking: "Checking…",
+      stale: "You changed something. Check your rate again for a new estimate.",
       required: "Required.",
       submit: "Check rates",
       resultsTitle: "Your estimate",
@@ -2414,6 +2420,7 @@ const en: Messages = {
       confirmFailed: "We couldn't confirm your application. Check your answers and try again.",
       restored: "Welcome back. Your answers are still here.",
       estimateUpdated: "Estimate updated: {price}",
+      confirming: "Confirming…",
     },
     service: {
       title: "Selected service",
@@ -2434,6 +2441,7 @@ const en: Messages = {
       changeLeadPacked: "Every service for your route, priced for the {kg} kg in your packages.",
       selected: "Selected",
       changed: "Service changed to {service}.",
+      updating: "Updating…",
     },
     eligibility: {
       title: "Eligibility check",

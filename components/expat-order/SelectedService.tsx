@@ -11,6 +11,7 @@ import type { ExpatRate } from "@/lib/pricing/expat-rates";
 import type { CheckRateInput } from "@/lib/order/expat-order";
 import { formatIDR } from "@/lib/utils/currency";
 import { useT } from "@/lib/i18n/LanguageProvider";
+import { cn } from "@/lib/utils/cn";
 
 /**
  * The picked rate beside the plan, after the live page's "Selected
@@ -21,13 +22,16 @@ import { useT } from "@/lib/i18n/LanguageProvider";
  * plan's ServicePicker). A white card on the field that stays in view on a
  * wide screen; on a phone a strip over the form (the service, then the
  * price) that opens to the rest. `flash` counts the times the estimate
- * changed what it's priced on: each one washes the figure once.
+ * changed what it's priced on: each one washes the figure once. While the
+ * packages it follows are still being typed it's `updating`: the figure
+ * stands back until the new one lands.
  */
 export function SelectedService({
   check,
   rate,
   packed = false,
   flash = 0,
+  updating = false,
   action,
 }: {
   check: CheckRateInput;
@@ -35,6 +39,7 @@ export function SelectedService({
   /** the rate was priced again on the packages' weight */
   packed?: boolean;
   flash?: number;
+  updating?: boolean;
   /** what changes the service, beside the title */
   action?: React.ReactNode;
 }) {
@@ -79,8 +84,14 @@ export function SelectedService({
 
   const price = (
     <div className="rounded-md bg-surface-2 px-4 py-3">
-      <p className="text-xs text-muted">{s("estimate")}</p>
-      <p className="mt-0.5 font-display text-2xl font-bold tracking-tight tabular-nums">
+      <p className="text-xs text-muted">{updating ? s("updating") : s("estimate")}</p>
+      <p
+        aria-busy={updating || undefined}
+        className={cn(
+          "mt-0.5 font-display text-2xl font-bold tracking-tight tabular-nums transition-opacity duration-150",
+          updating && "opacity-50",
+        )}
+      >
         <span key={flash} className={flash ? "estimate-flash" : undefined}>
           {formatIDR(rate.total)}
         </span>
@@ -109,7 +120,8 @@ export function SelectedService({
           aria-expanded={open}
           aria-controls="service-details"
           onClick={() => setOpen((o) => !o)}
-          className="mt-3 flex w-full flex-col gap-2 rounded-sm text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/50"
+          // the press is answered at once, in colour (and let go of over 150ms)
+          className="relative mt-3 flex w-full flex-col gap-2 rounded-sm text-left after:-inset-x-2 after:-inset-y-1.5 after:absolute after:rounded-sm after:transition-colors active:after:bg-foreground/[0.04] active:after:duration-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/50"
         >
           <span className="flex items-center justify-between gap-3">
             <span className="flex min-w-0 items-center gap-2.5">
@@ -132,7 +144,12 @@ export function SelectedService({
                 </Badge>
               )}
             </span>
-            <span className="font-display text-base font-bold tabular-nums">
+            <span
+              className={cn(
+                "font-display text-base font-bold tabular-nums transition-opacity duration-150",
+                updating && "opacity-50",
+              )}
+            >
               <span key={flash} className={flash ? "estimate-flash" : undefined}>
                 {formatIDR(rate.total)}
               </span>

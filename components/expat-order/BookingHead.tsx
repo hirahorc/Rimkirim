@@ -11,7 +11,9 @@ import { cn } from "@/lib/utils/cn";
  * to keep, on its own Panel 2 strip with the copy button. The landing's
  * closing ticket shows this very head in its last picture, `compact` and
  * without the copy button. `fresh` is the moment the application was
- * confirmed: the check draws itself, that once.
+ * confirmed, said in three beats, that once: the success mark arrives, its
+ * check draws itself, then the booking number's strip pops. The rest of the
+ * summary is there to be read, and stands.
  */
 export function BookingHead({
   number,
@@ -36,6 +38,7 @@ export function BookingHead({
           className={cn(
             "grid shrink-0 place-items-center rounded-full bg-success/15 text-success",
             compact ? "size-9" : "size-11",
+            fresh && "booked-in",
           )}
         >
           {fresh ? (
@@ -73,7 +76,10 @@ export function BookingHead({
         className={cn(
           "flex items-center justify-between gap-3 rounded-md bg-surface-2",
           compact ? "mt-4 px-3 py-2.5" : "mt-6 px-4 py-3",
+          fresh && "unlock-pop",
         )}
+        // the third beat: after the check has started to draw
+        style={fresh ? { animationDelay: "450ms" } : undefined}
       >
         <div className="min-w-0">
           <p className="text-xs text-muted">{bk("number")}</p>

@@ -152,6 +152,13 @@ function AddressCard({
   const t = useT();
   const d = (k: string) => t(`expatOrder.details.${k}`);
   const [editing, setEditing] = React.useState(false);
+  // the card and its editor take each other's place: the one coming in
+  // fades up (`swap-in`), from the first Change on, never as the page loads
+  const [swapped, setSwapped] = React.useState(false);
+  const swap = (to: boolean) => {
+    setSwapped(true);
+    setEditing(to);
+  };
   const change = React.useRef<HTMLButtonElement>(null);
   // closing the editor hands focus back to where it was opened from
   const wasEditing = React.useRef(false);
@@ -164,26 +171,30 @@ function AddressCard({
 
   return (
     <div className={cn("min-w-0", editing && "sm:col-span-2")}>
+      {/* keyed, so each is put on the page anew: a div that only changed its
+          class would have nothing to ease in from */}
       {editing ? (
-        <AddressEditor
-          side={side}
-          label={label}
-          country={country}
-          value={value}
-          onCancel={() => setEditing(false)}
-          onSave={(next) => {
-            onSave(next);
-            setEditing(false);
-          }}
-        />
+        <div key="editor" className={cn(swapped && "swap-in")}>
+          <AddressEditor
+            side={side}
+            label={label}
+            country={country}
+            value={value}
+            onCancel={() => swap(false)}
+            onSave={(next) => {
+              onSave(next);
+              swap(false);
+            }}
+          />
+        </div>
       ) : (
-        <div className="h-full rounded-md bg-surface-2 px-4 py-3 [overflow-wrap:anywhere]">
+        <div key="card" className={cn("h-full rounded-md bg-surface-2 px-4 py-3 [overflow-wrap:anywhere]", swapped && "swap-in")}>
           <div className="flex items-baseline justify-between gap-3">
             <p className="text-xs font-medium text-muted">{label}</p>
             <button
               ref={change}
               type="button"
-              onClick={() => setEditing(true)}
+              onClick={() => swap(true)}
               className="link-mark tap-target relative shrink-0 text-xs"
             >
               {d("change")}
@@ -206,7 +217,7 @@ function AddressCard({
                 variant="secondary"
                 size="sm"
                 className="tap-target relative bg-background"
-                onClick={() => setEditing(true)}
+                onClick={() => swap(true)}
               >
                 <MapPin /> {d("addDetail")}
               </Button>

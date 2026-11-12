@@ -618,6 +618,32 @@ review card, and the card answers with one box-shadow ring flash (`:target`, 1.2
 only) then goes quiet; under reduced motion the flash becomes a still ring while targeted.
 0.3–0.5s (the flash, at 1.2s, is the slow end of earned), `--ease-out-soft`, always guarded by
 `prefers-reduced-motion`.
+
+**One milestone in three beats.** A milestone plays one animation. The expat Booking Summary is
+the single exception: an application just confirmed is what the whole flow was for, so its
+arrival is three beats read as one moment, done inside a second. The success mark arrives
+(`booked-in`: scale 0.9 → 1 with a fade, 250ms), its check draws (`check-draw`, from 150ms), and
+the booking number's strip pops (`unlock-pop`, from 450ms). Only on arriving from Confirm
+application, never on a reload or a link back; the summary's rows are there to be read, and
+never move. Under reduced motion all of it simply stands.
+
+**Pace: a moment of commitment takes its moment.** Nothing in the prototype is slow, and that was
+the fault: handing something over and getting it back in the same frame reads as nothing having
+been done. So the two moments where the customer commits take at least a floor, as *the longer of
+the work and the floor* (`components/expat-order/pace.ts`), which is also what keeps a spinner
+from flickering once the work is a real request:
+- **Check rate, 700ms.** The button holds its `loading` state and reads "Checking…"; then the
+  estimate eases in (`.reveal`: 10px up with a fade, 0.5s) and the page goes to it. An estimate a
+  draft opened with stands, with no wait and no entrance.
+- **Confirm application, 1.2s.** The button reads "Confirming…" in its `loading` state while the
+  rest of the plan stands still at 60% (`inert`); then the Booking Summary, and its three beats.
+- **The estimate that follows the packages, 600ms after the last change to them.** While they're
+  being typed the figure stands back at 50% under "Updating…", then lands (washed, if what it's
+  priced on changed). Not another number on every keystroke.
+
+Everything else stays instant, on purpose: moving between the plan's parts, picking a rate (its
+button shows it's on its way, and that's all), changing the service (its price was on the card
+that was picked), saving an address, searching one. A pause there would only be a delay.
 The system holds **exactly one looping animation per landing**, each named and bounded below: the
 home hero's floating verdicts and the expat hero's departure board. Treat any other loop as drift.
 
@@ -1477,7 +1503,11 @@ like the landing, and keeps the landing's bar, which trades the lime "Check your
   share the line (a 320px phone, a nine-figure estimate, "Confirm application"), the bar wraps
   and the button takes the line under the estimate, full width.
 - **Check Rate:** one white card, Moving from beside Moving to, then the weight and the button
-  under a hairline. Fields are the system's Panel 2 inputs.
+  under a hairline. Fields are the system's Panel 2 inputs. An estimate is the answer to a
+  check (Motion, Pace): the button is lime while there's something to check and quiet once the
+  estimate on the page is the answer. Change an input and that estimate is stale: it stays to be
+  read at 50%, can't be selected, a line over it says to check again, and the button is lime
+  again.
 - **The rate card:** the offer card (below), the same one Back For Good's Cek Tarif shows, with
   "Estimated … for 30 kg" under the price for the charged weight. Every card carries the lime
   "Select this rate" (The One-Voice Rule's one list); on the field the plain cards are white with
@@ -1511,8 +1541,10 @@ like the landing, and keeps the landing's bar, which trades the lime "Check your
     answer just given.
   - *The estimate.* When what it's priced on changes (the packages' weight comes in or goes,
     another service is picked), the figure is washed once in lime (`estimate-flash`, 0.6s,
-    colour only) wherever it shows, and the change is said in a polite live region. Its moving
-    while a weight is typed is no news, and gets neither.
+    colour only) wherever it shows, and the change is said in a polite live region. While the
+    packages are being typed it stands back under "Updating…" and lands a beat after the last
+    change (Motion, Pace); a change that leaves what it's priced on as it was lands without the
+    wash.
   - *Toasts* (the app's one transient ping, never a button in them): an answer kept from an
     earlier visit, once a visit (plain); the plan opened without a rate, before it goes to
     Check Rate (info); another service picked (success); what the action still waits on
@@ -1522,10 +1554,23 @@ like the landing, and keeps the landing's bar, which trades the lime "Check your
     it; a removed package hands it to "Add a package".
   - *Removing a package* that has something typed in it asks first (the app's delete dialog,
     Stop Red on the confirming button); an empty one just goes.
-  - *The Booking Summary's check* draws itself the once, on arriving from Confirm application,
-    never on a reload.
+  - *The Booking Summary* arrives in its three beats (Motion, One milestone in three beats),
+    the once, on arriving from Confirm application, never on a reload.
   - A notice that an edit brings (a size that reads like the wrong unit, a Special Rate that no
     longer applies) eases in (`banner-enter`); one a draft arrived with stands.
+  - *Nothing jumps.* What an answer asks next (a follow-up, an "Others" field) is always on the
+    page and opens under its answer with the disclosure's height motion, so the questions below
+    glide down; closed it's inert and hidden, and a draft that has the answer opens with it
+    standing. The rest of a long package list on the Booking Summary opens the same way. An
+    address card and its editor take each other's place with the one coming in fading up 4px
+    over 200ms (`swap-in`, `@starting-style`; the layout itself moves at once), from the first
+    Change on. A part that can't be reached yet stands at 60% and comes up over 200ms as the
+    part above it is finished.
+  - *Every toggle answers the press* at once, in colour, over its whole line (a package's head,
+    "See more rates", the Selected Service's strip on a phone), and lets go over 150ms.
+  - *The loading spinner* (the saved draft loading, as each page of the flow opens) stays out
+    of sight for its first 200ms: a load shorter than that, which is nearly all of them, shows
+    the field alone instead of a flash of spinner.
 - **The Packages step:** inside the step's white card, each package is a Panel 2 block with no
   outline (`rounded-md`, a notch down from the card, The Step-Down Rule), whose head opens and
   closes it with the swapped chevron and names it in one line while closed. Inside: its

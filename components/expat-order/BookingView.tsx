@@ -6,7 +6,7 @@ import { ArrowLeft, BadgePercent, MessageCircle, PackageOpen } from "lucide-reac
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Disclosure } from "@/components/ui/disclosure";
+import { CollapseHeight, Disclosure } from "@/components/ui/disclosure";
 import { ReviewNote } from "@/components/expat/ReviewNote";
 import { ORDER_REVIEW_NOTES } from "@/lib/data/expat-order-notes";
 import { waLink } from "@/lib/contact";
@@ -32,6 +32,17 @@ function Row({ label, children }: { label: string; children: React.ReactNode }) 
   );
 }
 
+/** one package in the summary: what it is, its measures, what's inside */
+function PackageLine({ pk }: { pk: { title: string; measures: string; items: { name: string; quantity: number }[] } }) {
+  return (
+    <li>
+      <p>{pk.title}</p>
+      <p className="tabular-nums text-muted">{pk.measures}</p>
+      <p className="text-muted">{pk.items.map((it) => `${it.name} × ${it.quantity}`).join(", ")}</p>
+    </li>
+  );
+}
+
 /**
  * The Booking Summary, on the app's field like the steps before it: a white
  * card with the received head and the booking number, then the summary as
@@ -46,12 +57,10 @@ export function BookingView({ number }: { number: string }) {
   const booking = useExpatOrderStore((s) => s.bookings.find((b) => b.number === number));
   // a long list shows its first few packages until it's asked for whole
   const [allPackages, setAllPackages] = React.useState(false);
-  // arrived from Confirm application, not a reload or a link back to it
+  // arrived from Confirm application, not a reload or a link back to it:
+  // read once as the page mounts, then forgotten, so a reload finds nothing
   const [fresh] = React.useState(() => justBooked() === number);
-  React.useEffect(() => {
-    const id = window.setTimeout(clearJustBooked, 2000);
-    return () => window.clearTimeout(id);
-  }, []);
+  React.useEffect(clearJustBooked, []);
 
   if (!hydrated) return <FlowLoading />;
 
@@ -120,15 +129,22 @@ export function BookingView({ number }: { number: string }) {
               {f.packing && (
                 <Row label={bk("packing")}>
                   <p className="font-medium">{f.packing.summary}</p>
-                  <ol id="booking-packages" className="space-y-2 pt-2">
-                    {(allPackages ? f.packing.packages : f.packing.packages.slice(0, PACKAGES_SHOWN)).map((pk) => (
-                      <li key={pk.title}>
-                        <p>{pk.title}</p>
-                        <p className="tabular-nums text-muted">{pk.measures}</p>
-                        <p className="text-muted">{pk.items.map((it) => `${it.name} × ${it.quantity}`).join(", ")}</p>
-                      </li>
+                  <ol className="space-y-2 pt-2">
+                    {f.packing.packages.slice(0, PACKAGES_SHOWN).map((pk) => (
+                      <PackageLine key={pk.title} pk={pk} />
                     ))}
                   </ol>
+                  {/* the rest of a long list, behind "Show all": it opens with
+                      the disclosure's height motion, as every other one does */}
+                  {f.packing.packages.length > PACKAGES_SHOWN && (
+                    <CollapseHeight open={allPackages} id="booking-packages">
+                      <ol start={PACKAGES_SHOWN + 1} className="space-y-2 pt-2">
+                        {f.packing.packages.slice(PACKAGES_SHOWN).map((pk) => (
+                          <PackageLine key={pk.title} pk={pk} />
+                        ))}
+                      </ol>
+                    </CollapseHeight>
+                  )}
                   {f.packing.packages.length > PACKAGES_SHOWN && (
                     <button
                       type="button"

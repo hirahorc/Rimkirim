@@ -543,6 +543,56 @@ body:has(main > [data-field]) {
   animation: estimate-flash 0.6s var(--ease-out-soft) both;
 }
 
+/* The Booking Summary's success mark arriving, the first of its three beats
+   (then its check draws, then the booking number's strip pops: check-draw,
+   unlock-pop). Only on arriving from Confirm application. */
+@keyframes booked-in {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.booked-in {
+  animation: booked-in 0.25s var(--ease-out-soft) both;
+}
+
+/* The order flow's loading spinner: out of sight for the first 200ms, so a
+   load shorter than that (nearly all of them) never flashes one. */
+.flow-wait {
+  display: inline-flex;
+  animation: enter-fade 150ms ease 200ms both;
+}
+
+/* What takes another's place in a layout (an address card and its editor):
+   the one coming in fades up a touch as it's put on the page. The layout
+   itself still moves at once; this softens what arrives in it. */
+.swap-in {
+  transition:
+    opacity 200ms var(--ease-out-soft),
+    translate 200ms var(--ease-out-soft);
+}
+@starting-style {
+  .swap-in {
+    opacity: 0;
+    translate: 0 4px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  /* the wait stays (it's what keeps the flash away); the fade goes */
+  .flow-wait {
+    animation-duration: 1ms;
+  }
+  @starting-style {
+    .swap-in {
+      translate: none;
+    }
+  }
+}
+
 /* Inline text links. Lime can't be a text colour on daylight, so the accent
    moves to the underline stroke: dark ink, lime marker beneath. */
 /* Inline links read as links: conventional blue with an underline. */
@@ -1143,6 +1193,7 @@ body:has(main > [data-field]) {
   .check-draw,
   .banner-enter,
   .estimate-flash,
+  .booked-in,
   .tip-bubble {
     animation: none !important;
     opacity: 1 !important;

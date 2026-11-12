@@ -4,6 +4,7 @@ import * as React from "react";
 import { ArrowUpRight, Check, PackageOpen } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { DatePicker } from "@/components/ui/date-picker";
+import { CollapseHeight } from "@/components/ui/disclosure";
 import { Field } from "@/components/shared/forms/Field";
 import {
   ITEM_CATEGORIES,
@@ -72,6 +73,21 @@ function Asked({ missing, children }: { missing?: string; children: React.ReactN
   );
 }
 
+/** What an answer asks next, under it. It stays mounted and opens with the
+ *  disclosure's height motion, so the questions below glide down instead of
+ *  jumping; closed, it's inert and hidden, and a draft that already has the
+ *  answer opens with it standing. (A little room at the sides, so a focus
+ *  ring isn't cut by the panel's edge.) */
+function Under({ open, children }: { open: boolean; children: React.ReactNode }) {
+  return (
+    <div className="-mx-1">
+      <CollapseHeight open={open} className="px-1 pt-4">
+        {children}
+      </CollapseHeight>
+    </div>
+  );
+}
+
 /** a follow-up asked under its parent answer, stepped in so it reads as part
  *  of it */
 function FollowUp({
@@ -127,32 +143,39 @@ export function EligibilityStep({
   const answered = eligibilityProgress(value);
   /** what a group says once tried, while `unanswered` */
   const miss = (unanswered: boolean, k: string) => (tried && unanswered ? e(k) : undefined);
+  // what each answer asks next: all of it is on the page (Under), so only
+  // what its answer called for can be missing
+  const othersItems = value.items.includes("others");
+  const abroad = value.location === "abroad";
+  const inIndonesia = value.location === "indonesia";
+  const visa = value.hasVisa === true;
+  const otherReason = value.reason === "others";
+  const itemsOtherErr = miss(othersItems && !value.itemsOther.trim(), "required");
+  const reasonOtherErr = miss(otherReason && !value.reasonOther.trim(), "required");
 
   return (
     <div className="space-y-6">
       <Question n={1} id="q1" title={e("q1")} sub={e("q1Sub")} done={answered.q1}>
-        <Asked missing={miss(value.items.length === 0, "chooseSome")}>
-          <CheckCards
-            labelledBy="q1"
-            value={value.items}
-            onChange={(items) => onChange({ items, ...(items.includes("others") ? {} : { itemsOther: "" }) })}
-            options={ITEM_CATEGORIES.map((c) => ({ value: c, label: e(`items.${c}`) }))}
-          />
-        </Asked>
-        {value.items.includes("others") && (
-          <Field
-            label={e("itemsOther")}
-            hint={miss(!value.itemsOther.trim(), "required") ? undefined : e("otherRequired")}
-            error={miss(!value.itemsOther.trim(), "required")}
-          >
-            <Input
-              value={value.itemsOther}
-              onChange={(ev) => onChange({ itemsOther: ev.target.value })}
-              placeholder={e("itemsOtherPh")}
-              maxLength={120}
+        <div>
+          <Asked missing={miss(value.items.length === 0, "chooseSome")}>
+            <CheckCards
+              labelledBy="q1"
+              value={value.items}
+              onChange={(items) => onChange({ items, ...(items.includes("others") ? {} : { itemsOther: "" }) })}
+              options={ITEM_CATEGORIES.map((c) => ({ value: c, label: e(`items.${c}`) }))}
             />
-          </Field>
-        )}
+          </Asked>
+          <Under open={othersItems}>
+            <Field label={e("itemsOther")} hint={itemsOtherErr ? undefined : e("otherRequired")} error={itemsOtherErr}>
+              <Input
+                value={value.itemsOther}
+                onChange={(ev) => onChange({ itemsOther: ev.target.value })}
+                placeholder={e("itemsOtherPh")}
+                maxLength={120}
+              />
+            </Field>
+          </Under>
+        </div>
         {/* who packs, for every customer and whatever they ship, so in the
             info tint: nothing they chose brought it on. Furniture only adds
             to its words and points at its own steps, so the notice never
@@ -178,100 +201,102 @@ export function EligibilityStep({
       </Question>
 
       <Question n={2} id="q2" title={e("q2")} done={answered.q2}>
-        <Asked missing={miss(!value.location, "chooseOne")}>
-          <RadioCards
-            labelledBy="q2"
-            value={value.location}
-            onChange={(location) =>
-              location !== value.location && onChange({ location, arrivalDate: undefined, stayLength: undefined })
-            }
-            options={[
-              { value: "abroad" as const, label: e("abroad") },
-              { value: "indonesia" as const, label: e("indonesia") },
-            ]}
-          />
-        </Asked>
-        {value.location === "abroad" && (
-          <FollowUp id="q2-arrival" title={e("arrival")} missing={miss(!value.arrivalDate, "chooseDate")}>
-            <DatePicker
-              value={value.arrivalDate}
-              onChange={(arrivalDate) => onChange({ arrivalDate })}
-              min={todayIso()}
-              placeholder={e("arrivalPh")}
-              ariaLabel={e("arrival")}
-            />
-          </FollowUp>
-        )}
-        {value.location === "indonesia" && (
-          <FollowUp id="q2-stay" title={e("stay")} missing={miss(!value.stayLength, "chooseOne")}>
+        <div>
+          <Asked missing={miss(!value.location, "chooseOne")}>
             <RadioCards
-              labelledBy="q2-stay"
-              columns={4}
-              value={value.stayLength}
-              onChange={(stayLength) => onChange({ stayLength })}
-              options={STAY_LENGTHS.map((s) => ({ value: s, label: e(`stays.${s}`) }))}
+              labelledBy="q2"
+              value={value.location}
+              onChange={(location) =>
+                location !== value.location && onChange({ location, arrivalDate: undefined, stayLength: undefined })
+              }
+              options={[
+                { value: "abroad" as const, label: e("abroad") },
+                { value: "indonesia" as const, label: e("indonesia") },
+              ]}
             />
-          </FollowUp>
-        )}
+          </Asked>
+          <Under open={abroad}>
+            <FollowUp id="q2-arrival" title={e("arrival")} missing={miss(abroad && !value.arrivalDate, "chooseDate")}>
+              <DatePicker
+                value={value.arrivalDate}
+                onChange={(arrivalDate) => onChange({ arrivalDate })}
+                min={todayIso()}
+                placeholder={e("arrivalPh")}
+                ariaLabel={e("arrival")}
+              />
+            </FollowUp>
+          </Under>
+          <Under open={inIndonesia}>
+            <FollowUp id="q2-stay" title={e("stay")} missing={miss(inIndonesia && !value.stayLength, "chooseOne")}>
+              <RadioCards
+                labelledBy="q2-stay"
+                columns={4}
+                value={value.stayLength}
+                onChange={(stayLength) => onChange({ stayLength })}
+                options={STAY_LENGTHS.map((s) => ({ value: s, label: e(`stays.${s}`) }))}
+              />
+            </FollowUp>
+          </Under>
+        </div>
       </Question>
 
       <Question n={3} id="q3" title={e("q3")} done={answered.q3}>
-        <Asked missing={miss(value.hasVisa === undefined, "chooseOne")}>
-          <RadioCards
-            labelledBy="q3"
-            value={value.hasVisa}
-            onChange={(hasVisa) =>
-              hasVisa !== value.hasVisa && onChange({ hasVisa, hasVitas: undefined, hasItas: undefined })
-            }
-            options={yesNo}
-          />
-        </Asked>
-        {value.hasVisa && (
-          <div className="grid gap-3 sm:grid-cols-2">
-            <FollowUp
-              id="q3-vitas"
-              title={e("vitas")}
-              hint={e("vitasHint")}
-              missing={miss(value.hasVitas === undefined, "chooseOne")}
-            >
-              <RadioCards labelledBy="q3-vitas" value={value.hasVitas} onChange={(hasVitas) => onChange({ hasVitas })} options={yesNo} />
-            </FollowUp>
-            <FollowUp
-              id="q3-itas"
-              title={e("itas")}
-              hint={e("itasHint")}
-              missing={miss(value.hasItas === undefined, "chooseOne")}
-            >
-              <RadioCards labelledBy="q3-itas" value={value.hasItas} onChange={(hasItas) => onChange({ hasItas })} options={yesNo} />
-            </FollowUp>
-          </div>
-        )}
+        <div>
+          <Asked missing={miss(value.hasVisa === undefined, "chooseOne")}>
+            <RadioCards
+              labelledBy="q3"
+              value={value.hasVisa}
+              onChange={(hasVisa) =>
+                hasVisa !== value.hasVisa && onChange({ hasVisa, hasVitas: undefined, hasItas: undefined })
+              }
+              options={yesNo}
+            />
+          </Asked>
+          <Under open={visa}>
+            <div className="grid gap-3 sm:grid-cols-2">
+              <FollowUp
+                id="q3-vitas"
+                title={e("vitas")}
+                hint={e("vitasHint")}
+                missing={miss(visa && value.hasVitas === undefined, "chooseOne")}
+              >
+                <RadioCards labelledBy="q3-vitas" value={value.hasVitas} onChange={(hasVitas) => onChange({ hasVitas })} options={yesNo} />
+              </FollowUp>
+              <FollowUp
+                id="q3-itas"
+                title={e("itas")}
+                hint={e("itasHint")}
+                missing={miss(visa && value.hasItas === undefined, "chooseOne")}
+              >
+                <RadioCards labelledBy="q3-itas" value={value.hasItas} onChange={(hasItas) => onChange({ hasItas })} options={yesNo} />
+              </FollowUp>
+            </div>
+          </Under>
+        </div>
       </Question>
 
       <Question n={4} id="q4" title={e("q4")} sub={e("q4Sub")} done={answered.q4}>
-        <Asked missing={miss(!value.reason, "chooseOne")}>
-          <RadioCards
-            labelledBy="q4"
-            columns={3}
-            value={value.reason}
-            onChange={(reason) => onChange({ reason, ...(reason === "others" ? {} : { reasonOther: "" }) })}
-            options={REASONS.map((r) => ({ value: r, label: e(`reasons.${r}`) }))}
-          />
-        </Asked>
-        {value.reason === "others" && (
-          <Field
-            label={e("reasonOther")}
-            hint={miss(!value.reasonOther.trim(), "required") ? undefined : e("otherRequired")}
-            error={miss(!value.reasonOther.trim(), "required")}
-          >
-            <Input
-              value={value.reasonOther}
-              onChange={(ev) => onChange({ reasonOther: ev.target.value })}
-              placeholder={e("reasonOtherPh")}
-              maxLength={120}
+        <div>
+          <Asked missing={miss(!value.reason, "chooseOne")}>
+            <RadioCards
+              labelledBy="q4"
+              columns={3}
+              value={value.reason}
+              onChange={(reason) => onChange({ reason, ...(reason === "others" ? {} : { reasonOther: "" }) })}
+              options={REASONS.map((r) => ({ value: r, label: e(`reasons.${r}`) }))}
             />
-          </Field>
-        )}
+          </Asked>
+          <Under open={otherReason}>
+            <Field label={e("reasonOther")} hint={reasonOtherErr ? undefined : e("otherRequired")} error={reasonOtherErr}>
+              <Input
+                value={value.reasonOther}
+                onChange={(ev) => onChange({ reasonOther: ev.target.value })}
+                placeholder={e("reasonOtherPh")}
+                maxLength={120}
+              />
+            </Field>
+          </Under>
+        </div>
       </Question>
     </div>
   );

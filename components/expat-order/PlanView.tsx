@@ -32,6 +32,7 @@ import { CustomsPaths } from "./CustomsPaths";
 import { DetailsStep } from "./DetailsStep";
 import { EligibilityStep } from "./EligibilityStep";
 import { FlowLoading } from "./FlowLoading";
+import { PACE, paced } from "./pace";
 import { PackingStep } from "./PackingStep";
 import { SelectedService } from "./SelectedService";
 import { ServicePicker } from "./ServicePicker";
@@ -216,7 +217,28 @@ function Plan({
     }, 360);
   };
 
-  const pricing = packedPricing(check.originCountry, rate, packing);
+  // The estimate as the packages stand this instant, and the one on the page
+  // (`pricing`). The page's holds while the packages are still being typed
+  // and lands a beat after the last change (PACE.settle): the figure isn't
+  // another number on every keystroke, and its landing is one moment. A
+  // service picked from its own priced card has nothing to wait for
+  const live = packedPricing(check.originCountry, rate, packing);
+  const liveKey = `${live.rate.id}:${live.packed}:${live.kg}:${live.rate.total}:${live.specialFromKg ?? ""}`;
+  const [pricing, setPricing] = React.useState(live);
+  const [pricedKey, setPricedKey] = React.useState(liveKey);
+  if (pricing.rate.id !== live.rate.id) {
+    setPricing(live);
+    setPricedKey(liveKey);
+  }
+  const updating = pricedKey !== liveKey;
+  React.useEffect(() => {
+    if (pricedKey === liveKey) return;
+    const id = window.setTimeout(() => {
+      setPricing(packedPricing(check.originCountry, rate, packing));
+      setPricedKey(liveKey);
+    }, PACE.settle);
+    return () => window.clearTimeout(id);
+  }, [check.originCountry, rate, packing, liveKey, pricedKey]);
   // the estimate changed what it's priced on (the packages' weight came in
   // or went, another service was picked): the figure washes once and the
   // change is said. Its moving as a weight is typed is no news
@@ -251,8 +273,20 @@ function Plan({
   // Confirm once nothing is left, or when the part in hand is the last left
   const last = todo === null || (blocked && PARTS.filter((k) => !done[k]).length === 1);
 
-  const confirm = () => {
+  const alive = React.useRef(true);
+  React.useEffect(() => {
+    alive.current = true;
+    return () => {
+      alive.current = false;
+    };
+  }, []);
+  const confirm = async () => {
     onSending(true);
+    // the application takes its moment (pace.ts): the request, once there is
+    // one, and its floor together, the plan standing still under a button
+    // that says what's happening. Nothing is registered if the page was left
+    await paced(undefined, PACE.confirm);
+    if (!alive.current) return;
     const booking = submit();
     if (booking) {
       markJustBooked(booking.number);
@@ -292,7 +326,7 @@ function Plan({
   const act = () => {
     if (open && !done[open]) nudge(open);
     else if (todo) show(todo);
-    else confirm();
+    else void confirm();
   };
   const action = (
     <Button
@@ -303,7 +337,7 @@ function Plan({
       onClick={act}
       className="w-full"
     >
-      {last ? p("confirm") : p("continue")} {!last && <ArrowRight />}
+      {sending ? p("confirming") : last ? p("confirm") : p("continue")} {!sending && !last && <ArrowRight />}
     </Button>
   );
 
@@ -321,25 +355,29 @@ function Plan({
           {/* on a phone the service comes first, as a strip over the parts;
               its action is the bar's there */}
           <div className="space-y-4 lg:sticky lg:top-24 lg:order-2">
-            <SelectedService
-              check={check}
-              rate={pricing.rate}
-              packed={pricing.packed}
-              flash={flash}
-              // the service changes here, in place; the answers stay
-              action={
-                <ServicePicker
-                  check={check}
-                  pricing={pricing}
-                  onSelect={(picked) => {
-                    selectRate(checkedRate(check, picked));
-                    // said in a toast: on a phone, deep in the form, the
-                    // card that changed is off the screen
-                    toast.success(t("expatOrder.service.changed").replace("{service}", `${picked.carrier} ${picked.service}`));
-                  }}
-                />
-              }
-            />
+            {/* still, while the application is being confirmed */}
+            <div inert={sending} className={cn("transition-opacity duration-150", sending && "opacity-60")}>
+              <SelectedService
+                check={check}
+                rate={pricing.rate}
+                packed={pricing.packed}
+                flash={flash}
+                updating={updating}
+                // the service changes here, in place; the answers stay
+                action={
+                  <ServicePicker
+                    check={check}
+                    pricing={pricing}
+                    onSelect={(picked) => {
+                      selectRate(checkedRate(check, picked));
+                      // said in a toast: on a phone, deep in the form, the
+                      // card that changed is off the screen
+                      toast.success(t("expatOrder.service.changed").replace("{service}", `${picked.carrier} ${picked.service}`));
+                    }}
+                  />
+                }
+              />
+            </div>
             <div className="hidden lg:block">
               {action}
               {/* seen here, said from the part's own foot (plan-hint) */}
@@ -351,7 +389,7 @@ function Plan({
             </div>
           </div>
 
-          <div className="min-w-0 lg:order-1">
+          <div inert={sending} className={cn("min-w-0 transition-opacity duration-150 lg:order-1", sending && "opacity-60")}>
             <ol className="space-y-3">
               {PARTS.map((part, i) => {
                 const isOpen = open === part;
@@ -365,7 +403,11 @@ function Plan({
                       ref={(el) => {
                         cards.current[part] = el;
                       }}
-                      className={cn("scroll-mt-24 px-5 sm:px-8", locked && "opacity-60")}
+                      // one it can't reach yet stands back; it comes up as the part above is finished
+                      className={cn(
+                        "scroll-mt-24 px-5 transition-opacity duration-200 ease-(--ease-out-soft) sm:px-8",
+                        locked && "opacity-60",
+                      )}
                     >
                       <div className="relative flex items-start gap-3 py-5 sm:py-6">
                         <PartDot state={isDone ? "done" : isOpen ? "here" : "ahead"} n={i + 1} className="mt-1" />
@@ -471,8 +513,14 @@ function Plan({
             application"), the button takes the line under it, full width */}
         <div className="mx-auto flex max-w-5xl flex-wrap items-center gap-x-4 gap-y-2">
           <div className="shrink-0">
-            <p className="text-xs text-muted">{t("expatOrder.service.estimate")}</p>
-            <p className="whitespace-nowrap font-display text-lg font-bold tracking-tight tabular-nums">
+            <p className="text-xs text-muted">{t(updating ? "expatOrder.service.updating" : "expatOrder.service.estimate")}</p>
+            <p
+              aria-busy={updating || undefined}
+              className={cn(
+                "whitespace-nowrap font-display text-lg font-bold tracking-tight tabular-nums transition-opacity duration-150",
+                updating && "opacity-50",
+              )}
+            >
               <span key={flash} className={flash ? "estimate-flash" : undefined}>
                 {formatIDR(pricing.rate.total)}
               </span>

@@ -358,7 +358,8 @@ function PackageBlock({
           onClick={onToggle}
           aria-expanded={open}
           aria-controls={regionId}
-          className="-my-3 flex min-w-0 flex-1 items-center gap-2 rounded-sm py-3 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/50"
+          // the press is answered at once, in colour, over the whole line (and let go of over 150ms)
+          className="relative -my-3 flex min-w-0 flex-1 items-center gap-2 rounded-sm py-3 text-left after:-inset-x-2 after:inset-y-1 after:absolute after:rounded-sm after:transition-colors active:after:bg-foreground/[0.04] active:after:duration-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/50"
         >
           {/* swap, never rotate: the shared disclosure idiom */}
           {open ? (
