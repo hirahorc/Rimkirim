@@ -6,8 +6,9 @@ import { cn } from "@/lib/utils/cn";
 /**
  * The stage for a section's illustration: it builds its scene once, piece
  * by piece, when it is 40% in view, then stands still. Not a loop and not a
- * player (the page's one loop is the hero's departure board, and the one
- * player is the journey). The pieces are the journey's (`.jr-*` entrances,
+ * player (the page's one loop is the hero's departure board; its players
+ * are the journey and the pricing relay, which runs four of these stages
+ * as one and brings its own control). The pieces are the journey's (`.jr-*` entrances,
  * each with its start in --d) and so is the ground, a soft wash in the
  * chapter's hues under a fine grain (on the closing ticket the ticket
  * itself is the ground), so every illustration on the page is
@@ -26,6 +27,7 @@ export function SceneStage({
   buildWith,
   delay = 0,
   glint = false,
+  onBuild,
   className,
   sceneClassName,
   children,
@@ -44,12 +46,21 @@ export function SceneStage({
   /** answer a mouse as x.ai's product cards do: the scene leans in and one
    *  glint of light crosses the card (globals.css, .scene-glint) */
   glint?: boolean;
+  /** the scene has started to build (the pricing relay keeps its control
+   *  in step with it) */
+  onBuild?: () => void;
   className?: string;
   sceneClassName?: string;
   children: React.ReactNode;
 }) {
   const ref = React.useRef<HTMLDivElement>(null);
   const [built, setBuilt] = React.useState(false);
+  // read when the scene builds, so a new function each render never
+  // restarts the watch
+  const onBuildRef = React.useRef(onBuild);
+  React.useEffect(() => {
+    onBuildRef.current = onBuild;
+  });
 
   React.useEffect(() => {
     const el = ref.current;
@@ -61,6 +72,7 @@ export function SceneStage({
       ([e]) => {
         if (e.intersectionRatio >= 0.4) {
           setBuilt(true);
+          onBuildRef.current?.();
           io.disconnect();
         }
       },

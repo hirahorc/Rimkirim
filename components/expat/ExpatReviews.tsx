@@ -126,6 +126,7 @@ function avatarFor(name: string) {
 export function ExpatReviews() {
   const t = useT();
   const gridRef = React.useRef<HTMLDivElement>(null);
+  const rootRef = React.useRef<HTMLElement>(null);
 
   const reviews = EXPAT_REVIEWS.flatMap(({ name, photo }) => {
     const review = TESTIMONIALS.find((r) => r.name === name);
@@ -149,15 +150,42 @@ export function ExpatReviews() {
     return () => ro.disconnect();
   }, [hasPhoto]);
 
+  // the section's ground, its chapter's wash, comes up only once the reader
+  // has scrolled off the hero and into the section, and goes again on the
+  // way back up (globals.css, [data-ground]): "in" is the section across the
+  // line 30% up the screen, or already above the screen
+  React.useEffect(() => {
+    const root = rootRef.current;
+    if (!root) return;
+    const io = new IntersectionObserver(
+      ([e]) => {
+        root.dataset.ground = e.isIntersecting || e.boundingClientRect.top < 0 ? "on" : "";
+      },
+      { rootMargin: "0px 0px -30% 0px" },
+    );
+    io.observe(root);
+    return () => io.disconnect();
+  }, []);
+
   return (
-    <section id="reviews" aria-labelledby="reviews-heading" data-tone="sky" className="band scroll-mt-24">
-      <div className="section-shell mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-20">
+    <section
+      ref={rootRef}
+      id="reviews"
+      aria-labelledby="reviews-heading"
+      data-tone="sky"
+      data-ground=""
+      className="scroll-mt-24"
+    >
+      <div className="section-shell mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:py-24">
         <ReviewNote note={REVIEW_NOTES.reviews} className="mb-8" />
-        {/* no eyebrow, unlike the sections below: this one often shows from
-            the hero's own viewport, where an eyebrow read as a stray label
-            over a headline already in view (decided 2026-11-02) */}
+        {/* it has its eyebrow again, as every section in the frame does: it
+            went without one while the section showed from the hero's own
+            viewport as a band (2026-11-02), where the label read as stray;
+            under its own line and a section's space it reads as the start
+            of a part */}
         <SectionHead
           id="reviews-heading"
+          eyebrow={t("expat.reviews.eyebrow")}
           title={t("expat.reviews.heading")}
           subtitle={t("expat.reviews.subtitle")}
         />
@@ -168,7 +196,7 @@ export function ExpatReviews() {
             strip, the one exception) */}
         <div
           ref={gridRef}
-          className="reviews-grid scroll-strip -mx-2 mt-8 flex snap-x snap-mandatory items-start sm:items-stretch scroll-px-2 gap-4 overflow-x-auto px-2 pb-1 sm:mt-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-foreground/40 sm:mx-0 sm:grid sm:snap-none sm:grid-cols-2 sm:overflow-visible sm:px-0 sm:pb-0"
+          className="reviews-grid scroll-strip -mx-2 mt-8 flex snap-x snap-mandatory items-start sm:items-stretch scroll-px-2 gap-4 overflow-x-auto px-2 pb-1 sm:mt-8 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-foreground/40 sm:mx-0 sm:grid sm:snap-none sm:grid-cols-2 sm:overflow-visible sm:px-0 sm:pb-0"
           tabIndex={0}
           role="group"
           aria-label={`${reviews.length} ${t("testimonial.stripLabel")}`}
@@ -209,7 +237,7 @@ export function ExpatReviews() {
                   shot={t("expat.photo.customerShot")}
                   avoid={t("expat.photo.customerAvoid")}
                   // tighter on a phone's narrow card, so the brief fits the 4:3
-                  className="review-photo m-3 mb-0 aspect-[4/3] shrink-0 px-4 py-5 sm:m-4 sm:mb-0 sm:aspect-[16/10] sm:flex-1 sm:rounded-[12px] sm:px-6 sm:py-7"
+                  className="review-photo m-3 mb-0 aspect-[4/3] shrink-0 px-4 py-4 sm:m-4 sm:mb-0 sm:aspect-[16/10] sm:flex-1 sm:rounded-[12px] sm:px-6 sm:py-6"
                 />
               )}
               {photo && (
@@ -225,7 +253,7 @@ export function ExpatReviews() {
                   />
                 </div>
               )}
-              <div className={cn("relative flex flex-1 flex-col px-6 py-7", photo !== undefined && "sm:flex-none")}>
+              <div className={cn("relative flex flex-1 flex-col px-6 py-6", photo !== undefined && "sm:flex-none")}>
                 <ReviewQuote quote={quote} highlights={highlights} />
                 {/* names and routes wrap, never truncate: a customer's full
                     name ("Leticia Marina Bevilaqua") outruns a phone's card */}

@@ -2,11 +2,9 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { Info, MapPin } from "lucide-react";
+import { MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { DatePicker } from "@/components/ui/date-picker";
-import { Field } from "@/components/shared/forms/Field";
 import { DialCodeSelect } from "@/components/order/DialCodeSelect";
 import { getCountry } from "@/lib/data/countries";
 import { placeLine, type Place } from "@/lib/data/expat-places";
@@ -23,6 +21,7 @@ import type { AddressChange } from "@/lib/store/useExpatOrderStore";
 import { useT } from "@/lib/i18n/LanguageProvider";
 import { cn } from "@/lib/utils/cn";
 import { AddressField } from "./AddressField";
+import { Field, Note, QUIET, Well } from "./kit";
 
 type Side = "origin" | "destination";
 
@@ -36,8 +35,8 @@ interface AddressDraft {
  * A side's Address being changed, in the card's own place: the Address
  * searched again (inside its country, which set the rate and stays) and its
  * Detail Address. Nothing is kept until Save; Cancel leaves the card as it
- * was. A white plane with a hairline, so its Panel 2 fields read (the card
- * it replaces is Panel 2 itself).
+ * was. Fenced by a hairline, so its fields and its two buttons read as one
+ * thing being changed.
  */
 function AddressEditor({
   side,
@@ -74,18 +73,18 @@ function AddressEditor({
     <form
       noValidate
       aria-label={label}
-      className="rounded-md border border-border-strong bg-background px-4 py-4 sm:px-5"
+      className="rounded-md border border-border p-4"
       onSubmit={(e) => {
         e.preventDefault();
         setTried(true);
         if (addressReady(draft.place)) onSave({ place: draft.place, detail: draft.detail.trim() });
       }}
     >
-      <p className="text-xs font-medium text-muted">{label}</p>
+      <p className="text-xs font-medium">{label}</p>
       <p className="mt-1 text-sm font-medium">{getCountry(country)?.name}</p>
       {/* the origin country set the rate: it changes where the rate does */}
       {side === "origin" && (
-        <p className="mt-0.5 text-xs text-muted">
+        <p className="mt-1 text-xs text-muted">
           {d("otherCountry")}{" "}
           <Link href="/expat-relocation/rates" className="link-mark">
             {d("checkAgain")}
@@ -93,7 +92,7 @@ function AddressEditor({
         </p>
       )}
 
-      <div ref={fields} className="mt-4 grid gap-4">
+      <div ref={fields} className="mt-4 grid grid-cols-1 gap-4">
         <Field label={r("address")} hint={placeErr ? undefined : r("addressHint")} error={placeErr}>
           <AddressField
             country={country}
@@ -103,7 +102,7 @@ function AddressEditor({
           />
         </Field>
         <Field label={d(side === "origin" ? "originDetail" : "destinationDetail")}>
-          <Input
+          <Well
             value={draft.detail}
             onChange={(e) => setDraft((s) => ({ ...s, detail: e.target.value }))}
             placeholder={d("detailPh")}
@@ -112,12 +111,12 @@ function AddressEditor({
         </Field>
       </div>
 
-      <div className="mt-5 flex flex-col-reverse gap-2 border-t border-border pt-4 sm:flex-row sm:justify-end">
+      <div className="mt-4 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
         <Button type="button" variant="ghost" onClick={onCancel}>
           {d("cancel")}
         </Button>
         {/* never lime: the page's one lime is the plan's own action */}
-        <Button type="submit" variant="secondary">
+        <Button type="submit" variant="secondary" className={QUIET}>
           {d("save")}
         </Button>
       </div>
@@ -126,8 +125,9 @@ function AddressEditor({
 }
 
 /**
- * One side of the move, as a card: where from or where to as Check Rate set
- * it, with its Detail Address once it's given. "Change" turns the card into
+ * One side of the move, said back on the part's own paper with no box of
+ * its own: where from or where to as Check Rate set it, with its Detail
+ * Address once it's given. "Change" turns it into
  * its own editor, in place and across both columns (AddressEditor), so an
  * Address is changed here, not back on Check Rate. Each side's Detail
  * Address is optional and nothing else on the page asks for it, so until
@@ -188,9 +188,9 @@ function AddressCard({
           />
         </div>
       ) : (
-        <div key="card" className={cn("h-full rounded-md bg-surface-2 px-4 py-3 [overflow-wrap:anywhere]", swapped && "swap-in")}>
+        <div key="card" className={cn("[overflow-wrap:anywhere]", swapped && "swap-in")}>
           <div className="flex items-baseline justify-between gap-3">
-            <p className="text-xs font-medium text-muted">{label}</p>
+            <p className="text-xs font-medium">{label}</p>
             <button
               ref={change}
               type="button"
@@ -203,22 +203,10 @@ function AddressCard({
           <p className="mt-1 text-sm font-medium">{getCountry(country)?.name}</p>
           {value.place && <p className="text-sm text-muted">{placeLine(value.place)}</p>}
           {detail && <p className="text-sm text-muted">{detail}</p>}
-          {note && (
-            <p role="status" className="mt-3 flex gap-2 rounded-md bg-info/10 px-3 py-2.5 text-sm">
-              <Info aria-hidden className="mt-0.5 size-4 shrink-0 text-info" />
-              {note}
-            </p>
-          )}
+          {note && <Note className="mt-3">{note}</Note>}
           {!detail && (
             <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-2">
-              {/* white on the card's Panel 2, so it stands as the thing to press */}
-              <Button
-                type="button"
-                variant="secondary"
-                size="sm"
-                className="tap-target relative bg-background"
-                onClick={() => swap(true)}
-              >
+              <Button type="button" variant="secondary" size="sm" className={cn(QUIET, "tap-target relative")} onClick={() => swap(true)}>
                 <MapPin /> {d("addDetail")}
               </Button>
               <span className="text-xs text-muted">{d(side === "origin" ? "addDetailHintFrom" : "addDetailHintTo")}</span>
@@ -282,8 +270,8 @@ export function DetailsStep({
         : undefined;
 
   return (
-    <div className="space-y-8">
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+    <div className="grid grid-cols-1 gap-8">
+      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
         <AddressCard
           side="origin"
           label={d("from")}
@@ -308,10 +296,10 @@ export function DetailsStep({
         />
       </div>
 
-      <div className="grid gap-5 border-t border-border pt-6 sm:grid-cols-2">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-x-6">
         <div className="sm:col-span-2">
           <Field label={d("fullName")} error={nameErr}>
-            <Input
+            <Well
               value={value.fullName}
               onChange={(e) => onChange({ fullName: e.target.value })}
               onBlur={leave("name")}
@@ -322,7 +310,7 @@ export function DetailsStep({
           </Field>
         </div>
         <Field label={d("email")} error={emailErr}>
-          <Input
+          <Well
             type="email"
             value={value.email}
             onChange={(e) => onChange({ email: e.target.value })}
@@ -344,7 +332,7 @@ export function DetailsStep({
             onBlur={leave("phone")}
           />
         </Field>
-        <div className="sm:col-span-2 sm:max-w-sm">
+        <div>
           <Field label={d("pickup")} hint={pickupErr ? undefined : d("pickupHint")} error={pickupErr}>
             <PickupPicker
               value={value.pickupDate}
@@ -383,9 +371,9 @@ function PhoneField({
             no "Popular" group (those are the WNI flow's markets) */}
         <DialCodeSelect value={dialIso} onChange={onDial} showPopular={false} />
       </div>
-      <Input
+      <Well
         {...wiring}
-        className="flex-1 tabular-nums"
+        className="tabular-nums"
         type="tel"
         inputMode="tel"
         autoComplete="tel-national"

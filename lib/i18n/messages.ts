@@ -238,7 +238,7 @@ const id = {
       close: "Tidak perlu memilih sekarang. Saat mereview pesananmu, kami tunjukkan jalur yang paling menguntungkan dan dokumen yang dibutuhkan. Keputusannya tetap di kamu.",
     },
     packing: {
-      title: "Paketmu",
+      title: "Detail paket",
       lead: "Isi tiap kardus atau koper, beserta berat dan ukurannya. Tim kami memeriksanya sebelum pickup.",
       guess: "Belum dikemas? Perkiraan terbaikmu sudah cukup untuk sekarang. Detailnya bisa kamu perbarui setelah tim kami memeriksanya.",
       packageN: "Paket {n}",
@@ -273,6 +273,7 @@ const id = {
       itemNamePh: "mis. Jaket musim dingin",
       qty: "Jumlah",
       value: "Nilai per barang",
+      each: "per barang",
       addItem: "Tambah barang",
       removeItem: "Hapus barang {n}",
       itemsOne: "1 barang",
@@ -411,6 +412,7 @@ const id = {
       noticeBody: "Barangmu sudah lolos bea cukai di Indonesia. Berikutnya: pintu rumahmu.",
     },
     reviews: {
+      eyebrow: "Ulasan",
       heading: "Kata pelanggan yang sudah kirim dengan Rimkirim",
       subtitle: "Pengalaman dari orang-orang yang sudah mengirim barangnya ke Indonesia.",
       more: "Baca selengkapnya",
@@ -658,10 +660,15 @@ const id = {
       step2Body: "Totalnya adalah chargeable weight kirimanmu.",
       step3Title: "Kalikan dengan tarif per kilo",
       step3Body: "Tarifnya tergantung dari mana kamu mengirim dan layanan yang kamu pilih. Cek tarif menampilkannya.",
-      step4Title: "Tambahkan surcharge penanganan, kalau ada barang yang memerlukannya",
-      step4Body:
-        "Barang memerlukannya kalau beratnya di atas 25 kg, sisi terpanjangnya di atas sekitar 120 cm, atau tidak dikemas dalam kardus polos (termasuk koper). Hanya yang tertinggi yang berlaku untuk tiap barang, dan tercantum di quotation-mu.",
-      surchargeCta: "Lihat informasi surcharge",
+      // not a step the customer does: the surcharge is ours to add, by rule
+      step4Title: "Sebagian barang kena surcharge penanganan",
+      step4Body: "Hanya yang tertinggi yang berlaku untuk tiap barang, dan tercantum di quotation-mu.",
+      surchargeCta: "Baca detail surcharge",
+      // the pictures' control (where they play as one run) and each picture's own replay
+      play: "Putar contoh hitungan",
+      pause: "Jeda contoh hitungan",
+      replay: "Putar ulang contoh hitungan",
+      replayStep: "Putar ulang langkah {n}",
       promise: "Cek tarif memberi estimasi instan, belum termasuk surcharge. Harga final ada di invoice, setelah paketmu tiba di gudang kami dan kami ukur serta timbang ulang.",
     },
     customs: {
@@ -682,7 +689,6 @@ const id = {
         doc2: "ITAS kerja atau belajar, berlaku 12 bulan atau lebih",
         doc3: "Pengesahan kerja atau izin belajar",
         doc4: "Commercial invoice/packing list dengan nilai tiap barang (template-nya kami kirimkan)",
-        doc5: "Surat kuasa, supaya kami bisa mendeklarasikannya atas namamu",
         note: "Kendaraan dan barang kena cukai (seperti alkohol dan rokok) tidak termasuk.",
       },
       penumpang: {
@@ -790,19 +796,19 @@ const id = {
     // the words inside the section illustrations (decorative, hidden from
     // assistive tech; the sections' own text carries the meaning)
     scenes: {
-      size: {
-        title: "Contoh: satu kardus, satu koper",
+      pricing: {
         box: "Kardus",
         suitcase: "Koper",
         actual: "Aktual",
         volumetric: "Volumetrik",
-        chargeable: "Chargeable",
-        surcharge: "+ surcharge penanganan",
-        total: "Chargeable weight",
-        rate: "× Tarif per kilo",
-        rateValue: "untuk rutemu",
-        surchargeTotal: "+ Surcharge penanganan",
-        surchargeValue: "untuk koper",
+        chargeable: "Chargeable weight",
+        rate: "× tarif per kilo",
+        maxWeight: "Maks. 25 kg",
+        maxSide: "Maks. 120 cm",
+        cardboard: "Kardus polos",
+        surcharge: "Surcharge",
+        yes: "Ya",
+        no: "Tidak",
       },
       thread: {
         today: "Hari ini",
@@ -2500,7 +2506,7 @@ const en: Messages = {
       close: "No need to choose now. When we review your booking, we'll point out the one that saves you the most and what it needs. The choice is yours.",
     },
     packing: {
-      title: "Your packages",
+      title: "Package details",
       lead: "What's in each box or suitcase, and how heavy and big it is. Our team reviews it before pickup.",
       guess: "Not packed yet? Your best guess is fine for now. You can update these details after our team reviews them.",
       packageN: "Package {n}",
@@ -2535,6 +2541,7 @@ const en: Messages = {
       itemNamePh: "e.g. Winter coats",
       qty: "Qty",
       value: "Value each",
+      each: "each",
       addItem: "Add an item",
       removeItem: "Remove item {n}",
       itemsOne: "1 item",
@@ -2671,6 +2678,7 @@ const en: Messages = {
       noticeBody: "Your boxes have cleared customs in Indonesia. Next stop: your door.",
     },
     reviews: {
+      eyebrow: "Reviews",
       heading: "What customers say about shipping with Rimkirim",
       subtitle: "Experiences from people who have sent their belongings to Indonesia.",
       more: "Read more",
@@ -2916,10 +2924,13 @@ const en: Messages = {
       step2Body: "The total is your shipment's chargeable weight.",
       step3Title: "Multiply by the rate per kilo",
       step3Body: "The rate depends on where you're shipping from and the service you pick. Check your rate shows it.",
-      step4Title: "Add a handling surcharge, if a piece needs one",
-      step4Body:
-        "A piece needs one when it's over 25 kg, over about 120 cm on its longest side, or not in a plain cardboard box (suitcases included). Only the highest applies to each piece, and it's listed in your quotation.",
-      surchargeCta: "See surcharge information",
+      step4Title: "Some pieces carry a handling surcharge",
+      step4Body: "Only the highest one applies to each piece, and it's listed in your quotation.",
+      surchargeCta: "Read the surcharge details",
+      play: "Play the example",
+      pause: "Pause the example",
+      replay: "Play the example again",
+      replayStep: "Play step {n} again",
       promise: "Checking your rate gives you an instant estimate, before surcharges. Your final price comes on your invoice, once your packages reach our warehouse and we've measured and weighed them again.",
     },
     customs: {
@@ -2940,7 +2951,6 @@ const en: Messages = {
         doc2: "ITAS for work or study, valid 12 months or more",
         doc3: "Your work approval or study permit",
         doc4: "Commercial invoice/packing list with each item's value (we'll send you a template)",
-        doc5: "Power of attorney, so we can declare on your behalf",
         note: "Vehicles and excise goods (such as alcohol and tobacco) aren't covered.",
       },
       penumpang: {
@@ -3046,19 +3056,19 @@ const en: Messages = {
       next3: "Confirm your details, and get your booking summary by email",
     },
     scenes: {
-      size: {
-        title: "Example: one box, one suitcase",
+      pricing: {
         box: "Box",
         suitcase: "Suitcase",
         actual: "Actual",
         volumetric: "Volumetric",
-        chargeable: "Chargeable",
-        surcharge: "+ handling surcharge",
-        total: "Chargeable weight",
-        rate: "× Rate per kilo",
-        rateValue: "for your route",
-        surchargeTotal: "+ Handling surcharge",
-        surchargeValue: "for the suitcase",
+        chargeable: "Chargeable weight",
+        rate: "× rate per kilo",
+        maxWeight: "Up to 25 kg",
+        maxSide: "Up to 120 cm",
+        cardboard: "Cardboard box",
+        surcharge: "Surcharge",
+        yes: "Yes",
+        no: "No",
       },
       thread: {
         today: "Today",

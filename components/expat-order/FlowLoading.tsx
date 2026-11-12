@@ -8,7 +8,7 @@ import { Loader2 } from "lucide-react";
 export function FlowLoading() {
   return (
     // on the field already, so the page doesn't flash white before its cards
-    <div data-field className="flex min-h-[60vh] items-center justify-center text-muted">
+    <div data-field data-flow className="flex min-h-[60vh] items-center justify-center text-muted">
       <span className="flow-wait">
         <Loader2 aria-hidden className="size-5 animate-spin" />
       </span>

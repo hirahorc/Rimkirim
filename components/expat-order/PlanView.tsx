@@ -32,6 +32,7 @@ import { CustomsPaths } from "./CustomsPaths";
 import { DetailsStep } from "./DetailsStep";
 import { EligibilityStep } from "./EligibilityStep";
 import { FlowLoading } from "./FlowLoading";
+import { TYPE } from "./kit";
 import { PACE, paced } from "./pace";
 import { PackingStep } from "./PackingStep";
 import { SelectedService } from "./SelectedService";
@@ -91,10 +92,10 @@ function saidBack(
   };
 }
 
-/** a part's dot, in the status stepper's encoding (DESIGN.md, Status
- *  stepper): done is lime with an Ink check, the one in hand is Ink-framed
- *  with a lime core, one still ahead is Hairline on Panel 2 with its number */
-function PartDot({ state, n, className }: { state: "done" | "here" | "ahead"; n: number; className?: string }) {
+/** a part's dot: done is Ink with a paper check, the one in hand an Ink
+ *  ring around its number, one still ahead wash with its number. No lime:
+ *  that's the action's. As tall as the title's line, so the two sit level */
+function PartDot({ state, n }: { state: "done" | "here" | "ahead"; n: number }) {
   // earned motion: the check draws itself for a part just finished, never
   // for one a draft brought finished. The latest change of state decides
   const [was, setWas] = React.useState(state);
@@ -107,37 +108,35 @@ function PartDot({ state, n, className }: { state: "done" | "here" | "ahead"; n:
     <span
       aria-hidden
       className={cn(
-        "grid size-6 shrink-0 place-items-center rounded-full font-display text-xs font-semibold tabular-nums",
-        state === "done" && "bg-brand text-brand-ink",
-        state === "here" && "border-2 border-foreground bg-background",
-        state === "ahead" && "border border-border-strong bg-surface-2 text-muted",
-        className,
+        "grid size-7 shrink-0 place-items-center rounded-full font-display text-xs font-semibold tabular-nums",
+        state === "done" && "bg-foreground text-background",
+        state === "here" && "shadow-[inset_0_0_0_2px_var(--foreground)]",
+        state === "ahead" && "bg-surface-2 text-muted",
       )}
     >
-      {state === "done" &&
-        (earned ? (
-          <svg
-            viewBox="0 0 24 24"
-            className="size-3.5"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth={3}
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path className="check-draw" d="M4 12.5l5 5L20 6.5" />
-          </svg>
-        ) : (
-          <Check className="size-3.5" strokeWidth={3} />
-        ))}
-      {state === "here" && <span className="size-2 rounded-full bg-brand" />}
-      {state === "ahead" && n}
+      {state !== "done" ? (
+        n
+      ) : earned ? (
+        <svg
+          viewBox="0 0 24 24"
+          className="size-4"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth={3}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <path className="check-draw" d="M4 12.5l5 5L20 6.5" />
+        </svg>
+      ) : (
+        <Check className="size-4" strokeWidth={3} />
+      )}
     </span>
   );
 }
 
 /**
- * The plan, on one page (the app's field, white cards on Panel 2): the
+ * The plan, on one page (the flow's field, paper cards on wash): the
  * Eligibility Check, Personal Information, then the Packages, three parts
  * down a single sheet with one open at a time. A finished part folds to a
  * line that says it back, and the next opens under it; nothing is a page
@@ -342,19 +341,16 @@ function Plan({
   );
 
   return (
-    // the app's field, as Check Rate sits: white cards on Panel 2, with room
-    // at the foot of a phone for the bar, two lines tall at its most. A field
-    // in error wears Stop Red on its edge, so what the action counted can be
-    // found down a long part
-    <div data-field className="pb-44 lg:pb-20 [&_input[aria-invalid=true]]:border-danger">
-      <div className="mx-auto max-w-5xl px-4 pt-8 sm:px-6 sm:pt-10">
-        <h1 className="text-balance font-display text-3xl font-bold tracking-tight sm:text-4xl">{p("title")}</h1>
-        <p className="mt-3 max-w-xl text-pretty text-muted">{p("subtitle")}</p>
+    // the flow's field, as Check Rate sits: paper cards on wash
+    <div data-field data-flow>
+      <div className="mx-auto max-w-5xl px-4 pb-12 pt-6 sm:px-6 sm:pt-8">
+        <h1 className={cn(TYPE.title, "text-balance")}>{p("title")}</h1>
+        <p className="mt-1 max-w-xl text-pretty text-sm text-muted">{p("subtitle")}</p>
 
-        <div className="mt-6 grid gap-4 sm:mt-8 lg:grid-cols-[minmax(0,1fr)_20rem] lg:items-start lg:gap-12">
+        <div className="mt-6 grid grid-cols-1 gap-4 sm:mt-8 lg:grid-cols-[minmax(0,1fr)_20rem] lg:items-start lg:gap-12">
           {/* on a phone the service comes first, as a strip over the parts;
               its action is the bar's there */}
-          <div className="space-y-4 lg:sticky lg:top-24 lg:order-2">
+          <div className="grid grid-cols-1 gap-4 lg:sticky lg:top-24 lg:order-2">
             {/* still, while the application is being confirmed */}
             <div inert={sending} className={cn("transition-opacity duration-150", sending && "opacity-60")}>
               <SelectedService
@@ -390,7 +386,7 @@ function Plan({
           </div>
 
           <div inert={sending} className={cn("min-w-0 transition-opacity duration-150 lg:order-1", sending && "opacity-60")}>
-            <ol className="space-y-3">
+            <ol className="grid grid-cols-1 gap-3">
               {PARTS.map((part, i) => {
                 const isOpen = open === part;
                 const isDone = done[part];
@@ -405,12 +401,13 @@ function Plan({
                       }}
                       // one it can't reach yet stands back; it comes up as the part above is finished
                       className={cn(
-                        "scroll-mt-24 px-5 transition-opacity duration-200 ease-(--ease-out-soft) sm:px-8",
+                        "scroll-mt-24 transition-opacity duration-200 ease-(--ease-out-soft)",
                         locked && "opacity-60",
                       )}
                     >
-                      <div className="relative flex items-start gap-3 py-5 sm:py-6">
-                        <PartDot state={isDone ? "done" : isOpen ? "here" : "ahead"} n={i + 1} className="mt-1" />
+                      {/* its own stacking context, so the press's wash stays under the words */}
+                      <div className="relative isolate flex gap-3 p-4 sm:p-6">
+                        <PartDot state={isDone ? "done" : isOpen ? "here" : "ahead"} n={i + 1} />
                         <div className="min-w-0 flex-1">
                           <h2
                             ref={(el) => {
@@ -418,16 +415,21 @@ function Plan({
                             }}
                             // takes focus when its part opens (show)
                             tabIndex={-1}
-                            className="font-display text-xl font-semibold tracking-tight outline-none"
+                            className={cn(TYPE.heading, "outline-none")}
                           >
                             {foldable ? (
-                              // the whole line reopens the part
+                              // The whole card reopens the part, in two layers:
+                              // the press surface over everything in the head
+                              // (its dot, the line under the title, the word
+                              // "Edit": none of them is the button, so each
+                              // would swallow the press), and under the words
+                              // the wash that answers it
                               <button
                                 type="button"
                                 aria-expanded={false}
                                 aria-controls={id}
                                 onClick={() => show(part)}
-                                className="rounded-sm text-left after:absolute after:inset-0 after:rounded-md after:transition-colors active:after:bg-foreground/[0.04] focus-visible:outline-none focus-visible:after:ring-2 focus-visible:after:ring-foreground/50"
+                                className="rounded-sm text-left before:absolute before:inset-0 before:-z-10 before:rounded-lg before:transition-colors after:absolute after:inset-0 after:rounded-lg active:before:bg-surface-2 active:before:duration-0 focus-visible:outline-none focus-visible:after:ring-2 focus-visible:after:ring-foreground/50"
                               >
                                 {t(`expatOrder.${part}.title`)}
                               </button>
@@ -443,20 +445,22 @@ function Plan({
                           </p>
                         </div>
                         {foldable && (
-                          <span aria-hidden className="link-mark mt-1 shrink-0 text-sm">
+                          // the title's line, so the word sits level with it
+                          <span aria-hidden className="link-mark flex h-7 shrink-0 items-center text-sm">
                             {isDone ? p("edit") : p("open")}
                           </span>
                         )}
                       </div>
-                      <CollapseHeight open={isOpen} id={id}>
-                        <div className="border-t border-border pb-6 pt-6 sm:pb-8">
+                      {/* the card's padding is inside the fold, which clips
+                          what's past its edge: a focus ring at the content's
+                          edge sits in it */}
+                      <CollapseHeight open={isOpen} id={id} className="px-4 pb-4 sm:px-6 sm:pb-6">
+                        <div className="border-t border-border pt-6">
                           <ReviewNote note={ORDER_REVIEW_NOTES[part]} className="mb-6" />
                           {part === "eligibility" && (
                             <>
                               <EligibilityStep value={eligibility} tried={tried.eligibility > 0} onChange={setEligibility} />
-                              <div className="mt-8">
-                                <CustomsPaths id="customs-paths" title={t("expatOrder.customs.title")} />
-                              </div>
+                              <CustomsPaths id="customs-paths" title={t("expatOrder.customs.title")} className="mt-8" />
                             </>
                           )}
                           {part === "details" && (
@@ -484,7 +488,7 @@ function Plan({
                               bar's button can't say; beside the form it shows
                               under the button */}
                           {isOpen && !isDone && (
-                            <p id="plan-hint" className="mt-8 text-xs text-muted lg:sr-only">
+                            <p id="plan-hint" className="mt-6 text-xs text-muted lg:sr-only">
                               {why(part)}
                             </p>
                           )}
@@ -506,8 +510,10 @@ function Plan({
         </div>
       </div>
 
-      {/* a phone: the estimate and the one action, always in reach */}
-      <div className="fixed inset-x-0 bottom-0 z-30 border-t border-border bg-background/95 px-4 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-3 backdrop-blur-xl lg:hidden">
+      {/* a phone: the estimate and the one action, always in reach. It keeps
+          to the foot of the screen while the plan is under it and takes its
+          own place at the plan's end, so nothing has to be padded clear of it */}
+      <div className="sticky bottom-0 z-30 border-t border-border bg-background px-4 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-3 lg:hidden">
         {/* an amount is never cut: when the estimate and the button can't
             share the line (a narrow phone, a nine-figure estimate, "Confirm
             application"), the button takes the line under it, full width */}
@@ -517,7 +523,7 @@ function Plan({
             <p
               aria-busy={updating || undefined}
               className={cn(
-                "whitespace-nowrap font-display text-lg font-bold tracking-tight tabular-nums transition-opacity duration-150",
+                "whitespace-nowrap font-mono text-base font-semibold tabular-nums transition-opacity duration-150",
                 updating && "opacity-50",
               )}
             >

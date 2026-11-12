@@ -32,10 +32,10 @@ export function PhotoSlot({
         bleed
           ? // the host card clips the corners; no overflow of its own, so an
             // aspect ratio set by the host stays a floor the brief can grow past
-            "p-5"
+            "p-4"
           : // md, one step under the lg media frame: a tighter corner reads as
             // a photo's edge rather than a card's (requested 2026-10-26)
-            "overflow-hidden rounded-md border border-dashed border-border-strong px-6 py-7",
+            "overflow-hidden rounded-md border border-dashed border-border-strong px-6 py-6",
         className,
       )}
     >
@@ -45,7 +45,7 @@ export function PhotoSlot({
         <p className="font-display text-xs font-medium uppercase tracking-[0.04em] text-muted">
           {t("expat.photo.label")}
         </p>
-        <p className="mt-1.5 max-w-sm text-sm leading-relaxed text-foreground">{shot}</p>
+        <p className="mt-2 max-w-sm text-sm leading-relaxed text-foreground">{shot}</p>
         {avoid && (
           <p className="mt-1 text-xs text-muted-2">
             {t("expat.photo.avoid")}: {avoid}

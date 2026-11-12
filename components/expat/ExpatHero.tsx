@@ -66,7 +66,7 @@ function ClearedNotice({ style }: { style?: React.CSSProperties }) {
   return (
     <div
       aria-hidden
-      className="hero-drop pointer-events-none absolute left-[9%] top-[9%] z-10 flex w-[min(82%,18rem)] items-start gap-2.5 rounded-md bg-background p-3 shadow-overlay lg:-left-20 lg:top-1 lg:w-[19.5rem]"
+      className="hero-drop pointer-events-none absolute left-[9%] top-[9%] z-10 flex w-[min(82%,18rem)] items-start gap-2 rounded-md bg-background p-3 shadow-overlay lg:-left-20 lg:top-1 lg:w-[19.5rem]"
       style={style}
     >
       {/* eslint-disable-next-line @next/next/no-img-element -- a 96px still, as in SceneParts */}
@@ -92,13 +92,13 @@ export function ExpatHero() {
       data-tone="sky"
       className="relative overflow-hidden lg:flex lg:min-h-[min(calc(100svh-5.5rem),56rem)] lg:items-center"
     >
-      <div className="relative mx-auto w-full max-w-6xl px-4 pb-16 pt-10 sm:px-6 sm:pt-14 lg:py-16">
+      <div className="relative mx-auto w-full max-w-6xl px-4 pb-16 pt-8 sm:px-6 sm:pt-12 lg:py-16">
         <ReviewNote note={REVIEW_NOTES.hero} className="mb-3" />
         <ReviewNote note={REVIEW_NOTES.cta} className="mb-6" />
         {/* the deck's column is 26rem until xl: at lg's narrow end a 30rem
             deck left the copy 440px, where "belongings with you." broke
             onto a fifth line and a third strip of tape */}
-        <div className="grid items-center gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,26rem)] lg:gap-14 xl:grid-cols-[minmax(0,1fr)_minmax(0,30rem)]">
+        <div className="grid items-center gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,26rem)] lg:gap-12 xl:grid-cols-[minmax(0,1fr)_minmax(0,30rem)]">
           <div>
             {/* the eyebrow is a departures board, origin flipping to IDN;
                 how the route is travelled is the subtitle's to say */}
@@ -115,7 +115,7 @@ export function ExpatHero() {
                 "Relocating to Indonesia?" on one line (11.52em): in the
                 wider column the 26rem deck leaves, that line ran out under
                 the message hanging off the pile */}
-            <h1 className="hero-headline relative mt-5 text-balance font-display text-[clamp(2.25rem,4.6vw,3.25rem)] font-medium leading-[1.18] tracking-[-0.02em] lg:max-w-[10.75em]">
+            <h1 className="hero-headline relative mt-4 text-balance font-display text-heading lg:text-display font-medium leading-[1.18] tracking-[-0.02em] lg:max-w-[10.75em]">
               <span className="block">
                 <Words text={title1} startIndex={0} base={TIERS.words} step={TIERS.wordStep} />
               </span>
@@ -128,7 +128,7 @@ export function ExpatHero() {
                 />
               </TapeMark>
             </h1>
-            <p className="hero-in mt-5 max-w-xl text-base leading-relaxed text-muted sm:text-lg" style={at(TIERS.subtitle)}>
+            <p className="hero-in mt-4 max-w-xl text-base leading-relaxed text-muted" style={at(TIERS.subtitle)}>
               {t("expat.hero.subtitle")}
             </p>
 

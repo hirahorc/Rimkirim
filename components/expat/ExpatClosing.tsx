@@ -22,7 +22,7 @@ const NEXT = [
  * order the visitor will meet it (the rate, the questions, the booking
  * summary), because "and then what?" is the last doubt.
  *
- * Set as a ticket, the page's one dark surface (DESIGN.md, The dusk
+ * Set as a ticket, the page's one dark section (DESIGN.md, The dusk
  * ticket): the ask above a tear line, what happens next on the stub. Dusk,
  * the deep end of the route the page walks from sky through violet to
  * magenta, so arriving here reads as landing; and dark because the last ask
@@ -39,18 +39,18 @@ export function ExpatClosing() {
   return (
     // on the desk after the FAQ, also on the desk: the FAQ's own foot is the
     // space above, so the ticket keeps the same space above as below
-    <section aria-labelledby="closing-heading" className="mx-auto max-w-6xl px-2 pb-16 sm:px-6 sm:pb-20">
+    <section aria-labelledby="closing-heading" className="mx-auto max-w-6xl px-2 pb-16 sm:px-6 sm:pb-16">
       <ReviewNote note={REVIEW_NOTES.closing} className="mb-8" />
       <div className="rounded-lg bg-dusk text-background">
-        <div className="flex flex-col gap-8 px-5 pb-10 pt-10 sm:px-10 sm:pt-12 lg:flex-row lg:items-end lg:justify-between lg:px-14 lg:pt-14">
+        <div className="flex flex-col gap-8 px-4 pb-8 pt-8 sm:px-8 sm:pt-12 lg:flex-row lg:items-end lg:justify-between lg:px-12 lg:pt-12">
           <div className="max-w-2xl">
             <h2
               id="closing-heading"
-              className="text-balance font-display text-3xl font-bold tracking-tight sm:text-4xl lg:text-5xl"
+              className="text-balance font-display text-heading font-bold tracking-tight lg:text-display"
             >
               {t("expat.closing.heading")}
             </h2>
-            <p className="mt-4 max-w-xl text-pretty text-dusk-soft sm:text-lg">{t("expat.closing.subtitle")}</p>
+            <p className="mt-4 max-w-xl text-pretty text-dusk-soft sm:text-base">{t("expat.closing.subtitle")}</p>
           </div>
           {/* the house ring is ink with a white offset: on the ticket it
               turns over, a white ring with a dusk gap. The bar's own button
@@ -76,12 +76,12 @@ export function ExpatClosing() {
             arrives, the way the hero's route does, just before the stub's
             rails (globals.css, .ticket-tear) */}
         <div aria-hidden className="ticket-tear relative">
-          <div className="ticket-tear-line mx-5 border-t border-dashed border-background/25 sm:mx-10 lg:mx-14" />
+          <div className="ticket-tear-line mx-4 border-t border-dashed border-background/25 sm:mx-8 lg:mx-12" />
           <span className="absolute left-0 top-0 h-6 w-3 -translate-y-1/2 rounded-r-full bg-background" />
           <span className="absolute right-0 top-0 h-6 w-3 -translate-y-1/2 rounded-l-full bg-background" />
         </div>
 
-        <div className="px-5 pb-10 pt-8 sm:px-10 lg:px-14 lg:pb-14">
+        <div className="px-4 pb-8 pt-8 sm:px-8 lg:px-12 lg:pb-12">
           <h3 className="font-display text-xs font-medium uppercase tracking-[0.04em] text-dusk-soft">
             {t("expat.closing.nextTitle")}
           </h3>
@@ -94,13 +94,13 @@ export function ExpatClosing() {
             role="group"
             aria-label={t("expat.closing.nextTitle")}
             tabIndex={0}
-            className="scroll-strip -mx-5 mt-4 snap-x snap-mandatory scroll-px-5 overflow-x-auto px-5 sm:mx-0 sm:snap-none sm:overflow-visible sm:px-0"
+            className="scroll-strip -mx-4 mt-4 snap-x snap-mandatory scroll-px-5 overflow-x-auto px-4 sm:mx-0 sm:snap-none sm:overflow-visible sm:px-0"
           >
             <ol className="flex gap-4 sm:grid sm:gap-6 lg:grid-cols-3 lg:gap-4">
               {NEXT.map(({ key, Scene }, i) => (
                 <li
                   key={key}
-                  className="how-step relative w-[82%] shrink-0 snap-start pt-5 sm:grid sm:w-auto sm:grid-cols-[18rem_minmax(0,1fr)] sm:items-center sm:gap-x-6 lg:block"
+                  className="how-step relative w-[82%] shrink-0 snap-start pt-4 sm:grid sm:w-auto sm:grid-cols-[18rem_minmax(0,1fr)] sm:items-center sm:gap-x-6 lg:block"
                   style={{ "--i": i } as React.CSSProperties}
                 >
                   <span aria-hidden className="how-step-rail absolute inset-x-0 top-0 h-px bg-background/20" />

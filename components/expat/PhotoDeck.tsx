@@ -149,7 +149,7 @@ export function PhotoDeck({
               data-depth={depth < SHOWN ? depth : "rest"}
               data-deal={dealt ? i : undefined}
               className={cn(
-                "deck-card absolute inset-[5%] rounded-md bg-background p-1.5 shadow-float",
+                "deck-card absolute inset-[5%] rounded-md bg-background p-2 shadow-float",
                 dealt && "deck-deal",
               )}
               style={dealt ? ({ "--at": `${dealAt + (i - 1) * 0.08}s` } as React.CSSProperties) : undefined}
@@ -181,7 +181,7 @@ export function PhotoDeck({
       </p>
 
       <div
-        className={cn("mt-3 flex items-center justify-between gap-3 px-[5%]", dealAt !== undefined && "hero-in")}
+        className={cn("mt-3 flex items-center justify-between gap-3 px-4", dealAt !== undefined && "hero-in")}
         style={dealAt !== undefined ? ({ "--at": `${dealAt + 0.45}s` } as React.CSSProperties) : undefined}
       >
         <span className="text-xs text-muted-2">{t("expat.photos.caption")}</span>

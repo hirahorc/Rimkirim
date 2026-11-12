@@ -121,7 +121,7 @@ export function RouteBoard({ className, style }: { className?: string; style?: R
 
         {/* the route: a dashed line drawn from origin to destination with the
             plane at its tip, redrawn for every new origin */}
-        <span className="board-track relative mx-2.5 inline-block h-4 shrink-0">
+        <span className="board-track relative mx-3 inline-block h-4 shrink-0">
           <span
             key={`l-${turn}`}
             className="board-line absolute inset-x-0 top-1/2 border-t border-dashed border-muted-2"

@@ -54,7 +54,7 @@ export function PackedPicture() {
   const p = (k: string) => t(`expatOrder.packing.${k}`);
   return (
     <div
-      className="jr jr-arrive absolute inset-x-5 top-5 mx-auto max-w-[26rem] rounded-[14px] bg-background p-4 shadow-float md:-right-[4.5rem] md:left-[max(20rem,44%)] md:top-8 md:mx-0 md:max-w-none md:p-5"
+      className="jr jr-arrive absolute inset-x-5 top-5 mx-auto max-w-[26rem] rounded-[14px] bg-background p-4 shadow-float md:-right-[4.5rem] md:left-[max(20rem,44%)] md:top-8 md:mx-0 md:max-w-none md:p-4"
       style={at(0)}
     >
       <div className="flex items-center gap-2">
@@ -69,7 +69,7 @@ export function PackedPicture() {
         {/* the rows stand from the start; what's in them is filled in, a
             row at a time */}
         {PACKED.map((it, i) => (
-          <li key={it.key} className={cn(ROW, "py-2.5 text-sm")}>
+          <li key={it.key} className={cn(ROW, "py-3 text-sm")}>
             <span className="jr jr-rise truncate" style={at(450 + i * 220)}>
               {t(`expat.scenes.packed.${it.key}`)}
             </span>
@@ -123,7 +123,7 @@ export function BooksStat() {
   return (
     <div className="px-6 pt-6">
       <p className="text-sm font-medium text-tone-ink">{t("expat.ship.books.stat.lead")}</p>
-      <p className="mt-2 whitespace-nowrap font-display text-[4.75rem] font-medium leading-[1.05] tracking-[-0.02em] text-tone-ink tabular-nums">
+      <p className="mt-2 whitespace-nowrap font-display text-display font-medium leading-[1.05] tracking-[-0.02em] text-tone-ink tabular-nums">
         {t("expat.customs.rates.books.duty")}
       </p>
       <p className="mt-3 max-w-[15rem] text-sm leading-relaxed text-muted">{t("expat.ship.books.stat.label")}</p>
@@ -199,13 +199,13 @@ export function AsksPicture() {
       <div className="jr jr-rise absolute bottom-1 right-4 w-[9.5rem] @max-xs:hidden" style={at(0)}>
         <RecordPlayerObjects className="h-auto w-full" />
       </div>
-      <div className="absolute left-6 right-6 top-6 grid gap-2.5">
+      <div className="absolute left-6 right-6 top-6 grid gap-2">
         {ASKS.map((row, i) => (
           <div key={i} className="flex gap-2" style={{ paddingLeft: row.indent }}>
             {row.keys.map((k) => (
               <span
                 key={k}
-                className="jr jr-drop whitespace-nowrap rounded-full bg-background px-3.5 py-2 text-sm shadow-float"
+                className="jr jr-drop whitespace-nowrap rounded-full bg-background px-4 py-2 text-sm shadow-float"
                 style={at(250 + n++ * 140)}
               >
                 {t(`expat.scenes.asks.${k}`)}

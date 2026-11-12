@@ -3,19 +3,20 @@
 import * as React from "react";
 import Link from "next/link";
 import { ArrowLeft, BadgePercent, MessageCircle, PackageOpen } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { CollapseHeight, Disclosure } from "@/components/ui/disclosure";
+import { CollapseHeight } from "@/components/ui/disclosure";
 import { ReviewNote } from "@/components/expat/ReviewNote";
 import { ORDER_REVIEW_NOTES } from "@/lib/data/expat-order-notes";
 import { waLink } from "@/lib/contact";
 import { useExpatOrderHydrated, useExpatOrderStore } from "@/lib/store/useExpatOrderStore";
 import { useT } from "@/lib/i18n/LanguageProvider";
+import { cn } from "@/lib/utils/cn";
 import { bookingFacts } from "./booking-facts";
 import { BookingHead } from "./BookingHead";
 import { CustomsPaths } from "./CustomsPaths";
 import { FlowLoading } from "./FlowLoading";
+import { Chip, Fold, TYPE } from "./kit";
 import { clearJustBooked, justBooked } from "./visit";
 
 /** how many packages the summary lists before it folds the rest */
@@ -25,9 +26,9 @@ const PACKAGES_SHOWN = 5;
  *  a hairline between rows (the app's line-item reading) */
 function Row({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <div className="grid gap-1 border-t border-border py-4 sm:grid-cols-[9rem_minmax(0,1fr)] sm:gap-6">
+    <div className="grid grid-cols-1 gap-1 border-t border-border py-4 sm:grid-cols-[9rem_minmax(0,1fr)] sm:gap-6">
       <dt className="text-sm text-muted">{label}</dt>
-      <dd className="space-y-0.5 text-sm leading-relaxed">{children}</dd>
+      <dd className="text-sm">{children}</dd>
     </div>
   );
 }
@@ -44,7 +45,7 @@ function PackageLine({ pk }: { pk: { title: string; measures: string; items: { n
 }
 
 /**
- * The Booking Summary, on the app's field like the steps before it: a white
+ * The Booking Summary, on the flow's field like the steps before it: a paper
  * card with the received head and the booking number, then the summary as
  * rows (route, shipping, what's shipping, the packages, pickup, contact). Beside it, what
  * happens next, the other answers and the documents each Customs Path needs,
@@ -66,10 +67,10 @@ export function BookingView({ number }: { number: string }) {
 
   if (!booking) {
     return (
-      <div data-field className="mx-auto max-w-xl px-4 py-24 text-center sm:px-6">
-        <h1 className="font-display text-3xl font-bold tracking-tight">{bk("notFoundTitle")}</h1>
-        <p className="mt-3 text-muted">{bk("notFoundBody")}</p>
-        <Button asChild size="lg" className="mt-8">
+      <div data-field data-flow className="mx-auto max-w-xl px-4 py-12 text-center sm:px-6">
+        <h1 className={TYPE.title}>{bk("notFoundTitle")}</h1>
+        <p className="mt-1 text-sm text-muted">{bk("notFoundBody")}</p>
+        <Button asChild size="lg" className="mt-6">
           <Link href="/expat-relocation/rates">{bk("notFoundCta")}</Link>
         </Button>
       </div>
@@ -79,15 +80,15 @@ export function BookingView({ number }: { number: string }) {
   const f = bookingFacts(booking, t);
 
   return (
-    <div data-field className="mx-auto max-w-5xl px-4 pb-20 pt-8 sm:px-6 sm:pt-10">
+    <div data-field data-flow className="mx-auto max-w-5xl px-4 pb-12 pt-6 sm:px-6 sm:pt-8">
       <ReviewNote note={ORDER_REVIEW_NOTES.booking} className="mb-6" />
 
       {/* what the customer typed is shown as typed, and some of it can't
           wrap by itself (an email, a long word in an address): it may break
           anywhere, and the column is stated (minmax(0, 1fr)) so nothing
           unbreakable can widen the summary past the screen */}
-      <div className="grid grid-cols-1 gap-6 [overflow-wrap:anywhere] lg:grid-cols-[minmax(0,1fr)_22rem] lg:items-start">
-        <Card className="min-w-0 px-5 py-6 sm:px-8 sm:py-8">
+      <div className="grid grid-cols-1 gap-4 [overflow-wrap:anywhere] lg:grid-cols-[minmax(0,1fr)_20rem] lg:items-start lg:gap-12">
+        <Card className="min-w-0 p-4 sm:p-6">
           <article aria-labelledby="booking-heading">
             <BookingHead number={f.number} email={f.contact.email} headingId="booking-heading" fresh={fresh} />
 
@@ -96,7 +97,7 @@ export function BookingView({ number }: { number: string }) {
                 <p className="font-medium">{f.from.country}</p>
                 <p className="text-muted">{f.from.address}</p>
                 {f.from.detail && <p className="text-muted">{f.from.detail}</p>}
-                <p className="pt-2 font-medium">{f.to.country}</p>
+                <p className="mt-2 font-medium">{f.to.country}</p>
                 <p className="text-muted">{f.to.address}</p>
                 {f.to.detail && <p className="text-muted">{f.to.detail}</p>}
               </Row>
@@ -104,32 +105,36 @@ export function BookingView({ number }: { number: string }) {
                 <p className="flex flex-wrap items-center gap-2 font-medium">
                   {f.shipping.service}
                   {f.shipping.special && (
-                    <Badge variant="brand">
-                      <BadgePercent aria-hidden className="size-3.5" /> {t("expatOrder.rates.special")}
-                    </Badge>
+                    <Chip>
+                      <BadgePercent aria-hidden /> {t("expatOrder.rates.special")}
+                    </Chip>
                   )}
                 </p>
                 <p className="text-muted">
                   {f.shipping.transit} · {f.shipping.weight}
                 </p>
-                <p className="pt-2 font-display text-2xl font-bold tracking-tight tabular-nums">{f.shipping.estimate}</p>
-                <p className="text-xs text-muted">{t("expatOrder.service.note")}</p>
+                <p className={cn(TYPE.figure, "mt-2")}>{f.shipping.estimate}</p>
+                <p className="mt-1 text-xs text-muted">{t("expatOrder.service.note")}</p>
               </Row>
               <Row label={bk("items")}>
-                <ul className="space-y-0.5">
+                <ul>
                   {f.items.map((i) => (
-                    <li key={i}>{i}</li>
+                    <li key={i} className="font-medium">
+                      {i}
+                    </li>
                   ))}
                 </ul>
-                <p className="flex gap-2 pt-2 text-muted">
-                  <PackageOpen aria-hidden className="mt-0.5 size-4 shrink-0 text-info" />
+                <p className="mt-2 flex gap-2 text-muted">
+                  <span className="flex h-5 shrink-0 items-center">
+                    <PackageOpen aria-hidden className="size-4" />
+                  </span>
                   {f.packReminder}
                 </p>
               </Row>
               {f.packing && (
                 <Row label={bk("packing")}>
                   <p className="font-medium">{f.packing.summary}</p>
-                  <ol className="space-y-2 pt-2">
+                  <ol className="mt-2 grid grid-cols-1 gap-2">
                     {f.packing.packages.slice(0, PACKAGES_SHOWN).map((pk) => (
                       <PackageLine key={pk.title} pk={pk} />
                     ))}
@@ -138,7 +143,7 @@ export function BookingView({ number }: { number: string }) {
                       the disclosure's height motion, as every other one does */}
                   {f.packing.packages.length > PACKAGES_SHOWN && (
                     <CollapseHeight open={allPackages} id="booking-packages">
-                      <ol start={PACKAGES_SHOWN + 1} className="space-y-2 pt-2">
+                      <ol start={PACKAGES_SHOWN + 1} className="grid grid-cols-1 gap-2 pt-2">
                         {f.packing.packages.slice(PACKAGES_SHOWN).map((pk) => (
                           <PackageLine key={pk.title} pk={pk} />
                         ))}
@@ -151,7 +156,7 @@ export function BookingView({ number }: { number: string }) {
                       aria-expanded={allPackages}
                       aria-controls="booking-packages"
                       onClick={() => setAllPackages((v) => !v)}
-                      className="link-mark tap-row relative mt-1"
+                      className="link-mark tap-row relative mt-2"
                     >
                       {allPackages
                         ? bk("packagesFewer")
@@ -172,42 +177,43 @@ export function BookingView({ number }: { number: string }) {
           </article>
         </Card>
 
-        <div className="space-y-6">
-          <Card className="px-5 py-6 sm:px-6">
+        <div className="grid grid-cols-1 gap-4">
+          <Card className="p-4 sm:p-6">
             <section aria-labelledby="next-heading">
-              <h2 id="next-heading" className="font-display text-lg font-semibold tracking-tight">
+              <h2 id="next-heading" className={TYPE.subhead}>
                 {bk("nextTitle")}
               </h2>
-              <ol className="mt-5 space-y-5">
+              <ol className="mt-4 grid grid-cols-1 gap-4">
                 {f.next.map((n, i) => (
                   <li key={n.title} className="flex gap-3">
-                    <span className="grid size-6 shrink-0 place-items-center rounded-full bg-surface-2 font-display text-xs font-semibold tabular-nums">
+                    {/* as tall as its title's line, so the two sit level */}
+                    <span className="grid size-5 shrink-0 place-items-center rounded-full bg-surface-2 text-xs font-medium tabular-nums">
                       {i + 1}
                     </span>
                     <div>
-                      <h3 className="text-sm font-semibold">{n.title}</h3>
-                      <p className="mt-1 text-sm leading-relaxed text-muted">{n.body}</p>
+                      <h3 className="text-sm font-medium">{n.title}</h3>
+                      <p className="mt-1 text-sm text-muted">{n.body}</p>
                     </div>
                   </li>
                 ))}
               </ol>
               {/* not a step: when the invoice comes, under the steps and apart from the pickup */}
-              <p className="mt-5 border-t border-border pt-4 text-sm leading-relaxed text-muted">{f.invoice}</p>
+              <p className="mt-4 border-t border-border pt-4 text-sm text-muted">{f.invoice}</p>
             </section>
           </Card>
 
           {/* two folded rows, one list: the answers, then the documents */}
-          <Card className="px-3 py-1 sm:px-4">
-            <Disclosure id="your-answers" question={bk("answers")}>
-              <dl className="space-y-2 text-sm">
+          <Card className="px-4 sm:px-6">
+            <Fold id="your-answers" title={bk("answers")}>
+              <dl className="grid grid-cols-1 gap-2 text-sm">
                 {f.answers.map(([k, v]) => (
-                  <div key={k} className="grid grid-cols-[8.5rem_minmax(0,1fr)] gap-3">
+                  <div key={k} className="grid grid-cols-[8rem_minmax(0,1fr)] gap-3">
                     <dt className="text-muted">{k}</dt>
                     <dd className="font-medium">{v}</dd>
                   </div>
                 ))}
               </dl>
-            </Disclosure>
+            </Fold>
             <CustomsPaths id="documents" title={t("expatOrder.customs.docsTitle")} edges="top" />
           </Card>
 
@@ -217,12 +223,12 @@ export function BookingView({ number }: { number: string }) {
               href={waLink(bk("helpWa").replace("{number}", f.number))}
               target="_blank"
               rel="noreferrer"
-              className="link-mark tap-row relative inline-flex items-start gap-1.5"
+              className="link-mark tap-row relative"
             >
-              <MessageCircle aria-hidden className="mt-0.5 size-4 shrink-0" /> {bk("helpCta")}
+              <MessageCircle aria-hidden className="inline size-4 align-text-bottom" /> {bk("helpCta")}
             </a>
           </p>
-          <Button asChild variant="ghost" className="-ml-4">
+          <Button asChild variant="ghost" className="justify-self-start">
             <Link href="/expat-relocation">
               <ArrowLeft /> {bk("home")}
             </Link>

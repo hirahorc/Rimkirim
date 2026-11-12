@@ -38,6 +38,8 @@
      component that speaks the tone still reads right on any other page */
   --tone-ink: var(--muted);
   --tone-wash: var(--surface-2);
+  --tone-deep: var(--foreground);
+  --tone-deep-soft: var(--border-strong);
   /* the expat ticket: the deep end of the expat route (the violet-magenta
      midpoint, 55% toward black). White words 12.5:1, the soft lavender
      9.3:1, the lime door 10.5:1 */
@@ -127,6 +129,12 @@
   /* dialog anatomy: the bottom inset that keeps a sheet's last row clear of
      the home indicator (pb-dialog-safe). One token so every dialog agrees. */
   --spacing-dialog-safe: calc(1.25rem + env(safe-area-inset-bottom));
+  /* the expat landing's two top type steps (12 14 16 20 are the house's
+     xs sm base xl): a section's heading and the hero's display */
+  --text-heading: 2rem;
+  --text-heading--line-height: 2.5rem;
+  --text-display: 3rem;
+  --text-display--line-height: 3.25rem;
 }
 
 /* Default border colour. Must live in a layer: unlayered rules outrank every
@@ -284,6 +292,11 @@ body:has(main > [data-field]) {
   --tone: #d41ce6;
   --tone-wash: #fadafc;
   --tone-ink: #a213b0;
+  /* the deep panel's fill and its quiet words (.deep-panel, below): the hue
+     40% toward black, and the band's line colour as ink. White 11.2:1 on
+     the fill, the soft 7.2:1 */
+  --tone-deep: #690873;
+  --tone-deep-soft: #f5befa;
   --muted: #64426c;
   --muted-2: #73517d;
   --border: #fbdefd;
@@ -296,6 +309,156 @@ body:has(main > [data-field]) {
   --border: #f5befa;
   --border-strong: #f0a5f7;
 }
+/* The expat landing's scales. The page keeps its chapters and every colour
+   it had; what it is held to is one spacing scale and one type scale:
+     spacing  4 8 12 16 24 32 48 64 96 (96 is a section's own padding from
+              lg, and nothing else's; a 1 to 2px nudge that seats an icon
+              on its line is alignment, not spacing)
+     type     12 14 16 20 32 48 (text-heading and text-display are the top
+              two; the rest are the house's xs sm base xl)
+   Its components are written to them. The one shared piece that isn't, the
+   accordion (Disclosure), is brought onto them here, for the landing only
+   (`[data-landing="expat"]`, the wrapper in app/expat-relocation/page.tsx):
+   16 where it reads 20. Pictures keep their own em inside. */
+[data-landing="expat"] details > summary {
+  padding-block: 1rem;
+}
+[data-landing="expat"] details > div > div {
+  padding-bottom: 1rem;
+  padding-left: 1rem;
+}
+[data-landing="expat"] details.rounded-lg > summary,
+[data-landing="expat"] details.rounded-lg > div > div {
+  padding-inline: 1rem;
+}
+@media (min-width: 40rem) {
+  [data-landing="expat"] details.rounded-lg > summary,
+  [data-landing="expat"] details.rounded-lg > div > div {
+    padding-inline: 1.5rem;
+  }
+}
+
+/* The frame. The landing's sections are parted by space and line, not by a
+   coloured ground (the bands are gone from this page): a hairline over each
+   section from the reviews to the FAQ, and one under the FAQ, each running
+   the full width of the screen; and from 76rem a rail down each side of the
+   content column, from the first line to the last, which the lines cross, so
+   the page reads as one column ruled into parts (after stripe.com). Below
+   76rem the column is the screen, so there are no rails. One neutral line
+   all the way down: it is set on the frame, outside any chapter, so no
+   section tints it. */
+.landing-frame {
+  --frame-line: var(--border-strong);
+  position: relative;
+  border-bottom: 1px solid var(--frame-line);
+}
+.landing-frame > section {
+  position: relative;
+}
+.landing-frame > section::before {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  top: 0;
+  border-top: 1px solid var(--frame-line);
+  pointer-events: none;
+}
+/* A section with parts of its own (What you can ship's packing guide and
+   "Before you send", Who does what's two lists and its carriers) rules them
+   apart in the frame's neutral, dashed: a quieter line than the one between
+   two sections, and not the chapter's, so the page has one line colour and
+   two weights of it. It is the same rule where two parts stand side by side
+   and the line turns upright. */
+.landing-frame .part-rule {
+  border-color: var(--frame-line);
+  border-style: dashed;
+}
+/* A panel solid on its chapter's deep, with no outline: the three customs
+   paths, dark enough that their titles stand white. Inside it the neutrals
+   turn over, the way a chapter re-points them, so nothing in the panel is
+   painted one by one: words white, the quiet ones, the icons and the ink a
+   soft tint of the hue, hairlines white at 16% (1.44:1 on the fill, the
+   band pair's step), the focus ring white. Only the magenta chapter has a
+   deep; outside it the panel falls back to ink with the neutral line
+   colour as its soft. */
+.deep-panel {
+  --foreground: #ffffff;
+  --muted: var(--tone-deep-soft);
+  --muted-2: var(--tone-deep-soft);
+  --tone-ink: var(--tone-deep-soft);
+  --border: rgb(255 255 255 / 0.16);
+  --border-strong: rgb(255 255 255 / 0.28);
+  background: var(--tone-deep);
+  color: var(--foreground);
+}
+/* Two sections in the frame have a ground of their own, solid, from line to
+   line across the screen, each on its chapter's wash, so the page isn't white
+   all the way down: the reviews and pricing. Pricing's is simply there
+   (data-ground="on" in the markup). The reviews' isn't there as the page
+   opens (the section's first line shows under the hero, and a strip of
+   colour there read as a stray band): it comes up once the reader has
+   scrolled off the hero and into the section, and goes again on the way back
+   up (ExpatReviews sets data-ground="on"). Colour only, on the system's
+   ease; at once under reduced motion. A card on a ground is a white plane,
+   and its hairlines are the chapter's band pair, pitched for the wash. */
+.landing-frame > section[data-ground] {
+  isolation: isolate;
+  --card-surface: var(--background);
+}
+.landing-frame > section[data-ground]::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--tone-wash);
+  opacity: 0;
+  transition: opacity 300ms cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
+}
+.landing-frame > section[data-ground="on"]::after {
+  opacity: 1;
+}
+@media (prefers-reduced-motion: reduce) {
+  .landing-frame > section[data-ground]::after {
+    transition: none;
+  }
+}
+.landing-frame > section[data-ground="on"][data-tone="sky"] {
+  --border: #9cd7f7;
+  --border-strong: #75c8f3;
+}
+.landing-frame > section[data-ground="on"][data-tone="violet"] {
+  --border: #c9c8fb;
+  --border-strong: #b8b5f8;
+}
+.landing-frame > section[data-ground="on"][data-tone="magenta"] {
+  --border: #f5befa;
+  --border-strong: #f0a5f7;
+}
+/* the ticket stands clear of the frame's foot by a section's own space */
+.landing-frame + section {
+  margin-top: 4rem;
+}
+@media (min-width: 64rem) {
+  .landing-frame + section {
+    margin-top: 6rem;
+  }
+}
+@media (min-width: 76rem) {
+  .landing-frame::before {
+    content: "";
+    position: absolute;
+    inset-block: 0;
+    left: 50%;
+    width: 72rem;
+    translate: -50%;
+    /* over a section's own ground, so the rails run unbroken through it */
+    z-index: 1;
+    border-inline: 1px solid var(--frame-line);
+    pointer-events: none;
+  }
+}
+
 /* out of the chapter again: the landing's pictures of the order flow render
    its own components, and the flow is the app on daylight neutrals, so the
    picture shows them as they are rather than in the section's hue */
@@ -312,6 +475,124 @@ body:has(main > [data-field]) {
 /* the photo slots' grid speaks the chapter's hue too */
 [data-tone] {
   --grid-line: color-mix(in srgb, var(--tone) 16%, transparent);
+}
+
+/* The expat order flow (Check Rate, the plan, the Booking Summary) runs on
+   five colours, paper, wash, ink, muted and lime, and a sixth kept for one
+   thing: red, for what's wrong. As a chapter does, it re-points the
+   system's own tokens rather than painting components one by one, so every
+   shared control inside it (the pickers, a dialog, a toast, the bar and the
+   footer) takes them untouched.
+   - Paper is a card. Wash is the one grey: the ground under the cards, a
+     field's well and every hairline.
+   - Ink is the words, and the way to say chosen, done or told. There is no
+     blue or green here, so those are said in weight, an icon and where they
+     stand. Muted is the second voice.
+   - Lime is the action's alone.
+   - Red (the system's Stop Red) is an error's alone: the edge of the field
+     that's wrong, the words that say why, the toast that counts what's
+     missing. Never an offer, a warning or a button.
+   The two "down" shades are states (a hover, a press, the option under the
+   pointer), mixed from the five and never a colour at rest. On the body, so
+   portalled overlays are inside it; [data-flow] alone is the landing's
+   pictures of the flow, after .tone-none so it wins there. */
+body:has(main > [data-flow]),
+[data-flow],
+[data-tone] [data-flow] {
+  --flow-paper: #ffffff;
+  --flow-wash: #ebebee;
+  --flow-ink: #1f1f1f;
+  --flow-muted: #52525b;
+  --flow-lime: #c1ff00;
+  --flow-red: #e60000;
+  --flow-wash-down: color-mix(in oklab, var(--flow-wash) 92%, var(--flow-ink));
+  --flow-lime-down: color-mix(in oklab, var(--flow-lime) 88%, var(--flow-ink));
+
+  --background: var(--flow-paper);
+  --surface: var(--flow-paper);
+  --surface-2: var(--flow-wash);
+  --surface-3: var(--flow-wash-down);
+  --border: var(--flow-wash);
+  --border-strong: var(--flow-wash);
+  --foreground: var(--flow-ink);
+  --muted: var(--flow-muted);
+  --muted-2: var(--flow-muted);
+  --tone-ink: var(--flow-muted);
+  --brand: var(--flow-lime);
+  --brand-soft: var(--flow-lime);
+  --brand-dim: var(--flow-lime-down);
+  --brand-ink: var(--flow-ink);
+  --accent: var(--flow-ink);
+  --accent-ink: var(--flow-ink);
+  --success: var(--flow-ink);
+  --success-ink: var(--flow-ink);
+  --warning: var(--flow-ink);
+  --warning-ink: var(--flow-ink);
+  --danger: var(--flow-red);
+  --danger-ink: var(--flow-red);
+  --info: var(--flow-ink);
+  --info-ink: var(--flow-ink);
+}
+/* a link is ink with a line under it; under the pointer the line thickens */
+body:has(main > [data-flow]) .link-mark {
+  color: var(--flow-ink);
+  text-decoration-color: currentColor;
+  text-decoration-thickness: 1px;
+}
+body:has(main > [data-flow]) .link-mark:active,
+body:has(main > [data-flow]) .link-mark:focus-visible {
+  text-decoration-thickness: 2px;
+}
+@media (hover: hover) {
+  body:has(main > [data-flow]) .link-mark:hover {
+    color: var(--flow-ink);
+    text-decoration-thickness: 2px;
+  }
+}
+body:has(main > [data-flow]) .link-mark:focus-visible {
+  outline-color: var(--flow-ink);
+}
+/* what opens over the page (a picker's list, the calendar) is paper, as a
+   card is: on the page's own wash it would read as a hole, not a layer. The
+   day that's chosen is Ink, as every chosen answer is; lime stays the
+   action's */
+body:has(main > [data-flow]) .pop-panel {
+  background-color: var(--flow-paper);
+}
+body:has(main > [data-flow]) .pop-panel [role="gridcell"] > button[aria-pressed="true"] {
+  background-color: var(--flow-ink);
+  color: var(--flow-paper);
+}
+body:has(main > [data-flow]) .pop-panel [role="gridcell"] > button[aria-pressed="true"] > span {
+  background-color: var(--flow-paper);
+}
+/* every day that can be picked is Ink, and Sunday's name is Muted as the
+   other six are: the calendar's red Sunday is a custom, not an error, and
+   red here is only what's wrong */
+body:has(main > [data-flow]) .pop-panel [role="gridcell"] > button:enabled:not([aria-pressed="true"]) {
+  color: var(--flow-ink);
+}
+body:has(main > [data-flow]) .pop-panel :has(+ [role="grid"]) > div {
+  color: var(--flow-muted);
+}
+/* a toast is ink, and its icon says which kind; the one that says what's
+   wrong is red */
+body:has(main > [data-flow]) [data-sonner-toaster][data-sonner-theme] {
+  --normal-bg: var(--flow-ink);
+  --normal-border: var(--flow-ink);
+  --normal-text: var(--flow-paper);
+  --success-bg: var(--flow-ink);
+  --success-border: var(--flow-ink);
+  --success-text: var(--flow-paper);
+  --info-bg: var(--flow-ink);
+  --info-border: var(--flow-ink);
+  --info-text: var(--flow-paper);
+  --warning-bg: var(--flow-ink);
+  --warning-border: var(--flow-ink);
+  --warning-text: var(--flow-paper);
+  --error-bg: var(--flow-red);
+  --error-border: var(--flow-red);
+  --error-text: var(--flow-paper);
 }
 
 /* grid backdrop for hero */
@@ -1243,6 +1524,30 @@ body:has(main > [data-field]) {
   visibility: hidden;
   pointer-events: none;
 }
+/* A section's eyebrow on the expat landing wears the same paint as the
+   header's "Expat Relocation": the same two stops at the same angle, drawn
+   the same way, across the words (so the label is as wide as its words, not
+   its column). Still: it's a label, never a link, so it never flows. The
+   bright stops sit under AA at this size, as they do in the header (2.4:1
+   at the sky end, 4.3:1 at the magenta end on white); a call made for the
+   brand's colour, taken with that known. */
+.eyebrow-expat {
+  --nav-expat-from: #21b1ec;
+  --nav-expat-to: #d41ce6;
+  width: fit-content;
+  color: transparent;
+  background-image: linear-gradient(
+    82deg,
+    var(--nav-expat-from) 0%,
+    var(--nav-expat-to) 40%,
+    var(--nav-expat-from) 60%,
+    var(--nav-expat-to) 100%
+  );
+  background-size: 300% 100%;
+  background-position: 0% 50%;
+  -webkit-background-clip: text;
+  background-clip: text;
+}
 /* only where it is a link: the expat bar wears the gradient on its service
    name, a label, and a label that stirs under the pointer promises a click
    that does nothing. And the hover is a mouse's: on touch it would stay on,
@@ -1869,12 +2174,11 @@ a.nav-expat:focus-visible {
   animation-name: none;
 }
 /* chosen from the keyboard, nothing moves at all (PRODUCT.md): the stage,
-   the highlight and the rail are simply there, the tile neither flips nor
-   pulses */
+   the highlight and the rail are simply there, the tile doesn't flip */
 .jr-root[data-instant] :is(.jr-slot, .jr-glide, .jr-rail-fill, .jr-dusk) {
   transition: none;
 }
-.jr-root[data-instant] :is(.jr-tile, .jr-pulse) {
+.jr-root[data-instant] .jr-tile {
   animation: none;
 }
 /* the highlight glides from step to step, and the rail fills behind it;
@@ -1927,28 +2231,6 @@ a.nav-expat:focus-visible {
     opacity: 1;
   }
 }
-/* a step reached: a ring of the chapter's ink swells out of its tile and
-   fades, just after the tile's flip; behind the tile's number */
-@keyframes jr-pulse {
-  from {
-    opacity: 0.7;
-    transform: scale(1);
-  }
-  to {
-    opacity: 0;
-    transform: scale(1.9);
-  }
-}
-.jr-pulse {
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  border-radius: inherit;
-  background: color-mix(in srgb, var(--tone-ink) 22%, transparent);
-  box-shadow: 0 0 0 2px var(--tone-ink);
-  opacity: 0;
-  pointer-events: none;
-}
 .jr-timer {
   stroke-dasharray: 100;
   animation: jr-hold var(--dwell) linear both;
@@ -1994,9 +2276,6 @@ a.nav-expat:focus-visible {
   .jr-tile {
     animation: board-flip 320ms var(--ease-out-soft) both;
   }
-  .jr-pulse {
-    animation: jr-pulse 750ms var(--ease-hover) 180ms both;
-  }
   /* the section reveals itself once, as it comes into view (the journey,
      and the expat pricing, "What you can ship" and "Who does what", which
      reveal as the journey does: useSectionReveal) */
@@ -2015,6 +2294,13 @@ a.nav-expat:focus-visible {
 /* built states, which is all a reader without motion or script sees */
 .jr-check {
   stroke-dasharray: 24;
+}
+/* a piece that is on stage for a while and then gives its place to the next
+   (the pricing relay: one worked piece before another, one rate before
+   another). Wherever nothing plays it stands hidden, so what's left is
+   only what the scene ends on */
+.jr-pass {
+  opacity: 0;
 }
 .jr-ring {
   stroke-dasharray: 100;
@@ -2112,6 +2398,27 @@ a.nav-expat:focus-visible {
     transform: scale(0.96);
   }
 }
+/* one thing in another's place (a passing piece, and the one that takes
+   its place for good): it only fades in, over what was there, on the same
+   lines. Moved as well, two sheets with the same labels cross as a blur;
+   set down on top, what they share never flickers and only what differs
+   dissolves. So each is opaque, and the one under it goes once it's hidden */
+@keyframes jr-pass-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes jr-pass-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
 @keyframes jr-fly {
   0% {
     opacity: 0;
@@ -2155,10 +2462,28 @@ a.nav-expat:focus-visible {
   }
   .jr-scene[data-built] .jr-draw { animation-name: jr-type; }
   .jr-scene[data-built] .jr-fly { animation-name: jr-fly; }
+  /* in at its start, out --len later; the second holds only forwards, or
+     its first frame would show the piece before it has come up */
+  .jr-scene[data-built] .jr-swap { animation-name: jr-pass-in; animation-duration: 300ms; animation-timing-function: ease-out; }
+  .jr-scene[data-built] .jr-pass {
+    animation-name: jr-pass-in, jr-pass-out;
+    animation-duration: 300ms, 200ms;
+    animation-timing-function: ease-out;
+    animation-fill-mode: both, forwards;
+    animation-delay:
+      calc(var(--d0, 0ms) + var(--d, 0ms)),
+      calc(var(--d0, 0ms) + var(--d, 0ms) + var(--len, 1200ms));
+  }
+  /* the pricing relay can be held: by its control, off screen, and in a
+     hidden tab. Paused, a piece keeps its place in the run, the ones still
+     waiting their turn included */
+  [data-relay]:is([data-paused], [data-hold]) :is(.jr, .jr-pass) {
+    animation-play-state: paused;
+  }
 
   /* until its step comes up, a scene's pieces wait out of sight (only
      once the page is live, so without script every scene stands built) */
-  :is([data-journey-ready], [data-scene-ready]) .jr-scene:not([data-built]) :is(.jr-arrive, .jr-lift, .jr-rise, .jr-drop, .jr-flip, .jr-fly, .jr-press, .jr-land) {
+  :is([data-journey-ready], [data-scene-ready]) .jr-scene:not([data-built]) :is(.jr-arrive, .jr-lift, .jr-rise, .jr-drop, .jr-flip, .jr-fly, .jr-press, .jr-land, .jr-swap) {
     opacity: 0;
   }
   :is([data-journey-ready], [data-scene-ready]) .jr-scene:not([data-built]) :is(.jr-type, .jr-draw) {

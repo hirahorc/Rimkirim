@@ -4,23 +4,24 @@ import * as React from "react";
 import { Check } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 
-/** the card both choices share: a white plane that frames in Ink when chosen */
+/** the card both choices share: a wash well, as a field is, that turns to
+ *  paper framed in Ink when chosen */
 const card = (on: boolean) =>
   cn(
-    // pressed, the plane dips to Panel 2 at once: the answer itself only
-    // lands when the finger lifts
-    "flex w-full items-center gap-3 rounded-md border bg-background px-4 py-3 text-left text-sm transition-colors active:bg-surface-2",
-    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/50",
+    "flex min-h-11 w-full items-center gap-2 rounded-md px-3 py-2 text-left text-sm transition-colors",
+    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/50 focus-visible:ring-offset-2 focus-visible:ring-offset-background",
     on
-      ? "border-foreground font-medium text-foreground shadow-[inset_0_0_0_1px_var(--foreground)]"
-      : "border-border-strong text-foreground hover:border-muted-2",
+      ? "bg-background font-medium shadow-[inset_0_0_0_2px_var(--foreground)]"
+      : // pressed, the well dips at once: the answer itself only lands when
+        // the finger lifts
+        "bg-surface-2 hover:bg-surface-3 active:bg-surface-3",
   );
 
 /**
  * One answer from a few, as cards (Q2, Q3 and its follow-ups, Q4): real radio
  * semantics (labelled by its question, arrows move the choice, roving
- * tabindex), the chosen card framed in Ink with the stepper's lime core in
- * its dot. Not lime-filled: lime stays the page's one "press this".
+ * tabindex), the chosen card framed in Ink with its dot filled. Ink, not
+ * lime: lime stays the page's one "press this".
  */
 export function RadioCards<T extends string | boolean>({
   value,
@@ -53,7 +54,7 @@ export function RadioCards<T extends string | boolean>({
       role="radiogroup"
       aria-labelledby={labelledBy}
       className={cn(
-        "grid gap-2",
+        "grid grid-cols-1 gap-2",
         columns === 2 && "sm:grid-cols-2",
         columns === 3 && "sm:grid-cols-3",
         columns === 4 && "sm:grid-cols-2 lg:grid-cols-4",
@@ -85,12 +86,9 @@ export function RadioCards<T extends string | boolean>({
           >
             <span
               aria-hidden
-              className={cn(
-                "grid size-5 shrink-0 place-items-center rounded-full",
-                on ? "border-2 border-foreground" : "border border-border-strong bg-surface-2",
-              )}
+              className={cn("grid size-5 shrink-0 place-items-center rounded-full", on ? "bg-foreground" : "bg-background")}
             >
-              {on && <span className={cn("size-2 rounded-full bg-brand", picked && "radio-check-in")} />}
+              {on && <span className={cn("size-2 rounded-full bg-background", picked && "radio-check-in")} />}
             </span>
             {o.label}
           </button>
@@ -101,8 +99,8 @@ export function RadioCards<T extends string | boolean>({
 }
 
 /**
- * Any number of answers (Q1), as cards with a real checkbox each: the box is
- * the system's checked state (lime with an Ink tick), the card frames in Ink.
+ * Any number of answers (Q1), as cards with a real checkbox each: the box
+ * fills with Ink under a paper tick, the card frames in Ink.
  */
 export function CheckCards<T extends string>({
   value,
@@ -121,7 +119,7 @@ export function CheckCards<T extends string>({
   // as the radio's dot: only an answer just given pops in
   const [picked, setPicked] = React.useState(false);
   return (
-    <div role="group" aria-labelledby={labelledBy} className={cn("grid gap-2", !single && "sm:grid-cols-2")}>
+    <div role="group" aria-labelledby={labelledBy} className={cn("grid grid-cols-1 gap-2", !single && "sm:grid-cols-2")}>
       {options.map((o) => {
         const on = value.includes(o.value);
         return (
@@ -139,8 +137,8 @@ export function CheckCards<T extends string>({
             <span
               aria-hidden
               className={cn(
-                "grid size-5 shrink-0 place-items-center rounded-[6px] border",
-                on ? "border-brand bg-brand text-brand-ink" : "border-border-strong bg-surface-2",
+                "grid size-5 shrink-0 place-items-center rounded-2xs",
+                on ? "bg-foreground text-background" : "bg-background",
               )}
             >
               {on && <Check className={cn("size-3.5", picked && "radio-check-in")} strokeWidth={3} />}

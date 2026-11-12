@@ -17,7 +17,7 @@ import { revealOrder as order, useSectionReveal } from "./useSectionReveal";
  *  decides (docs/adr/0002). The order flow lists the same three
  *  (CustomsPaths), so the two can never tell a customer different things */
 export const CUSTOMS_ROUTES: readonly { key: string; docs: readonly string[] }[] = [
-  { key: "pindahan", docs: ["doc1", "doc2", "doc3", "doc4", "doc5"] },
+  { key: "pindahan", docs: ["doc1", "doc2", "doc3", "doc4"] },
   { key: "penumpang", docs: ["doc1", "doc2", "doc3"] },
   { key: "kiriman", docs: ["doc1", "doc2"] },
 ];
@@ -38,7 +38,7 @@ const RATES = ["general", "books", "regulated", "apparel"] as const;
  * them (the timing, what isn't covered, the NPWP), so nothing under the
  * cards says them again. The one route with no exemption gets its rates under them,
  * one number big on each row, since that's the one a visitor has to work
- * out, then a way to ask. A band in the
+ * out, then a way to ask. On the desk in the
  * magenta chapter, between How it works and the FAQ on the desk. Every
  * rule here is a draft until ops confirms it (REVIEW_NOTES.customs).
  */
@@ -72,9 +72,9 @@ export function DocName({ doc }: { doc: string }) {
 /** one Customs Path's documents */
 function DocList({ docs, k }: { docs: readonly string[]; k: (path: string) => string }) {
   return (
-    <ul className="mt-3 space-y-2.5">
+    <ul className="mt-3 space-y-3">
       {docs.map((d) => (
-        <li key={d} className="flex gap-2.5 text-sm">
+        <li key={d} className="flex gap-2 text-sm">
           <FileText aria-hidden className="mt-0.5 size-4 shrink-0 text-muted-2" />
           <DocName doc={k(d)} />
         </li>
@@ -98,8 +98,8 @@ export function ExpatCustoms() {
   const rootRef = useSectionReveal<HTMLElement>();
   const r = (path: string) => t(`expat.customs.rates.${path}`);
   return (
-    <section ref={rootRef} aria-labelledby="customs-heading" data-tone="magenta" className="band">
-      <div className="section-shell mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-20">
+    <section ref={rootRef} aria-labelledby="customs-heading" data-tone="magenta">
+      <div className="section-shell mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:py-24">
         <ReviewNote note={REVIEW_NOTES.customs} className="mb-8" />
         <div className="jr-reveal" style={order(0)}>
           <SectionHead
@@ -110,7 +110,10 @@ export function ExpatCustoms() {
           />
         </div>
 
-        {/* from lg the three cards share their rows (a subgrid): a "For"
+        {/* the three ways in are solid on the chapter's deep (.deep-panel),
+            no outline, their titles white; the personal shipment's rates
+            under them are a white card with an outline. From lg the three
+            cards share their rows (a subgrid): a "For"
             that runs to two lines moves the other cards' rows down with it,
             so the three duty and tax answers, the explanations, the document
             lists and the notes each start on one line and read across */}
@@ -123,7 +126,7 @@ export function ExpatCustoms() {
             return (
               <article
                 key={key}
-                className="jr-reveal flex flex-col rounded-lg bg-background px-5 py-7 sm:px-7 lg:row-span-6 lg:grid lg:grid-rows-subgrid"
+                className="deep-panel jr-reveal flex flex-col rounded-lg px-4 py-6 sm:px-6 lg:row-span-6 lg:grid lg:grid-rows-subgrid"
                 style={order(1 + i)}
               >
                 {/* the path's name, then the same two facts on every card:
@@ -143,7 +146,7 @@ export function ExpatCustoms() {
                 {/* the documents: from lg all three lists stand open, side by
                     side; a phone, where the cards stack, folds each behind
                     its label and count, so the three verdicts read close */}
-                <div className="mt-6 border-t border-border pt-5">
+                <div className="mt-6 border-t border-border pt-4">
                   <p className="hidden font-display text-sm font-semibold text-tone-ink lg:block">
                     {t("expat.customs.needed")}
                   </p>
@@ -189,12 +192,12 @@ export function ExpatCustoms() {
             likely taxed; the card above already says customs sets the
             figure and the NPWP's part */}
         <div
-          className="jr-reveal mt-8 grid gap-y-5 rounded-lg bg-background px-5 py-7 sm:px-7 lg:grid-cols-[minmax(0,1fr)_minmax(0,2fr)] lg:gap-x-12"
+          className="jr-reveal mt-8 grid gap-y-4 rounded-lg border border-border-strong bg-background px-4 py-6 sm:px-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,2fr)] lg:gap-x-12"
           style={order(4)}
         >
           <div>
             <h3 className="font-display text-xl font-semibold tracking-tight">{r("title")}</h3>
-            <p className="mt-1.5 text-sm leading-relaxed text-muted">{r("subtitle")}</p>
+            <p className="mt-2 text-sm leading-relaxed text-muted">{r("subtitle")}</p>
             <p className="mt-4 hidden border-t border-border pt-4 text-sm leading-relaxed text-muted lg:block">{r("foot")}</p>
             <p className="mt-3 hidden text-sm leading-relaxed text-muted lg:block">{r("packing")}</p>
           </div>
@@ -215,16 +218,16 @@ export function ExpatCustoms() {
             <tbody>
               {RATES.map((row) => (
                 <tr key={row} className="border-b border-border last:border-b-0">
-                  <th scope="row" className="py-3.5 pr-4 align-top font-medium">
+                  <th scope="row" className="py-3 pr-4 align-top font-medium">
                     {r(`${row}.label`)}
                     {row === "general" && (
                       <span className="mt-0.5 block font-normal text-muted">{r("general.hint")}</span>
                     )}
                   </th>
-                  <td className="whitespace-nowrap py-3.5 pr-4 align-top font-display text-xl font-semibold tracking-tight tabular-nums">
+                  <td className="whitespace-nowrap py-3 pr-4 align-top font-display text-xl font-semibold tracking-tight tabular-nums">
                     {r(`${row}.duty`)}
                   </td>
-                  <td className="py-3.5 align-top text-muted">{r(`${row}.tax`)}</td>
+                  <td className="py-3 align-top text-muted">{r(`${row}.tax`)}</td>
                 </tr>
               ))}
             </tbody>
@@ -243,7 +246,7 @@ export function ExpatCustoms() {
             href={waLink(t("expat.customs.wa"))}
             target="_blank"
             rel="noreferrer"
-            className="link-mark tap-row relative inline-flex items-start gap-1.5"
+            className="link-mark tap-row relative inline-flex items-start gap-2"
           >
             <MessageCircle aria-hidden className="mt-0.5 size-4 shrink-0" /> {t("expat.customs.cta")}
           </a>

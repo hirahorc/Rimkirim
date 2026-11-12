@@ -24,7 +24,7 @@ colors:
   # expat chapter tones (data-tone): hue / wash / tone-ink, see The Chapter Rule
   expat-sky: "#21b1ec" # wash #c8e8fb, ink #0e668a
   expat-violet: "#7a66e9" # wash #dfdefd, ink #5c4db3
-  expat-magenta: "#d41ce6" # wash #fadafc, ink #a213b0
+  expat-magenta: "#d41ce6" # wash #fadafc, ink #a213b0, deep #690873 (soft #f5befa) for the customs path cards
   dusk: "#4a1e67" # the expat ticket; dusk-soft #ead6fc for its secondary words
 typography:
   display:
@@ -223,6 +223,60 @@ A daylight field with one electric accent and a small, disciplined status set.
   Ink at 80% toward black (`--accent-ink`) for words on its own tint.
 
 ### Expat chapters (the expat landing only)
+
+**The landing's scales (2026-11-12).** The chapters below stand: the landing keeps every colour
+it had (a rebuild on five colours was tried and taken back the same day). What changed is that
+its components are held to one spacing scale, 4 8 12 16 24 32 48 64 (a 1 to 2px nudge that
+seats an icon on its line is alignment, not spacing), and one type scale, 12 14 16 20 32 48
+(`text-heading` and `text-display` are the top two). The spacing scale has one more step, 96,
+which is a section's own padding from `lg` and nothing else's (64 below). A section's heading is
+32, and 48 from `lg` (the FAQ's, set in a side column, stays 32: `SectionHead compact`); the
+hero's display is 48 (32 on a phone). The shared accordion is brought onto the scale for the
+landing only (`[data-landing="expat"]`). Pictures keep their own em inside.
+
+**The frame (2026-11-12): on the expat landing, space and line part the sections, not a
+coloured ground.** The Band Rule below no longer applies to this page: no section there is a
+band, every one stands on the white desk, and its chapter lives in what's inside it (the
+tinted panels and pictures, the muted words, the eyebrow). What parts two sections is the
+space (64 and 64, 96 and 96 from `lg`), the heading at the display size, and a line: a hairline
+over each section from the reviews to the FAQ, and one under the FAQ, each running the full
+width of the screen at every size; and from 76rem a rail down each side of the content column,
+from the first line to the last, which the lines cross, so the page reads as one column ruled
+into parts (`.landing-frame`, after stripe.com). Below 76rem the column is the screen, so
+there are no rails. The line is one neutral (`#d4d4d4`) all the
+way down, set outside any chapter so no section tints it. The hero stands above the frame and
+the closing ticket below it, a section's space clear of its foot. The three customs paths
+(Relocation goods, Passenger goods, Personal shipment) are cards solid on their chapter's
+deep, magenta `#690873` (the hue 40% toward black, `--tone-deep`), with no outline
+(`.deep-panel`), dark enough that their titles are white. Inside the card the neutrals turn
+over, re-pointed on the panel as a chapter re-points them: words white (11.2:1), the quiet
+words, the icons and the "Documents needed" label the soft tint `#f5befa` (7.2:1,
+`--tone-deep-soft`), hairlines white at 16%, the focus ring white at 50% (3.7:1). The
+personal shipment's rates under them are a white card with the chapter's outline
+(`border-border-strong bg-background`).
+Tried first and dropped: numbered eyebrows on a rule, a lime index tab, an ink tile, and a
+cover that opened each section.
+Two sections in the frame have a ground of their own, so the page isn't white all the way
+down: **the reviews and pricing, each solid on its chapter's wash** (sky `#c8e8fb`, violet
+`#dfdefd`), from line to line across the screen, with the rails running through and the
+chapter's band pair for hairlines. Pricing's is simply there. The reviews' is not there as the
+page opens, since the section's first line shows under the hero and a strip of colour there
+read as a stray band: it comes up (opacity, 300ms on the system easing) once the section
+crosses the line 30% up the screen, and goes again on the way back up to the hero
+(`ExpatReviews`, `data-ground`). At once under reduced motion; without script the reviews
+stay white.
+**Inside a section, its own parts are ruled apart in the same neutral, dashed** (`.part-rule`):
+What you can ship's packing guide and "Before you send" (and the kinds and lists that stand
+side by side inside them, where the line turns upright from `md`), Who does what's two lists
+and its carriers. One line colour down the page in two weights: solid and full width between
+two sections, dashed and column-wide between a section's parts. A card's own inner lines, a
+table's rows and the FAQ's rules are that component's and keep the chapter's hairline.
+**Every section's eyebrow wears the route's gradient**, painted exactly as the header's "Expat
+Relocation" is (`.eyebrow-expat`: sky `#21b1ec` to magenta `#d41ce6` at 82°, across the words),
+in place of its chapter's ink: one colour for the label down the whole page. It is a label, so
+it never flows as the header's link does. Known and accepted, as in the header: the bright
+stops sit under AA at 12px (2.4:1 at the sky end and 4.1:1 at the magenta end on white; 1.9:1
+and 3.2:1 on the reviews' sky ground).
 The expat landing walks its own identity, the `.nav-expat` gradient (sky `#21b1ec` to magenta
 `#d41ce6`), down the page as solid stops, never as a gradient fill:
 
@@ -533,8 +587,8 @@ line; never a centred label over marks pushed to the band's two edges.
 **Each section in the viewport.** The hero owns the first screen from `lg`: it fills the viewport
 under the bar, less a 1.5rem peek of the reviews' sheet (capped for very tall screens). Short
 sections (the FAQ, the closing ticket) fit one desktop screen; pricing runs a little over one
-since it became the sum's four steps, and its example holds still beside them as they scroll
-(`lg:sticky`); long ones (what you can
+since it became the sum's four steps, but its four pictures and their words fit one together,
+which is what its relay needs; long ones (what you can
 send, who does what, the comparison, customs) read as a scroll with their own landmarks, a
 sub-head between hairlines every screen or so. No section is forced to a full screen: snapping a
 long page into screens hides content behind its own crop.
@@ -892,9 +946,9 @@ home hero's floating verdicts and the expat hero's departure board. Treat any ot
   its start). Each step holds 5.2s; the round control on the stage wears the hold as a ring, and
   the rail runs on toward the next step in step with it, a dot with a soft halo at its tip, from
   the active tile's lower edge to the next tile's upper edge, so the reader can see the next move
-  coming and the step moves on the moment the run touches it. The step it reaches answers with a
-  **pulse**, a ring of the chapter's ink swelling out of its tile and fading (`.jr-pulse`, 750ms,
-  just after the flip), and the next run sets off a beat later (`--run-delay`, 650ms), its head
+  coming and the step moves on the moment the run touches it. The step it reaches answers with
+  its tile's flip alone, the departure board's move, as the hero's country codes turn (a ring
+  that swelled out of the tile after the flip was tried, 2026-11-03 to 11-12, and taken out), and the next run sets off a beat later (`--run-delay`, 650ms), its head
   fading in at the tile's foot rather than popping up the instant the last run lands; the run
   takes the rest of the hold, so it still lands as the timer ring closes. Reached by its run, a
   step's fill takes the run's place at once (`data-snap`), so the stretch just drawn never empties
@@ -922,12 +976,23 @@ home hero's floating verdicts and the expat hero's departure board. Treat any ot
   shows it, framed and built as the journey's scenes are, from the same pieces (`SceneParts`:
   the filler line, the flag, the chat card) on the same ground, so the page's
   illustrations are one figure language. One hero surface a gutter from the top and sides, off the
-  bottom, at most one satellite. Pricing is the section's sum on an example ("Example: one box,
-  one suitcase", the readout: actual, volumetric, chargeable): a box charged on its volumetric
-  weight beside a suitcase charged on its actual weight and marked for a handling surcharge, then
-  the chargeable weight, the one big number, and under it the rest of the sum in words where a
-  figure would be (times the rate per kilo, plus the suitcase's surcharge): the page quotes neither.
-  It has no caption: the rule is the section's step 1 and what brings a surcharge its step 4.
+  bottom, at most one satellite. Pricing has four, one over each step of its sum, small (a
+  quarter of the page from `xl`, two by two from `sm`, stacked on a phone, where each is only as
+  tall as what it holds) and so each a short motion graphic and not a still: a picture that size
+  holds one thing at a time, and what passes through it in turn is what a still would have needed
+  four times the room for. They work the sum on one example, a box light for its size and a
+  suitcase heavy for its size. 1: each piece worked on the same sheet, the suitcase (the scale
+  wins), then the box (its size does), its sides multiplied over 5000 and the higher weight
+  marked, each dropping its answer into the foot. 2: those two answers come down into their rows,
+  a line is drawn, and the total lands, the one big number. 3: Check Rate's own card with its
+  price as a filler line as long as the rate is high (`RateCard`, `figures={false}`: this page
+  names no price); the origin changes, then the service, and the line changes length each time;
+  then the weight meets it. 4: the two pieces against the three things that bring a surcharge, a
+  piece at a time, a quiet tick where one is met and a cross in the chapter's ink where it isn't.
+  One thing takes another's place by fading in over it on the same lines, opaque, and the one
+  under it goes once it's hidden (`.jr-pass`, `.jr-swap`): moved as well, two sheets with the same
+  labels cross as a blur. A piece that only passes stands hidden wherever nothing plays, so what a
+  picture ends on is whole by itself.
   Who does what is the team on WhatsApp after reviewing the packing list (the wine to take out,
   the new phone likely taxed), then confirming the pickup on the day the customer chose, on the
   customer's phone: the
@@ -966,9 +1031,17 @@ home hero's floating verdicts and the expat hero's departure board. Treat any ot
   strip on a phone.
   Each **builds once** when 40% in view (a hero rises from the crop, rows lift in reading order,
   fields type, values rise, a pressed answer's fill comes up under its one label, `jr-press` and `jr-ink`), then stands still: no loop, no player, no control,
-  because none runs past about three seconds. The closing stub's three build as one set, 150ms
+  because none runs past about four seconds. The closing stub's three build as one set, 150ms
   apart, when the stub comes into view, so on a phone the slide peeking from the strip is
   already built.
+  **Pricing's four are the one set with a control.** In a row they play as a relay: the cards come
+  up together and wait, and each takes its turn as the one before lands the figure it hands over
+  (at 0, 3.25, 4.75 and 7.25s; about ten seconds in all). That is past five seconds of content
+  moving on its own, so the row has the journey's round control (pause, play, replay; WCAG
+  2.2.2), and it holds off screen and in a hidden tab (`[data-hold]`). It is not a loop: one
+  pass, then still. Two by two and stacked there is no run and no control: each plays as it
+  comes into view. A click on a picture plays that one again, at once and by itself. Under
+  reduced motion nothing plays, there is no control and nothing to click.
   Scenes are `aria-hidden`; the section's words carry the meaning. Each scene names its compact
   container query, where the gutter tightens and its type stays at 10px or more. Under reduced
   motion, and without script, every scene stands built.
@@ -1341,7 +1414,7 @@ own pair is in view, and arrives (a fade and a 4px rise on the hover curve) once
 away, so two limes saying the same thing never show at once; it gives way again to the closing
 ticket's button, the page's last ask (`data-door` marks both). Past the mid-page buttons it
 stays: a button coming and going all the way down would be its own noise. Inside the flow it gives way to
-"Need help?". The page is English only (LanguageProvider
+"Need help?"; the service name keeps its gradient there too. The page is English only (LanguageProvider
 forces the locale on this route, whatever the visitor saved), so neither bar nor footer carries a
 language switch. No site menu, no sign-in, no bell: expat orders run in their own flow, not the
 account system. The logo stays on the page, so the only door back to the main site is the footer's
@@ -1426,7 +1499,7 @@ options:" under it in `muted-2`, under the lane's `tone-ink` head with the wordm
   to `tone-ink`, the typical answer to ink), so the eye can follow one aspect across the width.
 
 ### The dusk ticket (signature)
-The expat landing ends on a ticket, the page's one dark surface. It is `bg-dusk` (`#4a1e67`)
+The expat landing ends on a ticket, the page's one dark section. It is `bg-dusk` (`#4a1e67`)
 with white words and the `lg` corner, and it sits inside the text column.
 
 - **Above the tear line, the ask:** the closing headline at up to 48px, one line under it in
@@ -1445,12 +1518,14 @@ arriving here reads as landing. It is dark because the last ask should not look 
 section.
 
 **One per landing, and only for the closing ask.** It is not a dark theme and does not license
-dark sections. The home landing's ink testimonial hook card is the only other dark surface.
+dark sections. The other dark surfaces are cards: the home landing's ink testimonial hook
+card, and the expat landing's three customs path cards on deep magenta (`.deep-panel`).
 
 ### The offer card (the Check Rate result)
-`OfferCard`, after the live rimkirim.com rate card, is the one card both Check Rate pages show:
-Back For Good's Cek Tarif (the special rate per tier, and the Advance carrier quotes) and the
-expat flow's rates. It is a full `rounded-lg` card at the standard `px-5 → sm:px-6` padding.
+`OfferCard`, after the live rimkirim.com rate card, is the card Back For Good's Cek Tarif shows
+(the special rate per tier, and the Advance carrier quotes). The expat flow's rates say the same
+things in the same order in a cut of their own (The expat order flow, The rate card). It is a
+full `rounded-lg` card at the standard `px-5 → sm:px-6` padding.
 
 - **Left, the service:** the carrier's logo (with Cheapest or Fastest beside it on Advance), the
   service in `muted`, the route as flags and ISO codes ("GB to ID"), then the transit days with
@@ -1475,21 +1550,87 @@ expat flow's rates. It is a full `rounded-lg` card at the standard `px-5 → sm:
 
 ### The expat order flow
 The order flow under `/expat-relocation` (rates, plan, booking) is the app, not the landing: it
-sits on **the field** (`data-field`, Panel 2 under white cards with no outline, The Stroke Rule),
-on daylight neutrals, as every order screen does. The landing's chapter tones, bands and dusk
-ticket stay on the landing; the flow shares the system's corners, type and buttons, and nothing
-else of the landing's dress, so no field or panel takes a chapter's tint. It speaks English only,
-like the landing, and keeps the landing's bar, which trades the lime "Check your rate" for a quiet
-"Need help?" on WhatsApp, since each screen's own action is its one lime.
+sits on **the field** (`data-field`, cards with no outline, The Stroke Rule). The landing's
+chapter tones, bands and dusk ticket stay on the landing. It speaks English only, like the
+landing, and keeps the landing's bar, which trades the lime "Check your rate" for a quiet "Need
+help?" on WhatsApp, since each screen's own action is its one lime.
+
+**The flow's system.** The flow runs on a cut of the system small enough to hold in the head:
+five colours and a sixth for errors, five type sizes and seven steps of space (`data-flow` in
+`globals.css`, and `components/expat-order/kit.tsx`). Nothing in the flow picks a colour, a size
+or a gap outside it, and there is no gradient anywhere in it. The bar above it is the site's
+chrome, not the flow's, so its service name keeps the `.nav-expat` gradient (the team's call: it
+was Ink here for a while).
+
+*Five colours, and red for what's wrong.* `data-flow` re-points the system's own tokens, as a
+chapter does, so every shared control inside the flow (the pickers, a dialog, a toast, the bar,
+the footer) takes them untouched.
+
+| Token | Value | What it is |
+| --- | --- | --- |
+| Paper | `#ffffff` | a card, and what opens over the page (a picker's list, a dialog) |
+| Wash | `#ebebee` | the one grey: the ground under the cards, a field's well, every hairline |
+| Ink | `#1f1f1f` | the words, and the way to say chosen, done or told |
+| Muted | `#52525b` | the second voice: a hint, a note, the label beside a value |
+| Lime | `#c1ff00` | the action, and nothing else |
+| Red | `#e60000` (Stop Red) | what's wrong, and nothing else |
+
+**Red is an error's.** The edge of the field that's wrong, the words under it that say why
+(medium, with a mark, so it isn't said in colour alone), and the toast that counts what's
+missing. Never an offer, a warning, a notice or a button: the Special Rate's tab and the button
+that confirms removing a package are Ink, and in the calendar every day that can be picked is
+Ink, Sundays too.
+
+There is no blue or green in the flow. What's told is fenced by a hairline; a chosen answer, a
+done mark, the Special Rate's tab and every other toast are Ink. Two "down" shades (wash and
+lime, each mixed a step toward Ink) are states only: a hover, a press, the option under the
+pointer. Carrier logos and flags are pictures, not tokens.
+
+*Five type sizes*, each on a 4px line, one job each:
+
+| Role | Size / line | Set in | For |
+| --- | --- | --- | --- |
+| Title | 24 / 32 | Space Grotesk 700 | the page's one h1 |
+| Heading | 20 / 28 | Space Grotesk 600 | a part of the plan, a card in the main column |
+| Subhead | 16 / 24 | Space Grotesk 600 | a question, a group, a package, a card beside the main column, the action's label |
+| Body | 14 / 20 | Geist 400, 500 for the one that leads | answers, values, prose, a field's text (16px under a finger, so iOS doesn't zoom) |
+| Caption | 12 / 16 | Geist 500 in Ink, 400 in Muted | a field's label; a hint or a note |
+
+A **figure**, the one number a card is about (a price, the booking number), is Geist Mono 600 at
+the Title's size; in a line of text a figure is mono at that line's size.
+
+*Seven steps of space* (Tailwind's 1, 2, 3, 4, 6, 8 and 12), each with a job:
+
+| Step | For |
+| --- | --- |
+| 4 | inside a pair: a label and its field, a title and its line |
+| 8 | between like things: one choice and the next, an icon and its word |
+| 12 | inside a control; from a group's title to the group; rows of a list |
+| 16 | between fields; a card's padding and the page's gutter on a phone |
+| 24 | between groups in a card; a card's padding and the gutter from `sm` |
+| 32 | between the sections of a card; from the page's title to the page |
+| 48 | between the regions of a page; the plan's two columns |
+
+A field and a choice are 44px tall, the page's action 48px.
+
+**Two planes, never three.** Paper on wash, and that is all the depth there is. A field is a wash
+well on paper, with what it wears (an icon, a unit, a currency) in a row inside it, so nothing
+that holds a field is itself filled. A group is set apart by space, a record that repeats (the
+packages, the summary's rows, the customs paths) by hairlines, and what's told or being changed
+(a notice, the address editor) by a hairline fence.
+
+**Lime is the action's.** One on a screen: Check rates, the plan's action, and each card's
+"Select this rate" (The One-Voice Rule's one list). Chosen and done are Ink. A button that isn't
+the action is paper with an Ink line (`QUIET`), since a wash fill here is a field's.
 
 - **The plan, one page:** the Eligibility Check, Your details and the Packages are three parts
-  down a single sheet, a white card each, one open at a time; there is no stepper and no page
-  between them. Each part's head carries a dot in the status stepper's encoding (done is lime
-  with an Ink check, the one in hand Ink-framed with a lime core, one still ahead Hairline on
-  Panel 2 with its number), its title, and one line under it: what it asks while open or ahead
-  (whole, never cut), itself said back once it's folded ("Alex Morgan · +61 412 345 678 · Pickup
-  Mon, 16 Nov"), in two lines at most (`line-clamp-2`), the date in its short form so it's the
-  last thing to go. A
+  down a single sheet, a paper card each, one open at a time; there is no stepper and no page
+  between them. Each part's head carries a dot (done is Ink with a paper check, the one in hand
+  an Ink ring around its number, one still ahead wash with its number), its title, and one line
+  under it: what it asks while open or ahead (whole, never cut), itself said back once it's
+  folded ("Alex Morgan · +61 412 345 678 · Pickup Mon, 16 Nov"), in two lines at most
+  (`line-clamp-2`), the date in its short form so it's the last thing to go. Under the head a
+  part's content runs the card's whole width: nothing is stepped in under the dot. A
   finished part folds (the disclosure's height motion) and the next opens under it, brought to
   the top; a folded part reopens from its whole line, marked "Edit" (or "Open", if it's still to
   do); a part whose earlier parts aren't in stands at 60% and doesn't open. Check Rate comes
@@ -1500,48 +1641,55 @@ like the landing, and keeps the landing's bar, which trades the lime "Check your
   is incomplete it answers in three ways at once: everything missing is named where it is (a
   field's error, "Choose an answer." under an open question; a folded package it waits on
   unfolds), the first of it is brought to the middle of the screen and takes focus, and one
-  error toast counts what's left ("3 things are still missing."), replaced by the next press.
+  toast counts what's left ("3 things are still missing."), replaced by the next press.
   On a wide screen it sits under the Selected Service,
-  sticky beside the parts. On a phone it rides a bar fixed to the foot of the screen
-  (`bg-background/95`, hairline above, padded for the home indicator) with the estimate beside
-  it, so the price and the way on are always under a thumb; the reason it waits is read at the
+  sticky beside the parts. On a phone it rides a bar that keeps to the foot of the screen
+  (sticky, paper, a hairline above, padded for the home indicator) with the estimate beside
+  it, so the price and the way on are always under a thumb; the bar takes its own place at the
+  plan's end, so nothing is padded clear of it. The reason it waits is read at the
   foot of the open part there. An amount is never cut: when the estimate and the button can't
   share the line (a 320px phone, a nine-figure estimate, "Confirm application"), the bar wraps
   and the button takes the line under the estimate, full width.
-- **Check Rate:** one white card, Moving from beside Moving to, then the weight and the button
-  under a hairline. Fields are the system's Panel 2 inputs. An estimate is the answer to a
-  check (Motion, Pace): the button is lime while there's something to check and quiet once the
-  estimate on the page is the answer. Change an input and that estimate is stale: it stays to be
-  read at 50%, can't be selected, a line over it says to check again, and the button is lime
-  again.
-- **The rate card:** the offer card (below), the same one Back For Good's Cek Tarif shows, with
-  "Estimated … for 30 kg" under the price for the chargeable weight. Every card carries the lime
-  "Select this rate" (The One-Voice Rule's one list); on the field the plain cards are white with
-  no outline, and a Special Rate wears the red tab and its fading border.
-- **Choice cards** (the Eligibility Check): white planes with a hairline that frame in Ink (2px,
-  as a doubled hairline) when chosen. A single choice shows the stepper's dot (Ink ring, lime
-  core); a multiple choice shows the system checkbox (lime with an Ink tick). Neither fills with
-  lime. Follow-ups sit on Panel 2 under the answer that asks them.
-- **The address cards** (Your details): where from and where to are two Panel 2 cards side by
-  side from sm, each with its country, its Address and its Detail Address once given, and a
-  quiet "Change". Change turns the card into its own editor in place: a white plane with a
-  hairline (so its Panel 2 fields read), across both columns, holding the Address search
-  (inside its country) and the Detail Address, then Cancel and a secondary "Save address"
-  (never lime: the page's one lime is the plan's action). Nothing is a page away and nothing
-  is kept until Save. Each side's Detail Address is optional and no field on the page asks for
-  it, so until it's in the card offers it: a white "Add detail address" button and a line saying
-  it's optional and what it's for. It never holds the plan's action. There is no map and no pin.
+- **Check Rate:** in the focused column (`max-w-3xl`), one paper card: Moving from beside Moving
+  to, then the weight with Check rates on its row, as tall as the field. An estimate is the
+  answer to a check (Motion, Pace): the button is lime while there's something to check and
+  quiet once the estimate on the page is the answer. Change an input and that estimate is stale:
+  it stays to be read at 50%, can't be selected, a line over it says to check again, and the
+  button is lime again.
+- **The rate card:** the flow's own cut of the offer card (`RateCard`): the same words in the
+  same order, on the flow's system. The price per kg is the card's figure, with "Estimated … for
+  30 kg" under it for the chargeable weight. Every card carries the lime "Select this rate"
+  (The One-Voice Rule's one list), under the price and as wide as the price's column, never
+  across a wide card (a phone's card is one column, so there it is). A Special Rate wears an Ink
+  tab on the card's top edge and no border of its own.
+- **Questions** (the Eligibility Check): a question's number sits before its words, small and
+  Muted, and gives way to an Ink check once it's answered; the answers run the part's whole
+  width. A follow-up sits close under the answer that asks it, its words a step below the
+  question's, with no box of its own.
+- **Choice cards:** wash wells, as a field is, that turn to paper framed in Ink (2px) when
+  chosen. A single choice fills its dot with Ink; a multiple choice fills its box with Ink under
+  a paper tick.
+- **The addresses** (Your details): where from and where to are said back on the part's own
+  paper, side by side from sm, each with its country, its Address and its Detail Address once
+  given, and a quiet "Change". Change turns one into its own editor in place, fenced by a
+  hairline, across both columns, holding the Address search (inside its country) and the Detail
+  Address, then Cancel and a quiet "Save address" (never lime: the page's one lime is the plan's
+  action). Nothing is a page away and nothing is kept until Save. Each side's Detail Address is
+  optional and no field on the page asks for it, so until it's in, its side offers it: a quiet
+  "Add detail address" button and a line saying it's optional and what it's for. It never holds
+  the plan's action. There is no map and no pin.
 - **Notices, not errors:** the packing notice (you pack everything yourself) stands under the
-  first question for every customer, so it wears the info tint, as the changed-address notice
-  does; ticking furniture only adds to its words and points its link at furniture's own steps.
-  Nothing in the flow turns a customer away, so no verdict
-  there wears Stop Red (the Special Rate tab is an offer mark, not a verdict). Field errors appear once a field is left, never on every keystroke,
-  or all at once when the action is pressed; a field in error wears Stop Red on its edge. A
+  first question for every customer, fenced by a hairline with its mark, as the changed-address
+  notice is; ticking furniture only adds to its words and points its link at furniture's own
+  steps. Nothing in the flow turns a customer away. Field errors appear once a field is left,
+  never on every keystroke, or all at once when the action is pressed; a field in error turns
+  its edge red, and keeps it while it's being put right, and says what's wrong under it, in red
+  with a mark. A
   Pickup Date that can no longer be picked (a draft from days ago) says so at once.
 - **Feedback, said once and where it happens:**
   - *Done marks.* A finished part's dot draws its check once (`check-draw`), only for a part
     just finished, never for one a draft brought finished. An answered question's number and a
-    finished package's head take the same mark (lime, an Ink check), still: what's left to do
+    finished package's head take an Ink check, still: what's left to do
     is what still wears a number.
   - *A chosen answer* lands with the route card's 100ms pop (`radio-check-in`), only for an
     answer just given.
@@ -1551,15 +1699,16 @@ like the landing, and keeps the landing's bar, which trades the lime "Check your
     packages are being typed it stands back under "Updating…" and lands a beat after the last
     change (Motion, Pace); a change that leaves what it's priced on as it was lands without the
     wash.
-  - *Toasts* (the app's one transient ping, never a button in them): an answer kept from an
-    earlier visit, once a visit (plain); the plan opened without a rate, before it goes to
-    Check Rate (info); another service picked (success); what the action still waits on
-    (error); an application that couldn't be confirmed (error).
+  - *Toasts* (the app's one transient ping, never a button in them) are Ink here, and their icon
+    says which kind: an answer kept from an
+    earlier visit, once a visit; the plan opened without a rate, before it goes to
+    Check Rate; another service picked. The two that say something's wrong are red: what the
+    action still waits on, and an application that couldn't be confirmed.
   - *Focus follows the eye.* Check rate goes to the first field that's wrong or, checked, to
     the estimate's title; a part that opens gives its title focus; a new package or item takes
     it; a removed package hands it to "Add a package".
   - *Removing a package* that has something typed in it asks first (the app's delete dialog,
-    Stop Red on the confirming button); an empty one just goes.
+    the confirming button in Ink); an empty one just goes.
   - *The Booking Summary* arrives in its three beats (Motion, One milestone in three beats),
     the once, on arriving from Confirm application, never on a reload.
   - A notice that an edit brings (a size that reads like the wrong unit, a Special Rate that no
@@ -1568,48 +1717,54 @@ like the landing, and keeps the landing's bar, which trades the lime "Check your
     page and opens under its answer with the disclosure's height motion, so the questions below
     glide down; closed it's inert and hidden, and a draft that has the answer opens with it
     standing. The rest of a long package list on the Booking Summary opens the same way. An
-    address card and its editor take each other's place with the one coming in fading up 4px
+    address and its editor take each other's place with the one coming in fading up 4px
     over 200ms (`swap-in`, `@starting-style`; the layout itself moves at once), from the first
     Change on. A part that can't be reached yet stands at 60% and comes up over 200ms as the
     part above it is finished.
-  - *Every toggle answers the press* at once, in colour, over its whole line (a package's head,
-    "See more rates", the Selected Service's strip on a phone), and lets go over 150ms.
+  - *Every toggle answers the press* at once, in wash, over its whole line (a package's head,
+    "See more rates", the Selected Service's strip on a phone, a fold), and lets go over 150ms.
   - *The loading spinner* (the saved draft loading, as each page of the flow opens) stays out
     of sight for its first 200ms: a load shorter than that, which is nearly all of them, shows
     the field alone instead of a flash of spinner.
-- **The Packages step:** inside the step's white card, each package is a Panel 2 block with no
-  outline (`rounded-md`, a notch down from the card, The Step-Down Rule), whose head opens and
+- **The Packages step:** the packages are a ruled list on the part's own paper, one package, a
+  hairline, the next. A package's head opens and
   closes it with the swapped chevron and names it in one line while closed. Inside: its
   packaging (Others opens what it's packed in beside it from sm, its examples in the placeholder
-  and the hint, as the Eligibility Check's Others does under its answer), the weight and three sides with their units worn in the inputs and one line on what
-  it's charged on, and the items as rows between hairlines (de-boxed, so no third tone). There are no
-  measurement photos. "Add a package" is the dashed button across the card. The values' currency is
-  chosen above the packages, with no hint under it (every value typed in a package wears it as
-  its prefix, so it comes first); the totals (packages, chargeable weight, declared value) sit
-  under a hairline below; the price never
+  and the hint, as the Eligibility Check's Others does under its answer), the weight and three
+  sides with their units worn in the fields and one line on what
+  it's charged on, and the items, each a row of three fields that wear what they are (the name's
+  example, "Qty", the currency and "each"), so no label repeats down the list; a phone sets the
+  name over the other two. There are no
+  measurement photos. "Add a package" is a quiet button across the card. The values' currency is
+  chosen above the packages, with no hint under it (every value typed in a package wears it,
+  so it comes first); the totals (packages, chargeable weight, declared value) sit
+  below the list; the price never
   repeats there, since the Selected Service beside it carries it. Declared values read as a code
-  and an amount ("AUD 300") to match the inputs' prefix. Past three packages the finished ones
+  and an amount ("AUD 300") to match the fields. Past three packages the finished ones
   open folded, so a house listed package by package is a screen of lines, not dozens of forms;
   the ones still to fill stay open. A size or weight that reads like the wrong unit (a side over
-  3 m, a package over 500 kg) is asked about in the info tint under the measures, never refused.
-- **Selected Service:** a white card beside the plan, sticky from lg; on a phone a
-  strip over the parts that opens to the rest: the service on a line of its own so its name reads
-  whole, then the Special Rate mark and the price under it. Once the packages are measured,
+  3 m, a package over 500 kg) is asked about in a notice under the measures, never refused.
+- **Selected Service:** a paper card beside the plan, sticky from lg, its estimate under the
+  card's one hairline. On a phone it is a
+  strip over the parts, the service on a line of its own so its name reads
+  whole, that opens to the rest; the price isn't said in the strip, since the bar at the
+  screen's foot always carries it. Once the packages are measured,
   the weight and estimate are theirs, and the weight says "from your packages". "Change", a
   text link beside the title, opens the rates without leaving the plan: a dialog (the mobile
-  sheet on a phone) of Check Rate's own rate cards, hairlined on the dialog's surface. The rate
+  sheet on a phone) of Check Rate's own rate cards, hairlined on the dialog's paper. The rate
   in hand is framed in Ink (2px, as a chosen answer is) and marked "Selected" beside its
   carrier, with no button; every other card carries "Select this rate", and picking one closes
   the dialog.
-- **The Booking Summary:** a white card with the received head (the success check, who the
-  summary went to) over the booking number on a Panel 2 strip with its copy button, then the
-  summary as label-and-value rows between hairlines. What happens next, the other answers and
-  the documents sit in a side card.
-- **The customs block in the flow** reads the landing's own Customs copy, folded into a
-  Disclosure: each path's name and the same two facts, as equals, the same for every customer.
+- **The Booking Summary:** a paper card with the received head (the done mark, who the
+  summary went to) over the booking number, a figure on a wash strip with its copy button, then
+  the summary as label-and-value rows between hairlines. What happens next, the other answers
+  and the documents sit beside it.
+- **The customs block in the flow** reads the landing's own Customs copy, folded: each path's
+  name and the same two facts, as equals, ruled one from the next, the same for every customer.
   It never reflects their answers (docs/adr/0002).
 - **On the landing,** the pictures of the flow render these components inside `.tone-none`,
-  which hands the neutrals back inside a chapter, so the picture shows the product as it is.
+  which hands the neutrals back inside a chapter, so the picture shows the product as it is;
+  `data-flow` on a picture hands it the flow's own colours as well.
 
 ### De-boxed record (signature)
 The read-only counterpart to the card. A long reference record — the order summary, the FAQ — is
@@ -1692,8 +1847,9 @@ same order, permanently).
   not a surface.
 - **Don't** put prose in the mono font, or set a data figure in the sans display font.
 - **Don't** reintroduce a dark theme — light-mode-only is a committed product decision, so guard
-  text contrast in the one theme. A dark surface is not a theme: there are exactly two, the
-  testimonial hook card and the expat dusk ticket, each once on its page.
+  text contrast in the one theme. A dark surface is not a theme: there are exactly three, the
+  testimonial hook card, the expat dusk ticket, and the expat customs path cards (one row
+  of three), each once on its page.
 - **Don't** let a landing's sections run together on hairlines and near-white tints; alternate
   the open desk with bands (The Band Rule).
 - **Don't** let Move Purple compete with Live Lime for "the answer"; purple says *whose move*,

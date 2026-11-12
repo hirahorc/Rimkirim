@@ -60,17 +60,27 @@ export default function ExpatRelocationPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd()) }}
       />
-      <ExpatHero />
-      <ExpatReviews />
-      <WhatYouCanShip />
-      <WhatWeCoordinate />
-      <WhyRimkirim />
-      <QuoteFactors />
-      <ExpatSteps />
-      <ExpatCustoms />
-      <ShipmentExamples />
-      <ExpatFaq />
-      <ExpatClosing />
+      {/* the landing's scope: its components are written to one spacing
+          scale and one type scale, and the shared accordion is brought onto
+          them here (globals.css, [data-landing="expat"]) */}
+      <div data-landing="expat">
+        <ExpatHero />
+        {/* the sections between the hero and the ticket stand in one frame:
+            a rule over each, and a rail down each side where there's room
+            (globals.css, .landing-frame) */}
+        <div className="landing-frame">
+          <ExpatReviews />
+          <WhatYouCanShip />
+          <WhatWeCoordinate />
+          <WhyRimkirim />
+          <QuoteFactors />
+          <ExpatSteps />
+          <ExpatCustoms />
+          <ShipmentExamples />
+          <ExpatFaq />
+        </div>
+        <ExpatClosing />
+      </div>
     </>
   );
 }

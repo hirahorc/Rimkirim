@@ -36,18 +36,18 @@ export function ExpatFaq() {
   );
 
   return (
-    // on the desk, after the customs band: the questions read as a page of
+    // on the desk, as every section is: the questions read as a page of
     // their own, not one more sheet. Outside the chapters, on the daylight
     // neutrals, so the questions read as plain reference, not one more stop
     <section id="faq" aria-labelledby="faq-heading" className="scroll-mt-24">
       {/* on the page's content edge like every other section, the heading
           and the way to ask in a column of their own from lg, the questions
           beside them, ruled one from the next */}
-      <div className="section-shell mx-auto grid max-w-6xl gap-8 px-4 py-16 sm:px-6 sm:py-20 lg:grid-cols-[minmax(0,1fr)_minmax(0,2fr)] lg:gap-16">
+      <div className="section-shell mx-auto grid max-w-6xl gap-8 px-4 py-16 sm:px-6 lg:py-24 lg:grid-cols-[minmax(0,1fr)_minmax(0,2fr)] lg:gap-16">
         <div>
           <ReviewNote note={REVIEW_NOTES.faq} className="mb-8" />
           <div className="lg:sticky lg:top-28">
-            <SectionHead id="faq-heading" eyebrow={t("expat.faq.eyebrow")} title={t("expat.faq.heading")} />
+            <SectionHead id="faq-heading" eyebrow={t("expat.faq.eyebrow")} title={t("expat.faq.heading")} compact />
             <p className="mt-6 hidden lg:block">{ask}</p>
           </div>
         </div>

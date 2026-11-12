@@ -48,29 +48,33 @@ const heightFor = (aspect: number) => Math.round(RAMP.k / aspect ** RAMP.p);
 const CARRIERS = Object.entries(CARRIER_LOGOS).map(([name, l]) => ({ name, ...l }));
 
 /** the logo row alone, for a host that brings its own label: the expat
- *  page wears it as the foot of its "Who does what" band, leaving out the
- *  carriers it doesn't ship with (`omit`). Centred on its own (the 3 + 3
- *  above); `align="start"` sets it from the left, beside or under a label
- *  that is, and the row stays one line from `md`, spread across whatever
- *  column it's given */
+ *  page wears it as the foot of its "Who does what" section, under a
+ *  centred title, as this section does. `omit` leaves carriers out;
+ *  `order` names the marks to show and the order they stand in, for a row
+ *  that reads better another way than the data's: a justified row wants a
+ *  wordmark at each end, since a small badge there looks like it fell off
+ *  the line. A host with a different count sets its own cap below `md`
+ *  (className), so its marks wrap the way it means them to */
 export function CarrierLogos({
   className,
   omit = [],
-  align = "center",
+  order,
 }: {
   className?: string;
   omit?: readonly string[];
-  align?: "center" | "start";
+  order?: readonly string[];
 }) {
+  const shown = order
+    ? order.flatMap((name) => CARRIERS.filter((c) => c.name === name))
+    : CARRIERS.filter(({ name }) => !omit.includes(name));
   return (
     <ul
       className={cn(
-        "flex flex-wrap items-center gap-y-6 [--logo-scale:0.78] md:flex-nowrap md:justify-between md:gap-x-0 md:gap-y-0 md:[--logo-scale:0.9] lg:[--logo-scale:1]",
-        align === "center" ? "mx-auto max-w-[340px] justify-center gap-x-4 md:max-w-none" : "justify-start gap-x-8",
+        "mx-auto flex max-w-[340px] flex-wrap items-center justify-center gap-x-4 gap-y-6 [--logo-scale:0.78] md:max-w-none md:flex-nowrap md:justify-between md:gap-x-0 md:gap-y-0 md:[--logo-scale:0.9] lg:[--logo-scale:1]",
         className,
       )}
     >
-      {CARRIERS.filter(({ name }) => !omit.includes(name)).map(({ name, src, aspect, capScale = 1 }) => (
+      {shown.map(({ name, src, aspect, capScale = 1 }) => (
         <li key={name} className="flex items-center justify-center">
           {/* eslint-disable-next-line @next/next/no-img-element -- logo dims
               come from the file; height is set per aspect, width stays natural */}

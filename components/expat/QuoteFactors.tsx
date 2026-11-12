@@ -1,17 +1,53 @@
 "use client";
 
-import { ArrowRight } from "lucide-react";
+import * as React from "react";
+import { ArrowRight, Pause, Play, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SurchargeInfoDialog } from "@/components/rates/SurchargeInfoDialog";
 import { EXPAT_QUOTE_URL, REVIEW_NOTES } from "@/lib/data/expat";
 import { useT } from "@/lib/i18n/LanguageProvider";
+import { cn } from "@/lib/utils/cn";
 import { SectionHead } from "./SectionHead";
 import { ReviewNote } from "./ReviewNote";
 import { SceneStage } from "./SceneStage";
-import { SizeScene } from "./SectionScenes";
+import { ChargeableScene, RateScene, SumScene, SurchargeScene } from "./PricingScenes";
 import { revealOrder as order, useSectionReveal } from "./useSectionReveal";
 
-const STEPS = ["step1", "step2", "step3", "step4"] as const;
+/** `frame`: the picture's shape where the steps are stacked, as tall as what
+ *  it holds and no taller; side by side they share one */
+const STEPS = [
+  { key: "step1", Scene: ChargeableScene, frame: "aspect-[5/4]" },
+  { key: "step2", Scene: SumScene, frame: "aspect-[16/9]" },
+  { key: "step3", Scene: RateScene, frame: "aspect-[4/3]" },
+  { key: "step4", Scene: SurchargeScene, frame: "aspect-[3/2]" },
+] as const;
+
+/** when each picture's turn comes, ms into the relay: as the one before
+ *  lands the figure it hands over (PricingScenes) */
+const TURN = [0, 3250, 4750, 7250];
+/** the four cards come up together, this far apart, and wait their turn */
+const ARRIVE_MS = 120;
+
+/** idle: not on screen yet · playing · paused: by the control · done:
+ *  every picture that was playing has landed */
+type Mode = "idle" | "playing" | "paused" | "done";
+
+/** a media query, false until the page is live */
+function useMedia(query: string) {
+  const subscribe = React.useCallback(
+    (notify: () => void) => {
+      const mq = window.matchMedia(query);
+      mq.addEventListener("change", notify);
+      return () => mq.removeEventListener("change", notify);
+    },
+    [query],
+  );
+  return React.useSyncExternalStore(
+    subscribe,
+    () => window.matchMedia(query).matches,
+    () => false,
+  );
+}
 
 /**
  * Brief 05. People hesitate when a bulky piece is quoted high, so how the
@@ -20,89 +56,194 @@ const STEPS = ["step1", "step2", "step3", "step4"] as const;
  * reader to work out how they combine; it is now the sum itself, said once
  * under the heading and then step by step in the order it's done: each
  * piece's chargeable weight, the pieces added up, times the rate per kilo,
- * plus a handling surcharge where a piece needs one. Beside it the same sum
- * on an example, a light box charged on its volumetric weight and a heavy
- * suitcase charged on its actual weight, which adds a surcharge
- * (SectionScenes, SizeScene). The words are the carriers' and the main
- * site's: actual, volumetric and chargeable weight. No per-kilo rates and
- * no surcharge amounts here: Check Rate, behind "Check your rate", gives the
- * rate, the Surcharge Information modal is one tap from step 4, and the
- * final price comes on the invoice.
+ * plus a handling surcharge where a piece needs one. The words are the
+ * carriers' and the main site's: actual, volumetric and chargeable weight.
+ * No per-kilo rates and no surcharge amounts here: Check Rate, behind
+ * "Check your rate", gives the rate, the Surcharge Information modal is one
+ * tap from step 4, and the final price comes on the invoice.
+ *
+ * Each step has its own picture over its words (PricingScenes), a short
+ * motion graphic working the sum on one example. Four in a row from xl
+ * (below it a quarter of the page is too narrow for a picture's type), they
+ * play once as a relay, each taking its turn as the one before lands
+ * the figure it hands over, about ten seconds in all; so the row has a
+ * control that pauses, resumes and replays (content that moves on its own
+ * for more than five seconds has to be pausable), and it holds off screen
+ * and in a hidden tab. Two by two and stacked, each plays as it comes into
+ * view and none runs past four seconds, so there is no control. A click on
+ * a picture plays that one again, at once. Under reduced motion nothing
+ * plays: every picture stands as it ends, with no control and nothing to
+ * click. DESIGN.md, Motion, "The section scenes".
  */
 export function QuoteFactors() {
   const t = useT();
-  // the section reveals once, as the journey does: its head, the example,
-  // then the steps in the order the sum is done, the promise and the way in
+  // the section reveals once, as the journey does: its head, the steps in
+  // the order the sum is done, the promise and the way in
   const rootRef = useSectionReveal<HTMLElement>();
+  const railRef = React.useRef<HTMLOListElement>(null);
+  const row = useMedia("(min-width: 1280px)");
+  const still = useMedia("(prefers-reduced-motion: reduce)");
+  const relay = row && !still;
+  const [mode, setMode] = React.useState<Mode>("idle");
+  // bumping a picture's `n` plays it again; `alone` is one played by a
+  // click, at once and out of the relay
+  const [plays, setPlays] = React.useState(() => STEPS.map(() => ({ n: 0, alone: false })));
+  /** the pictures still playing */
+  const running = React.useRef(new Set<number>());
+
+  // off screen and in a hidden tab the relay holds (globals.css, [data-hold])
+  React.useEffect(() => {
+    const rail = railRef.current;
+    if (!rail) return;
+    const hold = { view: false, tab: document.hidden };
+    const apply = () => rail.toggleAttribute("data-hold", hold.view || hold.tab);
+    const io = new IntersectionObserver(([e]) => {
+      hold.view = !e.isIntersecting;
+      apply();
+    });
+    io.observe(rail);
+    const onVisibility = () => {
+      hold.tab = document.hidden;
+      apply();
+    };
+    document.addEventListener("visibilitychange", onVisibility);
+    return () => {
+      io.disconnect();
+      document.removeEventListener("visibilitychange", onVisibility);
+    };
+  }, []);
+
+  const built = (i: number) => {
+    running.current.add(i);
+    setMode("playing");
+  };
+  /** a picture's last piece has landed (PricingScenes, data-scene-end) */
+  const landed = (e: React.AnimationEvent<HTMLOListElement>) => {
+    const piece = e.target as HTMLElement;
+    if (!piece.hasAttribute("data-scene-end")) return;
+    running.current.delete(Number(piece.closest<HTMLElement>("[data-step]")?.dataset.step));
+    if (running.current.size === 0) setMode("done");
+  };
+  const again = (i: number) => {
+    setPlays((p) => p.map((x, j) => (j === i ? { n: x.n + 1, alone: true } : x)));
+    setMode("playing");
+  };
+  const control = () => {
+    if (mode === "playing") setMode("paused");
+    else if (mode === "paused") setMode("playing");
+    else {
+      running.current.clear();
+      setPlays((p) => p.map((x) => ({ n: x.n + 1, alone: false })));
+    }
+  };
+
   return (
-    <section ref={rootRef} aria-labelledby="pricing-heading" data-tone="violet" className="band">
-      <div className="section-shell mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-20">
+    // one of the two sections with a ground of its own, so the page isn't
+    // white from the reviews to the ticket: its chapter's wash, always there
+    // (globals.css, [data-ground])
+    <section ref={rootRef} aria-labelledby="pricing-heading" data-tone="violet" data-ground="on">
+      <div className="section-shell mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:py-24">
         <ReviewNote note={REVIEW_NOTES.pricing} className="mb-8" />
-        <div className="grid grid-cols-1 gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,30rem)] lg:gap-14">
-          <div>
-            <div className="jr-reveal" style={order(0)}>
-              <SectionHead
-                id="pricing-heading"
-                eyebrow={t("expat.pricing.eyebrow")}
-                title={t("expat.pricing.heading")}
-                subtitle={t("expat.pricing.subtitle")}
-              />
-            </div>
-            {/* the sum, a step a row, numbered because the order is the
-                point; they arrive in it */}
-            <ol className="mt-10 border-t border-border">
-              {STEPS.map((s, i) => (
-                <li key={s} className="jr-reveal flex gap-3 border-b border-border py-4" style={order(2 + i)}>
+        <div className="jr-reveal flex items-end justify-between gap-6" style={order(0)}>
+          <SectionHead
+            id="pricing-heading"
+            eyebrow={t("expat.pricing.eyebrow")}
+            title={t("expat.pricing.heading")}
+            subtitle={t("expat.pricing.subtitle")}
+          />
+          {/* pause, play, replay: only where the pictures play as one run */}
+          {relay && mode !== "idle" && (
+            <button
+              type="button"
+              onClick={control}
+              aria-label={t(`expat.pricing.${mode === "playing" ? "pause" : mode === "done" ? "replay" : "play"}`)}
+              className="tap-target relative grid size-10 shrink-0 place-items-center rounded-full bg-background text-foreground transition-colors hover:text-tone-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/40"
+            >
+              {mode === "playing" ? (
+                <Pause className="size-3.5 fill-current" />
+              ) : mode === "done" ? (
+                <RotateCcw className="size-4" />
+              ) : (
+                <Play className="ml-0.5 size-3.5 fill-current" />
+              )}
+            </button>
+          )}
+        </div>
+
+        {/* the sum, a step a column, numbered because the order is the
+            point: each one's picture, then its words */}
+        <ol
+          ref={railRef}
+          data-relay
+          data-paused={mode === "paused" || undefined}
+          onAnimationEnd={landed}
+          className="mt-8 grid gap-x-6 gap-y-8 sm:grid-cols-2 xl:grid-cols-4"
+        >
+          {STEPS.map(({ key, Scene, frame }, i) => {
+            const { n, alone } = plays[i];
+            const inRelay = relay && !alone;
+            return (
+              <li key={key} data-step={i} className="jr-reveal" style={order(1 + i)}>
+                <div className="relative max-w-[24rem]">
+                  <SceneStage
+                    // a new run is a new stage: it builds again from nothing
+                    key={`${inRelay ? "relay" : "alone"}-${n}`}
+                    buildWith={inRelay ? "[data-relay]" : undefined}
+                    onBuild={() => built(i)}
+                    // a little taller in the row, where the pictures are
+                    // narrowest and their type a bigger share of them
+                    className={cn(frame, "sm:aspect-[5/4] xl:aspect-[10/9]")}
+                    sceneClassName="text-[length:5.3cqw] @min-[17rem]:text-[length:4.7cqw] @min-[21rem]:text-[length:4.2cqw]"
+                  >
+                    <Scene start={inRelay ? TURN[i] : 0} arrive={inRelay ? i * ARRIVE_MS : 0} />
+                  </SceneStage>
+                  {/* the picture itself is the way to see its step again;
+                      laid over it, since the stage is out of the
+                      accessibility tree */}
+                  {!still && (
+                    <button
+                      type="button"
+                      onClick={() => again(i)}
+                      aria-label={t("expat.pricing.replayStep").replace("{n}", String(i + 1))}
+                      className="absolute inset-0 cursor-pointer rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/60"
+                    />
+                  )}
+                </div>
+                <div className="mt-4 flex gap-3">
                   <span className="mt-0.5 grid size-5 shrink-0 place-items-center rounded-full border border-border-strong text-xs font-medium tabular-nums text-muted">
                     {i + 1}
                   </span>
                   <div className="min-w-0">
-                    <h3 className="text-balance font-medium">{t(`expat.pricing.${s}Title`)}</h3>
-                    <p className="mt-1 text-sm text-muted">{t(`expat.pricing.${s}Body`)}</p>
+                    <h3 className="text-balance font-medium">{t(`expat.pricing.${key}Title`)}</h3>
+                    <p className="mt-1 text-sm text-muted">{t(`expat.pricing.${key}Body`)}</p>
                     {/* the full breakdown, the same modal the main site's
                         calculator opens: per-carrier handling surcharges,
                         then the other logistic costs */}
-                    {s === "step4" && (
+                    {key === "step4" && (
                       <SurchargeInfoDialog>
-                        <button type="button" className="link-mark tap-target relative mt-1.5 block w-fit text-left text-sm">
+                        <button type="button" className="link-mark tap-target relative mt-2 block w-fit text-left text-sm">
                           {t("expat.pricing.surchargeCta")}
                         </button>
                       </SurchargeInfoDialog>
                     )}
                   </div>
-                </li>
-              ))}
-            </ol>
-            <p className="jr-reveal mt-6 max-w-lg font-medium" style={order(2 + STEPS.length)}>
-              {t("expat.pricing.promise")}
-            </p>
-            {/* the button rises inside a wrapper, so the reveal never holds
-                the button's own press */}
-            <div className="jr-reveal mt-5 sm:w-fit" style={order(3 + STEPS.length)}>
-              <Button asChild size="lg" className="w-full sm:w-auto">
-                <a href={EXPAT_QUOTE_URL}>
-                  {t("expat.cta")} <ArrowRight />
-                </a>
-              </Button>
-            </div>
-          </div>
+                </div>
+              </li>
+            );
+          })}
+        </ol>
 
-          {/* the same sum on an example, built once in view. It has no
-              caption: the rule is step 1 and what brings a surcharge is step
-              4, so nothing is said twice. It rises right after the head, as
-              the journey's stage does; beside the steps it holds still as
-              they scroll past, and below lg it sits in the middle, both as
-              the phone in "Who does what" does. Tall enough for the whole
-              sum, down to the surcharge's line */}
-          <div className="jr-reveal self-start lg:sticky lg:top-28" style={order(1)}>
-            <SceneStage
-              glint
-              className="mx-auto aspect-[5/7] w-full max-w-[30rem] sm:aspect-[6/7] lg:mx-0"
-              sceneClassName="text-[length:3.3cqw] @max-[30rem]:text-[length:4.3cqw]"
-            >
-              <SizeScene />
-            </SceneStage>
-          </div>
+        <p className="jr-reveal mt-8 max-w-lg font-medium" style={order(1 + STEPS.length)}>
+          {t("expat.pricing.promise")}
+        </p>
+        {/* the button rises inside a wrapper, so the reveal never holds
+            the button's own press */}
+        <div className="jr-reveal mt-4 sm:w-fit" style={order(2 + STEPS.length)}>
+          <Button asChild size="lg" className="w-full sm:w-auto">
+            <a href={EXPAT_QUOTE_URL}>
+              {t("expat.cta")} <ArrowRight />
+            </a>
+          </Button>
         </div>
       </div>
     </section>

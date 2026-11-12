@@ -118,7 +118,7 @@ function PickupStrip({ className }: { className?: string }) {
                 <div className="relative aspect-[4/5] overflow-hidden rounded-md bg-background">
                   <Image src={p.src} alt={r.described} fill sizes="78vw" draggable={false} className="object-cover" />
                 </div>
-                <figcaption className="mt-3 flex items-center gap-1.5 text-sm font-medium">
+                <figcaption className="mt-3 flex items-center gap-2 text-sm font-medium">
                   <Route code={p.from} from={r.from} to={r.to} />
                 </figcaption>
               </figure>
@@ -171,7 +171,7 @@ export function PickupPhotos({ className }: { className?: string }) {
       <ul
         aria-labelledby="pickups-heading"
         data-instant={instant || undefined}
-        className="pickup-slices mt-5 hidden sm:flex"
+        className="pickup-slices mt-4 hidden sm:flex"
       >
         {PHOTOS.map((p, i) => {
           const r = route(p);
@@ -212,7 +212,7 @@ export function PickupPhotos({ className }: { className?: string }) {
               </button>
               <p
                 aria-hidden
-                className="pickup-slice-label pointer-events-none absolute bottom-3 left-3 flex items-center gap-1.5 whitespace-nowrap rounded-sm bg-foreground px-3 py-2 text-xs font-medium leading-none text-background"
+                className="pickup-slice-label pointer-events-none absolute bottom-3 left-3 flex items-center gap-2 whitespace-nowrap rounded-sm bg-foreground px-3 py-2 text-xs font-medium leading-none text-background"
               >
                 <Route code={p.from} from={r.from} to={r.to} />
               </p>
@@ -220,7 +220,7 @@ export function PickupPhotos({ className }: { className?: string }) {
           );
         })}
       </ul>
-      <PickupStrip className="mt-5 sm:hidden" />
+      <PickupStrip className="mt-4 sm:hidden" />
     </div>
   );
 }

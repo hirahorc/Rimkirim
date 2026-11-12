@@ -3,10 +3,9 @@
 import * as React from "react";
 import { MapPin, X } from "lucide-react";
 import { Popover, PopoverAnchor, PopoverContent } from "@/components/ui/popover";
-import { Input } from "@/components/ui/input";
 import { searchPlaces, placeLine, type Place } from "@/lib/data/expat-places";
 import { useT } from "@/lib/i18n/LanguageProvider";
-import { cn } from "@/lib/utils/cn";
+import { Well } from "./kit";
 
 /**
  * The Check Rate Address: a search field over map suggestions, as on the live
@@ -63,9 +62,8 @@ export function AddressField({
   return (
     <Popover open={showList} onOpenChange={(o) => !o && setOpen(false)}>
       <PopoverAnchor asChild>
-        <div className="relative">
-          <MapPin aria-hidden className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-2" />
-          <Input
+        <div>
+          <Well
             {...wiring}
             role="combobox"
             aria-expanded={showList}
@@ -100,21 +98,23 @@ export function AddressField({
                 setOpen(false);
               }
             }}
-            className={cn("pl-9 pr-9", invalid && "border-danger")}
+            before={<MapPin aria-hidden className="size-4 shrink-0 text-muted" />}
+            after={
+              query && country ? (
+                <button
+                  type="button"
+                  aria-label={t("expatOrder.rates.addressClear")}
+                  onClick={() => {
+                    setQuery("");
+                    if (value) clear();
+                  }}
+                  className="tap-target relative grid size-6 shrink-0 place-items-center rounded-full text-muted hover:bg-surface-3 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/50"
+                >
+                  <X className="size-3.5" />
+                </button>
+              ) : undefined
+            }
           />
-          {query && country && (
-            <button
-              type="button"
-              aria-label={t("expatOrder.rates.addressClear")}
-              onClick={() => {
-                setQuery("");
-                if (value) clear();
-              }}
-              className="tap-target absolute right-2 top-1/2 grid size-7 -translate-y-1/2 place-items-center rounded-full text-muted-2 hover:bg-surface-3 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/50"
-            >
-              <X className="size-3.5" />
-            </button>
-          )}
         </div>
       </PopoverAnchor>
       <PopoverContent
@@ -127,7 +127,7 @@ export function AddressField({
       >
         <ul id={listId} role="listbox" aria-label={t("expatOrder.rates.address")}>
           {results.length === 0 ? (
-            <li className="px-2.5 py-2 text-sm text-muted">{t("expatOrder.rates.addressNoResults")}</li>
+            <li className="px-3 py-2 text-sm text-muted">{t("expatOrder.rates.addressNoResults")}</li>
           ) : (
             results.map((p, i) => (
               <li
@@ -141,12 +141,11 @@ export function AddressField({
                   pick(p);
                 }}
                 onMouseEnter={() => setActive(i)}
-                className={cn(
-                  "flex cursor-pointer items-start gap-2.5 rounded-sm px-2.5 py-2 text-sm",
-                  i === active && "bg-surface-3",
-                )}
+                className="flex cursor-pointer gap-2 rounded-sm px-3 py-2 text-sm aria-selected:bg-surface-3"
               >
-                <MapPin aria-hidden className="mt-0.5 size-4 shrink-0 text-muted-2" />
+                <span className="flex h-5 shrink-0 items-center">
+                  <MapPin aria-hidden className="size-4 text-muted" />
+                </span>
                 <span className="min-w-0">
                   <span className="block font-medium">{p.label}</span>
                   <span className="block truncate text-xs text-muted">{p.detail}</span>

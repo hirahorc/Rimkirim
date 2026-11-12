@@ -28,17 +28,17 @@ export function ShipmentExamples() {
     ) : null;
   }
   return (
-    <section aria-labelledby="examples-heading" data-tone="magenta" className="band">
-      <div className="section-shell mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-20">
+    <section aria-labelledby="examples-heading" data-tone="magenta">
+      <div className="section-shell mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:py-24">
         <SectionHead
           id="examples-heading"
           title={t("expat.examples.heading")}
           subtitle={t("expat.examples.subtitle")}
         />
-        <ul className="mt-10 grid gap-5 md:grid-cols-3">
+        <ul className="mt-8 grid gap-4 md:grid-cols-3">
           {SHIPMENT_EXAMPLES.map((e) => (
             <li key={`${e.customer}-${e.origin}`}>
-              <Card className="h-full rounded-lg px-6 py-7">
+              <Card className="h-full rounded-lg px-6 py-6">
                 <p className="text-xs text-muted-2">
                   {countryName(e.origin, locale)} {t("testimonial.routeTo")}
                 </p>

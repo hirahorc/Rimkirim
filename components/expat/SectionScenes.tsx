@@ -3,22 +3,21 @@
 import * as React from "react";
 import { Check, CheckCheck, ChevronLeft, PhoneCall, Video } from "lucide-react";
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
-import { formatNumber } from "@/lib/utils/currency";
 import { cn } from "@/lib/utils/cn";
 import { RateCard } from "@/components/expat-order/RateCard";
 import { CheckCards } from "@/components/expat-order/ChoiceCards";
 import { BookingHead } from "@/components/expat-order/BookingHead";
 import { expatRates } from "@/lib/pricing/expat-rates";
 import { IPhone } from "./IPhone";
-import { at, SceneTitle } from "./SceneParts";
+import { at } from "./SceneParts";
 
 /**
  * The section illustrations of the expat page, each the product moment its
- * section describes, built once on a SceneStage: the calculator weighing two
- * pieces at the warehouse (pricing), the team on WhatsApp going through the
- * packing list (who does what), and the order flow's own three screens
- * behind "Check your rate" (the closing ticket), drawn by the flow's own
- * components so the picture can never drift from the product.
+ * section describes, built once on a SceneStage: the team on WhatsApp going
+ * through the packing list (who does what), and the order flow's own three
+ * screens behind "Check your rate" (the closing ticket), drawn by the
+ * flow's own components so the picture can never drift from the product.
+ * Pricing's four, one a step and playing as a relay, are in PricingScenes.
  *
  * Framed as the journey's scenes are (the stageshow rules): one hero
  * surface, inset a gutter from the top and sides and running off the
@@ -30,136 +29,8 @@ import { at, SceneTitle } from "./SceneParts";
  */
 
 function useScene(group: string) {
-  const { t, locale } = useLanguage();
-  return { k: (key: string) => t(`expat.scenes.${group}.${key}`), locale };
-}
-
-/* ------------------------------------------------------------------ */
-/*  Pricing: the sum, on an example                                    */
-/* ------------------------------------------------------------------ */
-
-/** `surcharge`: not a cardboard box, so it adds a handling surcharge */
-const PIECES = [
-  { key: "box", kg: 12, dims: [60, 40, 40], surcharge: false },
-  { key: "suitcase", kg: 24, dims: [75, 50, 30], surcharge: true },
-] as const;
-
-/** the volumetric weight, length × width × height ÷ 5000, as the calculator works it */
-const volumetricKg = ([l, w, h]: readonly number[]) => (l * w * h) / 5000;
-
-/** one cell of a piece's readout, the calculator's own three: actual, volumetric, chargeable */
-function Readout({
-  label,
-  value,
-  ms,
-  win,
-  strong,
-}: {
-  label: string;
-  value: string;
-  ms: number;
-  /** of actual and volumetric, the one that counts; the other is set faint */
-  win?: boolean;
-  strong?: boolean;
-}) {
-  return (
-    // a compact stage gives the labels the room: "Volumetric" and
-    // "Chargeable" are the longest the calculator has
-    <div className="min-w-0 px-[0.7em] py-[0.5em] @max-[30rem]:px-[0.45em]">
-      <span className="block truncate text-[0.66em] font-medium uppercase tracking-[0.05em] text-muted-2 @max-[30rem]:tracking-normal">
-        {label}
-      </span>
-      <span
-        className={cn(
-          "jr jr-rise mt-[0.2em] block whitespace-nowrap text-[0.84em] tabular-nums",
-          win === true && "font-medium text-tone-ink",
-          win === false && "text-muted-2",
-          strong && "font-semibold",
-        )}
-        style={at(ms)}
-      >
-        {value}
-      </span>
-    </div>
-  );
-}
-
-/**
- * The section's sum on an example, in the section's own order: a box light
- * for its size, charged on its volumetric weight, and a suitcase heavy for
- * its size, charged on its actual weight and, not being a cardboard box,
- * marked for a handling surcharge; then the two added up, the chargeable
- * weight and the one big number; then what's still to come, times the rate
- * per kilo and plus the suitcase's surcharge. Neither has a figure: the
- * rate is Check Rate's to give and the surcharge the quotation's.
- */
-export function SizeScene() {
-  const { k, locale } = useScene("size");
-  const kg = (n: number) => `${formatNumber(n, 1, locale)} kg`;
-  const total = PIECES.reduce((s, p) => s + Math.max(p.kg, volumetricKg(p.dims)), 0);
-  return (
-    <div
-      className="jr jr-arrive absolute inset-x-[2.6em] top-[2.6em] h-[40em] rounded-[1.1em] bg-background p-[1.2em] shadow-float @max-[30rem]:inset-x-[1.6em] @max-[30rem]:top-[1.6em] @max-[30rem]:p-[1em]"
-      style={at(0)}
-    >
-      <SceneTitle>{k("title")}</SceneTitle>
-      <div className="mt-[0.9em] grid gap-[0.6em]">
-        {PIECES.map((p, i) => {
-          const size = volumetricKg(p.dims);
-          const bySize = size > p.kg;
-          const start = 300 + i * 1250;
-          return (
-            <div key={p.key} className="jr jr-rise rounded-[0.8em] bg-surface-2 p-[0.75em]" style={at(start)}>
-              <div className="flex items-baseline justify-between gap-[0.6em]">
-                <span className="text-[0.66em] font-semibold uppercase tracking-[0.06em] text-muted">{k(p.key)}</span>
-                {/* what the piece adds beyond its weight, once it's weighed */}
-                {p.surcharge && (
-                  <span className="jr jr-rise whitespace-nowrap text-[0.7em] font-medium text-tone-ink" style={at(start + 1150)}>
-                    {k("surcharge")}
-                  </span>
-                )}
-              </div>
-              {/* the fields, typed in: weight, then the three sides */}
-              <div className="mt-[0.5em] grid grid-cols-[minmax(0,1fr)_minmax(0,1.75fr)] gap-[0.45em]">
-                {[`${p.kg} kg`, `${p.dims.join(" × ")} cm`].map((v, j) => (
-                  <span key={v} className="flex h-[2.15em] items-center rounded-[0.55em] bg-background px-[0.7em]">
-                    <span className="jr jr-type whitespace-nowrap text-[0.84em] tabular-nums" style={at(start + 200 + j * 240)}>
-                      {v}
-                    </span>
-                  </span>
-                ))}
-              </div>
-              <div className="mt-[0.5em] grid grid-cols-3 divide-x divide-border rounded-[0.55em] bg-background">
-                <Readout label={k("actual")} value={kg(p.kg)} ms={start + 700} win={!bySize} />
-                <Readout label={k("volumetric")} value={kg(size)} ms={start + 820} win={bySize} />
-                <Readout label={k("chargeable")} value={kg(Math.max(p.kg, size))} ms={start + 1000} strong />
-              </div>
-            </div>
-          );
-        })}
-      </div>
-      <div
-        className="jr jr-rise mt-[0.8em] flex items-baseline justify-between gap-[1em] border-t border-border pt-[0.7em]"
-        style={at(2950)}
-      >
-        <span className="text-[0.82em] font-medium">{k("total")}</span>
-        <span className="font-display text-[1.45em] font-semibold tabular-nums tracking-tight">{kg(total)}</span>
-      </div>
-      {/* the rest of the sum, a line each, with words where a figure would
-          be: neither is this page's to quote */}
-      {(
-        [
-          ["rate", "rateValue", 3300],
-          ["surchargeTotal", "surchargeValue", 3550],
-        ] as const
-      ).map(([label, value, ms]) => (
-        <div key={label} className="jr jr-rise mt-[0.45em] flex items-baseline justify-between gap-[1em]" style={at(ms)}>
-          <span className="whitespace-nowrap text-[0.82em] font-medium">{k(label)}</span>
-          <span className="whitespace-nowrap text-[0.82em] text-muted">{k(value)}</span>
-        </div>
-      ))}
-    </div>
-  );
+  const { t } = useLanguage();
+  return { k: (key: string) => t(`expat.scenes.${group}.${key}`) };
 }
 
 /* ------------------------------------------------------------------ */

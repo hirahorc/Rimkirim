@@ -5,10 +5,8 @@ import { useRouter } from "next/navigation";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { CollapseHeight } from "@/components/ui/disclosure";
 import { CountrySelect } from "@/components/shared/CountrySelect";
-import { Field } from "@/components/shared/forms/Field";
 import { ReviewNote } from "@/components/expat/ReviewNote";
 import { ORDER_REVIEW_NOTES } from "@/lib/data/expat-order-notes";
 import { INDONESIA } from "@/lib/data/countries";
@@ -20,6 +18,7 @@ import { useT } from "@/lib/i18n/LanguageProvider";
 import { cn } from "@/lib/utils/cn";
 import { AddressField } from "./AddressField";
 import { FlowLoading } from "./FlowLoading";
+import { Field, PRESS, QUIET, TYPE, Well, Worn } from "./kit";
 import { PACE, paced } from "./pace";
 import { RateCard } from "./RateCard";
 import { useDraftWelcome } from "./visit";
@@ -35,9 +34,10 @@ function addressError(p: Place | null, t: (k: string) => string): string | undef
 const checkKey = (c: CheckRateInput) => [c.originCountry, c.origin?.id, c.destination?.id, c.weightKg].join("|");
 
 /**
- * Check Rate and Select Rate on one page, on the app's field (a white card
- * on Panel 2, as every order screen sits): the form, and once checked the
- * one rate the epic asks for under it, the rest behind "See more rates". The form writes straight
+ * Check Rate and Select Rate on one page, on the flow's field (a paper card
+ * on wash) and in the focused column: Moving from beside Moving to, the
+ * weight with Check rates on its own row, and once checked the one rate the
+ * epic asks for under it, the rest behind "See more rates". The form writes straight
  * into the draft, so a reload keeps it. An estimate is the answer to a check:
  * Check rate takes its moment (pace.ts), then the estimate comes up; once an
  * input changes, the estimate on the page is stale (dimmed, not selectable)
@@ -146,12 +146,12 @@ function RatesForm() {
   const rounded = !!estimate && estimate.result.chargedKg !== estimate.kg;
 
   return (
-    // the app's field: Panel 2 under white cards, the way every order screen
-    // reads; the landing's chapter colours stay on the landing
-    <div data-field className="mx-auto max-w-5xl px-4 pb-20 pt-8 sm:px-6 sm:pt-10">
+    // the flow's field: wash under paper cards, in the focused column; the
+    // landing's chapter colours stay on the landing
+    <div data-field data-flow className="mx-auto max-w-3xl px-4 pb-12 pt-6 sm:px-6 sm:pt-8">
       <ReviewNote note={ORDER_REVIEW_NOTES.rates} className="mb-6" />
-      <h1 className="text-balance font-display text-3xl font-bold tracking-tight sm:text-4xl">{r("title")}</h1>
-      <p className="mt-3 max-w-xl text-pretty text-muted">{r("subtitle")}</p>
+      <h1 className={cn(TYPE.title, "text-balance")}>{r("title")}</h1>
+      <p className="mt-1 max-w-xl text-pretty text-sm text-muted">{r("subtitle")}</p>
 
       <form
         ref={form}
@@ -160,73 +160,77 @@ function RatesForm() {
           e.preventDefault();
           void submit();
         }}
-        className="mt-8"
+        className="mt-6 sm:mt-8"
       >
-        <Card className="p-5 sm:p-6">
-          <div className="grid gap-8 md:grid-cols-2 md:gap-6">
-            <fieldset className="min-w-0">
-              <legend className="mb-4 font-display text-base font-semibold tracking-tight">{r("from")}</legend>
-              <div className="space-y-4">
-                <Field label={r("country")} error={errs.originCountry}>
-                  <CountrySelectField
-                    value={check.originCountry}
-                    onChange={(code) => update({ originCountry: code, origin: null })}
-                    placeholder={r("countryPh")}
-                    ariaLabel={`${r("from")}: ${r("country")}`}
-                    exclude="ID"
-                  />
-                </Field>
-                <Field label={r("address")} hint={originErr ? undefined : r("addressHint")} error={originErr}>
-                  <AddressField
-                    country={check.originCountry}
-                    value={check.origin}
-                    onChange={(p) => update({ origin: p })}
-                    invalid={!!originErr}
-                  />
-                </Field>
-              </div>
-            </fieldset>
-
-            <fieldset className="min-w-0">
-              <legend className="mb-4 font-display text-base font-semibold tracking-tight">{r("to")}</legend>
-              <div className="space-y-4">
-                <Field label={r("country")}>
-                  <CountrySelectField
-                    value={INDONESIA.code}
-                    onChange={() => {}}
-                    locked
-                    ariaLabel={`${r("to")}: ${r("country")}`}
-                  />
-                </Field>
-                <Field label={r("address")} hint={destErr ? undefined : r("addressHintTo")} error={destErr}>
-                  <AddressField
-                    country="ID"
-                    value={check.destination}
-                    onChange={(p) => update({ destination: p })}
-                    invalid={!!destErr}
-                  />
-                </Field>
-              </div>
-            </fieldset>
-          </div>
-
-          <div className="mt-6 flex flex-col gap-4 border-t border-border pt-6 sm:flex-row sm:items-start sm:justify-between">
-            <div className="sm:w-64">
-              <Field label={r("weight")} hint={errs.weight ? undefined : r("weightHint")} error={errs.weight}>
-                <WeightInput
-                  value={weightText}
-                  onChange={(text) => {
-                    setWeightText(text);
-                    const n = Number(text.replace(",", "."));
-                    update({ weightKg: text.trim() && Number.isFinite(n) && n > 0 ? n : null });
-                  }}
-                  placeholder={r("weightPh")}
-                  invalid={!!errs.weight}
+        <Card className="grid grid-cols-1 gap-6 p-4 sm:grid-cols-2 sm:p-6">
+          <fieldset className="min-w-0">
+            <legend className={cn(TYPE.subhead, "mb-3")}>{r("from")}</legend>
+            <div className="grid grid-cols-1 gap-4">
+              <Field label={r("country")} error={errs.originCountry}>
+                <CountrySelectField
+                  value={check.originCountry}
+                  onChange={(code) => update({ originCountry: code, origin: null })}
+                  placeholder={r("countryPh")}
+                  ariaLabel={`${r("from")}: ${r("country")}`}
+                  exclude="ID"
+                />
+              </Field>
+              <Field label={r("address")} hint={originErr ? undefined : r("addressHint")} error={originErr}>
+                <AddressField
+                  country={check.originCountry}
+                  value={check.origin}
+                  onChange={(p) => update({ origin: p })}
+                  invalid={!!originErr}
                 />
               </Field>
             </div>
-            {/* lime while there's something to check: no estimate yet, or one that's stale */}
-            <Button type="submit" size="lg" variant={fresh ? "secondary" : "brand"} loading={checking} className="sm:mt-6">
+          </fieldset>
+
+          <fieldset className="min-w-0">
+            <legend className={cn(TYPE.subhead, "mb-3")}>{r("to")}</legend>
+            <div className="grid grid-cols-1 gap-4">
+              <Field label={r("country")}>
+                <CountrySelectField
+                  value={INDONESIA.code}
+                  onChange={() => {}}
+                  locked
+                  ariaLabel={`${r("to")}: ${r("country")}`}
+                />
+              </Field>
+              <Field label={r("address")} hint={destErr ? undefined : r("addressHintTo")} error={destErr}>
+                <AddressField
+                  country="ID"
+                  value={check.destination}
+                  onChange={(p) => update({ destination: p })}
+                  invalid={!!destErr}
+                />
+              </Field>
+            </div>
+          </fieldset>
+
+          <Field label={r("weight")} hint={errs.weight ? undefined : r("weightHint")} error={errs.weight}>
+            <WeightInput
+              value={weightText}
+              onChange={(text) => {
+                setWeightText(text);
+                const n = Number(text.replace(",", "."));
+                update({ weightKg: text.trim() && Number.isFinite(n) && n > 0 ? n : null });
+              }}
+              placeholder={r("weightPh")}
+            />
+          </Field>
+          <div>
+            {/* a label's line and its gap, so the button sits on the weight's row */}
+            <span aria-hidden className="mb-1 hidden h-4 sm:block" />
+            {/* lime while there's something to check: no estimate yet, or one
+                that's stale. As tall as the field it answers */}
+            <Button
+              type="submit"
+              size="lg"
+              variant={fresh ? "secondary" : "brand"}
+              loading={checking}
+              className={cn("h-11 w-full sm:w-auto", fresh && QUIET)}
+            >
               {checking ? r("checking") : r("submit")}
             </Button>
           </div>
@@ -240,7 +244,7 @@ function RatesForm() {
           key={checks}
           ref={results}
           aria-labelledby="estimate-heading"
-          className={cn("mt-10 scroll-mt-24", checks > 0 && "reveal")}
+          className={cn("mt-8 scroll-mt-24 sm:mt-12", checks > 0 && "reveal")}
         >
           <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1">
             <h2
@@ -248,7 +252,7 @@ function RatesForm() {
               id="estimate-heading"
               // takes focus when Check rate brings the estimate up (settle)
               tabIndex={-1}
-              className="font-display text-2xl font-semibold tracking-tight outline-none"
+              className={cn(TYPE.heading, "outline-none")}
             >
               {r("resultsTitle")}
             </h2>
@@ -257,14 +261,15 @@ function RatesForm() {
             )}
           </div>
           {stale && (
-            <p role="status" className="mt-2 text-sm text-muted">
+            <p role="status" className="mt-1 text-sm font-medium">
               {r("stale")}
             </p>
           )}
 
           {/* priced on what the form held before: still readable, no longer selectable */}
           <div inert={stale} className={cn("transition-opacity duration-150", stale && "opacity-50")}>
-            <div className="mt-5">
+            {/* room over the card for the Special Rate's tab, which rides its edge */}
+            <div className="mt-6">
               <RateCard
                 rate={lead}
                 origin={estimate.origin}
@@ -280,24 +285,23 @@ function RatesForm() {
             )}
 
             {/* the card says what it excludes; the page adds what it leads to */}
-            <p className="mt-4 max-w-2xl text-sm leading-relaxed text-muted">{t("expatOrder.service.note")}</p>
+            <p className="mt-3 max-w-2xl text-xs text-muted">{t("expatOrder.service.note")}</p>
 
             {rest.length > 0 && (
-              <div className="mt-8 border-t border-border pt-6">
+              <div className="mt-6">
                 <button
                   type="button"
                   aria-expanded={more}
                   aria-controls="more-rates"
                   onClick={() => setMore((m) => !m)}
-                  // the press is answered at once, in colour (and let go of over 150ms)
-                className="tap-row relative inline-flex items-center gap-2 rounded-sm font-display text-sm font-semibold after:-inset-x-2 after:inset-y-0 after:absolute after:rounded-sm after:transition-colors active:after:bg-foreground/[0.04] active:after:duration-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/50"
+                  className={cn(PRESS, "tap-row inline-flex items-center gap-2 rounded-sm font-display text-sm font-semibold")}
                 >
                   {more ? r("seeLess") : r("seeMore").replace("{n}", String(rest.length))}
                   {/* swap, never rotate: the shared disclosure idiom */}
                   {more ? <ChevronUp aria-hidden className="size-4" /> : <ChevronDown aria-hidden className="size-4" />}
                 </button>
                 <CollapseHeight open={more} id="more-rates">
-                  <ul className="grid gap-3 pt-5">
+                  <ul className="grid grid-cols-1 gap-3 pt-4">
                     {rest.map((rate) => (
                       <li key={rate.id}>
                         <RateCard
@@ -336,7 +340,7 @@ function CountrySelectField({
   "aria-invalid": invalid,
 }: React.ComponentProps<typeof CountrySelect> & { id?: string; "aria-invalid"?: React.AriaAttributes["aria-invalid"] }) {
   return (
-    <div id={id} data-invalid={invalid ? true : undefined}>
+    <div id={id} data-invalid={invalid ? true : undefined} className="data-[invalid]:[&_button]:border-danger">
       <CountrySelect
         value={value}
         onChange={onChange}
@@ -356,29 +360,23 @@ function WeightInput({
   value,
   onChange,
   placeholder,
-  invalid,
   ...wiring
 }: {
   value: string;
   onChange: (text: string) => void;
   placeholder?: string;
-  invalid?: boolean;
 } & Pick<React.InputHTMLAttributes<HTMLInputElement>, "id" | "aria-describedby" | "aria-invalid">) {
   return (
-    <div className="relative">
-      <Input
-        {...wiring}
-        inputMode="decimal"
-        value={value}
-        placeholder={placeholder}
-        // a bound on what's typed, not a rule: the most a shipment may weigh is ops' to set
-        maxLength={7}
-        onChange={(e) => onChange(e.target.value.replace(/[^0-9.,]/g, ""))}
-        className={cn("pr-10 tabular-nums", invalid && "border-danger")}
-      />
-      <span aria-hidden className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted">
-        kg
-      </span>
-    </div>
+    <Well
+      {...wiring}
+      inputMode="decimal"
+      value={value}
+      placeholder={placeholder}
+      // a bound on what's typed, not a rule: the most a shipment may weigh is ops' to set
+      maxLength={7}
+      onChange={(e) => onChange(e.target.value.replace(/[^0-9.,]/g, ""))}
+      className="tabular-nums"
+      after={<Worn>kg</Worn>}
+    />
   );
 }

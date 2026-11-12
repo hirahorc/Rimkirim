@@ -176,7 +176,7 @@ export function WhatYouCanShip() {
 
   return (
     <section ref={rootRef} aria-labelledby="ship-heading" data-tone="sky">
-      <div className="section-shell mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-20">
+      <div className="section-shell mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:py-24">
         <ReviewNote note={REVIEW_NOTES.ship} className="mb-8" />
         <div className="jr-reveal" style={order(0)}>
           <SectionHead
@@ -270,7 +270,7 @@ export function WhatYouCanShip() {
                     <div className={cn("flex min-w-0 flex-col px-6 pb-6", !Picture && "pt-6", hero && "md:max-w-[19rem]")}>
                       <h3 className="font-display text-xl font-semibold tracking-tight">{k("title")}</h3>
                       {/* two lines held from sm, so a row's titles share a line */}
-                      <p className="mt-1.5 text-sm leading-relaxed text-muted sm:min-h-[2lh]">{k("answer")}</p>
+                      <p className="mt-2 text-sm leading-relaxed text-muted sm:min-h-[2lh]">{k("answer")}</p>
                       {/* the whole card is the toggle's hit area; the label
                           says what the details hold */}
                       <button
@@ -279,7 +279,7 @@ export function WhatYouCanShip() {
                         aria-expanded={isOpen}
                         aria-controls={`ship-${key}`}
                         onClick={() => choose(key)}
-                        className="mt-auto flex items-center gap-1.5 self-start pt-4 text-left text-sm font-medium after:absolute after:inset-0 after:rounded-lg after:transition-colors active:after:bg-[color-mix(in_oklab,var(--tone-ink)_6%,transparent)] focus-visible:outline-none focus-visible:after:ring-2 focus-visible:after:ring-foreground/50"
+                        className="mt-auto flex items-center gap-2 self-start pt-4 text-left text-sm font-medium after:absolute after:inset-0 after:rounded-lg after:transition-colors active:after:bg-[color-mix(in_oklab,var(--tone-ink)_6%,transparent)] focus-visible:outline-none focus-visible:after:ring-2 focus-visible:after:ring-foreground/50"
                       >
                         {k("more")}
                         <Chevron aria-hidden className="size-4 text-muted-2" />
@@ -294,7 +294,7 @@ export function WhatYouCanShip() {
                       <div
                         role="region"
                         aria-labelledby={`ship-${key}-toggle`}
-                        className="relative rounded-lg border border-(--tone) bg-background px-5 py-6 sm:px-6 lg:px-8 lg:py-7"
+                        className="relative rounded-lg border border-(--tone) bg-background px-4 py-6 sm:px-6 lg:px-8 lg:py-6"
                       >
                         <span
                           aria-hidden
@@ -308,14 +308,14 @@ export function WhatYouCanShip() {
                               </dt>
                               <dd className="mt-2">
                                 <p className="font-display text-xl font-semibold tracking-tight">{k(`${f}.value`)}</p>
-                                <p className="mt-1.5 text-sm leading-relaxed text-muted">{k(`${f}.body`)}</p>
+                                <p className="mt-2 text-sm leading-relaxed text-muted">{k(`${f}.body`)}</p>
                               </dd>
                             </div>
                           ))}
                         </dl>
                         <div className="mt-6 border-t border-border pt-4">
                           {action === "price" ? (
-                            <a href={EXPAT_QUOTE_URL} className="link-mark tap-row relative inline-flex items-center gap-1.5 text-sm">
+                            <a href={EXPAT_QUOTE_URL} className="link-mark tap-row relative inline-flex items-center gap-2 text-sm">
                               {t("expat.ship.price")} <ArrowRight aria-hidden className="size-4 shrink-0" />
                             </a>
                           ) : (
@@ -325,7 +325,7 @@ export function WhatYouCanShip() {
                               href={waLink(k("wa"))}
                               target="_blank"
                               rel="noreferrer"
-                              className="link-mark tap-row relative inline-flex items-start gap-1.5 text-sm"
+                              className="link-mark tap-row relative inline-flex items-start gap-2 text-sm"
                             >
                               <MessageCircle aria-hidden className="mt-0.5 size-4 shrink-0" /> {k("cta")}
                             </a>
@@ -350,10 +350,10 @@ export function WhatYouCanShip() {
             On a phone each reads as a card does, drawing beside the words */}
         <div
           id="packing"
-          className="jr-reveal mt-12 scroll-mt-24 border-t border-border pt-10 sm:mt-16 sm:pt-12"
+          className="part-rule jr-reveal mt-12 scroll-mt-24 border-t pt-8 sm:mt-16 sm:pt-12"
           style={order(1 + CARDS.length)}
         >
-          <h3 className="font-display text-2xl font-semibold tracking-tight sm:text-3xl">{t("expat.ship.pack.title")}</h3>
+          <h3 className="font-display text-xl font-semibold tracking-tight sm:text-heading">{t("expat.ship.pack.title")}</h3>
           <p className="mt-2 max-w-2xl leading-relaxed text-muted">{t("expat.ship.pack.lead")}</p>
           <p className="mt-2 text-sm">
             {/* the same modal as the main site's calculator */}
@@ -369,7 +369,7 @@ export function WhatYouCanShip() {
                 key={p}
                 className={cn(
                   "flex gap-4 md:flex-col",
-                  j > 0 && "border-t border-border pt-6 md:border-l md:border-t-0 md:pl-8 md:pt-0",
+                  j > 0 && "part-rule border-t pt-6 md:border-l md:border-t-0 md:pl-8 md:pt-0",
                   j < PACKS.length - 1 && "md:pr-8",
                 )}
               >
@@ -378,8 +378,8 @@ export function WhatYouCanShip() {
                   <h4 className="font-display text-xs font-medium uppercase tracking-[0.04em] text-tone-ink">
                     {t(`expat.ship.pack.${p}.title`)}
                   </h4>
-                  <p className="mt-2 font-display text-lg font-semibold tracking-tight sm:text-xl">{t(`expat.ship.pack.${p}.rule`)}</p>
-                  <p className="mt-1.5 text-sm leading-relaxed text-muted">{t(`expat.ship.pack.${p}.body`)}</p>
+                  <p className="mt-2 font-display text-xl font-semibold tracking-tight">{t(`expat.ship.pack.${p}.rule`)}</p>
+                  <p className="mt-2 text-sm leading-relaxed text-muted">{t(`expat.ship.pack.${p}.body`)}</p>
                 </div>
               </li>
             ))}
@@ -408,7 +408,7 @@ export function WhatYouCanShip() {
                     <Sofa className="size-5" strokeWidth={1.75} />
                   </span>
                   <span className="min-w-0">
-                    <span className="block font-display text-lg font-semibold tracking-tight">
+                    <span className="block font-display text-xl font-semibold tracking-tight">
                       {t("expat.ship.pack.furniture.title")}
                     </span>
                     <span className="mt-0.5 block text-sm text-muted">{t("expat.ship.pack.furniture.hint")}</span>
@@ -441,13 +441,13 @@ export function WhatYouCanShip() {
             can't go at all, each thing in its ring (amber to ask about, the
             no-entry sign for never). On a phone it reads down, the asking
             first; from lg the two sit side by side over one way to ask */}
-        <div className="jr-reveal mt-12 border-t border-border pt-10 sm:mt-16 sm:pt-12" style={order(2 + CARDS.length)}>
-          <h3 className="font-display text-2xl font-semibold tracking-tight sm:text-3xl">{t("expat.ship.before.title")}</h3>
+        <div className="part-rule jr-reveal mt-12 border-t pt-8 sm:mt-16 sm:pt-12" style={order(2 + CARDS.length)}>
+          <h3 className="font-display text-xl font-semibold tracking-tight sm:text-heading">{t("expat.ship.before.title")}</h3>
           {/* de-boxed on the desk: no tinted panel, so nothing in the sky
               chapter stacks against the violet band that follows */}
           <div className="mt-6 grid lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
             <div className="lg:pr-12">
-              <h4 className="flex items-center gap-2.5 font-display text-xl font-semibold tracking-tight">
+              <h4 className="flex items-center gap-2 font-display text-xl font-semibold tracking-tight">
                 <CircleAlert aria-hidden className="size-5 text-warning-ink" strokeWidth={2.25} />
                 {t("expat.ship.before.check.title")}
               </h4>
@@ -461,8 +461,8 @@ export function WhatYouCanShip() {
                 ))}
               </ul>
             </div>
-            <div className="mt-8 border-t border-border pt-7 lg:mt-0 lg:border-l lg:border-t-0 lg:pl-12 lg:pt-0">
-              <h4 className="flex items-center gap-2.5 font-display text-xl font-semibold tracking-tight">
+            <div className="part-rule mt-8 border-t pt-6 lg:mt-0 lg:border-l lg:border-t-0 lg:pl-12 lg:pt-0">
+              <h4 className="flex items-center gap-2 font-display text-xl font-semibold tracking-tight">
                 <Ban aria-hidden className="size-5 text-danger" strokeWidth={2.25} />
                 {t("expat.ship.before.banned.title")}
               </h4>
@@ -479,7 +479,7 @@ export function WhatYouCanShip() {
                 ))}
               </ul>
             </div>
-            <p className="mt-8 border-t border-border pt-5 text-sm leading-relaxed text-muted lg:col-span-2">
+            <p className="part-rule mt-8 border-t pt-4 text-sm leading-relaxed text-muted lg:col-span-2">
               {t("expat.ship.before.ask")}{" "}
               <a
                 href={waLink(t("expat.ship.before.wa"))}

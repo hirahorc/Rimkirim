@@ -1,9 +1,8 @@
 "use client";
 
 import * as React from "react";
-import { Check, ChevronDown, ChevronUp, Info, Plus, Ruler, Trash2, X } from "lucide-react";
+import { ChevronDown, ChevronUp, Plus, Ruler, Trash2, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { SelectField } from "@/components/ui/select-field";
 import { CollapseHeight } from "@/components/ui/disclosure";
 import {
@@ -14,7 +13,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Field } from "@/components/shared/forms/Field";
 import { PACKAGING_TYPES } from "@/components/order/module-options";
 import { CURRENCIES } from "@/lib/data/currencies";
 import {
@@ -35,6 +33,7 @@ import {
 import { formatNumber } from "@/lib/utils/currency";
 import { useT } from "@/lib/i18n/LanguageProvider";
 import { cn } from "@/lib/utils/cn";
+import { Done, Field, Note, PRESS, QUIET, TYPE, Well, Worn } from "./kit";
 
 /** digits and one decimal point, a comma read as one */
 function decimal(s: string): string {
@@ -63,8 +62,9 @@ const ODD_WEIGHT_KG = 500;
 
 /**
  * The Packages step, the WNI flow's Items & Packages in the plan's dress: the
- * values' currency first, then each package a Panel 2 block (packaging,
- * weight and three sides, what's inside), then the totals. The estimate
+ * values' currency first, then the packages as a ruled list on the part's
+ * own paper (each its packaging, weight and three sides, what's inside),
+ * then the totals. The estimate
  * lives in the Selected Service beside it and follows the packages once
  * they're measured (packedPricing); this step says so under the totals.
  * Errors show once a field is left, as on Your details; `tried` (a count of
@@ -148,9 +148,11 @@ export function PackingStep({
     });
 
   return (
-    <div className="space-y-6">
+    <div className="grid grid-cols-1 gap-6">
       <p className="flex gap-2 text-sm text-muted">
-        <Ruler aria-hidden className="mt-0.5 size-4 shrink-0" />
+        <span className="flex h-5 shrink-0 items-center">
+          <Ruler aria-hidden className="size-4" />
+        </span>
         {p("guess")}
       </p>
 
@@ -168,9 +170,9 @@ export function PackingStep({
         />
       </Field>
 
-      <div className="space-y-3">
+      <div>
         {many && (
-          <div className="flex justify-end">
+          <div className="mb-2 flex justify-end">
             <Button
               type="button"
               variant="ghost"
@@ -183,9 +185,10 @@ export function PackingStep({
             </Button>
           </div>
         )}
-        <ol className="space-y-3">
+        {/* a record that repeats is ruled, not boxed: one package, a hairline, the next */}
+        <ol className="divide-y divide-border border-y border-border">
           {value.packages.map((pk, i) => (
-            <li key={pk.id}>
+            <li key={pk.id} className="py-4">
               <PackageBlock
                 n={i + 1}
                 pkg={pk}
@@ -211,42 +214,37 @@ export function PackingStep({
             </li>
           ))}
         </ol>
-        <Button ref={addRef} type="button" variant="dashed" className="w-full" onClick={addPackage}>
+        <Button ref={addRef} type="button" variant="secondary" className={cn(QUIET, "mt-4 w-full")} onClick={addPackage}>
           <Plus /> {p("addPackage")}
         </Button>
       </div>
 
-      <div className="border-t border-border pt-6">
-        <dl className="grid grid-cols-2 gap-x-4 gap-y-5 sm:grid-cols-3">
+      <div>
+        <dl className="grid grid-cols-2 gap-4 sm:grid-cols-3">
           <div>
             <dt className="text-xs text-muted">{p("totalPackages")}</dt>
-            <dd className="mt-0.5 font-display text-xl font-bold tracking-tight tabular-nums">{totals.packages}</dd>
+            <dd className={cn(TYPE.subhead, "mt-1 tabular-nums")}>{totals.packages}</dd>
           </div>
           <div>
             <dt className="text-xs text-muted">{p("totalKg")}</dt>
-            <dd className="mt-0.5 font-display text-xl font-bold tracking-tight tabular-nums">{kg(totals.kg)} kg</dd>
+            <dd className={cn(TYPE.subhead, "mt-1 tabular-nums")}>{kg(totals.kg)} kg</dd>
             {pricing.packed && pricing.kg !== checkedKg && (
-              <dd className="mt-0.5 text-xs text-muted">{p("checkedKg").replace("{kg}", kg(checkedKg))}</dd>
+              <dd className="mt-1 text-xs text-muted">{p("checkedKg").replace("{kg}", kg(checkedKg))}</dd>
             )}
           </div>
           <div className="col-span-2 sm:col-span-1">
             <dt className="text-xs text-muted">{p("totalValue")}</dt>
-            <dd className="mt-0.5 font-display text-xl font-bold tracking-tight tabular-nums">
-              {declaredValue(totals.value, currency)}
-            </dd>
+            <dd className={cn(TYPE.subhead, "mt-1 tabular-nums")}>{declaredValue(totals.value, currency)}</dd>
           </div>
         </dl>
         {pricing.specialFromKg ? (
-          <p role="status" className={cn("mt-5 flex gap-2 rounded-md bg-info/10 px-3 py-2.5 text-sm", edited && "banner-enter")}>
-            <Info aria-hidden className="mt-0.5 size-4 shrink-0 text-info" />
+          <Note className={cn("mt-4", edited && "banner-enter")}>
             {/* the weight the standing estimate is priced on: the one
                 checked, unless the Special Rate was picked on the plan */}
             {p("estimateNoSpecial").replace("{min}", kg(pricing.specialFromKg)).replace("{kg}", kg(pricing.rate.chargedKg))}
-          </p>
+          </Note>
         ) : (
-          <p className="mt-5 text-xs leading-relaxed text-muted">
-            {pricing.packed ? p("estimatePacked") : p("estimatePending")}
-          </p>
+          <p className="mt-4 text-xs text-muted">{pricing.packed ? p("estimatePacked") : p("estimatePending")}</p>
         )}
       </div>
 
@@ -267,18 +265,11 @@ export function PackingStep({
 
 /** a number field with its unit worn inside, on the right */
 function UnitInput({ unit, ...props }: { unit: string } & React.InputHTMLAttributes<HTMLInputElement>) {
-  return (
-    <div className="relative">
-      <Input {...props} inputMode="decimal" className="pr-10 tabular-nums" />
-      <span aria-hidden className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-2">
-        {unit}
-      </span>
-    </div>
-  );
+  return <Well {...props} inputMode="decimal" className="tabular-nums" after={<Worn>{unit}</Worn>} />;
 }
 
-/** one package: a Panel 2 block whose head opens and closes it, and names it
- *  in a line while it's closed */
+/** one package, on the part's own paper: its head opens and closes it, and
+ *  names it in a line while it's closed */
 function PackageBlock({
   n,
   pkg,
@@ -351,30 +342,24 @@ function PackageBlock({
     onChange({ items: pkg.items.map((it) => (it.id === id ? { ...it, ...patch } : it)) });
 
   return (
-    <div className="rounded-md bg-surface-2 px-4 py-4 sm:px-5">
+    <div>
       <div className="flex items-center justify-between gap-3">
         <button
           type="button"
           onClick={onToggle}
           aria-expanded={open}
           aria-controls={regionId}
-          // the press is answered at once, in colour, over the whole line (and let go of over 150ms)
-          className="relative -my-3 flex min-w-0 flex-1 items-center gap-2 rounded-sm py-3 text-left after:-inset-x-2 after:inset-y-1 after:absolute after:rounded-sm after:transition-colors active:after:bg-foreground/[0.04] active:after:duration-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/50"
+          className={cn(PRESS, "flex min-w-0 flex-1 items-center gap-2 rounded-sm py-1 text-left")}
         >
           {/* swap, never rotate: the shared disclosure idiom */}
           {open ? (
-            <ChevronUp aria-hidden className="size-4 shrink-0 text-muted-2" />
+            <ChevronUp aria-hidden className="size-4 shrink-0 text-muted" />
           ) : (
-            <ChevronDown aria-hidden className="size-4 shrink-0 text-muted-2" />
+            <ChevronDown aria-hidden className="size-4 shrink-0 text-muted" />
           )}
-          <span className="shrink-0 font-display text-sm font-semibold">{p("packageN").replace("{n}", String(n))}</span>
-          {/* nothing left to ask of it: the plan's done mark, small */}
-          {done && (
-            <span className="grid size-4 shrink-0 place-items-center rounded-full bg-brand text-brand-ink">
-              <Check aria-hidden className="size-2.5" strokeWidth={3.5} />
-              <span className="sr-only">{t("expatOrder.plan.done")}</span>
-            </span>
-          )}
+          <span className={cn(TYPE.subhead, "shrink-0")}>{p("packageN").replace("{n}", String(n))}</span>
+          {/* nothing left to ask of it */}
+          {done && <Done label={t("expatOrder.plan.done")} />}
           {!open && <span className="truncate text-sm text-muted">{summary}</span>}
         </button>
         {onRemove && (
@@ -384,116 +369,119 @@ function PackageBlock({
             size="sm"
             onClick={onRemove}
             aria-label={p("removePackage").replace("{n}", String(n))}
-            className="tap-target relative -my-2 shrink-0 text-muted hover:bg-surface-3 hover:text-danger"
+            className="tap-target relative shrink-0"
           >
             <Trash2 /> {p("remove")}
           </Button>
         )}
       </div>
 
-      <CollapseHeight open={open} id={regionId}>
-        <div className="space-y-6 pt-5">
-          {/* Others asks what it's packed in, beside the choice from sm, as
-              Moving from sits beside Moving to */}
-          <div className="grid items-start gap-3 sm:grid-cols-2">
-            <Field label={p("packaging")} hint={pkg.packaging !== "box" ? p("surcharge") : undefined}>
-              <SelectField
-                value={pkg.packaging}
-                onChange={(packaging) => onChange({ packaging, ...(packaging === "other" ? {} : { packagingOther: "" }) })}
-                ariaLabel={p("packaging")}
-                options={PACKAGING_TYPES.map((o) => ({ value: o.value, label: p(`types.${o.value}`) }))}
-              />
-            </Field>
-            {other && (
-              <Field
-                label={p("packagingOther")}
-                hint={p("packagingOtherHint")}
-                error={seen(`${pkg.id}.packagingOther`) && !packagingDescribed(pkg) ? p("required") : undefined}
-              >
-                <Input
-                  value={pkg.packagingOther ?? ""}
-                  onChange={(e) => onChange({ packagingOther: e.target.value })}
-                  onBlur={leave(`${pkg.id}.packagingOther`)}
-                  placeholder={p("packagingOtherPh")}
-                  maxLength={60}
+      {/* a little room around the fold, which clips what's past its edge,
+          so a field's focus ring isn't cut */}
+      <div className="-mx-1">
+        <CollapseHeight open={open} id={regionId} className="px-1 pb-1">
+          <div className="grid grid-cols-1 gap-6 pt-4">
+            {/* Others asks what it's packed in, beside the choice from sm, as
+                Moving from sits beside Moving to */}
+            <div className="grid grid-cols-1 items-start gap-4 sm:grid-cols-2 sm:gap-6">
+              <Field label={p("packaging")} hint={pkg.packaging !== "box" ? p("surcharge") : undefined}>
+                <SelectField
+                  value={pkg.packaging}
+                  onChange={(packaging) => onChange({ packaging, ...(packaging === "other" ? {} : { packagingOther: "" }) })}
+                  ariaLabel={p("packaging")}
+                  options={PACKAGING_TYPES.map((o) => ({ value: o.value, label: p(`types.${o.value}`) }))}
                 />
               </Field>
-            )}
-          </div>
-
-          <div>
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-              {measure("weight")}
-              {measure("length")}
-              {measure("width")}
-              {measure("height")}
+              {other && (
+                <Field
+                  label={p("packagingOther")}
+                  hint={p("packagingOtherHint")}
+                  error={seen(`${pkg.id}.packagingOther`) && !packagingDescribed(pkg) ? p("required") : undefined}
+                >
+                  <Well
+                    value={pkg.packagingOther ?? ""}
+                    onChange={(e) => onChange({ packagingOther: e.target.value })}
+                    onBlur={leave(`${pkg.id}.packagingOther`)}
+                    placeholder={p("packagingOtherPh")}
+                    maxLength={60}
+                  />
+                </Field>
+              )}
             </div>
-            {charge && (
-              <p className="mt-2 text-xs text-muted">
-                {p(charge.by === "size" ? "chargeSize" : "chargeWeight").replace("{kg}", kg(charge.kg))}
-              </p>
-            )}
-            {/* a number that looks like the wrong unit: asked about, not
-                refused, since the estimate follows it at once */}
-            {(longest > ODD_SIDE_CM || heavy) && (
-              <p role="status" className={cn("mt-3 flex gap-2 rounded-md bg-info/10 px-3 py-2.5 text-sm", enter && "banner-enter")}>
-                <Info aria-hidden className="mt-0.5 size-4 shrink-0 text-info" />
-                <span>
-                  {longest > ODD_SIDE_CM &&
-                    p("oddSize").replace("{cm}", kg(longest)).replace("{m}", kg(longest / 100))}
+
+            <div>
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+                {measure("weight")}
+                {measure("length")}
+                {measure("width")}
+                {measure("height")}
+              </div>
+              {charge && (
+                <p className="mt-1 text-xs text-muted">
+                  {p(charge.by === "size" ? "chargeSize" : "chargeWeight").replace("{kg}", kg(charge.kg))}
+                </p>
+              )}
+              {/* a number that looks like the wrong unit: asked about, not
+                  refused, since the estimate follows it at once */}
+              {(longest > ODD_SIDE_CM || heavy) && (
+                <Note className={cn("mt-3", enter && "banner-enter")}>
+                  {longest > ODD_SIDE_CM && p("oddSize").replace("{cm}", kg(longest)).replace("{m}", kg(longest / 100))}
                   {longest > ODD_SIDE_CM && heavy && " "}
                   {heavy && p("oddWeight").replace("{kg}", kg(Number.parseFloat(pkg.weight)))}
-                </span>
-              </p>
-            )}
-          </div>
+                </Note>
+              )}
+            </div>
 
-          <fieldset>
-            <legend className="text-sm font-medium">{p("inside")}</legend>
-            <ul className="mt-1 divide-y divide-border">
-              {pkg.items.map((it, j) => {
-                const nameErr = seen(`${it.id}.name`) && !it.name.trim() ? p("required") : undefined;
-                const qtyErr = seen(`${it.id}.qty`) && !(Number.parseFloat(it.quantity) >= 1) ? p("required") : undefined;
-                return (
-                  <li
-                    key={it.id}
-                    data-item={it.id}
-                    className="grid grid-cols-[4.5rem_minmax(0,1fr)_2.75rem] items-start gap-x-3 gap-y-3 py-3 sm:grid-cols-[minmax(0,1fr)_4.5rem_9rem_2.75rem]"
-                  >
-                    <div className="col-span-3 sm:col-span-1">
-                      <Field label={p("itemName")} error={nameErr}>
-                        <Input
-                          value={it.name}
-                          onChange={(e) => setItem(it.id, { name: e.target.value })}
-                          onBlur={leave(`${it.id}.name`)}
-                          placeholder={p("itemNamePh")}
-                          maxLength={120}
+            <fieldset>
+              <legend className="text-sm font-medium">{p("inside")}</legend>
+              {/* each item a row of three fields that wear what they are (the
+                  name's example, "Qty", the currency and "each"), so no label
+                  is repeated down the list: a phone sets the name over the
+                  other two, closer to them than to the next item */}
+              <ul className="mt-2 grid grid-cols-1 gap-4 sm:gap-2">
+                {pkg.items.map((it, j) => {
+                  const nameErr = seen(`${it.id}.name`) && !it.name.trim() ? p("required") : undefined;
+                  const qtyErr = seen(`${it.id}.qty`) && !(Number.parseFloat(it.quantity) >= 1) ? p("required") : undefined;
+                  return (
+                    <li
+                      key={it.id}
+                      data-item={it.id}
+                      className="grid grid-cols-[6rem_minmax(0,1fr)_2.75rem] items-start gap-2 sm:grid-cols-[minmax(0,1fr)_6rem_11rem_2.75rem]"
+                    >
+                      <div className="col-span-3 sm:col-span-1">
+                        <Field quiet label={`${p("itemName")} ${j + 1}`} error={nameErr}>
+                          <Well
+                            value={it.name}
+                            onChange={(e) => setItem(it.id, { name: e.target.value })}
+                            onBlur={leave(`${it.id}.name`)}
+                            placeholder={p("itemNamePh")}
+                            maxLength={120}
+                          />
+                        </Field>
+                      </div>
+                      <Field quiet label={`${p("itemName")} ${j + 1}: ${p("qty")}`} error={qtyErr}>
+                        <Well
+                          value={it.quantity}
+                          onChange={(e) => setItem(it.id, { quantity: digits(e.target.value) })}
+                          onBlur={leave(`${it.id}.qty`)}
+                          inputMode="numeric"
+                          className="tabular-nums"
+                          maxLength={5}
+                          before={<Worn>{p("qty")}</Worn>}
                         />
                       </Field>
-                    </div>
-                    <Field label={p("qty")} error={qtyErr}>
-                      <Input
-                        value={it.quantity}
-                        onChange={(e) => setItem(it.id, { quantity: digits(e.target.value) })}
-                        onBlur={leave(`${it.id}.qty`)}
-                        inputMode="numeric"
-                        className="tabular-nums"
-                        maxLength={5}
-                      />
-                    </Field>
-                    <Field label={p("value")}>
-                      <PrefixedInput
-                        prefix={currency}
-                        value={it.value}
-                        onChange={(e) => setItem(it.id, { value: decimal(e.target.value) })}
-                        inputMode="decimal"
-                        placeholder="0"
-                        maxLength={12}
-                      />
-                    </Field>
-                    {/* the label's height (16px line, 6px gap), so the button
-                        lines up with the inputs */}
-                    <div className="pt-[1.375rem]">
+                      <Field quiet label={`${p("itemName")} ${j + 1}: ${p("value")}`}>
+                        <Well
+                          value={it.value}
+                          onChange={(e) => setItem(it.id, { value: decimal(e.target.value) })}
+                          inputMode="decimal"
+                          className="tabular-nums"
+                          placeholder="0"
+                          maxLength={12}
+                          before={<Worn>{currency}</Worn>}
+                          after={<Worn>{p("each")}</Worn>}
+                        />
+                      </Field>
                       {pkg.items.length > 1 && (
                         <Button
                           type="button"
@@ -501,44 +489,31 @@ function PackageBlock({
                           size="icon"
                           onClick={() => onChange({ items: pkg.items.filter((x) => x.id !== it.id) })}
                           aria-label={p("removeItem").replace("{n}", String(j + 1))}
-                          className="size-11 text-muted hover:bg-surface-3 hover:text-danger"
+                          className="size-11"
                         >
                           <X />
                         </Button>
                       )}
-                    </div>
-                  </li>
-                );
-              })}
-            </ul>
-            <button
-              type="button"
-              onClick={() => {
-                const it = newPackingItem();
-                onChange({ items: [...pkg.items, it] });
-                // the new row's name is what's typed next
-                onceRendered(() => document.querySelector<HTMLElement>(`[data-item="${it.id}"] input`)?.focus());
-              }}
-              className="link-mark tap-row relative mt-1 inline-flex items-center gap-1.5 text-sm"
-            >
-              <Plus aria-hidden className="size-4" /> {p("addItem")}
-            </button>
-          </fieldset>
-        </div>
-      </CollapseHeight>
-    </div>
-  );
-}
-
-/** an Input with the currency worn quietly on the left; Field's wiring lands
- *  on the input */
-function PrefixedInput({ prefix, className, ...props }: { prefix: string } & React.InputHTMLAttributes<HTMLInputElement>) {
-  return (
-    <div className="relative">
-      <span aria-hidden className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-xs text-muted-2">
-        {prefix}
-      </span>
-      <Input {...props} className={cn("pl-12 tabular-nums", className)} />
+                    </li>
+                  );
+                })}
+              </ul>
+              <button
+                type="button"
+                onClick={() => {
+                  const it = newPackingItem();
+                  onChange({ items: [...pkg.items, it] });
+                  // the new row's name is what's typed next
+                  onceRendered(() => document.querySelector<HTMLElement>(`[data-item="${it.id}"] input`)?.focus());
+                }}
+                className="link-mark tap-row relative mt-2 inline-flex items-center gap-1 text-sm"
+              >
+                <Plus aria-hidden className="size-4" /> {p("addItem")}
+              </button>
+            </fieldset>
+          </div>
+        </CollapseHeight>
+      </div>
     </div>
   );
 }
@@ -578,12 +553,15 @@ function RemovePackageDialog({
           <DialogDescription>{p("removeBody")}</DialogDescription>
         </DialogHeader>
         <DialogFooter>
-          <Button type="button" variant="secondary" onClick={() => onOpenChange(false)}>
+          <Button type="button" variant="secondary" className={QUIET} onClick={() => onOpenChange(false)}>
             {p("removeCancel")}
           </Button>
+          {/* Ink, the dialog's one solid button: red in the flow is only what's
+              wrong, and lime is for going on, not for taking away */}
           <Button
             type="button"
             variant="danger"
+            className="border-foreground bg-foreground text-background hover:bg-foreground"
             onClick={() => {
               removed.current = true;
               onConfirm();

@@ -14,8 +14,8 @@ const SCENES = [DetailsScene, QuoteScene, FlightScene, DoorScene];
 const DWELL_MS = 5200;
 /** how long a scene leaving the stage takes to travel out (the .jr-slot transition) */
 const LEAVE_MS = 650;
-/** the beat between a step coming up (its tile flips and pulses) and the
- *  run setting off toward the next; the run takes the rest of the hold */
+/** the beat between a step coming up (its tile flips) and the run
+ *  setting off toward the next; the run takes the rest of the hold */
 const RUN_DELAY_MS = 650;
 
 /**
@@ -220,7 +220,7 @@ export function JourneySteps({
         {head}
       </div>
 
-      <div className="mt-10 grid gap-8 lg:mt-12 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:items-center lg:gap-16">
+      <div className="mt-8 grid gap-8 lg:mt-12 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:items-center lg:gap-16">
         {/* the stage: on top on a phone, beside the steps from lg */}
         <div className="jr-stage jr-reveal relative lg:col-start-2 lg:row-start-1" style={order(1)}>
           {/* portrait on a phone, where the scenes take their compact layout */}
@@ -323,7 +323,7 @@ export function JourneySteps({
               its tip, reaching the next tile's edge as the hold runs out, so
               the step moves on the moment the run touches it. The run sets
               off a beat after the step comes up (--run-delay), once its tile
-              has flipped and pulsed, its head fading in at the tile's foot */}
+              has flipped, its head fading in at the tile's foot */}
           {layout && (
             <span
               aria-hidden
@@ -382,14 +382,11 @@ export function JourneySteps({
                     )}
                   >
                     {String(i + 1).padStart(2, "0")}
-                    {/* reached: a ring of the chapter's ink swells out of
-                        the tile and fades, the arrival the run led to */}
-                    {isActive && <span className="jr-pulse" />}
                   </span>
                 <div className="relative z-10 min-w-0">
                   <h3
                     className={cn(
-                      "font-display text-lg font-semibold leading-8 tracking-tight transition-colors duration-200",
+                      "font-display text-xl font-semibold leading-8 tracking-tight transition-colors duration-200",
                       isActive ? "text-tone-ink" : "pointer-fine:group-hover/step:text-tone-ink",
                     )}
                   >
@@ -403,7 +400,7 @@ export function JourneySteps({
         </ol>
       </div>
 
-      <div className="jr-reveal mt-10" style={order(6)}>
+      <div className="jr-reveal mt-8" style={order(6)}>
         {footer}
       </div>
     </div>

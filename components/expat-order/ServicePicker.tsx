@@ -86,10 +86,10 @@ function Options({
       </DialogHeader>
       <DialogBody className="pb-dialog-safe sm:pb-6">
         <ReviewNote note={ORDER_REVIEW_NOTES.service} />
-        {/* the page's field makes a card a white plane with no outline; on
-            the dialog's own surface it wears its hairline again. The room on
+        {/* the page's field makes a card a paper plane with no outline; on
+            the dialog's own paper it wears its hairline again. The room on
             top is the Special Rate's tab, which rides its card's edge */}
-        <ul className="grid gap-3 pt-4 [--card-border:var(--border)]">
+        <ul className="grid grid-cols-1 gap-3 pt-4 [--card-border:var(--border)]">
           {options.rates.map((rate) => {
             const selected = rate.id === pricing.rate.id;
             return (

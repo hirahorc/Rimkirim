@@ -20,7 +20,7 @@ export function ExpatSteps() {
   const t = useT();
   return (
     <section id="how-it-works" aria-labelledby="steps-heading" data-tone="magenta" className="scroll-mt-24">
-      <div className="section-shell mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-20">
+      <div className="section-shell mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:py-24">
         <ReviewNote note={REVIEW_NOTES.steps} className="mb-8" />
         <JourneySteps
           head={
