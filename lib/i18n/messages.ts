@@ -2683,7 +2683,7 @@ const en: Messages = {
       less: "Show less",
     },
     ship: {
-      eyebrow: "What you can send",
+      eyebrow: "Things you can ship",
       heading: "Shipping your personal belongings to Indonesia?",
       subtitle: "Almost any personal belonging can go. Here's what our customers send most.",
       charges: "See every handling charge",
