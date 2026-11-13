@@ -1411,9 +1411,8 @@ in ink it stays neutral and lime stays the one colour in the action row.
   or weight on a card says one path is the better one. Each is built the same way: the path's
   name at the Title role, its Indonesian term on a quiet italic line under it ("Relocation
   goods", *Barang Pindahan*), then the same two facts under a hairline, "For" (who it's for) and
-  "Duty and tax" (what it pays), the explanation, the documents needed with a document glyph
-  (what we do to help, "We'll send you a template", on a Dim Grey line under the document's
-  name), and a note at the foot. Only the words differ. From `lg` the three share their rows
+  "Duty and tax" (what it pays), the explanation, the documents needed with a document glyph,
+  and a note at the foot. Only the words differ. From `lg` the three share their rows
   (`grid-rows-subgrid`), so a "For" that runs to two lines moves the others with it: the duty
   and tax answers, the explanations, the lists and the notes each start on one line. Each card
   carries its own rules as ops wrote them (the timing, what isn't covered, the NPWP), so nothing

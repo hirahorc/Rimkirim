@@ -6,7 +6,6 @@ import { CollapseHeight } from "@/components/ui/disclosure";
 import { REVIEW_NOTES } from "@/lib/data/expat";
 import { waLink } from "@/lib/contact";
 import { useT } from "@/lib/i18n/LanguageProvider";
-import { cn } from "@/lib/utils/cn";
 import { SectionHead } from "./SectionHead";
 import { ReviewNote } from "./ReviewNote";
 import { revealOrder as order, useSectionReveal } from "./useSectionReveal";
@@ -71,21 +70,6 @@ function PathName({ name }: { name: string }) {
   );
 }
 
-/** a document's name, and the help that comes with it ("we'll send you a
- *  template") on a quiet line under it, as PathName sets the Indonesian
- *  term, so the names read straight down the list. The order flow's
- *  CustomsPaths sets its documents the same way; `helpClassName` is how a
- *  page sets the help line in its own small print */
-export function DocName({ doc, helpClassName }: { doc: string; helpClassName?: string }) {
-  const [name, help] = doc.split(/\s*\((.+)\)\s*$/);
-  return (
-    <span>
-      {name}
-      {help && <span className={cn("mt-0.5 block text-muted first-letter:uppercase", helpClassName)}>{help}</span>}
-    </span>
-  );
-}
-
 /** one Customs Path's documents */
 function DocList({ docs, k }: { docs: readonly string[]; k: (path: string) => string }) {
   return (
@@ -93,7 +77,7 @@ function DocList({ docs, k }: { docs: readonly string[]; k: (path: string) => st
       {docs.map((d) => (
         <li key={d} className="flex gap-2 text-sm">
           <FileText aria-hidden className="mt-0.5 size-4 shrink-0 text-muted-2" />
-          <DocName doc={k(d)} helpClassName="mt-1 text-xs" />
+          <span>{k(d)}</span>
         </li>
       ))}
     </ul>

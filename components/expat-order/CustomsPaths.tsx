@@ -1,7 +1,7 @@
 "use client";
 
 import { FileText } from "lucide-react";
-import { CUSTOMS_ROUTES, DocName } from "@/components/expat/ExpatCustoms";
+import { CUSTOMS_ROUTES } from "@/components/expat/ExpatCustoms";
 import { useT } from "@/lib/i18n/LanguageProvider";
 import { cn } from "@/lib/utils/cn";
 import { Fold, TYPE } from "./kit";
@@ -56,9 +56,7 @@ export function CustomsPaths({
                     <span className="flex h-5 shrink-0 items-center">
                       <FileText aria-hidden className="size-4 text-muted" />
                     </span>
-                    {/* its note ("We'll send you a template") is small print,
-                        4px under the name: the flow's step, not the landing's */}
-                    <DocName doc={k(d)} helpClassName="mt-1 text-xs" />
+                    <span>{k(d)}</span>
                   </li>
                 ))}
               </ul>
