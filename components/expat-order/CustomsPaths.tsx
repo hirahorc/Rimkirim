@@ -56,7 +56,9 @@ export function CustomsPaths({
                     <span className="flex h-5 shrink-0 items-center">
                       <FileText aria-hidden className="size-4 text-muted" />
                     </span>
-                    <DocName doc={k(d)} />
+                    {/* its note ("We'll send you a template") is small print,
+                        4px under the name: the flow's step, not the landing's */}
+                    <DocName doc={k(d)} helpClassName="mt-1 text-xs" />
                   </li>
                 ))}
               </ul>

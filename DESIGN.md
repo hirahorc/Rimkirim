@@ -715,7 +715,7 @@ only) then goes quiet; under reduced motion the flash becomes a still ring while
 the single exception: an application just confirmed is what the whole flow was for, so its
 arrival is three beats read as one moment, done inside a second. The success mark arrives
 (`booked-in`: scale 0.9 → 1 with a fade, 250ms), its check draws (`check-draw`, from 150ms), and
-the booking number's strip pops (`unlock-pop`, from 450ms). Only on arriving from Confirm
+the booking number pops (`unlock-pop`, from 450ms). Only on arriving from Confirm
 application, never on a reload or a link back; the summary's rows are there to be read, and
 never move. Under reduced motion all of it simply stands.
 
@@ -1853,10 +1853,21 @@ the action is paper with an Ink line (`QUIET`), since a wash fill here is a fiel
   in hand is framed in Ink (2px, as a chosen answer is) and marked "Selected" beside its
   carrier, with no button; every other card carries "Select this rate", and picking one closes
   the dialog.
-- **The Booking Summary:** a paper card with the received head (the done mark, who the
-  summary went to) over the booking number, a figure on a wash strip with its copy button, then
-  the summary as label-and-value rows between hairlines. What happens next, the other answers
-  and the documents sit beside it.
+- **The Booking Summary:** laid out in the order the customer needs it. First the received head
+  (the done mark, who the summary went to) with the booking number, the page's one figure: 24px
+  on the card's own paper with its copy button beside it, never on a wash strip, which in the
+  flow is a field's. From lg it stands at the head's right, and the head runs across the page.
+  Then What happens next: the steps, the pickup date set in ink inside its step, when the
+  invoice comes, and the documents folded under them. Then "Your booking", the record, as
+  label-and-value rows between hairlines (the label 12px muted, so it never reads as a line of
+  the value; the estimate 16px, below the number's 24), with the other answers folded at its
+  foot. Then a way to ask, and the way back. On a phone that's one column, so what happens next
+  is a screen up rather than after the whole record. From lg the record takes the wide column,
+  where its rows want the width, and What happens next stands beside it (22rem), as the
+  Selected Service did on the plan. The record spans the last two rows and the last row is
+  `1fr`, so the way to ask sits right under the steps however long the record runs. The page
+  is set in a cut of the flow's system: four sizes (24, 16, 14, 12), six steps of space (4, 8,
+  12, 16, 24, 48), and paper, wash, ink and muted; no lime, as there's nothing left to act on.
 - **The customs block in the flow** reads the landing's own Customs copy, folded: each path's
   name and the same two facts, as equals, ruled one from the next, the same for every customer.
   It never reflects their answers (docs/adr/0002).

@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { ArrowLeft, BadgePercent, MessageCircle, PackageOpen } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { CollapseHeight } from "@/components/ui/disclosure";
@@ -11,29 +11,38 @@ import { ORDER_REVIEW_NOTES } from "@/lib/data/expat-order-notes";
 import { waLink } from "@/lib/contact";
 import { useExpatOrderHydrated, useExpatOrderStore } from "@/lib/store/useExpatOrderStore";
 import { useT } from "@/lib/i18n/LanguageProvider";
-import { cn } from "@/lib/utils/cn";
 import { bookingFacts } from "./booking-facts";
 import { BookingHead } from "./BookingHead";
 import { CustomsPaths } from "./CustomsPaths";
 import { FlowLoading } from "./FlowLoading";
-import { Chip, Fold, TYPE } from "./kit";
+import { Fold, TYPE } from "./kit";
 import { clearJustBooked, justBooked } from "./visit";
 
 /** how many packages the summary lists before it folds the rest */
 const PACKAGES_SHOWN = 5;
 
-/** one row of the summary: its label on the left, what it holds beside it,
- *  a hairline between rows (the app's line-item reading) */
+/**
+ * The page is set in a cut of the flow's system (kit.tsx), and nothing else:
+ *   Type   24/32 the head's two (the title, the booking number), 16/24 a
+ *          card's heading and the estimate, 14/20 what's read (500 for the
+ *          line that leads), 12/16 a label, small print, a step's number
+ *   Space  4 8 12 16 24 48
+ *   Colour paper, wash, ink, muted. No lime: there's nothing left to act on.
+ */
+
+/** one row of the record: its label over what it holds on a phone, beside it
+ *  from sm, on one baseline. The label is small and muted, so it never reads
+ *  as a line of the value */
 function Row({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <div className="grid grid-cols-1 gap-1 border-t border-border py-4 sm:grid-cols-[9rem_minmax(0,1fr)] sm:gap-6">
-      <dt className="text-sm text-muted">{label}</dt>
+    <div className="grid grid-cols-1 gap-1 border-t border-border py-4 sm:grid-cols-[8rem_minmax(0,1fr)] sm:items-baseline sm:gap-6">
+      <dt className="text-xs text-muted">{label}</dt>
       <dd className="text-sm">{children}</dd>
     </div>
   );
 }
 
-/** one package in the summary: what it is, its measures, what's inside */
+/** one package in the record: what it is, its measures, what's inside */
 function PackageLine({ pk }: { pk: { title: string; measures: string; items: { name: string; quantity: number }[] } }) {
   return (
     <li>
@@ -45,11 +54,16 @@ function PackageLine({ pk }: { pk: { title: string; measures: string; items: { n
 }
 
 /**
- * The Booking Summary, on the flow's field like the steps before it: a paper
- * card with the received head and the booking number, then the summary as
- * rows (route, shipping, what's shipping, the packages, pickup, contact). Beside it, what
- * happens next, the other answers and the documents each Customs Path needs,
- * folded, and a way to ask. The Customs Category never shows.
+ * The Booking Summary, on the flow's field like the steps before it, in the
+ * order the customer needs it: the received head with the booking number,
+ * then what happens next, then the record of what they booked, then a way to
+ * ask. On a phone that's one column, so what happens next is a screen up, not
+ * after the whole record. From lg the head runs across, the record takes the
+ * wide column (its rows want the width) and what happens next stands beside
+ * it, as the Selected Service did on the plan, with the way to ask under it.
+ * Each fold sits in the card it belongs to: the documents under the steps
+ * that ask for them, the other answers at the foot of the record. The
+ * Customs Category never shows.
  */
 export function BookingView({ number }: { number: string }) {
   const t = useT();
@@ -78,21 +92,68 @@ export function BookingView({ number }: { number: string }) {
   }
 
   const f = bookingFacts(booking, t);
+  // the pickup date is the one day the customer prepares for: inside its
+  // step's sentence it's set in ink, so it isn't lost in the line
+  const dated = (body: string) => {
+    const at = f.pickup ? body.indexOf(f.pickup) : -1;
+    if (at < 0) return body;
+    return (
+      <>
+        {body.slice(0, at)}
+        <span className="font-medium text-foreground">{f.pickup}</span>
+        {body.slice(at + f.pickup.length)}
+      </>
+    );
+  };
 
   return (
-    <div data-field data-flow className="mx-auto max-w-5xl px-4 pb-12 pt-6 sm:px-6 sm:pt-8">
+    <div data-field data-flow className="mx-auto max-w-5xl px-4 pb-12 pt-6 sm:px-6">
       <ReviewNote note={ORDER_REVIEW_NOTES.booking} className="mb-6" />
 
       {/* what the customer typed is shown as typed, and some of it can't
           wrap by itself (an email, a long word in an address): it may break
-          anywhere, and the column is stated (minmax(0, 1fr)) so nothing
-          unbreakable can widen the summary past the screen */}
-      <div className="grid grid-cols-1 gap-4 [overflow-wrap:anywhere] lg:grid-cols-[minmax(0,1fr)_20rem] lg:items-start lg:gap-12">
-        <Card className="min-w-0 p-4 sm:p-6">
-          <article aria-labelledby="booking-heading">
-            <BookingHead number={f.number} email={f.contact.email} headingId="booking-heading" fresh={fresh} />
+          anywhere, and the columns are stated (minmax(0, 1fr)) so nothing
+          unbreakable can widen the page past the screen. From lg the record
+          spans the last two rows, and the last row is the flexible one, so
+          the way to ask sits right under what happens next however long the
+          record runs */}
+      <div className="grid grid-cols-1 gap-4 [overflow-wrap:anywhere] lg:grid-cols-[minmax(0,1fr)_22rem] lg:grid-rows-[auto_auto_1fr] lg:items-start lg:gap-x-12 lg:gap-y-6">
+        <Card className="min-w-0 p-4 sm:p-6 lg:col-span-2">
+          <BookingHead number={f.number} email={f.contact.email} headingId="booking-heading" fresh={fresh} />
+        </Card>
 
-            <dl className="mt-6">
+        <Card className="min-w-0 px-4 pt-4 sm:px-6 sm:pt-6 lg:col-start-2 lg:row-start-2">
+          <section aria-labelledby="next-heading">
+            <h2 id="next-heading" className={TYPE.subhead}>
+              {bk("nextTitle")}
+            </h2>
+            <ol className="mt-4 grid grid-cols-1 gap-4">
+              {f.next.map((n, i) => (
+                <li key={n.title} className="flex gap-3">
+                  {/* as tall as its title's line, so the two sit level;
+                      wash, as a part still ahead is on the plan */}
+                  <span className="grid size-5 shrink-0 place-items-center rounded-full bg-surface-2 text-xs font-medium tabular-nums">
+                    {i + 1}
+                  </span>
+                  <div className="min-w-0">
+                    <h3 className="text-sm font-medium">{n.title}</h3>
+                    <p className="mt-1 text-pretty text-sm text-muted">{dated(n.body)}</p>
+                  </div>
+                </li>
+              ))}
+            </ol>
+            {/* not a step: when the invoice comes, under the steps and apart from the pickup */}
+            <p className="mt-4 border-t border-border py-4 text-pretty text-sm text-muted">{f.invoice}</p>
+            <CustomsPaths id="documents" title={t("expatOrder.customs.docsTitle")} edges="top" />
+          </section>
+        </Card>
+
+        <Card className="min-w-0 px-4 pt-4 sm:px-6 sm:pt-6 lg:col-start-1 lg:row-span-2 lg:row-start-2">
+          <section aria-labelledby="record-heading">
+            <h2 id="record-heading" className={TYPE.subhead}>
+              {bk("record")}
+            </h2>
+            <dl className="mt-4">
               <Row label={bk("route")}>
                 <p className="font-medium">{f.from.country}</p>
                 <p className="text-muted">{f.from.address}</p>
@@ -102,18 +163,14 @@ export function BookingView({ number }: { number: string }) {
                 {f.to.detail && <p className="text-muted">{f.to.detail}</p>}
               </Row>
               <Row label={bk("shipping")}>
-                <p className="flex flex-wrap items-center gap-2 font-medium">
-                  {f.shipping.service}
-                  {f.shipping.special && (
-                    <Chip>
-                      <BadgePercent aria-hidden /> {t("expatOrder.rates.special")}
-                    </Chip>
-                  )}
-                </p>
+                <p className="font-medium">{f.shipping.service}</p>
                 <p className="text-muted">
-                  {f.shipping.transit} · {f.shipping.weight}
+                  {[f.shipping.special && t("expatOrder.rates.special"), f.shipping.transit, f.shipping.weight]
+                    .filter(Boolean)
+                    .join(" · ")}
                 </p>
-                <p className={cn(TYPE.figure, "mt-2")}>{f.shipping.estimate}</p>
+                {/* an estimate, not the figure to keep: the booking number is */}
+                <p className="mt-2 font-mono text-base font-semibold tabular-nums">{f.shipping.estimate}</p>
                 <p className="mt-1 text-xs text-muted">{t("expatOrder.service.note")}</p>
               </Row>
               <Row label={bk("items")}>
@@ -124,12 +181,7 @@ export function BookingView({ number }: { number: string }) {
                     </li>
                   ))}
                 </ul>
-                <p className="mt-2 flex gap-2 text-muted">
-                  <span className="flex h-5 shrink-0 items-center">
-                    <PackageOpen aria-hidden className="size-4" />
-                  </span>
-                  {f.packReminder}
-                </p>
+                <p className="mt-1 text-xs text-muted">{f.packReminder}</p>
               </Row>
               {f.packing && (
                 <Row label={bk("packing")}>
@@ -174,49 +226,20 @@ export function BookingView({ number }: { number: string }) {
                 <p className="tabular-nums text-muted">{f.contact.phone}</p>
               </Row>
             </dl>
-          </article>
-        </Card>
-
-        <div className="grid grid-cols-1 gap-4">
-          <Card className="p-4 sm:p-6">
-            <section aria-labelledby="next-heading">
-              <h2 id="next-heading" className={TYPE.subhead}>
-                {bk("nextTitle")}
-              </h2>
-              <ol className="mt-4 grid grid-cols-1 gap-4">
-                {f.next.map((n, i) => (
-                  <li key={n.title} className="flex gap-3">
-                    {/* as tall as its title's line, so the two sit level */}
-                    <span className="grid size-5 shrink-0 place-items-center rounded-full bg-surface-2 text-xs font-medium tabular-nums">
-                      {i + 1}
-                    </span>
-                    <div>
-                      <h3 className="text-sm font-medium">{n.title}</h3>
-                      <p className="mt-1 text-sm text-muted">{n.body}</p>
-                    </div>
-                  </li>
-                ))}
-              </ol>
-              {/* not a step: when the invoice comes, under the steps and apart from the pickup */}
-              <p className="mt-4 border-t border-border pt-4 text-sm text-muted">{f.invoice}</p>
-            </section>
-          </Card>
-
-          {/* two folded rows, one list: the answers, then the documents */}
-          <Card className="px-4 sm:px-6">
-            <Fold id="your-answers" title={bk("answers")}>
+            <Fold id="your-answers" title={bk("answers")} className="border-t border-border">
               <dl className="grid grid-cols-1 gap-2 text-sm">
                 {f.answers.map(([k, v]) => (
-                  <div key={k} className="grid grid-cols-[8rem_minmax(0,1fr)] gap-3">
-                    <dt className="text-muted">{k}</dt>
+                  <div key={k} className="grid grid-cols-1 gap-1 sm:grid-cols-[8rem_minmax(0,1fr)] sm:items-baseline sm:gap-6">
+                    <dt className="text-xs text-muted">{k}</dt>
                     <dd className="font-medium">{v}</dd>
                   </div>
                 ))}
               </dl>
             </Fold>
-            <CustomsPaths id="documents" title={t("expatOrder.customs.docsTitle")} edges="top" />
-          </Card>
+          </section>
+        </Card>
 
+        <div className="grid grid-cols-1 justify-items-start gap-4 lg:col-start-2 lg:row-start-3">
           <p className="text-sm text-muted">
             {bk("help")}{" "}
             <a
@@ -225,14 +248,16 @@ export function BookingView({ number }: { number: string }) {
               rel="noreferrer"
               className="link-mark tap-row relative"
             >
-              <MessageCircle aria-hidden className="inline size-4 align-text-bottom" /> {bk("helpCta")}
+              {bk("helpCta")}
             </a>
           </p>
-          <Button asChild variant="ghost" className="justify-self-start">
-            <Link href="/expat-relocation">
-              <ArrowLeft /> {bk("home")}
-            </Link>
-          </Button>
+          {/* a link as the help's is, so its arrow stands on the line the
+              help starts on (a ghost button's padding set it in) and its
+              focus ring stays inside the gutter on a phone */}
+          <Link href="/expat-relocation" className="link-mark tap-row relative inline-flex items-center gap-2 text-sm">
+            <ArrowLeft aria-hidden className="size-4 shrink-0" />
+            {bk("home")}
+          </Link>
         </div>
       </div>
     </div>

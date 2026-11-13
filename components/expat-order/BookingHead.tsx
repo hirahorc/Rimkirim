@@ -9,13 +9,15 @@ import { TYPE } from "./kit";
 /**
  * The top of the Booking Summary: that it's received, with the done mark
  * (Ink, a paper check, as a finished part of the plan wears), who the
- * summary went to, and the booking number as the one figure to keep, on its
- * own wash strip with the copy button. The landing's
- * closing ticket shows this very head in its last picture, `compact` and
- * without the copy button. `fresh` is the moment the application was
- * confirmed, said in three beats, that once: the success mark arrives, its
- * check draws itself, then the booking number's strip pops. The rest of the
- * summary is there to be read, and stands.
+ * summary went to, and the booking number as the one figure to keep, on the
+ * card's own paper with the copy button beside it (a wash strip in this flow
+ * is a field's, and the number isn't one to type in). From lg the number
+ * stands at the right of the head; under that, below a hairline. The
+ * landing's closing ticket shows this very head in its last picture,
+ * `compact` and without the copy button. `fresh` is the moment the
+ * application was confirmed, said in three beats, that once: the success mark
+ * arrives, its check draws itself, then the booking number pops. The rest of
+ * the summary is there to be read, and stands.
  */
 export function BookingHead({
   number,
@@ -34,7 +36,12 @@ export function BookingHead({
   const t = useT();
   const bk = (k: string) => t(`expatOrder.booking.${k}`);
   return (
-    <>
+    <div
+      className={cn(
+        "grid grid-cols-1",
+        compact ? "gap-3" : "gap-4 sm:gap-6 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end lg:gap-12",
+      )}
+    >
       <div className="flex gap-3">
         {/* as tall as the title's line, so the two sit level */}
         <span
@@ -73,19 +80,19 @@ export function BookingHead({
       </div>
       <div
         className={cn(
-          "flex items-center justify-between gap-3 rounded-md bg-surface-2",
-          compact ? "mt-3 px-3 py-2" : "mt-6 px-4 py-3",
+          "min-w-0 border-t border-border",
+          compact ? "pt-3" : "pt-4 sm:pt-6 lg:border-t-0 lg:pt-0",
           fresh && "unlock-pop",
         )}
         // the third beat: after the check has started to draw
         style={fresh ? { animationDelay: "450ms" } : undefined}
       >
-        <div className="min-w-0">
-          <p className="text-xs text-muted">{bk("number")}</p>
+        <p className="text-xs text-muted">{bk("number")}</p>
+        <div className="flex items-center gap-2">
           <p className={compact ? "font-mono text-base font-semibold tabular-nums" : TYPE.figure}>{number}</p>
+          {!compact && <CopyButton value={number} />}
         </div>
-        {!compact && <CopyButton value={number} />}
       </div>
-    </>
+    </div>
   );
 }

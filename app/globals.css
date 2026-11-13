@@ -825,7 +825,7 @@ body:has(main > [data-flow]) [data-sonner-toaster][data-sonner-theme] {
 }
 
 /* The Booking Summary's success mark arriving, the first of its three beats
-   (then its check draws, then the booking number's strip pops: check-draw,
+   (then its check draws, then the booking number pops: check-draw,
    unlock-pop). Only on arriving from Confirm application. */
 @keyframes booked-in {
   from {
