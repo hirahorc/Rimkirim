@@ -210,38 +210,67 @@ export function ExpatCustoms() {
           {t("expat.customs.extraDocs")}
         </p>
 
-        {/* the personal shipment's rates: what's inside, then its duty as
-            the one big number on the row, then the tax on top. From lg the
-            words take the left third and the table the rest, so its three
-            columns sit close enough to read across. A phone has no room for
-            a third column (its cells ran to three lines), so there the tax
-            sits under what it's on, named, and the duty stands at the
-            row's right. Under them, as small print, the rule over USD 1,500
-            and that the packing list review flags what's likely taxed; the
-            card above already says customs sets the figure and the NPWP's
-            part */}
+        {/* the personal shipment's rates: its title, the flat rates up to
+            USD 1,500, and under a line what applies over it and that every
+            item is listed with its value; then what's inside, its duty as
+            the one big number on the row, the tax on top. From xl the words
+            take the left third and the table the rest, so its three columns
+            sit close enough to read across (from lg, where two thirds is
+            too narrow for the tax, the words stand over the table). Below
+            lg a list, as the comparison does on a phone: a name and its
+            duty share the first line, and what's under the name has the
+            whole width. The column names are the chapter's ink; a rate sits
+            on its name's baseline (on its own 28px line it sat 6px under) */}
         <div
-          className="jr-reveal mt-6 grid gap-y-4 rounded-lg border border-border-strong bg-background px-4 py-6 sm:px-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,2fr)] lg:gap-x-12"
+          className="jr-reveal mt-6 grid gap-y-6 rounded-lg border border-border-strong bg-background px-4 py-6 sm:px-6 xl:grid-cols-[minmax(0,1fr)_minmax(0,2fr)] xl:gap-x-12"
           style={order(4)}
         >
           <div>
-            <h3 className="font-display text-xl font-semibold tracking-tight">{r("title")}</h3>
-            <p className="mt-2 text-sm leading-relaxed text-muted">{r("subtitle")}</p>
-            <div className="mt-4 hidden space-y-2 border-t border-border pt-4 text-xs text-muted lg:block">
-              <p>{r("foot")}</p>
-              <p>{r("packing")}</p>
-            </div>
+            <h3 className="text-balance font-display text-xl font-semibold tracking-tight">{r("title")}</h3>
+            {/* a currency stays on the line of its amount */}
+            <p className="mt-2 text-sm leading-relaxed text-muted">{r("subtitle").replaceAll("USD ", "USD\u00a0")}</p>
+            <p className="mt-4 border-t border-border pt-4 text-sm leading-relaxed text-muted">
+              {r("foot").replaceAll("USD ", "USD\u00a0")}
+            </p>
+            <p className="mt-3 text-sm leading-relaxed text-muted">{r("packing")}</p>
           </div>
-          <table className="w-full border-collapse text-left text-sm">
+
+          <div className="lg:hidden">
+            {/* the columns' names, for the eye: each rate says its own to a
+                screen reader */}
+            <p aria-hidden className="flex justify-between gap-4 border-b border-border pb-3 font-display text-sm font-medium text-tone-ink">
+              <span>{r("what")}</span>
+              <span>{r("duty")}</span>
+            </p>
+            <ul className="divide-y divide-border text-sm">
+              {RATES.map((row) => (
+                <li key={row} className="py-3">
+                  <p className="flex items-baseline justify-between gap-4">
+                    <span className="font-medium">{r(`${row}.label`)}</span>
+                    <span className="shrink-0 font-display text-xl leading-5 font-semibold tracking-tight tabular-nums">
+                      <span className="sr-only">{r("duty")}: </span>
+                      {r(`${row}.duty`)}
+                    </span>
+                  </p>
+                  {row === "general" && <p className="mt-0.5 text-muted">{r("general.hint")}</p>}
+                  <p className="mt-1 text-muted">
+                    {r("tax")}: {r(`${row}.tax`)}
+                  </p>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <table className="hidden w-full border-collapse text-left text-sm lg:table">
             <thead>
-              <tr className="border-b border-border text-xs text-muted">
+              <tr className="border-b border-border font-display text-sm text-tone-ink">
                 <th scope="col" className="pb-3 pr-4 font-medium">
                   {r("what")}
                 </th>
-                <th scope="col" className="pb-3 text-right font-medium sm:pr-4 sm:text-left">
+                <th scope="col" className="whitespace-nowrap pb-3 pr-4 font-medium">
                   {r("duty")}
                 </th>
-                <th scope="col" className="hidden pb-3 font-medium sm:table-cell">
+                <th scope="col" className="pb-3 font-medium">
                   {r("tax")}
                 </th>
               </tr>
@@ -252,24 +281,19 @@ export function ExpatCustoms() {
                   <th scope="row" className="py-3 pr-4 align-top font-medium">
                     {r(`${row}.label`)}
                     {row === "general" && (
-                      <span className="mt-1 block text-xs font-normal text-muted">{r("general.hint")}</span>
+                      <span className="mt-0.5 block font-normal text-muted">{r("general.hint")}</span>
                     )}
-                    <span className="mt-1 block text-xs font-normal text-muted sm:hidden">
-                      {r("tax")}: {r(`${row}.tax`)}
-                    </span>
                   </th>
-                  <td className="whitespace-nowrap py-3 text-right align-top font-display text-xl font-semibold tracking-tight tabular-nums sm:pr-4 sm:text-left">
+                  <td className="whitespace-nowrap py-3 pr-4 align-top font-display text-xl leading-5 font-semibold tracking-tight tabular-nums">
                     {r(`${row}.duty`)}
                   </td>
-                  <td className="hidden py-3 align-top text-muted sm:table-cell">{r(`${row}.tax`)}</td>
+                  {/* a tax that wraps breaks into two even lines, never
+                      leaving "(PPh)" alone */}
+                  <td className="text-balance py-3 align-top text-muted">{r(`${row}.tax`)}</td>
                 </tr>
               ))}
             </tbody>
           </table>
-          <div className="space-y-2 border-t border-border pt-4 text-xs text-muted lg:hidden">
-            <p>{r("foot")}</p>
-            <p>{r("packing")}</p>
-          </div>
         </div>
 
         {/* the message arrives already asking the question, so the team

@@ -284,10 +284,24 @@ the explanation with its small print 8px under it; the documents, last, under th
 duty and tax is the answer to the section's heading, so it is the one fact set at 20px, the
 size of the card's name. From lg the three share their rows (subgrid), so the answers, the
 explanations and the document lists each start on one line across the cards; a shorter list
-ends its card early, at the foot. On a phone the document list folds behind its label. In the
-rates card the duty is the one 20px figure on a row; its header and its two notes are small
-print in Muted. On a phone the table has two columns: the tax sits under what it's on, named
-("Tax: 11% VAT"), and the duty stands at the row's right.
+ends its card early, at the foot. On a phone the document list folds behind its label.
+**The rates card (2026-11-13).** "What you'll pay on a personal shipment" keeps the layout it had
+before the day's audits, which reads better: from `xl` its words take the left third (the title,
+the flat rates up to USD 1,500, then under a hairline what applies over it and that every item
+is listed with its value, all 14px Muted on a loose line) and the table the rest, its column
+names in the chapter's ink (Space Grotesk 14, medium), the duty as the one 20px figure on a
+row, the tax in Muted. Tried the same day and taken back: one column, the rules over a
+full-width table, a 320px name column and a 12px descriptor. What stayed from those passes:
+a rate sits on its name's baseline (on its own 28px line it sat 6px under it); a tax that wraps
+(the longer copy, "11% VAT (PPN) + 5% income tax (PPh)", does in two thirds of the card) breaks
+into two even lines, never leaving "(PPh)" alone; the title is balanced; a currency keeps to its
+amount's line ("USD 1,500"). From `lg` to `xl` two thirds is too narrow for the tax, so the
+words stand over the table. Below `lg` the words come first and then a list, as the comparison
+does on a phone: a name and its duty share the first line, the tax under the name ("Tax: 11%
+VAT (PPN), no income tax (PPh)") has the card's whole width, and the column names stand over it
+for the eye only, each rate naming its column to a screen reader. The card repeats on purpose
+what the Personal shipment card above it already says (customs sets the final duty and tax, and
+income tax can be higher without an NPWP): each one is read on its own, so neither is cut.
 Tried first and dropped: numbered eyebrows on a rule, a lime index tab, an ink tile, and a
 cover that opened each section.
 Two sections in the frame have a ground of their own, so the page isn't white all the way
@@ -1404,10 +1418,10 @@ in ink it stays neutral and lime stays the one colour in the action row.
   and tax answers, the explanations, the lists and the notes each start on one line. Each card
   carries its own rules as ops wrote them (the timing, what isn't covered, the NPWP), so nothing
   under the cards repeats them. Under them, one Dim Grey line for all three lists, that customs
-  may ask for more, then one more white plane for the only route with no exemption: what a
-  personal shipment pays, a real table (what's inside, its duty as the one number at the Title
-  role, the tax on top), its title and footnote in the left third from `lg`, then one WhatsApp
-  link.
+  may ask for more, then one more white plane for the only route with no exemption: what you'll
+  pay on a personal shipment, its words in the left third from `xl` and a real table beside them
+  (what's inside, its duty as the one number at the Title role, the tax on top; a list below
+  `lg`), then one WhatsApp link.
 - **The bento's things** (`ShipObjects`, on every item tile): the things people send drawn in the
   round, as the doorstep's door is (plain SVG, after a reference: a 3D render of the bento):
   every surface its own gradient lit from the top left, matte, a soft blurred shadow in the
