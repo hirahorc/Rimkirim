@@ -1058,15 +1058,27 @@ home hero's floating verdicts and the expat hero's departure board. Treat any ot
   quarter of the page from `xl`, two by two from `sm`, stacked on a phone, where each is only as
   tall as what it holds) and so each a short motion graphic and not a still: a picture that size
   holds one thing at a time, and what passes through it in turn is what a still would have needed
-  four times the room for. They work the sum on one example, a box light for its size and a
-  suitcase heavy for its size. 1: each piece worked on the same sheet, the suitcase (the scale
-  wins), then the box (its size does), its sides multiplied over 5000 and the higher weight
-  marked, each dropping its answer into the foot. 2: those two answers come down into their rows,
-  a line is drawn, and the total lands, the one big number. 3: Check Rate's own card with its
-  price as a filler line as long as the rate is high (`RateCard`, `figures={false}`: this page
-  names no price); the origin changes, then the service, and the line changes length each time;
-  then the weight meets it. 4: the two pieces against the three things that bring a surcharge, a
-  piece at a time, a quiet tick where one is met and a cross in the chapter's ink where it isn't.
+  four times the room for. They work the sum on one shipment of three pieces (2026-11-13): a box
+  light for its size (8.4 kg, 50 × 40 × 38 cm), the suitcase from ops' sheet (20.97 kg) and a box
+  of books (51.6 kg). Ops' rule is the sheet's `ROUNDUP(MAX(actual, volumetric), 0)`: each piece
+  is rounded up to the next whole kilo on its own, then the pieces are added. 1: one piece only,
+  the one measured, the box (its size counts, the case that surprises): what it weighs and
+  measures typed in, its sides multiplied over 5000, the two weights side by side and the higher
+  marked; then the foot takes 15.2 kg and rounds it up to 16 kg, not 15, so it reads as always
+  up. Two pieces on one sheet, each with its own answer, read as two answers to one question.
+  2: the three pieces come down a row at a time, each with the weight off its sheet and that
+  weight rounded up (15.2 → 16 kg, 20.97 → 21 kg, 51.6 → 52 kg); a line is drawn, and the total
+  lands, 89 kg, the one big number. No plus sign: rows over a rule are a sum already. 3: Check
+  Rate's own card with its price as a filler line as long as the rate is high (`RateCard`,
+  `figures={false}`: this page names no price); the origin changes, then the service, and the
+  line changes length each time; then the weight meets it. 4: the same three pieces as the
+  quotation lists them, under "Handling surcharge", checked a piece at a time since a surcharge
+  is per piece, each surcharge named with why (the Surcharge Information's FedEx table) and its
+  amount as the rate card's filler line, as long as it is high: the box needs none; the suitcase
+  brings one, for being a suitcase; the box of books brings two, over 25 kg (Overweight) and over
+  50 kg (Oversize, twice the amount), and the lower is struck through and goes quiet, since only
+  the highest one applies to a piece. Tried first and dropped: the pieces against three tests in
+  a tick-and-cross grid with a Yes or No under each, which read as a quiz and not as a bill.
   One thing takes another's place by fading in over it on the same lines, opaque, and the one
   under it goes once it's hidden (`.jr-pass`, `.jr-swap`): moved as well, two sheets with the same
   labels cross as a blur. A piece that only passes stands hidden wherever nothing plays, so what a
@@ -1114,7 +1126,7 @@ home hero's floating verdicts and the expat hero's departure board. Treat any ot
   already built.
   **Pricing's four are the one set with a control.** In a row they play as a relay: the cards come
   up together and wait, and each takes its turn as the one before lands the figure it hands over
-  (at 0, 3.25, 4.75 and 7.25s; about ten seconds in all). That is past five seconds of content
+  (at 0, 2.4, 4.3 and 6.8s; about ten seconds in all). That is past five seconds of content
   moving on its own, so the row has the journey's round control (pause, play, replay; WCAG
   2.2.2), and it holds off screen and in a hidden tab (`[data-hold]`). It is not a loop: one
   pass, then still. Two by two and stacked there is no run and no control: each plays as it

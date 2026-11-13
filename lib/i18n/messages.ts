@@ -658,14 +658,15 @@ const id = {
       // the sum, in the order it's done
       step1Title: "Cari chargeable weight tiap barang",
       step1Body:
-        "Yang lebih besar antara berat aktual dan berat volumetriknya: panjang × lebar × tinggi dalam cm, ÷ 5000. Kardus besar tapi ringan dihitung dari berat volumetriknya.",
+        "Yang lebih besar antara berat aktual dan berat volumetriknya (panjang × lebar × tinggi dalam cm, ÷ 5000), dibulatkan ke atas ke kilo utuh berikutnya. Kardus besar tapi ringan dihitung dari berat volumetriknya.",
       step2Title: "Jumlahkan semua barangmu",
-      step2Body: "Totalnya adalah chargeable weight kirimanmu.",
+      step2Body: "Jumlah berat yang sudah dibulatkan ke atas itulah chargeable weight kirimanmu.",
       step3Title: "Kalikan dengan tarif per kilo",
       step3Body: "Tarifnya tergantung dari mana kamu mengirim dan layanan yang kamu pilih. Cek tarif menampilkannya.",
       // not a step the customer does: the surcharge is ours to add, by rule
       step4Title: "Sebagian barang kena surcharge penanganan",
-      step4Body: "Hanya yang tertinggi yang berlaku untuk tiap barang, dan tercantum di quotation-mu.",
+      step4Body:
+        "Koper, kardus berbungkus plastik, dan barang yang berat atau besar butuh penanganan ekstra. Hanya surcharge tertinggi yang berlaku untuk tiap barang, dan tercantum di quotation-mu.",
       surchargeCta: "Baca detail surcharge",
       // the pictures' control (where they play as one run) and each picture's own replay
       play: "Putar contoh hitungan",
@@ -809,18 +810,19 @@ const id = {
     // assistive tech; the sections' own text carries the meaning)
     scenes: {
       pricing: {
-        box: "Kardus",
+        box1: "Kardus 1",
         suitcase: "Koper",
+        box2: "Kardus 2",
         actual: "Aktual",
         volumetric: "Volumetrik",
         chargeable: "Chargeable weight",
+        roundedUp: "{kg}, dibulatkan ke atas",
         rate: "× tarif per kilo",
-        maxWeight: "Maks. 25 kg",
-        maxSide: "Maks. 120 cm",
-        cardboard: "Kardus polos",
-        surcharge: "Surcharge",
-        yes: "Ya",
-        no: "Tidak",
+        surchargeHead: "Surcharge penanganan",
+        none: "Tidak ada",
+        bag: "Koper atau tas",
+        overweight: "Overweight, di atas 25 kg",
+        oversize: "Oversize, di atas 50 kg",
       },
       thread: {
         today: "Hari ini",
@@ -2934,13 +2936,14 @@ const en: Messages = {
       subtitle: "Chargeable weight × rate per kilo, plus any handling surcharge.",
       step1Title: "Find each piece's chargeable weight",
       step1Body:
-        "The higher of its actual weight and its volumetric weight: length × width × height in cm, ÷ 5000. A big, light box is charged on its volumetric weight.",
+        "The higher of its actual weight and its volumetric weight (length × width × height in cm, ÷ 5000), rounded up to the next whole kilo. A big, light box is charged on its volumetric weight.",
       step2Title: "Add your pieces together",
-      step2Body: "The total is your shipment's chargeable weight.",
+      step2Body: "The total of the rounded-up weights is your shipment's chargeable weight.",
       step3Title: "Multiply by the rate per kilo",
       step3Body: "The rate depends on where you're shipping from and the service you pick. Check your rate shows it.",
       step4Title: "Some pieces carry a handling surcharge",
-      step4Body: "Only the highest one applies to each piece, and it's listed in your quotation.",
+      step4Body:
+        "Suitcases, plastic-wrapped boxes, and heavy or large pieces need extra handling. Only the highest surcharge applies to each piece, and it's listed in your quotation.",
       surchargeCta: "Read the surcharge details",
       play: "Play the example",
       pause: "Pause the example",
@@ -3081,18 +3084,19 @@ const en: Messages = {
     },
     scenes: {
       pricing: {
-        box: "Box",
+        box1: "Box 1",
         suitcase: "Suitcase",
+        box2: "Box 2",
         actual: "Actual",
         volumetric: "Volumetric",
         chargeable: "Chargeable weight",
+        roundedUp: "{kg}, rounded up",
         rate: "× rate per kilo",
-        maxWeight: "Up to 25 kg",
-        maxSide: "Up to 120 cm",
-        cardboard: "Cardboard box",
-        surcharge: "Surcharge",
-        yes: "Yes",
-        no: "No",
+        surchargeHead: "Handling surcharge",
+        none: "None",
+        bag: "Suitcase or bag",
+        overweight: "Overweight, over 25 kg",
+        oversize: "Oversize, over 50 kg",
       },
       thread: {
         today: "Today",

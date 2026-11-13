@@ -17,15 +17,15 @@ import { revealOrder as order, useSectionReveal } from "./useSectionReveal";
 /** `frame`: the picture's shape where the steps are stacked, as tall as what
  *  it holds and no taller; side by side they share one */
 const STEPS = [
-  { key: "step1", Scene: ChargeableScene, frame: "aspect-[5/4]" },
-  { key: "step2", Scene: SumScene, frame: "aspect-[16/9]" },
+  { key: "step1", Scene: ChargeableScene, frame: "aspect-[4/3]" },
+  { key: "step2", Scene: SumScene, frame: "aspect-[3/2]" },
   { key: "step3", Scene: RateScene, frame: "aspect-[4/3]" },
-  { key: "step4", Scene: SurchargeScene, frame: "aspect-[3/2]" },
+  { key: "step4", Scene: SurchargeScene, frame: "aspect-[4/3]" },
 ] as const;
 
 /** when each picture's turn comes, ms into the relay: as the one before
  *  lands the figure it hands over (PricingScenes) */
-const TURN = [0, 3250, 4750, 7250];
+const TURN = [0, 2400, 4300, 6800];
 /** the four cards come up together, this far apart, and wait their turn */
 const ARRIVE_MS = 120;
 
@@ -39,8 +39,9 @@ type Mode = "idle" | "playing" | "paused" | "done";
  * affects the price (route, weight, dimension, surcharges), which left the
  * reader to work out how they combine; it is now the sum itself, said once
  * under the heading and then step by step in the order it's done: each
- * piece's chargeable weight, the pieces added up, times the rate per kilo,
- * plus a handling surcharge where a piece needs one. The words are the
+ * piece's chargeable weight, rounded up to the next whole kilo (ops' rule:
+ * a piece at a time, before they're added), the pieces added up, times the
+ * rate per kilo, plus a handling surcharge where a piece needs one. The words are the
  * carriers' and the main site's: actual, volumetric and chargeable weight.
  * No per-kilo rates and no surcharge amounts here: Check Rate, behind
  * "Check your rate", gives the rate, the Surcharge Information modal is one
