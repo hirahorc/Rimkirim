@@ -108,7 +108,7 @@ function PickupStrip({ className }: { className?: string }) {
         ref={list}
         tabIndex={0}
         aria-labelledby="pickups-heading"
-        className="scroll-strip relative -mx-2 flex snap-x snap-mandatory scroll-px-2 gap-3 overflow-x-auto px-2 pb-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-foreground/40"
+        className="scroll-strip relative -mx-2 flex snap-x snap-mandatory scroll-px-2 gap-3 overflow-x-auto px-2 pb-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-foreground/60"
       >
         {PHOTOS.map((p) => {
           const r = route(p);
@@ -134,7 +134,7 @@ function PickupStrip({ className }: { className?: string }) {
             onClick={() => goTo(i)}
             aria-label={t("expat.photos.position").replace("{n}", String(i + 1)).replace("{total}", String(N))}
             aria-current={i === active}
-            className="grid h-11 w-6 place-items-center rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/40"
+            className="grid h-11 w-6 place-items-center rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/60"
           >
             <span
               className={cn("size-1.5 rounded-full transition-colors", i === active ? "bg-foreground" : "bg-border-strong")}

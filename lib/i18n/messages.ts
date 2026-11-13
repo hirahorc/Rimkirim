@@ -393,7 +393,7 @@ const id = {
   },
   expat: {
     cta: "Cek tarifmu",
-    headerHome: "Expat Relocation, kembali ke atas",
+    headerHome: "Rimkirim Expat Relocation, kembali ke atas",
     footer: {
       tagline: "Kirim barang pribadimu ke Indonesia, untuk kamu yang relokasi ke sini.",
       contacts: "Kontak",
@@ -402,6 +402,8 @@ const id = {
     hero: {
       eyebrow: "Relokasi expat & WNA ke Indonesia",
       boardLabel: "Pintu ke pintu, lewat udara",
+      boardPause: "Jeda papan keberangkatan",
+      boardPlay: "Putar papan keberangkatan",
       title1: "Relokasi ke Indonesia?",
       title2: "Bawa barang-barangmu.",
       subtitle: "Kirim kardus, koper, dan barang pribadi ke Indonesia, dari pintu ke pintu lewat udara, dengan bantuan mengatur perjalanannya.",
@@ -2661,7 +2663,7 @@ const en: Messages = {
   },
   expat: {
     cta: "Check your rate",
-    headerHome: "Expat Relocation, back to top",
+    headerHome: "Rimkirim Expat Relocation, back to top",
     footer: {
       tagline: "Shipping personal belongings to Indonesia, for people relocating here.",
       contacts: "Contacts",
@@ -2670,6 +2672,8 @@ const en: Messages = {
     hero: {
       eyebrow: "Expat relocation to Indonesia",
       boardLabel: "Door to door, by air",
+      boardPause: "Pause the departure board",
+      boardPlay: "Play the departure board",
       title1: "Relocating to Indonesia?",
       title2: "Bring your belongings with you.",
       subtitle: "Ship boxes, luggage and personal belongings to Indonesia, door to door and by air, with help coordinating the journey.",

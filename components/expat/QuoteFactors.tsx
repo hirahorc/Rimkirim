@@ -11,6 +11,7 @@ import { SectionHead } from "./SectionHead";
 import { ReviewNote } from "./ReviewNote";
 import { SceneStage } from "./SceneStage";
 import { ChargeableScene, RateScene, SumScene, SurchargeScene } from "./PricingScenes";
+import { useMedia } from "./useMedia";
 import { revealOrder as order, useSectionReveal } from "./useSectionReveal";
 
 /** `frame`: the picture's shape where the steps are stacked, as tall as what
@@ -31,23 +32,6 @@ const ARRIVE_MS = 120;
 /** idle: not on screen yet · playing · paused: by the control · done:
  *  every picture that was playing has landed */
 type Mode = "idle" | "playing" | "paused" | "done";
-
-/** a media query, false until the page is live */
-function useMedia(query: string) {
-  const subscribe = React.useCallback(
-    (notify: () => void) => {
-      const mq = window.matchMedia(query);
-      mq.addEventListener("change", notify);
-      return () => mq.removeEventListener("change", notify);
-    },
-    [query],
-  );
-  return React.useSyncExternalStore(
-    subscribe,
-    () => window.matchMedia(query).matches,
-    () => false,
-  );
-}
 
 /**
  * Brief 05. People hesitate when a bulky piece is quoted high, so how the
@@ -157,7 +141,7 @@ export function QuoteFactors() {
               type="button"
               onClick={control}
               aria-label={t(`expat.pricing.${mode === "playing" ? "pause" : mode === "done" ? "replay" : "play"}`)}
-              className="tap-target relative grid size-10 shrink-0 place-items-center rounded-full bg-background text-foreground transition-colors hover:text-tone-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/40"
+              className="tap-target relative grid size-10 shrink-0 place-items-center rounded-full bg-background text-foreground transition-colors hover:text-tone-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/60"
             >
               {mode === "playing" ? (
                 <Pause className="size-3.5 fill-current" />
@@ -171,20 +155,30 @@ export function QuoteFactors() {
         </div>
 
         {/* the sum, a step a column, numbered because the order is the
-            point: each one's picture, then its words */}
+            point: each one's picture, then its words. In the row of four, a
+            step's picture, title and words are rows shared with the other
+            three (subgrid), so the titles and the words under them each
+            start on one line however each wraps; two by two the words
+            follow their own title, where a shared row left a blank line
+            under the shorter one */}
         <ol
           ref={railRef}
           data-relay
           data-paused={mode === "paused" || undefined}
           onAnimationEnd={landed}
-          className="mt-8 grid gap-x-6 gap-y-8 sm:grid-cols-2 xl:grid-cols-4"
+          className="mt-8 grid gap-x-6 gap-y-8 sm:mt-12 sm:grid-cols-2 xl:grid-cols-4"
         >
           {STEPS.map(({ key, Scene, frame }, i) => {
             const { n, alone } = plays[i];
             const inRelay = relay && !alone;
             return (
-              <li key={key} data-step={i} className="jr-reveal" style={order(1 + i)}>
-                <div className="relative max-w-[24rem]">
+              <li
+                key={key}
+                data-step={i}
+                className="jr-reveal max-w-[24rem] xl:row-span-3 xl:grid xl:grid-rows-subgrid xl:gap-y-0"
+                style={order(1 + i)}
+              >
+                <div className="relative">
                   <SceneStage
                     // a new run is a new stage: it builds again from nothing
                     key={`${inRelay ? "relay" : "alone"}-${n}`}
@@ -209,36 +203,39 @@ export function QuoteFactors() {
                     />
                   )}
                 </div>
-                <div className="mt-4 flex gap-3">
-                  <span className="mt-0.5 grid size-5 shrink-0 place-items-center rounded-full border border-border-strong text-xs font-medium tabular-nums text-muted">
-                    {i + 1}
-                  </span>
-                  <div className="min-w-0">
-                    <h3 className="text-balance font-medium">{t(`expat.pricing.${key}Title`)}</h3>
-                    <p className="mt-1 text-sm text-muted">{t(`expat.pricing.${key}Body`)}</p>
-                    {/* the full breakdown, the same modal the main site's
-                        calculator opens: per-carrier handling surcharges,
-                        then the other logistic costs */}
-                    {key === "step4" && (
-                      <SurchargeInfoDialog>
-                        <button type="button" className="link-mark tap-target relative mt-2 block w-fit text-left text-sm">
-                          {t("expat.pricing.surchargeCta")}
-                        </button>
-                      </SurchargeInfoDialog>
-                    )}
-                  </div>
+                {/* the number leads the title at its size, in the chapter's
+                    ink, so the words keep the picture's left edge */}
+                <h3 className="mt-4 text-balance font-display text-xl font-semibold tracking-tight">
+                  <span className="mr-2 tabular-nums text-tone-ink">{i + 1}</span>
+                  {t(`expat.pricing.${key}Title`)}
+                </h3>
+                <div className="mt-1">
+                  <p className="text-sm text-muted">{t(`expat.pricing.${key}Body`)}</p>
+                  {/* the full breakdown, the same modal the main site's
+                      calculator opens: per-carrier handling surcharges,
+                      then the other logistic costs */}
+                  {key === "step4" && (
+                    <SurchargeInfoDialog>
+                      <button type="button" className="link-mark tap-target relative mt-2 block w-fit text-left text-sm">
+                        {t("expat.pricing.surchargeCta")}
+                      </button>
+                    </SurchargeInfoDialog>
+                  )}
                 </div>
               </li>
             );
           })}
         </ol>
 
-        <p className="jr-reveal mt-8 max-w-lg font-medium" style={order(1 + STEPS.length)}>
+        {/* the way in, a step further from the steps than they are from
+            each other, so it never reads as a fifth: what checking gives
+            and when the price is final, in plain body type, then the button */}
+        <p className="jr-reveal mt-12 max-w-xl" style={order(1 + STEPS.length)}>
           {t("expat.pricing.promise")}
         </p>
         {/* the button rises inside a wrapper, so the reveal never holds
             the button's own press */}
-        <div className="jr-reveal mt-4 sm:w-fit" style={order(2 + STEPS.length)}>
+        <div className="jr-reveal mt-6 sm:w-fit" style={order(2 + STEPS.length)}>
           <Button asChild size="lg" className="w-full sm:w-auto">
             <a href={EXPAT_QUOTE_URL}>
               {t("expat.cta")} <ArrowRight />

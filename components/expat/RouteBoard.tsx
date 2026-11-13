@@ -1,9 +1,10 @@
 "use client";
 
 import * as React from "react";
-import { Plane } from "lucide-react";
+import { Pause, Plane, Play } from "lucide-react";
 import { Flag } from "@/components/shared/Flag";
 import { useT } from "@/lib/i18n/LanguageProvider";
+import { cn } from "@/lib/utils/cn";
 
 /** where expats ship from, as the board cycles them; all fly to Indonesia */
 const ORIGINS = [
@@ -63,14 +64,19 @@ function Tiles({ code, delayMs }: { code: string; delayMs: number }) {
  *
  * The page's one loop (DESIGN.md, Motion: "The departure board"): it runs
  * only while the board is on screen and the tab is visible, and not at all
- * under reduced motion, where the first route simply stands. The tiles are
- * decoration for sighted readers; assistive tech gets one plain sentence.
+ * under reduced motion, where the first route simply stands. It moves on its
+ * own for as long as it's on screen, so a small control at the end of the
+ * row stops it and starts it again (WCAG 2.2.2); under reduced motion there
+ * is nothing to stop, so there is no control. The tiles are decoration for
+ * sighted readers; assistive tech gets one plain sentence.
  */
 export function RouteBoard({ className, style }: { className?: string; style?: React.CSSProperties }) {
   const t = useT();
   const ref = React.useRef<HTMLDivElement>(null);
   const [turn, setTurn] = React.useState(0);
   const [onScreen, setOnScreen] = React.useState(false);
+  /** stopped by its control */
+  const [paused, setPaused] = React.useState(false);
   const reduce = React.useSyncExternalStore(subscribeRM, () => window.matchMedia(RM).matches, () => true);
   const pageVisible = React.useSyncExternalStore(
     subscribeVisibility,
@@ -86,7 +92,7 @@ export function RouteBoard({ className, style }: { className?: string; style?: R
     return () => io.disconnect();
   }, []);
 
-  const running = onScreen && pageVisible && !reduce;
+  const running = onScreen && pageVisible && !reduce && !paused;
   React.useEffect(() => {
     if (!running) return;
     const id = window.setTimeout(() => setTurn((n) => n + 1), HOLD_MS);
@@ -102,7 +108,7 @@ export function RouteBoard({ className, style }: { className?: string; style?: R
   const flightDelay = entrance ? destDelay + 3 * FLIP_STEP_MS + 120 : 3 * FLIP_STEP_MS + 120;
 
   return (
-    <div ref={ref} className={className} style={style}>
+    <div ref={ref} className={cn("flex items-center", className)} style={style}>
       <p className="sr-only">{t("expat.hero.eyebrow")}</p>
       <div aria-hidden className="route-board flex items-center">
         {/* all origin flags are stacked and crossfade, so a swap never
@@ -138,6 +144,16 @@ export function RouteBoard({ className, style }: { className?: string; style?: R
         <Tiles key="dest" code={DEST.iso3} delayMs={destDelay} />
         <Flag code={DEST.iso2} size={15} className="ml-2" />
       </div>
+      {!reduce && (
+        <button
+          type="button"
+          onClick={() => setPaused((p) => !p)}
+          aria-label={t(paused ? "expat.hero.boardPlay" : "expat.hero.boardPause")}
+          className="tap-target relative ml-3 grid size-6 shrink-0 place-items-center rounded-full text-muted transition-colors hover:bg-surface-2 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/60"
+        >
+          {paused ? <Play aria-hidden className="ml-px size-3 fill-current" /> : <Pause aria-hidden className="size-3 fill-current" />}
+        </button>
+      )}
     </div>
   );
 }

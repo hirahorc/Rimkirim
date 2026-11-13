@@ -6,6 +6,7 @@ import { CollapseHeight } from "@/components/ui/disclosure";
 import { REVIEW_NOTES } from "@/lib/data/expat";
 import { waLink } from "@/lib/contact";
 import { useT } from "@/lib/i18n/LanguageProvider";
+import { cn } from "@/lib/utils/cn";
 import { SectionHead } from "./SectionHead";
 import { ReviewNote } from "./ReviewNote";
 import { revealOrder as order, useSectionReveal } from "./useSectionReveal";
@@ -32,15 +33,30 @@ const RATES = ["general", "books", "regulated", "apparel"] as const;
  * answered on the page in plain words rather than in a guide. Three cards
  * side by side, built the same way so none reads as the better one: the
  * path's name, then two facts under the same two labels (who it's for, and
- * its duty and tax), the explanation, the documents it needs, and a note
- * pinned to the foot so the three feet share a line; under all three, that
- * customs may ask for more. Each card carries its own rules, as ops wrote
+ * its duty and tax, which is the answer to the heading and so set as large
+ * as the name), the explanation with its small print under it, and last the
+ * documents it needs, so a shorter list ends a card early and leaves no gap
+ * inside it; under all three, that customs may ask for more. Each card carries its own rules, as ops wrote
  * them (the timing, what isn't covered, the NPWP), so nothing under the
  * cards says them again. The one route with no exemption gets its rates under them,
  * one number big on each row, since that's the one a visitor has to work
  * out, then a way to ask. On the desk in the
  * magenta chapter, between How it works and the FAQ on the desk. Every
  * rule here is a draft until ops confirms it (REVIEW_NOTES.customs).
+ *
+ * The four cards are set in three type sizes and five steps of space, and
+ * nothing else (DESIGN.md, The customs cards):
+ *   20/28 display 600  a card's title and its answer (a path's duty and
+ *                      tax, a rate)
+ *   14/20              what's read, a paragraph on a looser line; medium
+ *                      for a value and a row's name
+ *   12/16              a label (medium), a count, a help line, small print
+ *   4   a label and its value, a name and the line under it
+ *   8   one list item and the next, a paragraph and its small print
+ *   12  a table row's top and bottom, a label and the list under it
+ *   16  one fact and the next, a rule and what's under it, a card's sides
+ *       on a phone, one card and the next
+ *   24  one group and the next, a card's padding
  */
 /** a path's name as its title, the Indonesian term ("Barang Pindahan")
  *  on a quiet line of its own, in italic as a foreign term, so the three
@@ -50,7 +66,7 @@ function PathName({ name }: { name: string }) {
   return (
     <h3 className="font-display text-xl font-semibold tracking-tight">
       {title}
-      {local && <span className="mt-0.5 block font-sans text-sm font-normal italic tracking-normal text-muted">{local}</span>}
+      {local && <span className="mt-1 block font-sans text-sm font-normal italic tracking-normal text-muted">{local}</span>}
     </h3>
   );
 }
@@ -58,13 +74,14 @@ function PathName({ name }: { name: string }) {
 /** a document's name, and the help that comes with it ("we'll send you a
  *  template") on a quiet line under it, as PathName sets the Indonesian
  *  term, so the names read straight down the list. The order flow's
- *  CustomsPaths sets its documents the same way */
-export function DocName({ doc }: { doc: string }) {
+ *  CustomsPaths sets its documents the same way; `helpClassName` is how a
+ *  page sets the help line in its own small print */
+export function DocName({ doc, helpClassName }: { doc: string; helpClassName?: string }) {
   const [name, help] = doc.split(/\s*\((.+)\)\s*$/);
   return (
     <span>
       {name}
-      {help && <span className="mt-0.5 block text-muted first-letter:uppercase">{help}</span>}
+      {help && <span className={cn("mt-0.5 block text-muted first-letter:uppercase", helpClassName)}>{help}</span>}
     </span>
   );
 }
@@ -72,11 +89,11 @@ export function DocName({ doc }: { doc: string }) {
 /** one Customs Path's documents */
 function DocList({ docs, k }: { docs: readonly string[]; k: (path: string) => string }) {
   return (
-    <ul className="mt-3 space-y-3">
+    <ul className="mt-3 space-y-2">
       {docs.map((d) => (
         <li key={d} className="flex gap-2 text-sm">
           <FileText aria-hidden className="mt-0.5 size-4 shrink-0 text-muted-2" />
-          <DocName doc={k(d)} />
+          <DocName doc={k(d)} helpClassName="mt-1 text-xs" />
         </li>
       ))}
     </ul>
@@ -112,53 +129,65 @@ export function ExpatCustoms() {
 
         {/* the three ways in are solid on the chapter's deep (.deep-panel),
             no outline, their titles white; the personal shipment's rates
-            under them are a white card with an outline. From lg the three
-            cards share their rows (a subgrid): a "For"
+            under them are a white card with an outline. A card reads from
+            the top in three groups, 24px apart: what it's called, who it's
+            for and what it pays; why, with its small print; the documents.
+            From lg the three cards share their rows (a subgrid): a "For"
             that runs to two lines moves the other cards' rows down with it,
-            so the three duty and tax answers, the explanations, the document
-            lists and the notes each start on one line and read across */}
+            so the three duty and tax answers, the explanations and the
+            document lists each start on one line and read across */}
         <div className="mt-8 grid gap-4 sm:mt-12 lg:grid-cols-3 lg:gap-y-0">
           {CUSTOMS_ROUTES.map(({ key, docs }, i) => {
             const k = (path: string) => t(`expat.customs.${key}.${path}`);
             // swapped, never rotated, as every disclosure on the page is
             // (DESIGN.md, Motion, The disclosure open)
             const Chevron = docsOpen.has(key) ? ChevronUp : ChevronDown;
+            const count = <span className="font-normal text-muted">· {docs.length}</span>;
             return (
               <article
                 key={key}
-                className="deep-panel jr-reveal flex flex-col rounded-lg px-4 py-6 sm:px-6 lg:row-span-6 lg:grid lg:grid-rows-subgrid"
+                className="deep-panel jr-reveal flex flex-col rounded-lg px-4 py-6 sm:px-6 lg:row-span-5 lg:grid lg:grid-rows-subgrid"
                 style={order(1 + i)}
               >
                 {/* the path's name, then the same two facts on every card:
-                    no glyph or colour ranks one path above another */}
+                    no glyph or colour ranks one path above another. The
+                    duty and tax is the card's answer, as large as its name */}
                 <PathName name={k("name")} />
-                <dl className="mt-4 grid gap-3 border-t border-border pt-4 text-sm lg:row-span-2 lg:grid-rows-subgrid lg:gap-y-0">
+                <dl className="mt-4 grid gap-4 border-t border-border pt-4 lg:row-span-2 lg:grid-rows-subgrid lg:gap-y-0">
                   <div>
-                    <dt className="text-muted">{t("expat.customs.forLabel")}</dt>
-                    <dd className="mt-0.5 font-medium">{k("when")}</dd>
+                    <dt className="text-xs font-medium text-muted">{t("expat.customs.forLabel")}</dt>
+                    <dd className="mt-1 text-sm font-medium">{k("when")}</dd>
                   </div>
-                  <div className="lg:mt-3">
-                    <dt className="text-muted">{t("expat.customs.dutyLabel")}</dt>
-                    <dd className="mt-0.5 font-medium">{k("verdict")}</dd>
+                  <div className="lg:mt-4">
+                    <dt className="text-xs font-medium text-muted">{t("expat.customs.dutyLabel")}</dt>
+                    <dd className="mt-1 text-balance font-display text-xl font-semibold tracking-tight">
+                      {k("verdict")}
+                    </dd>
                   </div>
                 </dl>
-                <p className="mt-4 text-sm leading-relaxed">{k("body")}</p>
-                {/* the documents: from lg all three lists stand open, side by
-                    side; a phone, where the cards stack, folds each behind
-                    its label and count, so the three verdicts read close */}
+                {/* one row of the subgrid, so the small print stays 8px
+                    under its paragraph however long the card beside runs */}
+                <div className="mt-6">
+                  <p className="text-sm leading-relaxed">{k("body")}</p>
+                  <p className="mt-2 text-xs text-muted">{k("note")}</p>
+                </div>
+                {/* the documents, last, each list under its count: from lg
+                    all three stand open, side by side; a phone, where the
+                    cards stack, folds each behind its label, so the three
+                    answers read close */}
                 <div className="mt-6 border-t border-border pt-4">
-                  <p className="hidden font-display text-sm font-semibold text-tone-ink lg:block">
-                    {t("expat.customs.needed")}
+                  <p className="hidden text-xs font-medium text-muted lg:block">
+                    {t("expat.customs.needed")} {count}
                   </p>
                   <button
                     type="button"
                     aria-expanded={docsOpen.has(key)}
                     aria-controls={`customs-${key}-docs`}
                     onClick={() => toggleDocs(key)}
-                    className="tap-row relative flex w-full items-center justify-between gap-3 text-left font-display text-sm font-semibold text-tone-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/50 lg:hidden"
+                    className="tap-row relative flex w-full items-center justify-between gap-3 text-left text-sm font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/60 lg:hidden"
                   >
                     <span>
-                      {t("expat.customs.needed")} <span className="font-normal text-muted">· {docs.length}</span>
+                      {t("expat.customs.needed")} {count}
                     </span>
                     <Chevron aria-hidden className="size-4 text-muted-2" />
                   </button>
@@ -171,9 +200,6 @@ export function ExpatCustoms() {
                     <DocList docs={docs} k={k} />
                   </div>
                 </div>
-                {/* the foot of all three cards on one line, the subgrid's
-                    last row */}
-                <p className="pt-6 text-sm leading-relaxed text-muted">{k("note")}</p>
               </article>
             );
           })}
@@ -187,30 +213,35 @@ export function ExpatCustoms() {
         {/* the personal shipment's rates: what's inside, then its duty as
             the one big number on the row, then the tax on top. From lg the
             words take the left third and the table the rest, so its three
-            columns sit close enough to read across. Under them, the rule
-            over USD 1,500 and that the packing list review flags what's
-            likely taxed; the card above already says customs sets the
-            figure and the NPWP's part */}
+            columns sit close enough to read across. A phone has no room for
+            a third column (its cells ran to three lines), so there the tax
+            sits under what it's on, named, and the duty stands at the
+            row's right. Under them, as small print, the rule over USD 1,500
+            and that the packing list review flags what's likely taxed; the
+            card above already says customs sets the figure and the NPWP's
+            part */}
         <div
-          className="jr-reveal mt-8 grid gap-y-4 rounded-lg border border-border-strong bg-background px-4 py-6 sm:px-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,2fr)] lg:gap-x-12"
+          className="jr-reveal mt-6 grid gap-y-4 rounded-lg border border-border-strong bg-background px-4 py-6 sm:px-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,2fr)] lg:gap-x-12"
           style={order(4)}
         >
           <div>
             <h3 className="font-display text-xl font-semibold tracking-tight">{r("title")}</h3>
             <p className="mt-2 text-sm leading-relaxed text-muted">{r("subtitle")}</p>
-            <p className="mt-4 hidden border-t border-border pt-4 text-sm leading-relaxed text-muted lg:block">{r("foot")}</p>
-            <p className="mt-3 hidden text-sm leading-relaxed text-muted lg:block">{r("packing")}</p>
+            <div className="mt-4 hidden space-y-2 border-t border-border pt-4 text-xs text-muted lg:block">
+              <p>{r("foot")}</p>
+              <p>{r("packing")}</p>
+            </div>
           </div>
           <table className="w-full border-collapse text-left text-sm">
             <thead>
-              <tr className="border-b border-border font-display text-sm text-tone-ink">
+              <tr className="border-b border-border text-xs text-muted">
                 <th scope="col" className="pb-3 pr-4 font-medium">
                   {r("what")}
                 </th>
-                <th scope="col" className="pb-3 pr-4 font-medium">
+                <th scope="col" className="pb-3 text-right font-medium sm:pr-4 sm:text-left">
                   {r("duty")}
                 </th>
-                <th scope="col" className="pb-3 font-medium">
+                <th scope="col" className="hidden pb-3 font-medium sm:table-cell">
                   {r("tax")}
                 </th>
               </tr>
@@ -221,18 +252,21 @@ export function ExpatCustoms() {
                   <th scope="row" className="py-3 pr-4 align-top font-medium">
                     {r(`${row}.label`)}
                     {row === "general" && (
-                      <span className="mt-0.5 block font-normal text-muted">{r("general.hint")}</span>
+                      <span className="mt-1 block text-xs font-normal text-muted">{r("general.hint")}</span>
                     )}
+                    <span className="mt-1 block text-xs font-normal text-muted sm:hidden">
+                      {r("tax")}: {r(`${row}.tax`)}
+                    </span>
                   </th>
-                  <td className="whitespace-nowrap py-3 pr-4 align-top font-display text-xl font-semibold tracking-tight tabular-nums">
+                  <td className="whitespace-nowrap py-3 text-right align-top font-display text-xl font-semibold tracking-tight tabular-nums sm:pr-4 sm:text-left">
                     {r(`${row}.duty`)}
                   </td>
-                  <td className="py-3 align-top text-muted">{r(`${row}.tax`)}</td>
+                  <td className="hidden py-3 align-top text-muted sm:table-cell">{r(`${row}.tax`)}</td>
                 </tr>
               ))}
             </tbody>
           </table>
-          <div className="space-y-3 border-t border-border pt-4 text-sm leading-relaxed text-muted lg:hidden">
+          <div className="space-y-2 border-t border-border pt-4 text-xs text-muted lg:hidden">
             <p>{r("foot")}</p>
             <p>{r("packing")}</p>
           </div>

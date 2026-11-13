@@ -41,7 +41,7 @@ export function ChatHead({ className }: { className?: string }) {
       <img src="/expat/journey/rimkirim-avatar.png" alt="" className="size-[1.75em] shrink-0 rounded-full" />
       <span className="min-w-0">
         <span className="block truncate text-[0.82em] font-semibold leading-tight">Rimkirim</span>
-        <span className="block truncate text-[0.66em] leading-tight text-muted-2">WhatsApp</span>
+        <span className="block truncate text-[0.72em] leading-tight text-muted-2">WhatsApp</span>
       </span>
     </div>
   );

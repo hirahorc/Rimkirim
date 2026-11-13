@@ -8,6 +8,7 @@ import { useT } from "@/lib/i18n/LanguageProvider";
 import { ReviewNote } from "./ReviewNote";
 import { SceneStage } from "./SceneStage";
 import { EligibleScene, EstimateScene, HandoffScene } from "./SectionScenes";
+import { useMedia } from "./useMedia";
 
 const NEXT = [
   { key: "next1", Scene: EstimateScene },
@@ -36,6 +37,8 @@ const NEXT = [
  */
 export function ExpatClosing() {
   const t = useT();
+  /** from sm the stub is a grid, not a strip: nothing to scroll, so no tab stop */
+  const grid = useMedia("(min-width: 640px)");
   return (
     // on the desk after the FAQ, also on the desk: the FAQ's own foot is the
     // space above, so the ticket keeps the same space above as below
@@ -93,8 +96,8 @@ export function ExpatClosing() {
           <div
             role="group"
             aria-label={t("expat.closing.nextTitle")}
-            tabIndex={0}
-            className="scroll-strip -mx-4 mt-4 snap-x snap-mandatory scroll-px-5 overflow-x-auto px-4 sm:mx-0 sm:snap-none sm:overflow-visible sm:px-0"
+            tabIndex={grid ? undefined : 0}
+            className="scroll-strip focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-background -mx-4 mt-4 snap-x snap-mandatory scroll-px-5 overflow-x-auto px-4 sm:mx-0 sm:snap-none sm:overflow-visible sm:px-0"
           >
             <ol className="flex gap-4 sm:grid sm:gap-6 lg:grid-cols-3 lg:gap-4">
               {NEXT.map(({ key, Scene }, i) => (

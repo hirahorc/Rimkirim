@@ -223,7 +223,7 @@ export function QuoteScene() {
               {tag && (
                 <span
                   className={cn(
-                    "jr jr-drop shrink-0 whitespace-nowrap rounded-full px-[0.6em] py-[0.2em] text-[0.7em] font-semibold",
+                    "jr jr-drop shrink-0 whitespace-nowrap rounded-full px-[0.6em] py-[0.2em] text-[0.72em] font-semibold",
                     tag === "taxed" ? "bg-(--tone-wash) text-tone-ink" : "bg-foreground text-background",
                   )}
                   style={at(500 + i * 260)}

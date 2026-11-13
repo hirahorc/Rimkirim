@@ -77,6 +77,17 @@ export const DialogContent = React.forwardRef<
             className,
           )}
           {...props}
+          // vaul leaves focus on the trigger, behind the scrim (its autoFocus
+          // is off, so a sheet that opens on a field doesn't throw up the
+          // keyboard), and Tab then walked the page under the sheet. The
+          // sheet itself takes focus instead: no field is focused, but the
+          // keyboard and a screen reader start inside it, and Tab stays there
+          onOpenAutoFocus={(e) => {
+            props.onOpenAutoFocus?.(e);
+            if (e.defaultPrevented) return;
+            e.preventDefault();
+            (e.target as HTMLElement | null)?.focus({ preventScroll: true });
+          }}
         >
           {/* grab handle: the sheet says "drag me" before anyone reads a word */}
           <div

@@ -279,7 +279,7 @@ export function WhatYouCanShip() {
                         aria-expanded={isOpen}
                         aria-controls={`ship-${key}`}
                         onClick={() => choose(key)}
-                        className="mt-auto flex items-center gap-2 self-start pt-4 text-left text-sm font-medium after:absolute after:inset-0 after:rounded-lg after:transition-colors active:after:bg-[color-mix(in_oklab,var(--tone-ink)_6%,transparent)] focus-visible:outline-none focus-visible:after:ring-2 focus-visible:after:ring-foreground/50"
+                        className="mt-auto flex items-center gap-2 self-start pt-4 text-left text-sm font-medium after:absolute after:inset-0 after:rounded-lg after:transition-colors active:after:bg-[color-mix(in_oklab,var(--tone-ink)_6%,transparent)] focus-visible:outline-none focus-visible:after:ring-2 focus-visible:after:ring-foreground/60"
                       >
                         {k("more")}
                         <Chevron aria-hidden className="size-4 text-muted-2" />

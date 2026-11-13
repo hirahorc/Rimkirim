@@ -66,7 +66,7 @@ function WaBubble({
 }) {
   const me = from === "me";
   const meta = (
-    <span className="flex items-center gap-[3px] text-[11px] leading-none text-[#667781]">
+    <span className="flex items-center gap-[3px] text-[11px] leading-none text-[#60707a]">
       {time}
       {me && <CheckCheck className="size-[16px] text-[#53bdeb]" strokeWidth={2} />}
     </span>
@@ -196,7 +196,7 @@ export function ThreadScene() {
               <PdfIcon />
               <span className="min-w-0">
                 <span className="block truncate text-[15px] font-medium leading-[20px]">{k("file")}</span>
-                <span className="block text-[12.5px] leading-[16px] text-[#667781]">{k("pages")}</span>
+                <span className="block text-[12.5px] leading-[16px] text-[#60707a]">{k("pages")}</span>
               </span>
             </span>
           </WaBubble>

@@ -2,9 +2,11 @@
 
 import * as React from "react";
 import { Pause, Play, RotateCcw } from "lucide-react";
+import { CollapseHeight } from "@/components/ui/disclosure";
 import { useT } from "@/lib/i18n/LanguageProvider";
 import { cn } from "@/lib/utils/cn";
 import { DetailsScene, DoorScene, FlightScene, QuoteScene } from "./JourneyScenes";
+import { useMedia } from "./useMedia";
 import { alreadyThere } from "./useSectionReveal";
 
 const SCENES = [DetailsScene, QuoteScene, FlightScene, DoorScene];
@@ -58,6 +60,19 @@ const order = (i: number) => ({ "--i": i }) as React.CSSProperties;
  * screen and while the tab is hidden. Under
  * reduced motion nothing plays or moves: the first step stands, built, and
  * a click switches instantly. DESIGN.md, Motion: "The journey".
+ *
+ * Beside the stage (from lg) every step's words stand open. Under it, the
+ * four at full length pushed the steps a screen away from their picture,
+ * so there only the step on show is open: the picture, the four titles and
+ * the words of the one it is showing fit a phone's screen together. Until
+ * the steps start, and without script, all four are open.
+ *
+ * The section's own pieces are set in two type sizes and seven steps of
+ * space (DESIGN.md, The journey's scales): a step's title 20/28, its words
+ * and its number 14; 4 from a title to its words, 8 and 12 inside a row, 16
+ * from a number to its title and from the picture to the steps under it, 32
+ * to the button, 48 under the head, 64 between the steps and the picture
+ * beside them.
  */
 export function JourneySteps({
   steps,
@@ -71,6 +86,8 @@ export function JourneySteps({
   const t = useT();
   const rootRef = React.useRef<HTMLDivElement>(null);
   const listRef = React.useRef<HTMLOListElement>(null);
+  /** the steps stand beside the stage, so there is room for all their words */
+  const beside = useMedia("(min-width: 1024px)");
   const [mode, setMode] = React.useState<Mode>("idle");
   const [active, setActive] = React.useState(-1);
   /** the scenes built right now: the shown one, and the one leaving */
@@ -146,9 +163,9 @@ export function JourneySteps({
       applyHold();
     };
     document.addEventListener("visibilitychange", onVisibility);
+    const rows = (Array.from(list.children) as HTMLElement[]).filter((el) => el.tagName === "LI");
     const ro = new ResizeObserver(() => {
       const top = list.getBoundingClientRect().top;
-      const rows = (Array.from(list.children) as HTMLElement[]).filter((el) => el.tagName === "LI");
       const rects = rows.map((li) => li.querySelector<HTMLElement>("[data-tile]")!.getBoundingClientRect());
       setLayout({
         tiles: rects.map((r) => r.top + r.height / 2 - top),
@@ -157,6 +174,9 @@ export function JourneySteps({
       });
     });
     ro.observe(list);
+    // each row too: under the stage a step's words open as another's close,
+    // and the list can stand as tall as it was while every row in it moves
+    rows.forEach((li) => ro.observe(li));
     return () => {
       io.disconnect();
       ro.disconnect();
@@ -220,7 +240,7 @@ export function JourneySteps({
         {head}
       </div>
 
-      <div className="mt-8 grid gap-8 lg:mt-12 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:items-center lg:gap-16">
+      <div className="mt-8 grid gap-4 lg:mt-12 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:items-center lg:gap-16">
         {/* the stage: on top on a phone, beside the steps from lg */}
         <div className="jr-stage jr-reveal relative lg:col-start-2 lg:row-start-1" style={order(1)}>
           {/* portrait on a phone, where the scenes take their compact layout */}
@@ -277,7 +297,7 @@ export function JourneySteps({
               type="button"
               onClick={control}
               aria-label={t(mode === "auto" ? "expat.steps.pause" : mode === "done" ? "expat.steps.replay" : "expat.steps.play")}
-              className="jr-control tap-target absolute right-3 top-3 grid size-9 place-items-center rounded-full sm:size-10 bg-background text-foreground transition-colors hover:text-tone-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/40 sm:right-4 sm:top-4"
+              className="jr-control tap-target absolute right-3 top-3 grid size-9 place-items-center rounded-full sm:size-10 bg-background text-foreground transition-colors hover:text-tone-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/60 sm:right-4 sm:top-4"
             >
               <svg viewBox="0 0 40 40" className="absolute inset-0 -rotate-90" aria-hidden>
                 <circle cx="20" cy="20" r="18.5" fill="none" stroke="var(--border)" strokeWidth="2" />
@@ -349,6 +369,7 @@ export function JourneySteps({
           )}
           {steps.map((s, i) => {
             const isActive = i === active;
+            const open = beside || active < 0 || isActive;
             return (
               <li
                 key={s.title}
@@ -362,8 +383,9 @@ export function JourneySteps({
                   // a keyboard press has no pointer behind it (detail 0)
                   onClick={(e) => choose(i, e.detail === 0)}
                   aria-current={isActive ? "step" : undefined}
+                  aria-expanded={beside ? undefined : open}
                   aria-label={s.title}
-                  className="absolute inset-0 z-20 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/40 pointer-fine:cursor-pointer"
+                  className="absolute inset-0 z-20 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/60 pointer-fine:cursor-pointer"
                 />
                 {/* remounted when its step turns active, so it flips in on
                       the departure board's move (without the board's seam,
@@ -378,21 +400,33 @@ export function JourneySteps({
                         ? "jr-tile bg-tone-ink text-background"
                         : i < active
                           ? "bg-background text-tone-ink shadow-[inset_0_0_0_1px_var(--tone-ink)]"
-                          : "bg-background text-muted-2 shadow-[inset_0_0_0_1px_var(--border-strong)]",
+                          : "bg-background text-muted shadow-[inset_0_0_0_1px_var(--border-strong)]",
                     )}
                   >
                     {String(i + 1).padStart(2, "0")}
                   </span>
                 <div className="relative z-10 min-w-0">
+                  {/* 20 on a 28px line, so a title that wraps stays one
+                      title; 2px down, level with its 32px tile */}
                   <h3
                     className={cn(
-                      "font-display text-xl font-semibold leading-8 tracking-tight transition-colors duration-200",
+                      "pt-0.5 font-display text-xl font-semibold tracking-tight transition-colors duration-200",
                       isActive ? "text-tone-ink" : "pointer-fine:group-hover/step:text-tone-ink",
                     )}
                   >
                     {s.title}
                   </h3>
-                  <p className="mt-1 max-w-md text-sm leading-relaxed text-muted">{s.body}</p>
+                  {/* the step on show is the one whose words are in ink */}
+                  <CollapseHeight open={open} instant={instant} className="pt-1">
+                    <p
+                      className={cn(
+                        "max-w-md text-sm leading-relaxed transition-colors duration-200",
+                        isActive ? "text-foreground" : "text-muted",
+                      )}
+                    >
+                      {s.body}
+                    </p>
+                  </CollapseHeight>
                 </div>
               </li>
             );

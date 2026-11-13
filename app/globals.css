@@ -907,16 +907,17 @@ body:has(main > [data-flow]) [data-sonner-toaster][data-sonner-theme] {
   outline-offset: 2px;
   border-radius: 2px;
 }
-/* on a band's tinted wash the desk blue drops to about 4.1:1; one step
+/* on a band's tinted wash, and on a section's ground (the expat reviews
+   and pricing, [data-ground]), the desk blue drops to about 4.1:1; one step
    darker clears AA on every chapter's wash (5.1:1 and up) */
-.band .link-mark {
+:is(.band, [data-ground="on"]) .link-mark {
   color: color-mix(in srgb, var(--info) 80%, black);
 }
-.band .link-mark:active {
+:is(.band, [data-ground="on"]) .link-mark:active {
   color: color-mix(in srgb, var(--info) 70%, black);
 }
 @media (hover: hover) {
-  .band .link-mark:hover {
+  :is(.band, [data-ground="on"]) .link-mark:hover {
     color: color-mix(in srgb, var(--info) 70%, black);
   }
 }
@@ -1524,16 +1525,18 @@ body:has(main > [data-flow]) [data-sonner-toaster][data-sonner-theme] {
   visibility: hidden;
   pointer-events: none;
 }
-/* A section's eyebrow on the expat landing wears the same paint as the
-   header's "Expat Relocation": the same two stops at the same angle, drawn
-   the same way, across the words (so the label is as wide as its words, not
-   its column). Still: it's a label, never a link, so it never flows. The
-   bright stops sit under AA at this size, as they do in the header (2.4:1
-   at the sky end, 4.3:1 at the magenta end on white); a call made for the
-   brand's colour, taken with that known. */
+/* A section's eyebrow on the expat landing wears the header's "Expat
+   Relocation" sweep, sky to magenta at the same angle, drawn the same way,
+   across the words (so the label is as wide as its words, not its column).
+   Still: it's a label, never a link, so it never flows. Its stops are the
+   two chapters' inks, the same hues a shade deeper, because the header's
+   bright stops read 1.9 to 2.5:1 at 12px; these hold 4.9:1 or more at
+   every point of the sweep, on white and on the sky and violet grounds
+   (WCAG 1.4.3). The header keeps the bright ones: there it is the
+   service's name in the logo's lockup. */
 .eyebrow-expat {
-  --nav-expat-from: #21b1ec;
-  --nav-expat-to: #d41ce6;
+  --nav-expat-from: #0e668a;
+  --nav-expat-to: #a213b0;
   width: fit-content;
   color: transparent;
   background-image: linear-gradient(

@@ -249,11 +249,45 @@ the closing ticket below it, a section's space clear of its foot. The three cust
 (Relocation goods, Passenger goods, Personal shipment) are cards solid on their chapter's
 deep, magenta `#690873` (the hue 40% toward black, `--tone-deep`), with no outline
 (`.deep-panel`), dark enough that their titles are white. Inside the card the neutrals turn
-over, re-pointed on the panel as a chapter re-points them: words white (11.2:1), the quiet
-words, the icons and the "Documents needed" label the soft tint `#f5befa` (7.2:1,
-`--tone-deep-soft`), hairlines white at 16%, the focus ring white at 50% (3.7:1). The
-personal shipment's rates under them are a white card with the chapter's outline
-(`border-border-strong bg-background`).
+over, re-pointed on the panel as a chapter re-points them: words white (11.2:1), labels,
+small print and icons the soft tint `#f5befa` (7.2:1, `--tone-deep-soft`), hairlines white at
+16%, the focus ring white at 50% (3.7:1). The personal shipment's rates under them are a
+white card with the chapter's outline (`border-border-strong bg-background`).
+
+**The customs cards (2026-11-12).** The four cards are set in three type sizes, five steps of
+space and five colours, and nothing else:
+
+| Type | Set in | For |
+| --- | --- | --- |
+| 20 / 28 | Space Grotesk 600 | a card's title, and its answer: a path's duty and tax, a rate |
+| 14 / 20 | Geist 400, 500 for a value and a row's name | what's read; a paragraph on a looser line |
+| 12 / 16 | Geist 400, 500 for a label | a label, a count, a help line, small print |
+
+| Space | Between |
+| --- | --- |
+| 4 | a label and its value; a name and the line under it |
+| 8 | one list item and the next; a paragraph and its small print |
+| 12 | a table row's top and bottom; a label and the list under it |
+| 16 | one fact and the next; a rule and what's under it; a card's sides on a phone; one card and the next |
+| 24 | one group and the next; a card's padding |
+
+| Colour | Value | For |
+| --- | --- | --- |
+| Deep | `#690873` | the three path cards' fill |
+| Paper | `#ffffff` | the words on Deep (and its hairlines, at 16%); the rates card's fill |
+| Soft | `#f5befa` | on Deep: labels, small print, icons |
+| Ink | `#1f1f1f` | the words on Paper |
+| Muted | `#64426c` | on Paper: labels, small print, the tax column |
+
+A path card reads from the top in three groups: its name, who it's for and its duty and tax;
+the explanation with its small print 8px under it; the documents, last, under their count. The
+duty and tax is the answer to the section's heading, so it is the one fact set at 20px, the
+size of the card's name. From lg the three share their rows (subgrid), so the answers, the
+explanations and the document lists each start on one line across the cards; a shorter list
+ends its card early, at the foot. On a phone the document list folds behind its label. In the
+rates card the duty is the one 20px figure on a row; its header and its two notes are small
+print in Muted. On a phone the table has two columns: the tax sits under what it's on, named
+("Tax: 11% VAT"), and the duty stands at the row's right.
 Tried first and dropped: numbered eyebrows on a rule, a lime index tab, an ink tile, and a
 cover that opened each section.
 Two sections in the frame have a ground of their own, so the page isn't white all the way
@@ -271,12 +305,14 @@ side by side inside them, where the line turns upright from `md`), Who does what
 and its carriers. One line colour down the page in two weights: solid and full width between
 two sections, dashed and column-wide between a section's parts. A card's own inner lines, a
 table's rows and the FAQ's rules are that component's and keep the chapter's hairline.
-**Every section's eyebrow wears the route's gradient**, painted exactly as the header's "Expat
-Relocation" is (`.eyebrow-expat`: sky `#21b1ec` to magenta `#d41ce6` at 82°, across the words),
-in place of its chapter's ink: one colour for the label down the whole page. It is a label, so
-it never flows as the header's link does. Known and accepted, as in the header: the bright
-stops sit under AA at 12px (2.4:1 at the sky end and 4.1:1 at the magenta end on white; 1.9:1
-and 3.2:1 on the reviews' sky ground).
+**Every section's eyebrow wears the route's gradient**, the header's "Expat Relocation" sweep
+(`.eyebrow-expat`: sky to magenta at 82°, across the words) in place of its chapter's ink: one
+colour for the label down the whole page. It is a label, so it never flows as the header's link
+does. Its stops are the two chapters' inks, sky `#0e668a` to magenta `#a213b0`, the header's hues
+a shade deeper: the header's bright stops read 1.9 to 2.5:1 at 12px, these hold 4.9:1 or more at
+every point of the sweep on white and on the sky and violet grounds (WCAG 1.4.3, 2026-11-13). The
+header keeps its bright stops: there it is the service's name in the logo's lockup, which WCAG
+exempts as a logotype.
 The expat landing walks its own identity, the `.nav-expat` gradient (sky `#21b1ec` to magenta
 `#d41ce6`), down the page as solid stops, never as a gradient fill:
 
@@ -774,6 +810,9 @@ home hero's floating verdicts and the expat hero's departure board. Treat any ot
   The sheet carries **no close button**: it dismisses by swipe, scrim tap, or Esc, and an X
   would fight the grab-handle row. The X belongs to the modal presentation (no drag
   affordance) and to the mobile nav slide-over, which has no handle either.
+  **The sheet takes focus as it opens** (the sheet itself, not a field in it, so no keyboard
+  comes up): vaul left it on the trigger, behind the scrim, and Tab walked the page under the
+  sheet. Tab now stays in the sheet, and Esc hands focus back to the trigger (2026-11-13).
   **A picker is a sheet there too** (`Picker` in `ui/popover.tsx`: the country, dial code and
   currency lists, any searchable `SelectField`): under its field the panel showed seven rows of
   two hundred, where the keyboard comes up. As a sheet the list fills up to 85dvh, each row a
@@ -845,7 +884,10 @@ home hero's floating verdicts and the expat hero's departure board. Treat any ot
   the idea ("from wherever you are moving, to Indonesia, by air"), said without copy. It runs only
   while on screen and while the tab is visible, never under reduced motion (the first route stands,
   drawn, its plane landed), and assistive tech hears one sentence, "Expat relocation to
-  Indonesia", not a ticker.
+  Indonesia", not a ticker. It moves on its own for as long as it's on screen, so a 24px control
+  at the end of the row (44px hit area) pauses and plays it ("Pause the departure board", WCAG
+  2.2.2), in Muted with the buttons' ink ring; under reduced motion there is nothing to stop, so
+  there is no control.
 - **The deck's satellite** (`ClearedNotice`, expat hero): the stageshow framing for an
   image-led hero, the real photo pile as the hero object and one satellite, a WhatsApp message
   from Rimkirim at a notification's true scale (the page's chat card in small: the app icon,
@@ -931,7 +973,9 @@ home hero's floating verdicts and the expat hero's departure board. Treat any ot
   (the one lime in the illustrations: it is the brand's mark, not a "press this").
   Every size is in em, a share of the stage's width (2.85cqw), so a scene scales as one
   picture; below 30rem the stage turns portrait (4:5) and the scenes take a compact layout at
-  3.9cqw, never squeezed, so their type stays at 10px or more. Things arrive by moving (a hero
+  3.9cqw, never squeezed, so their type stays at 10px or more at 390 (at 320 the smallest is
+  about 8px; 4.2cqw was tried and pushed the form's country against its field and the chat over
+  the door). Things arrive by moving (a hero
   rises from the crop on the travel curve, chips and bubbles land from just above), and the
   stage changes scene like a conveyor: the done scene travels up and out while the next builds
   in its place, the other way round when stepping back. The scenes share one stage, beside the
@@ -953,10 +997,30 @@ home hero's floating verdicts and the expat hero's departure board. Treat any ot
   takes the rest of the hold, so it still lands as the timer ring closes. Reached by its run, a
   step's fill takes the run's place at once (`data-snap`), so the stretch just drawn never empties
   and refills; only a jump (a click, a replay) grows the fill. Below `lg`, where the steps sit
-  under the stage and out of sight while the scene plays, the stage carries the progress itself:
+  under the stage, the stage carries the progress itself:
   one segment per step level with the control, the past ones full, the active one filling over its
   hold on the ring's clock and pausing with it, as a story's bars do. After 04 it rests on the
   doorstep. A scene rebuilds each time it comes up while the steps play.
+  **Under the stage, only the step on show is open.** Beside the stage (from `lg`) every step's
+  words stand open. Under it the four at full length put the steps a screen away from their
+  picture (the section was 1,377px, 1.6 screens, at 390), so there the steps start 16px under the
+  stage and only the active step's words are open (`CollapseHeight`, the disclosure's own motion;
+  the highlight and the rail follow each row as it opens and closes, and a step's button says
+  `aria-expanded`): the picture, the four titles and the open step's words stand 751px tall, one
+  phone screen. Until the tour starts, and without script, all four are open.
+  **The journey's scales (2026-11-12).** The section's own pieces, under the page's head and over
+  its button, are set in two type sizes: a step's title, 20 on a 28px line (Space Grotesk 600; on
+  a 32px line a title that wrapped stood further from itself than from its words), and its words
+  and its number, 14 (Geist on a looser line; Geist Mono 500 in the tile). The step on show is
+  the one whose words are in Ink; the others' are Muted. Space is seven steps: 4 from a title to
+  its words; 8 and 12 inside a row (its padding on a phone and from `sm`); 16 from a number to
+  its title and from the stage to the steps under it; 32 from the steps to the button and under
+  the head on a phone; 48 under the head from `lg`; 64 between the steps and the stage beside
+  them. Colours are six: Ink for titles and the open step's words, Muted for the rest and the
+  numbers to come, the chapter's ink (`#a213b0`) for the step on show (its tile, its title, the
+  rail, the timer), its wash for the highlight, Paper for tiles and the control, lime for the
+  button. In the pictures no type is under 10px at 390 (the two that were, the chat's "WhatsApp"
+  and the packing list's tags, are 0.72em).
   **A click (or Enter) on a step takes over**: that step comes up and the playing stops. A step
   chosen by hand is a question, so it is answered at once: the stage turns to it in 240ms on the
   hover curve (`.jr-root[data-manual]`) and its scene stands built, where the tour's builds
@@ -1042,6 +1106,23 @@ home hero's floating verdicts and the expat hero's departure board. Treat any ot
   pass, then still. Two by two and stacked there is no run and no control: each plays as it
   comes into view. A click on a picture plays that one again, at once and by itself. Under
   reduced motion nothing plays, there is no control and nothing to click.
+  **Pricing's scales (2026-11-13).** Under the page's head, the section is set in three type
+  sizes: a step's title, 20 on a 28px line (Space Grotesk 600, the journey's and the
+  comparison's headline), led by its number at the same size in the chapter's ink, so the words
+  keep the picture's left edge (a 20px outlined circle with a 12px Muted digit indented every
+  title and its words 32px, two left edges a column); the closing line, 16 on 24 in Ink at
+  regular weight, the body's size, since it is what checking gives and when the price is final,
+  not a fifth step (it was 16 medium, the old titles' style); and the steps' words and the
+  surcharge link, 14 on 20. Space is six steps: 4 from a title to its words, 8 from the words to
+  the link, 16 from a picture to its title, 24 between the columns and from the closing line to
+  the button, 32 between the steps where they stack and under the head on a phone, 48 under the
+  head from `sm` (as every section with a grid under its head) and from the steps to the closing
+  line, a step further than the steps are from each other so it never reads as one of them. In
+  the row of four a step's picture, title and words are rows shared with the other three
+  (subgrid): the titles start on one line and so do the words, however each wraps. Two by two
+  they don't, since a shared row left a blank line under the shorter title. Colours: Ink, Muted,
+  the chapter's ink for the numbers, the wash, the house link blue for the one link, lime for the
+  button.
   Scenes are `aria-hidden`; the section's words carry the meaning. Each scene names its compact
   container query, where the gutter tightens and its type stays at 10px or more. Under reduced
   motion, and without script, every scene stands built.
@@ -1149,7 +1230,11 @@ like an accident.
 - **Primary:** Live Lime fill + Ink-on-Lime text, `font-semibold`, flat (no keyline, no glow).
 - **Hover / Focus:** Primary shifts to Live Lime Dim; all buttons show a `ring-2
   ring-foreground/60` on `:focus-visible` — the focus ring is **ink, not lime**, because a lime
-  ring on white fails the 3:1 non-text contrast requirement.
+  ring on white fails the 3:1 non-text contrast requirement. Every focus ring is ink at 60% or
+  more, never less: at 60% it is 4.3:1 on white and 3.9:1 on a chapter's wash, where ink at 40%
+  (2.5:1 and 2.4:1) fell under 3:1 (WCAG 1.4.11, 2026-11-13). On a dark surface the ring is
+  white (the dusk ticket's button and its "What happens next" strip). A scroll strip is a tab
+  stop only where it scrolls (a phone); from `sm`, where it is a grid, it is not.
 - **Secondary / Ghost / Dashed / Danger:** Secondary = Panel 2 fill + Hairline-Strong border
   (the former Outline variant was merged into it); Ghost = Dim/Readout text, hover fills Panel 2 —
   it also skins every icon-only button (copy, remove, stepper, calendar nav); Dashed = transparent
@@ -1466,7 +1551,8 @@ eyebrow names the service right below.
   budgets never borrow from each other. This is how lime reaches a card without becoming its
   surface.
 - **`.link-mark`** — inline links: conventional link blue (`--info`, mixed 8% toward black so it
-  clears 4.5:1 on `--surface`; 20% inside a band, whose tinted wash would drop it to about 4.1:1)
+  clears 4.5:1 on `--surface`; 20% inside a band or on a section's ground (`[data-ground="on"]`),
+  whose tinted wash would drop it to about 4.1:1)
   with a soft underline that darkens on hover (a mouse's only) and under a press; keyboard focus
   wears the buttons' ink ring as an outline (2px, ink at 60%, 2px off the text). Lime is never used
   to mark a link. On touch, a link that stands alone on its line also wears `.tap-row`, or
@@ -1482,21 +1568,33 @@ every width from `md`, and Rimkirim is a **lane laid across a ruled sheet**: one
 on the chapter's Panel 2 with the `lg` corner, rising above the header rule and running below the
 last row. Panel 2, not the band's wash: the table sits on the desk between two violet bands, and a
 wash-coloured lane would run the chapter together into one long violet stretch. On a phone the
-table becomes rows read down: the label, the lane's answer on its Panel 2 tile, then "Typical
-options:" under it in `muted-2`, under the lane's `tone-ink` head with the wordmark.
+table becomes rows read down: the row's name, the lane's answer on its Panel 2 tile, then
+"Typical options:" under it. No head over the phone's rows: there are no columns there for one
+to name, and the tile says which answer is ours.
 
-- **The head:** `tone-ink` with the white wordmark and the page's "Door to door, by air" in a
-  brand badge, the section's one lime mark (lime is at its loudest on violet). Phones keep the
-  wordmark only.
+- **The head:** `tone-ink` with the white wordmark, nothing else. The lime "Door to door, by air"
+  badge it carried is gone (2026-11-13): it was a second lime in the one column, over the
+  button, and it said the hero board's label and the "Door to door" row a third time.
 - **The cells:** each answer leads with a short headline in the display face, so the lane reads as
   the pitch on its own, then the sentence in the chapter's muted ink. Row hairlines turn white
   inside the lane, so the rows read through it without ruling it.
 - **The foot:** "Check your rate" lives at the bottom of the lane from `md`; a phone, whose lane is too
   narrow for the button, keeps it under the table.
-- **The typical column** sits plain on the desk, smaller and in `muted-2`, under a note on what it
-  summarises. No ticks, no crosses, no names: the lane does the highlighting, not a verdict.
+- **The typical column** is as wide as the lane and in the same voice as the lane's sentences
+  (14px, Muted), under a note on what it summarises: the other side of a comparison, not fine
+  print. No ticks, no crosses, no names: the lane does the highlighting, not a verdict.
+- **The row's name** is a label, 14px medium in Muted, set on the lane headline's baseline (24px
+  down where the lane's cell is 16, so 14 on a 20px line meets 20 on a 28px one). It was 16px in
+  Ink, louder than the answers it named.
 - Under a fine pointer a row lights up across the table in the colour channel (label and headline
   to `tone-ink`, the typical answer to ink), so the eye can follow one aspect across the width.
+- **Its scales (2026-11-13):** four type sizes, a lane headline 20/28 (16/24 on a phone, where 20
+  wrapped half of them), every answer and name 14/20, the column's note and the footnote 12/16;
+  space in 4, 8, 12, 16, 24, 32 and 48; five colours, Ink, Muted (`#4c4a6d`, 8.4:1 on white,
+  7.5:1 on the lane), the lane's Panel 2 (`#f2f2fe`), the head's violet (`#5c4db3`, white 6.6:1)
+  and lime for the button. `muted-2` is gone from it. Columns from `md`: the names `9rem`
+  (`12rem` from `lg`), the lane and the typical options half each of the rest; cells `16`
+  across (`24` from `lg`) and `16` down. At 1440 the section went from 1,583px to 1,394px.
 
 ### The dusk ticket (signature)
 The expat landing ends on a ticket, the page's one dark section. It is `bg-dusk` (`#4a1e67`)

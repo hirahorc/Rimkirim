@@ -11,6 +11,7 @@ import { cn } from "@/lib/utils/cn";
 import { SectionHead } from "./SectionHead";
 import { PhotoSlot } from "./PhotoSlot";
 import { ReviewNote } from "./ReviewNote";
+import { useMedia } from "./useMedia";
 
 /** past this many characters a quote opens folded, behind "Read more" */
 const LONG = 600;
@@ -125,6 +126,7 @@ function avatarFor(name: string) {
  */
 export function ExpatReviews() {
   const t = useT();
+  const grid = useMedia("(min-width: 640px)");
   const gridRef = React.useRef<HTMLDivElement>(null);
   const rootRef = React.useRef<HTMLElement>(null);
 
@@ -196,8 +198,10 @@ export function ExpatReviews() {
             strip, the one exception) */}
         <div
           ref={gridRef}
-          className="reviews-grid scroll-strip -mx-2 mt-8 flex snap-x snap-mandatory items-start sm:items-stretch scroll-px-2 gap-4 overflow-x-auto px-2 pb-1 sm:mt-8 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-foreground/40 sm:mx-0 sm:grid sm:snap-none sm:grid-cols-2 sm:overflow-visible sm:px-0 sm:pb-0"
-          tabIndex={0}
+          className="reviews-grid scroll-strip -mx-2 mt-8 flex snap-x snap-mandatory items-start sm:items-stretch scroll-px-2 gap-4 overflow-x-auto px-2 pb-1 sm:mt-8 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-foreground/60 sm:mx-0 sm:grid sm:snap-none sm:grid-cols-2 sm:overflow-visible sm:px-0 sm:pb-0"
+          // a strip to scroll on a phone, a grid from sm with nothing to
+          // scroll, so a tab stop only where it scrolls
+          tabIndex={grid ? undefined : 0}
           role="group"
           aria-label={`${reviews.length} ${t("testimonial.stripLabel")}`}
         >
@@ -309,7 +313,7 @@ function ReviewQuote({ quote, highlights }: { quote: string; highlights?: string
           aria-expanded={open}
           aria-controls={id}
           onClick={() => setOpen((o) => !o)}
-          className="link-mark tap-row relative mt-2 self-start rounded-sm text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/40"
+          className="link-mark tap-row relative mt-2 self-start rounded-sm text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/60"
         >
           {t(open ? "expat.reviews.less" : "expat.reviews.more")}
         </button>
