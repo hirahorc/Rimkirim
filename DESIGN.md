@@ -500,9 +500,9 @@ brand-label tier (eyebrows, chips, statuses, buttons — see The Brand-Label Rul
 - **Display** (Space Grotesk 500, `clamp(2rem, 7.5vw, 4.75rem)` = 32px -> 76px, line-height
   1.05, tracking -0.02em): Hero headline only, set as individually rising words. Medium weight, not
   bold: at 76px the lighter cut reads editorial and confident rather than shouty, and it keeps the
-  lime highlighter behind it feeling like a mark rather than a block. One other use, at its top size
-  only (4.75rem, line-height 1.05, in the chapter's ink): the one number of What you can send's
-  books tile (0%), the bento's stat, a figure rather than a headline.
+  lime highlighter behind it feeling like a mark rather than a block. What you can send's books
+  tile (0%) no longer borrows it: its figure is 32 in the chapter's ink, a step over the tile's
+  name and under the section's heading (at 48 it outranked both; 2026-11-13).
 - **Headline** (Space Grotesk 700, `2.25rem`/36px, tracking -0.025em): the largest non-hero
   heading — landing section titles ("Kenapa Rimkirim", "Dua arah, satu tim"), set `text-3xl
   sm:text-4xl`.
@@ -1331,8 +1331,8 @@ in ink it stays neutral and lime stays the one colour in the action row.
   (the hero, hung off the tile's right edge beside its words from `md`, inset and fading out at
   its foot over the rows still to fill when stacked), the folded clothes, trainers and a cap set
   before it on a stage of their own, past the fade, low enough that no listed row is covered; the
-  books' one number (0%, page text at the Display role's top size, not a picture) with the books
-  stacked in the corner beside it; and what people
+  books' one number (0%, page text at 32, Space Grotesk 500 in the chapter's ink, not a picture)
+  with the books stacked in the corner beside it, its words kept clear of them; and what people
   ask about as white chips, a record player in the corner, which gives way to the chips on a tile
   under 20rem. The two between them stand alone, each one group centred over its words: the home's
   things (the lamp at the back, the pot, the bowls in front over the lamp's base and the pot's
@@ -1347,19 +1347,19 @@ in ink it stays neutral and lime stays the one colour in the action row.
   The details open under the card's row as one white panel across the grid (dense placement, so
   it lands under the right row at any column count), edged and pointed at its card by a caret in
   the chapter's hue, as is the open card's edge; inside, each fact is a brand label, the rule in a
-  few words at the Title role, and why in Body, columns split by hairlines from `md`, so the panel
+  few words at 16 (Space Grotesk 600), and why at 14, columns split by hairlines from `md`, so the panel
   reads as a short spec, not a paragraph; it ends on one link (the price check, or WhatsApp with
   the message already written). One card is open at a time; the panel's height moves as the
   disclosure's does, but a card opened beside the open one takes its panel's place at once and the
   caret slides across. On a phone the tiles stack, the picture over the words, rather than
   becoming a strip: each answers a question every visitor has, so none may hide behind a swipe. The two
   parts after the cards each open under a full-width hairline with a sub-head a step under the
-  section's (24px, 30px from `sm`). Second, the packing guide (`#packing`, where the order flow
+  section's (20px on a phone, 32 from `sm`), each as far under what comes before it. Second, the packing guide (`#packing`, where the order flow
   links): that the customer packs everything, then what it all travels in (suitcases, boxes,
   special packaging): the one rule that prices every piece, then three columns open on the desk, split by
   hairlines from `md` (nothing in them opens, so they are not cards), each set as a fact in the
-  cards' details is: its name as the brand label in the chapter's ink, its own rule at the Title
-  role ("Double-wall, up to 25 kg"), why in Dim Grey, so no two lines in a column speak at the
+  cards' details is: its name as the brand label in the chapter's ink, its own rule at 16
+  ("Double-wall, up to 25 kg"), why in Dim Grey, so no two lines in a column speak at the
   same level; its drawing at 120 × 80, two thirds of
   a card's, since it's what things travel in, not what you send; what a piece packed any other way
   loses (its claim at the declared value) on one line under all three, and furniture's own steps
@@ -1367,11 +1367,29 @@ in ink it stays neutral and lime stays the one colour in the action row.
   white square, the title over one line that says what's inside, the chevron in a white ring), so
   it reads as something to open rather than a line of text; still a `<details>`, so the order
   flow's `#packing-furniture` opens it. Its six steps are numbered in How it works' tiles. Third, what to check before
-  sending, a Panel 2 block: what can go once the team has looked (each thing in a 2px warning
-  ring, the warning glyph on its head) beside what can't go at all (each struck through by the
-  no-entry sign, a 2px Stop Red ring and slash), side by side from `lg`, over the one place that
+  sending, a Panel 2 block: what can go once the team has looked (each thing in a 32px warning
+  ring of 1.5px, the warning glyph on its head) beside what can't go at all (each struck through
+  by the no-entry sign, a 1.5px Stop Red ring and slash), side by side from `lg`, over the one place that
   asks for a photo or a list. Seven things that can't go read as four and three: down two columns
   on a phone and from `lg`, across four between, never a row with one left over.
+  **What you can ship's scales (2026-11-13).** Under the page's head the section is set in five
+  sizes, one line height each: a part's title, 32 on 40 from `sm` and 20 on 28 on a phone (where
+  the heading is 32); a tile's name, 20 on 28; a rule, 16 on 24 in Space Grotesk 600, for a
+  pack's rule, a fact's in the open details, the two lists' heads in "Before you send" and the
+  furniture tile's title, so on a phone a part's title is never the size of what's under it (it
+  was: eleven things at 20 at 1440, thirteen on a phone, "Before you send" the size of "Check with
+  us first"); the packing lead, 16 on 24; every sentence, 14 on 20 in Dim Grey, a list's things
+  and a tile's toggle at 14 medium in Ink (14 had stood on two lines, 20 and 22.75, and 16 on 24
+  and 26); the brand labels, 12 uppercase in the chapter's ink. The books' figure is 32. Space:
+  4 from a label to its rule and a name or a rule to its words; 12 from a part's title to its
+  lead, and between a list's things; 16 between tiles, from a list's head to its things and from
+  a drawing to its label; 24 inside a tile and from the packs to what a claim loses; 32 from a
+  part's title or lead to what it holds and between its blocks; 48 under the head from `sm`, and
+  the gap before each part's line on a phone, 64 from `sm`, the same for both parts (they had
+  been 48 and 64). The charges link closes the packing lead's sentence rather than standing on a
+  line of its own. Colours stand as they were: Ink, Dim Grey, the chapter's ink for labels and
+  the figure, Panel 3 and the wash for the tiles, the warning and stop rings, the house link
+  blue; the toggle's chevron is Dim Grey, not a third grey.
 - **The customs routes** (`ExpatCustoms`, from ops' import summary, the source of truth for the
   service): the three ways belongings clear Indonesian customs, as three white planes side by
   side on the magenta band from `lg` (stacked below it, never two and one), **set as equals**:

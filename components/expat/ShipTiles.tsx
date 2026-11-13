@@ -115,18 +115,21 @@ export function ClothesPicture() {
 /*  Books: the one number                                              */
 /* ------------------------------------------------------------------ */
 
-/** the duty books pay, as the customs table states it, at the Display
- *  role's top size (DESIGN.md, Typography): page text, not a picture, so
- *  it's read as well as seen */
+/** the duty books pay, as the customs table states it, at a part's title
+ *  size (32): the tile's figure, a step over its 20px name and a step under
+ *  the section's heading, where at 48 it outranked both. Page text, not a
+ *  picture, so it's read as well as seen */
 export function BooksStat() {
   const t = useT();
   return (
-    <div className="px-6 pt-6">
+    // the words keep clear of the books in the corner (BooksPicture, 10rem
+    // wide, 1.25rem from the edge), however high the figure stands
+    <div className="pl-6 pr-[12rem] pt-6">
       <p className="text-sm font-medium text-tone-ink">{t("expat.ship.books.stat.lead")}</p>
-      <p className="mt-2 whitespace-nowrap font-display text-display font-medium leading-[1.05] tracking-[-0.02em] text-tone-ink tabular-nums">
+      <p className="mt-1 whitespace-nowrap font-display text-heading font-medium tracking-tight text-tone-ink tabular-nums">
         {t("expat.customs.rates.books.duty")}
       </p>
-      <p className="mt-3 max-w-[15rem] text-sm leading-relaxed text-muted">{t("expat.ship.books.stat.label")}</p>
+      <p className="mt-1 text-sm text-muted">{t("expat.ship.books.stat.label")}</p>
     </div>
   );
 }

@@ -270,7 +270,7 @@ export function WhatYouCanShip() {
                     <div className={cn("flex min-w-0 flex-col px-6 pb-6", !Picture && "pt-6", hero && "md:max-w-[19rem]")}>
                       <h3 className="font-display text-xl font-semibold tracking-tight">{k("title")}</h3>
                       {/* two lines held from sm, so a row's titles share a line */}
-                      <p className="mt-2 text-sm leading-relaxed text-muted sm:min-h-[2lh]">{k("answer")}</p>
+                      <p className="mt-1 text-sm text-muted sm:min-h-[2lh]">{k("answer")}</p>
                       {/* the whole card is the toggle's hit area; the label
                           says what the details hold */}
                       <button
@@ -282,7 +282,7 @@ export function WhatYouCanShip() {
                         className="mt-auto flex items-center gap-2 self-start pt-4 text-left text-sm font-medium after:absolute after:inset-0 after:rounded-lg after:transition-colors active:after:bg-[color-mix(in_oklab,var(--tone-ink)_6%,transparent)] focus-visible:outline-none focus-visible:after:ring-2 focus-visible:after:ring-foreground/60"
                       >
                         {k("more")}
-                        <Chevron aria-hidden className="size-4 text-muted-2" />
+                        <Chevron aria-hidden className="size-4 text-muted" />
                       </button>
                     </div>
                   </div>
@@ -306,9 +306,9 @@ export function WhatYouCanShip() {
                               <dt className="font-display text-xs font-medium uppercase tracking-[0.04em] text-tone-ink">
                                 {k(`${f}.label`)}
                               </dt>
-                              <dd className="mt-2">
-                                <p className="font-display text-xl font-semibold tracking-tight">{k(`${f}.value`)}</p>
-                                <p className="mt-2 text-sm leading-relaxed text-muted">{k(`${f}.body`)}</p>
+                              <dd className="mt-1">
+                                <p className="font-display text-base font-semibold tracking-tight">{k(`${f}.value`)}</p>
+                                <p className="mt-1 text-sm text-muted">{k(`${f}.body`)}</p>
                               </dd>
                             </div>
                           ))}
@@ -347,18 +347,23 @@ export function WhatYouCanShip() {
             prices every piece over them. Each reads as a fact in the cards'
             details does: its name the label, its own rule the title, why
             under it, so no two lines in a column speak at the same level.
-            On a phone each reads as a card does, drawing beside the words */}
+            On a phone each reads as a card does, drawing beside the words.
+            Its line sits as far under the cards as the next part's sits
+            under it, 48 and 64 from sm: the grid's last 16 is its cards'
+            own foot */}
         <div
           id="packing"
-          className="part-rule jr-reveal mt-12 scroll-mt-24 border-t pt-8 sm:mt-16 sm:pt-12"
+          className="part-rule jr-reveal mt-16 scroll-mt-24 border-t pt-8 sm:mt-20 sm:pt-12"
           style={order(1 + CARDS.length)}
         >
           <h3 className="font-display text-xl font-semibold tracking-tight sm:text-heading">{t("expat.ship.pack.title")}</h3>
-          <p className="mt-2 max-w-2xl leading-relaxed text-muted">{t("expat.ship.pack.lead")}</p>
-          <p className="mt-2 text-sm">
+          {/* the charges close the sentence about the price, as the way to
+              ask closes "Before you send", not a line of their own */}
+          <p className="mt-3 max-w-2xl text-muted">
+            {t("expat.ship.pack.lead")}{" "}
             {/* the same modal as the main site's calculator */}
             <SurchargeInfoDialog>
-              <button type="button" className="link-mark tap-row">
+              <button type="button" className="link-mark whitespace-nowrap text-left">
                 {t("expat.ship.charges")}
               </button>
             </SurchargeInfoDialog>
@@ -378,8 +383,8 @@ export function WhatYouCanShip() {
                   <h4 className="font-display text-xs font-medium uppercase tracking-[0.04em] text-tone-ink">
                     {t(`expat.ship.pack.${p}.title`)}
                   </h4>
-                  <p className="mt-2 font-display text-xl font-semibold tracking-tight">{t(`expat.ship.pack.${p}.rule`)}</p>
-                  <p className="mt-2 text-sm leading-relaxed text-muted">{t(`expat.ship.pack.${p}.body`)}</p>
+                  <p className="mt-1 font-display text-base font-semibold tracking-tight">{t(`expat.ship.pack.${p}.rule`)}</p>
+                  <p className="mt-1 text-sm text-muted">{t(`expat.ship.pack.${p}.body`)}</p>
                 </div>
               </li>
             ))}
@@ -387,7 +392,7 @@ export function WhatYouCanShip() {
           {/* why the guide matters, in ops' own terms: nothing is turned
               away at pickup, but a damage claim on a piece packed any other
               way isn't paid at its declared value */}
-          <p className="mt-8 flex gap-2 text-sm leading-relaxed">
+          <p className="mt-6 flex gap-2 text-sm">
             <ShieldAlert aria-hidden className="mt-0.5 size-4 shrink-0 text-tone-ink" />
             {t("expat.ship.pack.claim")}
           </p>
@@ -404,19 +409,19 @@ export function WhatYouCanShip() {
               tile
               question={
                 <span className="flex items-center gap-4">
-                  <span aria-hidden className="grid size-11 shrink-0 place-items-center rounded-sm bg-background text-tone-ink">
+                  <span aria-hidden className="grid size-12 shrink-0 place-items-center rounded-sm bg-background text-tone-ink">
                     <Sofa className="size-5" strokeWidth={1.75} />
                   </span>
                   <span className="min-w-0">
-                    <span className="block font-display text-xl font-semibold tracking-tight">
+                    <span className="block text-balance font-display text-base font-semibold tracking-tight">
                       {t("expat.ship.pack.furniture.title")}
                     </span>
-                    <span className="mt-0.5 block text-sm text-muted">{t("expat.ship.pack.furniture.hint")}</span>
+                    <span className="mt-1 block text-sm text-muted">{t("expat.ship.pack.furniture.hint")}</span>
                   </span>
                 </span>
               }
             >
-              <p className="max-w-2xl text-sm leading-relaxed text-muted">{t("expat.ship.pack.furniture.lead")}</p>
+              <p className="max-w-2xl text-sm text-muted">{t("expat.ship.pack.furniture.lead")}</p>
               <ol className="mt-6 grid gap-x-8 gap-y-6 sm:grid-cols-2 lg:grid-cols-3">
                 {FURNITURE.map((step, n) => (
                   <li key={step} className="flex gap-3">
@@ -428,7 +433,7 @@ export function WhatYouCanShip() {
                     </span>
                     <div className="min-w-0">
                       <p className="text-sm font-medium">{t(`expat.ship.pack.furniture.${step}.title`)}</p>
-                      <p className="mt-1 text-sm leading-relaxed text-muted">{t(`expat.ship.pack.furniture.${step}.body`)}</p>
+                      <p className="mt-1 text-sm text-muted">{t(`expat.ship.pack.furniture.${step}.body`)}</p>
                     </div>
                   </li>
                 ))}
@@ -445,14 +450,14 @@ export function WhatYouCanShip() {
           <h3 className="font-display text-xl font-semibold tracking-tight sm:text-heading">{t("expat.ship.before.title")}</h3>
           {/* de-boxed on the desk: no tinted panel, so nothing in the sky
               chapter stacks against the violet band that follows */}
-          <div className="mt-6 grid lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
+          <div className="mt-8 grid lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
             <div className="lg:pr-12">
-              <h4 className="flex items-center gap-2 font-display text-xl font-semibold tracking-tight">
-                <CircleAlert aria-hidden className="size-5 text-warning-ink" strokeWidth={2.25} />
+              <h4 className="flex items-center gap-2 font-display text-base font-semibold tracking-tight">
+                <CircleAlert aria-hidden className="size-4 text-warning-ink" strokeWidth={2.25} />
                 {t("expat.ship.before.check.title")}
               </h4>
-              <p className="mt-2 text-sm leading-relaxed text-muted">{t("expat.ship.before.check.body")}</p>
-              <ul className="mt-6 grid gap-x-4 gap-y-4 sm:grid-cols-3 lg:grid-cols-1">
+              <p className="mt-1 text-sm text-muted">{t("expat.ship.before.check.body")}</p>
+              <ul className="mt-4 grid gap-x-4 gap-y-3 sm:grid-cols-3 lg:grid-cols-1">
                 {CHECK.map(({ icon, key }) => (
                   <li key={key} className="flex items-center gap-3 text-sm font-medium">
                     <Ring icon={icon} />
@@ -462,15 +467,15 @@ export function WhatYouCanShip() {
               </ul>
             </div>
             <div className="part-rule mt-8 border-t pt-6 lg:mt-0 lg:border-l lg:border-t-0 lg:pl-12 lg:pt-0">
-              <h4 className="flex items-center gap-2 font-display text-xl font-semibold tracking-tight">
-                <Ban aria-hidden className="size-5 text-danger" strokeWidth={2.25} />
+              <h4 className="flex items-center gap-2 font-display text-base font-semibold tracking-tight">
+                <Ban aria-hidden className="size-4 text-danger" strokeWidth={2.25} />
                 {t("expat.ship.before.banned.title")}
               </h4>
-              <p className="mt-2 text-sm leading-relaxed text-muted">{t("expat.ship.before.banned.body")}</p>
+              <p className="mt-1 text-sm text-muted">{t("expat.ship.before.banned.body")}</p>
               {/* seven things as four and three: down two columns on a phone
                   and beside the asking from lg, so the three read as a column
                   that ends, not a row with one left over; across four between */}
-              <ul className="mt-6 grid grid-flow-col grid-cols-2 grid-rows-4 gap-x-4 gap-y-4 sm:grid-flow-row sm:grid-cols-4 sm:grid-rows-none lg:grid-flow-col lg:grid-cols-2 lg:grid-rows-4">
+              <ul className="mt-4 grid grid-flow-col grid-cols-2 grid-rows-4 gap-x-4 gap-y-3 sm:grid-flow-row sm:grid-cols-4 sm:grid-rows-none lg:grid-flow-col lg:grid-cols-2 lg:grid-rows-4">
                 {BANNED.map(({ icon, key }) => (
                   <li key={key} className="flex items-center gap-3 text-sm font-medium">
                     <Ring icon={icon} banned />
@@ -479,7 +484,7 @@ export function WhatYouCanShip() {
                 ))}
               </ul>
             </div>
-            <p className="part-rule mt-8 border-t pt-4 text-sm leading-relaxed text-muted lg:col-span-2">
+            <p className="part-rule mt-8 border-t pt-4 text-sm text-muted lg:col-span-2">
               {t("expat.ship.before.ask")}{" "}
               <a
                 href={waLink(t("expat.ship.before.wa"))}
@@ -504,12 +509,12 @@ function Ring({ icon: Icon, banned = false }: { icon: LucideIcon; banned?: boole
     <span
       aria-hidden
       className={cn(
-        "relative grid size-10 shrink-0 place-items-center rounded-full border-2 bg-background",
+        "relative grid size-8 shrink-0 place-items-center rounded-full border-[1.5px] bg-background",
         banned ? "border-danger/75" : "border-warning/75",
       )}
     >
-      <Icon className="size-4.5" strokeWidth={1.75} />
-      {banned && <span className="absolute inset-x-0.5 top-1/2 h-0.5 -translate-y-1/2 rotate-45 rounded-full bg-danger/75" />}
+      <Icon className="size-4" strokeWidth={1.75} />
+      {banned && <span className="absolute inset-x-0.5 top-1/2 h-[1.5px] -translate-y-1/2 rotate-45 rounded-full bg-danger/75" />}
     </span>
   );
 }
