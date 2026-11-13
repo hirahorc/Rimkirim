@@ -6,7 +6,7 @@ import { useLanguage } from "@/lib/i18n/LanguageProvider";
 import { expatRates } from "@/lib/pricing/expat-rates";
 import { formatNumber } from "@/lib/utils/currency";
 import { cn } from "@/lib/utils/cn";
-import { at, Bar } from "./SceneParts";
+import { at } from "./SceneParts";
 
 /**
  * The pricing section's four pictures, one a step, working the section's
@@ -34,22 +34,16 @@ type Turn = {
   arrive: number;
 };
 
-/** a handling surcharge a piece brings, as the Surcharge Information's
- *  FedEx table has it; `size` is its amount as a filler line's length,
- *  since this page names no amount (Oversize is twice the others) */
-const CHARGES = {
-  bag: { size: 2.5 },
-  overweight: { size: 2.5 },
-  oversize: { size: 5 },
-} as const;
-type Charge = keyof typeof CHARGES;
+/** a handling surcharge a piece brings, by its name in the Surcharge
+ *  Information's FedEx table (FedEx is the rate step 3 ends on) */
+type Charge = "bag" | "overweight" | "oversize";
 
 /**
  * The shipment: a box light for its size (its size counts), the suitcase
  * from the ops sheet that set the rounding rule (its weight counts, 20.97
  * kg, so 21), and a heavy box of books, over 25 kg and over 50 kg, so two
  * surcharges and only the higher one charged. `charges` is what each one
- * brings, in the order it's found.
+ * brings, the lower first, so the last is the one charged.
  */
 const PIECES = [
   { key: "box1", kg: 8.4, dims: [50, 40, 38], charges: [] as Charge[] },
@@ -277,81 +271,116 @@ export function RateScene({ start, arrive }: Turn) {
 /*  4: plus a handling surcharge, if a piece needs one                 */
 /* ------------------------------------------------------------------ */
 
-/** one surcharge a piece brings: its name and why, and its amount as a
- *  filler line. `dropped`: the piece brings a higher one too, so this one
- *  is struck through and goes quiet at `ms`, with the higher one left */
-function ChargeLine({ charge, ms, dropped }: { charge: Charge; ms: number; dropped?: number }) {
-  const { k } = useScene();
-  const line = (quiet: boolean) => (
-    <span className={cn("flex items-center justify-between gap-[1em]", quiet && "text-muted-2")}>
-      <span className="min-w-0 truncate text-[0.78em]">{k(charge)}</span>
-      {/* the rate card's own filler price (RateCard, figures={false}) */}
-      <Bar
-        w={`${CHARGES[charge].size}em`}
-        className={cn("h-[0.6em]", quiet ? "bg-foreground/[0.07]" : "bg-foreground/15")}
-      />
-    </span>
-  );
+/** the quotation's check on the one surcharge a piece is charged, drawn
+ *  at `ms` */
+function Charged({ ms }: { ms: number }) {
   return (
-    <span className="jr jr-rise mt-[0.3em] block" style={at(ms)}>
-      {dropped === undefined ? (
-        line(false)
-      ) : (
-        <span className="relative grid [&>*]:[grid-area:1/1]">
-          <span className="jr-pass" style={pass(ms, dropped - ms)}>
-            {line(false)}
+    <svg viewBox="0 0 16 16" className="block size-[0.9em]" aria-hidden>
+      <path
+        className="jr jr-check"
+        style={at(ms)}
+        d="M3.5 8.5l3 3 6-7"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2.4"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        pathLength={24}
+      />
+    </svg>
+  );
+}
+
+/**
+ * One surcharge a piece brings, as the quotation lists it (QuotationCard):
+ * a check where it's charged, its name, and on the right, where the
+ * quotation has its amount, why. It comes in plain at `ms`; at `decide`
+ * the piece's one charge is settled: `charged` draws its check, `dropped`
+ * goes quiet and is struck through, its name only.
+ */
+function ChargeLine({
+  charge,
+  ms,
+  decide,
+  charged,
+}: {
+  charge: Charge;
+  ms: number;
+  decide: number;
+  charged: boolean;
+}) {
+  const { k } = useScene();
+  const name = k(charge);
+  return (
+    <span className="jr jr-drop mt-[0.3em] flex items-baseline justify-between gap-[1em]" style={at(ms)}>
+      <span className="flex min-w-0 items-baseline gap-[0.35em]">
+        <span className="w-[0.9em] shrink-0 self-center">{charged && <Charged ms={decide} />}</span>
+        {charged ? (
+          <span className="truncate text-[0.78em]">{name}</span>
+        ) : (
+          // the name as it came in, then the same name quiet over it, and
+          // the strike drawn across it
+          <span className="relative grid text-[0.78em] [&>*]:[grid-area:1/1]">
+            <span className="jr-pass whitespace-nowrap" style={pass(ms, decide + SWAP_MS - ms)}>
+              {name}
+            </span>
+            <span className="jr jr-swap whitespace-nowrap text-muted-2" style={at(decide)}>
+              {name}
+            </span>
+            <span
+              className="jr jr-grow absolute inset-x-0 top-[57%] h-px origin-left bg-muted-2"
+              style={at(decide)}
+              data-scene-end=""
+            />
           </span>
-          <span className="jr jr-swap" style={at(dropped)}>
-            {line(true)}
-          </span>
-          <span
-            className="jr jr-grow h-px self-center origin-left bg-muted-2"
-            style={at(dropped)}
-            data-scene-end=""
-          />
-        </span>
-      )}
+        )}
+      </span>
+      <span className="shrink-0 text-[0.75em] text-muted-2">{k(`${charge}Why`)}</span>
     </span>
   );
 }
 
 /**
- * The same three pieces as they'd stand in the quotation, checked a piece
- * at a time, since a surcharge is charged per piece: the box needs none;
- * the suitcase brings one, for being a suitcase; the box of books brings
- * two, over 25 kg and over 50 kg, and the lower is struck through, since
- * only the highest one applies to a piece. Each amount is a filler line as
- * long as it is high, as the rate is in step 3.
+ * The quotation's surcharge breakdown, cut to the shipment's three pieces:
+ * each with its name and the weight it was typed in at, since a surcharge
+ * is per piece and on its actual weight, checked a piece at a time. The
+ * box needs none. The suitcase brings Suitcase/Bag, for not being a box,
+ * and is charged it. The box of books brings Overweight, then Oversize;
+ * then Oversize is charged and Overweight struck through, since only the
+ * highest applies to a piece. Named as the Surcharge Information's FedEx
+ * table names them, and with no amounts: this page names none.
  */
 export function SurchargeScene({ start, arrive }: Turn) {
-  const { k } = useScene();
+  const { k, kg } = useScene();
   /** when a piece is checked */
-  const check = [start + 300, start + 900, start + 1500];
+  const check = [start + 200, start + 600, start + 1150];
   return (
     <div className={CARD} style={at(arrive)}>
       <span className={LABEL}>{k("surchargeHead")}</span>
-      <ul className="mt-[0.35em] divide-y divide-border">
-        {PIECES.map((p, i) => (
-          <li key={p.key} className="py-[0.5em]">
-            <span className="flex items-baseline justify-between gap-[1em]">
-              <span className="text-[0.85em] font-medium">{k(p.key)}</span>
-              {p.charges.length === 0 && (
-                <span className="jr jr-rise text-[0.78em] text-muted-2" style={at(check[i])}>
-                  {k("none")}
+      <ul className="mt-[0.45em] grid gap-[0.35em]">
+        {PIECES.map((p, i) => {
+          const last = p.charges.length - 1;
+          // one charge is settled as soon as it's in; of two, once both are
+          const decide = check[i] + (last > 0 ? 800 : 250);
+          return (
+            <li key={p.key} className="rounded-[0.5em] bg-surface-2 px-[0.7em] py-[0.45em]">
+              <span className="flex items-baseline justify-between gap-[1em]">
+                <span className="flex min-w-0 items-baseline gap-[0.45em]">
+                  <span className="truncate text-[0.82em] font-medium">{k(p.key)}</span>
+                  <span className="shrink-0 text-[0.75em] tabular-nums text-muted-2">{kg(p.kg)}</span>
                 </span>
-              )}
-            </span>
-            {p.charges.map((c, j) => (
-              <ChargeLine
-                key={c}
-                charge={c}
-                ms={check[i] + j * 500}
-                // the lower of two goes once the higher has come in
-                dropped={p.charges.length > 1 && j === 0 ? check[i] + 1100 : undefined}
-              />
-            ))}
-          </li>
-        ))}
+                {last < 0 && (
+                  <span className="jr jr-rise shrink-0 text-[0.75em] text-muted-2" style={at(check[i])}>
+                    {k("none")}
+                  </span>
+                )}
+              </span>
+              {p.charges.map((c, j) => (
+                <ChargeLine key={c} charge={c} ms={check[i] + j * 300} decide={decide} charged={j === last} />
+              ))}
+            </li>
+          );
+        })}
       </ul>
     </div>
   );

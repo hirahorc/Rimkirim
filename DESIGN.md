@@ -1071,14 +1071,21 @@ home hero's floating verdicts and the expat hero's departure board. Treat any ot
   lands, 89 kg, the one big number. No plus sign: rows over a rule are a sum already. 3: Check
   Rate's own card with its price as a filler line as long as the rate is high (`RateCard`,
   `figures={false}`: this page names no price); the origin changes, then the service, and the
-  line changes length each time; then the weight meets it. 4: the same three pieces as the
-  quotation lists them, under "Handling surcharge", checked a piece at a time since a surcharge
-  is per piece, each surcharge named with why (the Surcharge Information's FedEx table) and its
-  amount as the rate card's filler line, as long as it is high: the box needs none; the suitcase
-  brings one, for being a suitcase; the box of books brings two, over 25 kg (Overweight) and over
-  50 kg (Oversize, twice the amount), and the lower is struck through and goes quiet, since only
-  the highest one applies to a piece. Tried first and dropped: the pieces against three tests in
-  a tick-and-cross grid with a Yes or No under each, which read as a quiz and not as a bill.
+  line changes length each time; then the weight meets it. 4: the quotation's surcharge
+  breakdown (`QuotationCard`) cut to the three pieces, each a panel with its name and the weight
+  it was typed in at (a surcharge is per piece and on its actual weight), checked a piece at a
+  time. Each surcharge is named as the Surcharge Information's FedEx table names it (FedEx is the
+  rate step 3 ends on), with why on the right, where the quotation has its amount: no amounts,
+  since this page names none until ops confirms them. The box needs none; the suitcase brings
+  Suitcase/Bag, for not being a box, and its check is drawn; the box of books brings Overweight
+  (over 25 kg), then Oversize (over 50 kg), and once both are in the check goes to Oversize while
+  Overweight goes quiet and is struck through, as the quotation strikes it: only the highest
+  applies to a piece. A piece's surcharges are listed lower first (the quotation lists the
+  highest first) so the two read as a climb and the one charged lands last. Tried and dropped:
+  the pieces against three tests in a tick-and-cross grid with a Yes or No under each, which read
+  as a quiz and not as a bill; then the quotation with each amount as a filler line as long as it
+  was high, which put grey pills where the eye compares, struck a pill along with its name, and
+  could not tell anyone which charge was higher.
   One thing takes another's place by fading in over it on the same lines, opaque, and the one
   under it goes once it's hidden (`.jr-pass`, `.jr-swap`): moved as well, two sheets with the same
   labels cross as a blur. A piece that only passes stands hidden wherever nothing plays, so what a

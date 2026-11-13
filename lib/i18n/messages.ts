@@ -820,9 +820,13 @@ const id = {
         rate: "× tarif per kilo",
         surchargeHead: "Surcharge penanganan",
         none: "Tidak ada",
-        bag: "Koper atau tas",
-        overweight: "Overweight, di atas 25 kg",
-        oversize: "Oversize, di atas 50 kg",
+        // named as the Surcharge Information's FedEx table names them
+        bag: "Koper/Tas",
+        bagWhy: "bukan kardus",
+        overweight: "Overweight",
+        overweightWhy: "di atas 25 kg",
+        oversize: "Oversize",
+        oversizeWhy: "di atas 50 kg",
       },
       thread: {
         today: "Hari ini",
@@ -3094,9 +3098,13 @@ const en: Messages = {
         rate: "× rate per kilo",
         surchargeHead: "Handling surcharge",
         none: "None",
-        bag: "Suitcase or bag",
-        overweight: "Overweight, over 25 kg",
-        oversize: "Oversize, over 50 kg",
+        // named as the Surcharge Information's FedEx table names them
+        bag: "Suitcase/Bag",
+        bagWhy: "not a box",
+        overweight: "Overweight",
+        overweightWhy: "over 25 kg",
+        oversize: "Oversize",
+        oversizeWhy: "over 50 kg",
       },
       thread: {
         today: "Today",
