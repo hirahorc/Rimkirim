@@ -570,7 +570,7 @@ const id = {
           },
           measure: {
             title: "Ukur dan timbang",
-            body: "Ukur dan timbang setiap koli setelah dikemas, lalu kirim angkanya ke kami: harganya dihitung dari angka itu. Tiap koli dihitung dari berat aktual atau berat volumetriknya, mana yang lebih besar.",
+            body: "Ukur dan timbang setiap koli setelah dikemas, lalu kirim angkanya ke kami. Tiap koli dihitung dari berat aktual atau berat volumetriknya, mana yang lebih besar.",
           },
           label: {
             title: "Beri label",
@@ -2868,7 +2868,7 @@ const en: Messages = {
           },
           measure: {
             title: "Measure and weigh it",
-            body: "Measure and weigh every packed piece and send us the numbers: they're what your price is based on. Each piece is charged on the higher of its actual or volumetric weight.",
+            body: "Measure and weigh every packed piece and send us the numbers. Each piece is charged on the higher of its actual or volumetric weight.",
           },
           label: {
             title: "Label it",
