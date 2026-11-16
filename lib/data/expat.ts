@@ -90,8 +90,8 @@ const FAQ: ExpatFaqSource[] = [
   {
     q: { id: "Berapa lama pengirimannya?", en: "How long does it take?" },
     a: {
-      id: "Lewat udara dari Eropa, biasanya sekitar 4–8 hari perjalanan, ditambah sekitar 4–10 hari kerja untuk clearance di Indonesia. Jauh lebih cepat daripada kargo laut, yang biasanya butuh lima sampai enam minggu di laut saja. Estimasi untuk rutemu tampil saat kamu cek tarif.",
-      en: "By air from Europe, usually around 4–8 days in transit, plus about 4–10 working days for customs clearance in Indonesia. That's much faster than sea freight, which usually spends five to six weeks at sea alone. You'll see the estimate for your route when you check your rate.",
+      id: "Lewat udara dari Eropa, biasanya sekitar 4–8 hari perjalanan, ditambah sekitar 4–10 hari kerja untuk clearance di Indonesia. Estimasi untuk rutemu tampil saat kamu cek tarif.",
+      en: "By air from Europe, usually around 4–8 days in transit, plus about 4–10 working days for customs clearance in Indonesia. You'll see the estimate for your route when you check your rate.",
     },
   },
   {
