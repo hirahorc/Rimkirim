@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import { SurchargeInfoDialog } from "@/components/rates/SurchargeInfoDialog";
 import { EXPAT_QUOTE_URL, REVIEW_NOTES } from "@/lib/data/expat";
 import { useT } from "@/lib/i18n/LanguageProvider";
-import { cn } from "@/lib/utils/cn";
 import { SectionHead } from "./SectionHead";
 import { ReviewNote } from "./ReviewNote";
 import { SceneStage } from "./SceneStage";
@@ -14,13 +13,11 @@ import { ChargeableScene, RateScene, SumScene, SurchargeScene } from "./PricingS
 import { useMedia } from "./useMedia";
 import { revealOrder as order, useSectionReveal } from "./useSectionReveal";
 
-/** `frame`: the picture's shape where the steps are stacked, as tall as what
- *  it holds and no taller; side by side they share one */
 const STEPS = [
-  { key: "step1", Scene: ChargeableScene, frame: "aspect-[4/3]" },
-  { key: "step2", Scene: SumScene, frame: "aspect-[3/2]" },
-  { key: "step3", Scene: RateScene, frame: "aspect-[4/3]" },
-  { key: "step4", Scene: SurchargeScene, frame: "aspect-[4/3]" },
+  { key: "step1", Scene: ChargeableScene },
+  { key: "step2", Scene: SumScene },
+  { key: "step3", Scene: RateScene },
+  { key: "step4", Scene: SurchargeScene },
 ] as const;
 
 /** when each picture's turn comes, ms into the relay: as the one before
@@ -169,14 +166,17 @@ export function QuoteFactors() {
           onAnimationEnd={landed}
           className="mt-8 grid gap-x-6 gap-y-8 sm:mt-12 sm:grid-cols-2 xl:grid-cols-4"
         >
-          {STEPS.map(({ key, Scene, frame }, i) => {
+          {STEPS.map(({ key, Scene }, i) => {
             const { n, alone } = plays[i];
             const inRelay = relay && !alone;
             return (
+              // stacked on a phone, a picture runs the page's width, a
+              // gutter each side as every section's does; two by two and
+              // four in a row, none grows past 24rem
               <li
                 key={key}
                 data-step={i}
-                className="jr-reveal max-w-[24rem] xl:row-span-3 xl:grid xl:grid-rows-subgrid xl:gap-y-0"
+                className="jr-reveal sm:max-w-[24rem] xl:row-span-3 xl:grid xl:grid-rows-subgrid xl:gap-y-0"
                 style={order(1 + i)}
               >
                 <div className="relative">
@@ -185,9 +185,11 @@ export function QuoteFactors() {
                     key={`${inRelay ? "relay" : "alone"}-${n}`}
                     buildWith={inRelay ? "[data-relay]" : undefined}
                     onBuild={() => built(i)}
-                    // a little taller in the row, where the pictures are
-                    // narrowest and their type a bigger share of them
-                    className={cn(frame, "sm:aspect-[5/4] xl:aspect-[10/9]")}
+                    // one shape for the four at every width, so they read as
+                    // a set: the tallest picture's on a phone (steps 1 and 4
+                    // need all of it), a little taller in the row, where the
+                    // pictures are narrowest and their type a bigger share
+                    className="aspect-[4/3] sm:aspect-[5/4] xl:aspect-[10/9]"
                     sceneClassName="text-[length:5.3cqw] @min-[17rem]:text-[length:4.7cqw] @min-[21rem]:text-[length:4.2cqw]"
                   >
                     <Scene start={inRelay ? TURN[i] : 0} arrive={inRelay ? i * ARRIVE_MS : 0} />

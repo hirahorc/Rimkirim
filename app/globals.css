@@ -2246,26 +2246,12 @@ a.nav-expat:focus-visible {
 .jr-rail-head {
   animation: jr-rail-head calc(var(--dwell) - var(--run-delay)) linear var(--run-delay) both;
 }
-/* the stage's own progress below lg: the active step's segment fills over
-   its hold, on the timer ring's clock */
-@keyframes jr-seg-run {
-  from {
-    transform: scaleX(0);
-  }
-  to {
-    transform: scaleX(1);
-  }
-}
-.jr-seg-run {
-  transform-origin: left;
-  animation: jr-seg-run var(--dwell) linear both;
-}
-.jr-root:is([data-hold], [data-paused]) :is(.jr-timer, .jr-rail-run, .jr-rail-head, .jr-seg-run) {
+.jr-root:is([data-hold], [data-paused]) :is(.jr-timer, .jr-rail-run, .jr-rail-head) {
   animation-play-state: paused;
 }
 /* a mouse resting on the stage is someone looking at the scene */
 @media (hover: hover) and (pointer: fine) {
-  .jr-root:has(.jr-stage:hover) :is(.jr-timer, .jr-rail-run, .jr-rail-head, .jr-seg-run) {
+  .jr-root:has(.jr-stage:hover) :is(.jr-timer, .jr-rail-run, .jr-rail-head) {
     animation-play-state: paused;
   }
 }

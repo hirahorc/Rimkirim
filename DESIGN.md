@@ -1012,9 +1012,9 @@ home hero's floating verdicts and the expat hero's departure board. Treat any ot
   takes the rest of the hold, so it still lands as the timer ring closes. Reached by its run, a
   step's fill takes the run's place at once (`data-snap`), so the stretch just drawn never empties
   and refills; only a jump (a click, a replay) grows the fill. Below `lg`, where the steps sit
-  under the stage, the stage carries the progress itself:
-  one segment per step level with the control, the past ones full, the active one filling over its
-  hold on the ring's clock and pausing with it, as a story's bars do. After 04 it rests on the
+  under the stage, the control's ring is the stage's one clock: a story's bars along the stage's top
+  (one segment per step, the active one filling over its hold) were tried and taken out
+  (2026-11-14), a third timer beside the ring and the rail on one phone screen. After 04 it rests on the
   doorstep. A scene rebuilds each time it comes up while the steps play.
   **Under the stage, only the step on show is open.** Beside the stage (from `lg`) every step's
   words stand open. Under it the four at full length put the steps a screen away from their
@@ -1056,8 +1056,11 @@ home hero's floating verdicts and the expat hero's departure board. Treat any ot
   the filler line, the flag, the chat card) on the same ground, so the page's
   illustrations are one figure language. One hero surface a gutter from the top and sides, off the
   bottom, at most one satellite. Pricing has four, one over each step of its sum, small (a
-  quarter of the page from `xl`, two by two from `sm`, stacked on a phone, where each is only as
-  tall as what it holds) and so each a short motion graphic and not a still: a picture that size
+  quarter of the page from `xl`, two by two from `sm`, stacked on a phone, where they
+  run the page's width less its gutters as every section's picture does, and the four take one shape,
+  4:3, the tallest of them; 2026-11-14: each had been only as tall as what it held, so step 2
+  came out shorter and the four stopped reading as a set, and a 24rem cap meant for two by two
+  left a 430px phone a gutter twice as wide on the right; the cap now starts at `sm`) and so each a short motion graphic and not a still: a picture that size
   holds one thing at a time, and what passes through it in turn is what a still would have needed
   four times the room for. They work the sum on one shipment of three pieces (2026-11-13): a box
   light for its size (8.4 kg, 50 × 40 × 38 cm), the suitcase from ops' sheet (20.97 kg) and a box

@@ -269,28 +269,6 @@ export function JourneySteps({
               ))}
             </div>
           </Frame>
-          {/* below lg the steps sit under the stage, out of sight while the
-              scene plays, so the stage carries the progress itself: one
-              segment per step, level with the control, the past ones full,
-              the active one filling over its hold (paused with it), as a
-              story's bars do */}
-          {mode !== "idle" && (
-            <div
-              aria-hidden
-              className="pointer-events-none absolute left-3 right-[3.75rem] top-[1.75rem] flex gap-1 sm:left-4 sm:right-[4.5rem] sm:top-[2.125rem] lg:hidden"
-            >
-              {steps.map((s, i) => (
-                <span key={s.title} className="relative h-1 flex-1 overflow-hidden rounded-full bg-background/75">
-                  {(i < active || (i === active && !timing) || mode === "done") && (
-                    <span className="absolute inset-0 rounded-full bg-tone-ink" />
-                  )}
-                  {i === active && timing && (
-                    <span key={`${run}-${active}`} className="jr-seg-run absolute inset-0 rounded-full bg-tone-ink" />
-                  )}
-                </span>
-              ))}
-            </div>
-          )}
           {/* pause, play, replay; its ring is the active step's hold running out */}
           {mode !== "idle" && (
             <button
