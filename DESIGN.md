@@ -1966,9 +1966,22 @@ the action is paper with an Ink line (`QUIET`), since a wash fill here is a fiel
   `1fr`, so the way to ask sits right under the steps however long the record runs. The page
   is set in a cut of the flow's system: four sizes (24, 16, 14, 12), six steps of space (4, 8,
   12, 16, 24, 48), and paper, wash, ink and muted; no lime, as there's nothing left to act on.
-- **The customs block in the flow** reads the landing's own Customs copy, folded: each path's
-  name and the same two facts, as equals, ruled one from the next, the same for every customer.
-  It never reflects their answers (docs/adr/0002).
+- **The customs block in the flow** reads the landing's own Customs copy: each path's name and
+  the same two facts, as equals, ruled one from the next, the same for every customer. It never
+  reflects their answers (docs/adr/0002). The Booking Summary folds it under the steps. On the
+  plan it's **the customs guide** (`CustomsGuide.tsx`), a button always on screen wherever the
+  customer is: a paper card under the action beside the form from lg, a line at the top of the
+  bar on a phone, both with the guide's own title, a ShieldCheck (the landing's "cleared" mark)
+  and a chevron. It opens the paths in the house dialog (a sheet on a phone), and the first
+  time the plan opens, it opens itself, half a second in. Where it lives is shown, not said:
+  the modal comes out of its button (300ms, `--ease-out-soft`) and goes back into it, aimed at
+  the button's words, as something travelling across the screen (350ms,
+  `--ease-in-out-strong`, solid until its last 40%, the scrim gone first). The sheet slides into
+  the bar its button is in. As it lands the button takes it with one Ink ring that fades (the
+  arrival flash's family), and the first time only, an Ink bubble beside the button says "Open
+  this again here, any time." for six seconds. The dialog takes focus itself, not its button,
+  and gives it back to the guide's button. Under reduced motion nothing flies: the ring stands
+  for its 1.2s and the words appear and go.
 - **On the landing,** the pictures of the flow render these components inside `.tone-none`,
   which hands the neutrals back inside a chapter, so the picture shows the product as it is;
   `data-flow` on a picture hands it the flow's own colours as well.

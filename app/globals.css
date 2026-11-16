@@ -1378,6 +1378,52 @@ body:has(main > [data-flow]) [data-sonner-toaster][data-sonner-theme] {
 .dlg-panel[data-state="open"] { animation: dlg-panel-in 260ms var(--ease-out-soft) both; }
 .dlg-panel[data-state="closed"] { animation: dlg-panel-out 150ms var(--ease-out-soft) both; }
 
+/* The customs guide on the plan (CustomsGuide.tsx): its panel comes out of
+   the button that opens it and goes back into it, so where it lives is seen
+   rather than said. --to-x/--to-y are that button's centre measured from the
+   screen's, which is where the modal's own centre is, set as it opens and
+   again as it closes. Out on the system's ease-out in 300ms. Back in as
+   something travelling across the screen (--ease-in-out-strong), 350ms: past
+   the 300ms budget on purpose, since a flight that short reads as a blink.
+   It stays solid until the last 40%, so it's seen arriving; the scrim has
+   gone by then (150ms), so the button it lands on is in plain view. The
+   modal only: below sm the guide is the house sheet, which slides down into
+   the bar its button is in. Under reduced motion .dlg-panel stands (below),
+   and the button's ring and the words say it instead. */
+@keyframes customs-in {
+  from { opacity: 0; transform: translate(var(--to-x, 0), var(--to-y, 0)) scale(0.12); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes customs-out {
+  0% { opacity: 1; transform: none; }
+  60% { opacity: 1; }
+  100% { opacity: 0; transform: translate(var(--to-x, 0), var(--to-y, 0)) scale(0.12); }
+}
+.dlg-panel.customs-panel[data-state="open"] { animation: customs-in 300ms var(--ease-out-soft) both; }
+.dlg-panel.customs-panel[data-state="closed"] { animation: customs-out 350ms var(--ease-in-out-strong) both; }
+/* the button taking it back: one ring of Ink that fades, the arrival
+   flash's family (the colour channel, once). Under reduced motion the ring
+   stands for the same time, then goes */
+@keyframes customs-catch {
+  from { box-shadow: 0 0 0 2px var(--foreground); }
+  to { box-shadow: 0 0 0 2px transparent; }
+}
+.customs-catch { animation: customs-catch 1.2s var(--ease-out-soft) both; }
+/* the words that say where it opens again: in from the button's side
+   (--hint-from), out in a fade */
+@keyframes customs-hint-in {
+  from { opacity: 0; transform: translateY(var(--hint-from, 4px)); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes customs-hint-out { to { opacity: 0; } }
+.customs-hint { animation: customs-hint-in 200ms var(--ease-out-soft) both; }
+.customs-hint[data-state="off"] { animation: customs-hint-out 200ms ease-out both; }
+@media (prefers-reduced-motion: reduce) {
+  .customs-catch { animation-timing-function: steps(1, end); }
+  .customs-hint,
+  .customs-hint[data-state="off"] { animation: none; }
+}
+
 /* Popover panels (selects, date picker): a short lift from the trigger side. */
 @keyframes pop-in {
   from { opacity: 0; transform: translateY(-4px) scale(0.98); }

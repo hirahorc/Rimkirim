@@ -7,32 +7,22 @@ import { cn } from "@/lib/utils/cn";
 import { Fold, TYPE } from "./kit";
 
 /**
- * The three Customs Paths inside the order flow, folded: each path's name,
- * who it's for and its duty and tax, then the documents it needs, read
- * from the same copy as the landing's Customs section and set as equals, as
- * there, ruled one from the next, with the landing's word that customs may
- * ask for more. The same for every
- * customer, never matched to their answers, so it can't give away the
- * internal Customs Category (docs/adr/0002). It ends on the promise that ops
- * recommends a path at review and the choice stays the customer's.
+ * The three Customs Paths inside the order flow: each path's name, who it's
+ * for and its duty and tax, then the documents it needs, read from the same
+ * copy as the landing's Customs section and set as equals, as there, ruled
+ * one from the next, with the landing's word that customs may ask for more.
+ * The same for every customer, never matched to their answers, so it can't
+ * give away the internal Customs Category (docs/adr/0002). It ends on the
+ * promise that ops recommends a path at review and the choice stays the
+ * customer's. `lead` off where a dialog's description says it already
+ * (CustomsGuide, on the plan).
  */
-export function CustomsPaths({
-  id,
-  title,
-  edges = "both",
-  className,
-}: {
-  id: string;
-  title: string;
-  /** its hairlines: both in a column of rows, top only as a card's last row */
-  edges?: "both" | "top";
-  className?: string;
-}) {
+export function CustomsBody({ lead = true }: { lead?: boolean }) {
   const t = useT();
   return (
-    <Fold id={id} title={title} className={cn("border-t border-border", edges === "both" && "border-b", className)}>
-      <p className="text-sm text-muted">{t("expatOrder.customs.lead")}</p>
-      <ul className="mt-4 divide-y divide-border border-y border-border">
+    <>
+      {lead && <p className="mb-4 text-sm text-muted">{t("expatOrder.customs.lead")}</p>}
+      <ul className="divide-y divide-border border-y border-border">
         {CUSTOMS_ROUTES.map(({ key, docs }) => {
           const k = (path: string) => t(`expat.customs.${key}.${path}`);
           return (
@@ -66,6 +56,27 @@ export function CustomsPaths({
       </ul>
       <p className="mt-4 text-sm text-muted">{t("expat.customs.extraDocs")}</p>
       <p className="mt-2 text-sm text-muted">{t("expatOrder.customs.close")}</p>
+    </>
+  );
+}
+
+/** the Customs Paths folded under a line, as the Booking Summary keeps
+ *  the documents to get ready */
+export function CustomsPaths({
+  id,
+  title,
+  edges = "both",
+  className,
+}: {
+  id: string;
+  title: string;
+  /** its hairlines: both in a column of rows, top only as a card's last row */
+  edges?: "both" | "top";
+  className?: string;
+}) {
+  return (
+    <Fold id={id} title={title} className={cn("border-t border-border", edges === "both" && "border-b", className)}>
+      <CustomsBody />
     </Fold>
   );
 }

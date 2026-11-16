@@ -236,6 +236,8 @@ const id = {
       lead: "Ada tiga jalur, masing-masing dengan dokumen yang dibutuhkan.",
       needed: "Dokumen yang dibutuhkan",
       close: "Tidak perlu memilih sekarang. Saat mereview pesananmu, kami tunjukkan jalur yang paling menguntungkan dan dokumen yang dibutuhkan. Keputusannya tetap di kamu.",
+      gotIt: "Oke, paham",
+      reopen: "Buka lagi di sini, kapan saja.",
     },
     packing: {
       title: "Detail paket",
@@ -2530,6 +2532,8 @@ const en: Messages = {
       lead: "There are three ways in, each with the documents it needs.",
       needed: "Documents needed",
       close: "No need to choose now. When we review your booking, we'll point out the one that saves you the most and what it needs. The choice is yours.",
+      gotIt: "Got it",
+      reopen: "Open this again here, any time.",
     },
     packing: {
       title: "Package details",

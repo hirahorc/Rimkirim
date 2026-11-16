@@ -28,7 +28,7 @@ import { formatIDR, formatNumber } from "@/lib/utils/currency";
 import { useT } from "@/lib/i18n/LanguageProvider";
 import { cn } from "@/lib/utils/cn";
 import { shortDate } from "./booking-facts";
-import { CustomsPaths } from "./CustomsPaths";
+import { CustomsGuide, CustomsGuideButton } from "./CustomsGuide";
 import { DetailsStep } from "./DetailsStep";
 import { EligibilityStep } from "./EligibilityStep";
 import { FlowLoading } from "./FlowLoading";
@@ -170,7 +170,14 @@ export function PlanView() {
   // the plan mounts on the loaded draft, so it opens on the part that draft
   // has reached
   if (!hydrated || !rate) return <FlowLoading />;
-  return <Plan rate={rate} sending={sending} onSending={setSending} />;
+  return (
+    // how the belongings clear customs, a press away wherever the plan is,
+    // and opening itself the first time (it adds no element: the plan stays
+    // the page's own field)
+    <CustomsGuide>
+      <Plan rate={rate} sending={sending} onSending={setSending} />
+    </CustomsGuide>
+  );
 }
 
 function Plan({
@@ -382,6 +389,7 @@ function Plan({
                   {why(open)}
                 </p>
               )}
+              <CustomsGuideButton placement="side" className="mt-4" />
             </div>
           </div>
 
@@ -457,11 +465,10 @@ function Plan({
                       <CollapseHeight open={isOpen} id={id} className="px-4 pb-4 sm:px-6 sm:pb-6">
                         <div className="border-t border-border pt-6">
                           <ReviewNote note={ORDER_REVIEW_NOTES[part]} className="mb-6" />
+                          {/* the Customs Paths aren't folded in here any more:
+                              they're the guide's, a press away from every part */}
                           {part === "eligibility" && (
-                            <>
-                              <EligibilityStep value={eligibility} tried={tried.eligibility > 0} onChange={setEligibility} />
-                              <CustomsPaths id="customs-paths" title={t("expatOrder.customs.title")} className="mt-8" />
-                            </>
+                            <EligibilityStep value={eligibility} tried={tried.eligibility > 0} onChange={setEligibility} />
                           )}
                           {part === "details" && (
                             <DetailsStep
@@ -518,6 +525,9 @@ function Plan({
             share the line (a narrow phone, a nine-figure estimate, "Confirm
             application"), the button takes the line under it, full width */}
         <div className="mx-auto flex max-w-5xl flex-wrap items-center gap-x-4 gap-y-2">
+          {/* the customs guide's own line, over the estimate: on a phone the
+              bar is the one thing always on screen */}
+          <CustomsGuideButton placement="bar" className="basis-full" />
           <div className="shrink-0">
             <p className="text-xs text-muted">{t(updating ? "expatOrder.service.updating" : "expatOrder.service.estimate")}</p>
             <p
