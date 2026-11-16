@@ -1614,14 +1614,25 @@ eyebrow names the service right below.
   edge. Motion 100ms in (lift + 0.95 scale) / 100ms out; opens on hover, focus, and tap.
 
 ### The comparison lane (signature)
-The expat "Why Rimkirim" table, Rimkirim against the typical options. It stays a real table at
-every width from `md`, and Rimkirim is a **lane laid across a ruled sheet**: one continuous card
+The expat "Why Rimkirim" table, Rimkirim against the typical options. It is a real table at
+every width, and Rimkirim is a **lane laid across a ruled sheet**: one continuous card
 on the chapter's Panel 2 with the `lg` corner, rising above the header rule and running below the
 last row. Panel 2, not the band's wash: the table sits on the desk between two violet bands, and a
-wash-coloured lane would run the chapter together into one long violet stretch. On a phone the
-table becomes rows read down: the row's name, the lane's answer on its Panel 2 tile, then
-"Typical options:" under it. No head over the phone's rows: there are no columns there for one
-to name, and the tile says which answer is ours.
+wash-coloured lane would run the chapter together into one long violet stretch. On a phone it
+stays two columns side by side, half the width each, since the section's whole job is the
+comparison (2026-11-13; it was rows read down, our answer on a Panel 2 tile and "Typical
+options:" in a paragraph under it, 2,140px at 390 that read as our pitch with a footnote). Each
+aspect is its own `tbody`: its name across both columns (kept to the lane's half, so a long one
+wraps there), then each side's headline, the typical options with a short headline of their own
+(the same face, size and ink as ours, so the lane alone does the highlighting). The sentences,
+seven or eight lines in a column that narrow, wait behind the aspect: a tap anywhere on it opens
+both at once (`CollapseHeight`, the button its control for the keyboard), chevron at the row's
+end, swapped not rotated. The two heads stick under the page's header while the rows pass, one
+line and 44px each, so a cell is never far from its column's name; the column's note is left to
+the subtitle and footnote there. The lane runs on behind each name through its half. Closed,
+1,283px at 390. Tried in sketches and dropped: one list with a Rimkirim / Typical switch (the two
+sides never seen together, and a visitor who never switches reads only ours) and paired lines
+with no table (as short, but the sentences gone on a phone).
 
 - **The head:** `tone-ink` with the white wordmark, nothing else. The lime "Door to door, by air"
   badge it carried is gone (2026-11-13): it was a second lime in the one column, over the
@@ -1629,8 +1640,8 @@ to name, and the tile says which answer is ours.
 - **The cells:** each answer leads with a short headline in the display face, so the lane reads as
   the pitch on its own, then the sentence in the chapter's muted ink. Row hairlines turn white
   inside the lane, so the rows read through it without ruling it.
-- **The foot:** "Check your rate" lives at the bottom of the lane from `md`; a phone, whose lane is too
-  narrow for the button, keeps it under the table.
+- **The foot:** "Check your rate" lives at the bottom of the lane from `md`; a phone, whose lane is
+  half its width, keeps it under the table.
 - **The typical column** is as wide as the lane and in the same voice as the lane's sentences
   (14px, Muted), under a note on what it summarises: the other side of a comparison, not fine
   print. No ticks, no crosses, no names: the lane does the highlighting, not a verdict.

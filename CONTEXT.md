@@ -67,7 +67,7 @@ The team's read, from the Packages, of which items customs is likely to tax; gui
 _Avoid_: Duty estimate, tax quote
 
 **Invoice**:
-The final price, issued late: once the packages have reached Indonesia, cleared customs, arrived at Rimkirim's warehouse and been measured and weighed again there. The customer pays it before Rimkirim delivers to the destination Address. It never comes at pickup.
+The final price, issued late: once the packages have reached Indonesia, cleared customs, arrived at Rimkirim's warehouse, where they're measured and weighed again as a check. It's priced on the customer's own measurements, as long as they've sent proof of them; if a carrier measures a package higher, Rimkirim disputes it for them. The customer pays it before Rimkirim delivers to the destination Address. It never comes at pickup.
 _Avoid_: Final quotation, bill
 
 **Selected Rate**:

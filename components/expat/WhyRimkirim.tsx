@@ -1,8 +1,10 @@
 "use client";
 
+import * as React from "react";
 import Image from "next/image";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, ChevronDown, ChevronUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { CollapseHeight } from "@/components/ui/disclosure";
 import { EXPAT_QUOTE_URL, REVIEW_NOTES } from "@/lib/data/expat";
 import { useT } from "@/lib/i18n/LanguageProvider";
 import { cn } from "@/lib/utils/cn";
@@ -25,20 +27,23 @@ const LIGHT = "transition-colors duration-200";
  * Rimkirim is a lane laid across a ruled sheet: one continuous card in the
  * chapter's wash, from a deep-violet head carrying the white wordmark down
  * to "Check your rate" at its foot (from md; a phone keeps the button under
- * the list). It rises above the header rule and runs below the last row, so
+ * the table). It rises above the header rule and runs below the last row, so
  * it reads as the column laid on top, the one to take. Each Rimkirim answer
  * leads with a short headline in the display face, so the lane can be
  * skimmed as the pitch on its own; the typical options sit beside it as
  * wide as it is and in the same voice, plain on the desk. Honest by
  * construction: no competitor named, and no ticks or crosses to exaggerate
- * the gap (the brief rules them out). A real table from md; a phone reads
- * it down, row by row (DESIGN.md, The Real-Table Rule).
+ * the gap (the brief rules them out). A real table at every width: on a
+ * phone two columns, ours and the typical options' side by side, each with
+ * a headline, and the sentences behind a tap on the aspect (DESIGN.md, The
+ * comparison lane).
  * Copy is pending ops verification (`?review=1`).
  *
  * Set in four type sizes, seven steps of space and five colours, and
  * nothing else (DESIGN.md, Why Rimkirim's scales):
  *   20/28 display 600  a Rimkirim headline (16/24 on a phone, where 20
- *                      wrapped half of them)
+ *                      wrapped half of them, and where the typical
+ *                      options have one too)
  *   14/20              every answer, a row's name (medium), a column's name
  *   12/16              a column's note, the footnote
  *   4 8 12 16 24 32 48
@@ -60,6 +65,14 @@ const LIGHT = "transition-colors duration-200";
 export function WhyRimkirim() {
   const t = useT();
   const last = ROWS.length - 1;
+  /** the aspects opened on a phone, to read both sides' sentences */
+  const [open, setOpen] = React.useState<ReadonlySet<string>>(() => new Set());
+  const toggle = (key: string) =>
+    setOpen((was) => {
+      const now = new Set(was);
+      if (!now.delete(key)) now.add(key);
+      return now;
+    });
   return (
     <section aria-labelledby="compare-heading" data-tone="violet">
       <div className="section-shell mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:py-24">
@@ -71,26 +84,105 @@ export function WhyRimkirim() {
           subtitle={t("expat.compare.subtitle")}
         />
 
-        {/* a phone reads it down, row by row: what's compared, our answer
-            on the lane's wash, then the typical one under it, so no cell is
-            squeezed to two or three words a line. No head over it: there
-            are no columns here for one to name, and the wash says which
-            answer is ours */}
-        <ul className="mt-8 divide-y divide-border border-y border-border md:hidden">
-          {ROWS.map((key) => (
-            <li key={key} className="py-4">
-              <p className="text-sm font-medium text-muted">{t(`expat.compare.${key}`)}</p>
-              <div className="mt-2 rounded-md bg-surface-2 px-4 py-3">
-                <p className="font-display text-base font-semibold tracking-tight">{t(`expat.compare.${key}Lead`)}</p>
-                <p className="mt-1 text-sm text-muted">{t(`expat.compare.${key}Ours`)}</p>
-              </div>
-              <p className="mt-3 text-sm text-muted">
-                <span className="font-medium text-foreground">{t("expat.compare.typical")}:</span>{" "}
-                {t(`expat.compare.${key}Typical`)}
-              </p>
-            </li>
-          ))}
-        </ul>
+        {/* a phone keeps the two sides side by side, half the width each,
+            as a table: each aspect's name across both, then each side's
+            headline under its column's name, which stays in view under the
+            page's header while the rows go by. The sentences would run
+            seven or eight lines in a column this narrow, so they wait
+            behind the aspect: a tap anywhere on it opens both at once */}
+        <table className="mt-8 w-full table-fixed border-separate border-spacing-0 text-left text-sm md:hidden">
+          <caption className="sr-only">{t("expat.compare.caption")}</caption>
+          <colgroup>
+            <col className="w-1/2" />
+            <col className="w-1/2" />
+          </colgroup>
+          <thead>
+            <tr>
+              {/* the page's ground behind the head, so the rows passing
+                  under it never show past its rounded corners. Both heads
+                  one line, 44 tall, so what stays in view is no more than
+                  it needs: the column's note is the subtitle's and the
+                  footnote's already */}
+              <th scope="col" className="sticky top-16 z-10 bg-background p-0 align-bottom">
+                <span className="block rounded-t-lg bg-tone-ink p-3">
+                  <Image
+                    src="/rimkirim-logo-white.png"
+                    alt="Rimkirim"
+                    width={1796}
+                    height={618}
+                    sizes="64px"
+                    className="h-5 w-auto"
+                  />
+                </span>
+              </th>
+              <th
+                scope="col"
+                className="sticky top-16 z-10 border-b border-border-strong bg-background p-3 align-bottom font-medium"
+              >
+                {t("expat.compare.typical")}
+              </th>
+            </tr>
+          </thead>
+          {ROWS.map((key, i) => {
+            const isOpen = open.has(key);
+            const id = `compare-${key}`;
+            return (
+              // the whole aspect takes the tap; the button is its control
+              // for the keyboard and assistive tech, and its click bubbles
+              // up here, so it toggles once
+              <tbody key={key} onClick={() => toggle(key)} className="cursor-pointer">
+                <tr>
+                  {/* the lane runs on behind the name, through its half */}
+                  <th
+                    scope="rowgroup"
+                    colSpan={2}
+                    className="p-0 font-normal [background:linear-gradient(to_right,var(--surface-2)_50%,transparent_50%)]"
+                  >
+                    <button
+                      type="button"
+                      aria-expanded={isOpen}
+                      aria-controls={`${id}-ours ${id}-typical`}
+                      className="flex w-full items-center justify-between gap-3 rounded-sm px-3 pb-1 pt-4 text-left font-medium text-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/60"
+                    >
+                      {/* kept to the lane's half, so a long name wraps
+                          there and never runs over the lane's edge */}
+                      <span className="max-w-[calc(50%-0.75rem)]">{t(`expat.compare.${key}`)}</span>
+                      {/* swap, never rotate: the shared disclosure idiom */}
+                      {isOpen ? (
+                        <ChevronUp aria-hidden className="size-4 shrink-0" />
+                      ) : (
+                        <ChevronDown aria-hidden className="size-4 shrink-0" />
+                      )}
+                    </button>
+                  </th>
+                </tr>
+                <tr>
+                  <td
+                    className={cn(
+                      "bg-surface-2 px-3 pb-4 align-top",
+                      i < last ? "border-b border-background/80" : "rounded-b-lg",
+                    )}
+                  >
+                    <p className="font-display text-base font-semibold tracking-tight">
+                      {t(`expat.compare.${key}Lead`)}
+                    </p>
+                    <CollapseHeight open={isOpen} id={`${id}-ours`}>
+                      <p className="pt-1 text-muted">{t(`expat.compare.${key}Ours`)}</p>
+                    </CollapseHeight>
+                  </td>
+                  <td className={cn("px-3 pb-4 align-top", i < last && "border-b border-border")}>
+                    <p className="font-display text-base font-semibold tracking-tight">
+                      {t(`expat.compare.${key}TypicalLead`)}
+                    </p>
+                    <CollapseHeight open={isOpen} id={`${id}-typical`}>
+                      <p className="pt-1 text-muted">{t(`expat.compare.${key}Typical`)}</p>
+                    </CollapseHeight>
+                  </td>
+                </tr>
+              </tbody>
+            );
+          })}
+        </table>
 
         {/* separate borders: only they let the lane's cells keep their
             rounded ends. From md, where three columns have room; the lane
