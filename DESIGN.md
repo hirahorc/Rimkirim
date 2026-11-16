@@ -1772,7 +1772,7 @@ the footer) takes them untouched.
 | Ink | `#1f1f1f` | the words, and the way to say chosen, done or told |
 | Muted | `#52525b` | the second voice: a hint, a note, the label beside a value |
 | Lime | `#c1ff00` | the action, and nothing else |
-| Red | `#e60000` (Stop Red) | what's wrong, and the Special Rate's mark |
+| Red | `#e60000` (Stop Red) | what's wrong, the Special Rate's mark, and what can't be shipped |
 
 **Red is an error's, and the offer's mark.** The edge of the field that's wrong, the words under
 it that say why (medium, with a mark, so it isn't said in colour alone), and the toast that
@@ -1784,7 +1784,9 @@ mixed 20% toward black so they read at AA on the tint) wherever the rate is name
 (the rate card, Selected Service, the Booking Summary and its email), and on the rate card the
 `.offer-special` border, red at the tab and fading to the hairline. A notice that only mentions
 the Special Rate (a toast, "Special Rate starts at 21 kg") stays Ink and Muted. Restored
-2026-11-16, after a round with the tab in Ink.
+2026-11-16, after a round with the tab in Ink. The other red that isn't an error is what can't be
+shipped, under Q1: its no-entry mark and each thing's ring and slash, as the landing draws its "Not
+allowed" list, so it's seen before a box is packed (2026-11-16).
 
 There is no blue or green in the flow. What's told is fenced by a hairline; a chosen answer, a
 done mark and every toast are Ink. Two "down" shades (wash and
@@ -1883,8 +1885,8 @@ press. A link inside a sentence ("check your rate again") stays a link: it goes 
   width. A follow-up sits close under the answer that asks it, its words a step below the
   question's, with no box of its own. What can't be shipped is told, never asked: right under
   Q1's choices, fenced by a hairline as anything told is, with the no-entry mark, one line on why,
-  each thing in a ring struck through (the landing's "Not allowed" drawing, in Ink, since red is
-  an error's here) and the way to the full list; it comes before the packing note, so it's read
+  each thing in a ring struck through in red, as the landing's "Not allowed" list draws it (its
+  no-entry mark red too, the words Ink; 2026-11-16, so it's seen) and the way to the full list; it comes before the packing note, so it's read
   as part of choosing what ships (2026-11-16).
 - **Choice cards:** wash wells, as a field is, that turn to paper framed in Ink (2px) when
   chosen. A single choice fills its dot with Ink; a multiple choice fills its box with Ink under

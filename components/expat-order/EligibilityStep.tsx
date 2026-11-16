@@ -115,16 +115,17 @@ function FollowUp({
 /** what can't be shipped, each with its picture */
 const BLOCKED_ICON: Record<BlockedItem, LucideIcon> = { vehicle: Car, excise: Wine, hazard: Flame };
 
-/** a thing that can't go, in its ring and struck through, as the landing's
- *  "Not allowed" list draws it, but in Ink: in the flow red is an error's */
+/** a thing that can't go, in its ring and struck through in red, as the
+ *  landing's "Not allowed" list draws it (the one red in the flow that isn't
+ *  an error or the Special Rate: it's there so it's seen) */
 function Struck({ icon: Icon }: { icon: LucideIcon }) {
   return (
     <span
       aria-hidden
-      className="relative grid size-8 shrink-0 place-items-center rounded-full border-[1.5px] border-foreground/70 bg-background"
+      className="relative grid size-8 shrink-0 place-items-center rounded-full border-[1.5px] border-danger/75 bg-background"
     >
       <Icon className="size-4" strokeWidth={1.75} />
-      <span className="absolute inset-x-0.5 top-1/2 h-[1.5px] -translate-y-1/2 rotate-45 rounded-full bg-foreground/70" />
+      <span className="absolute inset-x-0.5 top-1/2 h-[1.5px] -translate-y-1/2 rotate-45 rounded-full bg-danger/75" />
     </span>
   );
 }
@@ -198,7 +199,7 @@ export function EligibilityStep({
             they're read, and the way to everything else that can't go */}
         <section aria-labelledby="q1-blocked" className="flex gap-2 rounded-md border border-border px-4 py-3 text-sm">
           <span className="flex h-5 shrink-0 items-center">
-            <Ban aria-hidden className="size-4" />
+            <Ban aria-hidden className="size-4 text-danger" strokeWidth={2.25} />
           </span>
           <div className="min-w-0 flex-1">
             <h4 id="q1-blocked" className="font-medium">
