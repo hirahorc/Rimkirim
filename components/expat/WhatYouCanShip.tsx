@@ -6,6 +6,7 @@ import {
   Ban,
   Banknote,
   Bomb,
+  Car,
   ChevronDown,
   ChevronUp,
   Cigarette,
@@ -98,6 +99,7 @@ const BANNED = [
   { icon: Banknote, key: "cash" },
   { icon: Gem, key: "jewellery" },
   { icon: Sprout, key: "plants" },
+  { icon: Car, key: "vehicles" },
 ] as const;
 
 /** the details' columns, one per fact, from a tablet up */
@@ -476,9 +478,10 @@ export function WhatYouCanShip() {
                 {t("expat.ship.before.banned.title")}
               </h4>
               <p className="mt-1 text-sm text-muted">{t("expat.ship.before.banned.body")}</p>
-              {/* seven things as four and three: down two columns on a phone
-                  and beside the asking from lg, so the three read as a column
-                  that ends, not a row with one left over; across four between */}
+              {/* eight things as two fours: down two columns on a phone and
+                  beside the asking from lg, across four between. Motor
+                  vehicles joined the list from the PM's eligibility rule v1
+                  (2026-11-16), as the order flow's Q1 tells it */}
               <ul className="mt-4 grid grid-flow-col grid-cols-2 grid-rows-4 gap-x-4 gap-y-3 sm:grid-flow-row sm:grid-cols-4 sm:grid-rows-none lg:grid-flow-col lg:grid-cols-2 lg:grid-rows-4">
                 {BANNED.map(({ icon, key }) => (
                   <li key={key} className="flex items-center gap-3 text-sm font-medium">

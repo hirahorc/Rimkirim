@@ -1440,8 +1440,9 @@ in ink it stays neutral and lime stays the one colour in the action row.
   sending, a Panel 2 block: what can go once the team has looked (each thing in a 32px warning
   ring of 1.5px, the warning glyph on its head) beside what can't go at all (each struck through
   by the no-entry sign, a 1.5px Stop Red ring and slash), side by side from `lg`, over the one place that
-  asks for a photo or a list. Seven things that can't go read as four and three: down two columns
-  on a phone and from `lg`, across four between, never a row with one left over.
+  asks for a photo or a list. Eight things that can't go read as two fours: down two columns on a
+  phone and from `lg`, across four between, never a row with one left over. Motor vehicles joined
+  the seven (2026-11-16), from the PM's eligibility rule v1, as the order flow's Q1 tells it.
   **What you can ship's scales (2026-11-13).** Under the page's head the section is set in five
   sizes, one line height each: a part's title, 32 on 40 from `sm` and 20 on 28 on a phone (where
   the heading is 32); a tile's name, 20 on 28; a rule, 16 on 24 in Space Grotesk 600, for a
