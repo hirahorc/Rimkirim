@@ -271,6 +271,7 @@ export function EligibilityStep({
                 onChange={(arrivalDate) => onChange({ arrivalDate })}
                 min={todayIso()}
                 placeholder={e("arrivalPh")}
+                monthJump
                 ariaLabel={e("arrival")}
               />
             </FollowUp>
@@ -288,6 +289,7 @@ export function EligibilityStep({
                 onChange={(arrivalDate) => onChange({ arrivalDate })}
                 max={todayIso()}
                 placeholder={e("arrivalPh")}
+                monthJump
                 ariaLabel={e("arrival")}
               />
             </FollowUp>
