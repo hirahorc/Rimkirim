@@ -1386,9 +1386,14 @@ in ink it stays neutral and lime stays the one colour in the action row.
   lid a flat panel floating behind, its deck long and shallow and the record small at its front
   edge, it read as a box, and the chip asks about the records. The books are drawn to their real sizes on a scale of their own (`BOOK_CM` in `ShipObjects`, 6.4 units a centimetre, their depth at half its length; 2026-11-14): an art book at US Letter (8.5 by 11 in, 2.4 cm thick for 280 pages) at the bottom, a long novel at Royal (6.14 by 9.21 in, 4.1 cm for 600) on it with its fore-edge to the front, and a shorter one at 5.5 by 8.5 in (2.7 cm for 360) on top, each its trim plus 1/8 in squares and as thick as Lulu's casewrap spine table gives. Before, the three were nearly one size and about 5 cm thick for it. Each is a case binding as photographed (Wikimedia Commons): 1/8 in boards standing a square past the pages, a rounded spine (so its ends bow, and the novel's fore-edge falls in between its boards), the joint's groove 7 mm in along the cover, the novel's headband, a title stamped along each spine and a publisher's mark at its foot (ink on the cream cloth; foil on the blue, between two pairs of rules) and a blind rule round the top cover. The novel's ribbon, 8 mm wide, comes out of its fore-edge near the head, down its front, along the art book's cover and over its spine, its end cut in a V. The two between them stand alone, each one group centred over its words: the home's
   things (the lamp at the back, the pot, the bowls in front over the lamp's base and the pot's
-  handle) and the hobby things (an acoustic guitar leaning up to the right, a racket crossed
-  behind it, a shuttlecock standing on its cork and a golf ball in front), with no measure drawn
-  on them: the size rule is a fact in the card's details. The hobby things are drawn to their real
+  handle) and the hobby things, staged (2026-11-16) so each reads whole by its outline and the
+  eye runs from the biggest to the smallest, left to right: an acoustic guitar leaning up to the
+  right, the one focus, with nothing over it; a racket standing behind its neck, which crosses the
+  head's lower part (a clear overlap, the neck's shade on the strings, never a near-touch), its
+  shaft and grip whole beneath; then a shuttlecock standing on its cork by the racket's butt and a
+  golf ball last. Before, the racket's head showed half behind the guitar's shoulder and its grip
+  came out at the waist, so it read as two things. No measure is drawn on them: the size rule is
+  a fact in the card's details. The hobby things are drawn to their real
   sizes on one scale (`PER_CM` in `ShipObjects`, 2.1 units a centimetre; 2026-11-14): a
   dreadnought (body 50.8 cm long, 40.6 at the lower bout, 27.9 at the waist, 29.2 at the upper
   bout, a 14-fret neck on a 64.5 cm scale, a 15 cm headstock, Taylor's and Martin's specs), a

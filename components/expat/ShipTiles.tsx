@@ -165,9 +165,9 @@ export function HomePicture() {
 /*  Sports & hobbies: the things themselves                            */
 /* ------------------------------------------------------------------ */
 
-/** the hobby things as one pile, centred over the words as the home's
- *  group is: a guitar, a racket crossed behind it, a shuttlecock and a
- *  golf ball in front */
+/** the hobby things as one group, centred over the words as the home's
+ *  group is: a guitar, a racket standing behind its neck, then a
+ *  shuttlecock and a golf ball on the floor past the racket */
 export function HobbyPicture() {
   return (
     <div className="absolute inset-x-6 bottom-2 flex justify-center">

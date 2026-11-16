@@ -716,19 +716,21 @@ const SHUTTLE = { base: cm(2.6), cork: cm(2.5), feather: cm(6.6), tips: cm(6.4) 
 const GOLF = cm(4.267);
 
 /**
- * Sports & hobbies, staged as one pile, back to front: a badminton racket,
- * an acoustic guitar leaning up to the right across it (the racket's head
- * shows over the guitar's body, its shaft and grip out past its shoulder,
- * under the neck), then a shuttlecock standing on its cork and a golf ball
- * in front. Each is drawn to its real size on one scale (`PER_CM`), so the
- * golf ball is the size of the soundhole's half and the shuttle a little
- * taller than the guitar's bridge is wide, and each has the parts that make
- * it itself: the guitar's rosette, pickguard, bridge with its saddle and
- * pins, fret dots, nut, and a headstock with its string posts and six
- * tuner buttons; the racket's isometric head strung at its real density,
- * its T-joint, a grip wrapped in a spiral and a butt cap; the shuttle's
- * leather cork with its band, sixteen feathers tied with two threads; the
- * ball's dimples.
+ * Sports & hobbies, staged so each thing reads whole by its outline and the
+ * eye goes from the biggest to the smallest, left to right: the guitar, the
+ * one focus, leaning up to the right with nothing over it; the racket
+ * standing behind its neck, the neck crossing the head's lower part (a clear
+ * overlap, so the oval reads as behind it, never a near-touch), its throat,
+ * shaft and grip whole beneath; then the shuttlecock standing on its cork
+ * by the racket's butt, its own sport's pair, and the golf ball last. Each
+ * is drawn to its real size on one scale (`PER_CM`), so the golf ball is
+ * the size of the soundhole's half and the shuttle a little taller than the
+ * guitar's bridge is wide, and each has the parts that make it itself: the
+ * guitar's rosette, pickguard, bridge with its saddle and pins, fret dots,
+ * nut, and a headstock with its string posts and six tuner buttons; the
+ * racket's isometric head strung at its real density, its T-joint, a grip
+ * wrapped in a spiral and a butt cap; the shuttle's leather cork with its
+ * band, sixteen feathers tied with two threads; the ball's dimples.
  */
 export function HobbyObjects({ className }: { className?: string }) {
   const id = React.useId().replace(/[^a-zA-Z0-9]/g, "");
@@ -813,11 +815,16 @@ export function HobbyObjects({ className }: { className?: string }) {
     }
   }
 
-  // where each thing stands: the floor, the guitar leaning across the racket
+  // where each thing stands, staged so each reads whole by its outline
+  // (worked out on these sizes, so nothing only kisses another): the guitar
+  // leaning up to the right with its lower bout on the floor; the racket
+  // standing behind its neck, which crosses the head's lower part, the
+  // oval clear of the body by about 17 units; then the shuttle and the
+  // ball on the floor past the racket's butt
   const FLOOR = 162;
-  const guitarAt = `translate(4 ${FLOOR - 37.4}) rotate(-17)`;
-  const racketAt = "translate(42.3 46.9) rotate(47)";
-  const shuttleAt = `translate(100 ${FLOOR - 0.6}) rotate(-70)`;
+  const guitarAt = "translate(3 125.93) rotate(-22)";
+  const racketAt = "translate(123.16 27.81) rotate(70)";
+  const shuttleAt = `translate(185 ${FLOOR - 0.6}) rotate(-86)`;
 
   return (
     <svg viewBox="-4 26 222 142" className={cn("ship-art block overflow-visible", className)} aria-hidden>
@@ -878,19 +885,24 @@ export function HobbyObjects({ className }: { className?: string }) {
         <clipPath id={`${id}-strings`}>
           <path d={oval(ra - 1.5, rb - 1.5)} />
         </clipPath>
+        {/* the racket's head where it stands, for the neck's shade on it */}
+        <clipPath id={`${id}-racketHead`}>
+          <path d={oval(ra, rb)} transform={racketAt} />
+        </clipPath>
       </defs>
 
       {/* the pile's shadows on the floor, cast a little to the right */}
       <g className="ship-art-ground">
         <g filter={u("soft")} style={{ fill: "var(--art-ink)" }}>
-          <ellipse cx="62" cy={FLOOR} rx="60" ry="5" opacity="0.28" />
-          <ellipse cx="146" cy={FLOOR} rx="20" ry="3.5" opacity="0.22" />
-          <ellipse cx="104" cy={FLOOR} rx="8" ry="2.2" opacity="0.24" />
+          <ellipse cx="52" cy={FLOOR} rx="52" ry="5" opacity="0.28" />
+          <ellipse cx="174" cy={FLOOR} rx="6" ry="1.8" opacity="0.24" />
+          <ellipse cx="187" cy={FLOOR} rx="7" ry="2" opacity="0.22" />
+          <ellipse cx="207" cy={FLOOR} rx="5.5" ry="1.6" opacity="0.24" />
         </g>
       </g>
 
       <g className="ship-art-lift">
-        {/* the racket, at the back, head up to the left */}
+        {/* the racket, at the back, standing on its butt, head up to the left */}
         <g transform={racketAt}>
           <path d={oval(ra, rb)} fill="#fff" opacity="0.3" />
           <g clipPath={u("strings")} stroke="#fff" strokeOpacity="0.85" strokeWidth="0.3">
@@ -918,7 +930,19 @@ export function HobbyObjects({ className }: { className?: string }) {
           <rect x={butt - 2.6} y={-R.grip / 2 - 0.3} width="2.6" height={R.grip + 0.6} rx="1.1" style={{ fill: "var(--art-ink)" }} />
         </g>
 
-        {/* the guitar, leaning across it */}
+        {/* the shade the neck throws on the racket's strings, down and to
+            the right, away from the light: it says the head is behind */}
+        <g clipPath={u("racketHead")}>
+          <path
+            d={`M${L} ${f(-board(L))}L${nutX} ${f(-board(nutX))}V${f(board(nutX) + 2.4)}L${L} ${f(board(L) + 3)}Z`}
+            transform={`${guitarAt} translate(0 4.5)`}
+            fill="#000"
+            opacity="0.18"
+            filter={u("blur")}
+          />
+        </g>
+
+        {/* the guitar, its neck across the racket's head */}
         <g transform={guitarAt}>
           {/* the shade it throws on the racket, then its side under the top */}
           <path d={body} transform="translate(3 11)" fill="#000" opacity="0.16" filter={u("blur")} />
@@ -989,7 +1013,7 @@ export function HobbyObjects({ className }: { className?: string }) {
           ))}
         </g>
 
-        {/* in front: a shuttlecock standing on its cork */}
+        {/* past the racket's butt: a shuttlecock standing on its cork */}
         <g transform={shuttleAt}>
           <path
             d={`M${f(skirtFrom)} ${f(-cr)}L${f(skirtTo)} ${f(-tr)}V${f(tr)}L${f(skirtFrom)} ${f(cr)}Z`}
@@ -1018,8 +1042,8 @@ export function HobbyObjects({ className }: { className?: string }) {
           <rect x={f(skirtFrom - 0.8)} y={f(-cr)} width="0.8" height={f(S.base)} style={{ fill: "var(--art-ink)" }} />
         </g>
 
-        {/* and a golf ball, by the racket's butt */}
-        <g transform={`translate(154 ${f(FLOOR - gr)})`}>
+        {/* and the smallest last, a golf ball */}
+        <g transform={`translate(206 ${f(FLOOR - gr)})`}>
           <circle r={f(gr)} fill={u("ball")} />
           {dimples.map(([x, y, r]) => (
             <circle key={`${x},${y}`} cx={x} cy={y} r={r} fill="#000" opacity="0.08" />
