@@ -262,7 +262,8 @@
       "Bash(lsof -iTCP -sTCP:LISTEN -nP)",
       "Bash(grep -E \"^tsx$|^ts-node$\")",
       "Bash(node capture.mjs ./shots)",
-      "ClaudeInChromeDomain(localhost:3000)"
+      "ClaudeInChromeDomain(localhost:3000)",
+      "ClaudeInChromeDomain(www.google.com)"
     ],
     "additionalDirectories": [
       "/private/tmp/cdp-fs",
