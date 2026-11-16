@@ -245,7 +245,9 @@ export function PackingStep({
             {p("estimateNoSpecial").replace("{min}", kg(pricing.specialFromKg)).replace("{kg}", kg(pricing.rate.chargedKg))}
           </Note>
         ) : (
-          <p className="mt-4 text-xs text-muted">{pricing.packed ? p("estimatePacked") : p("estimatePending")}</p>
+          // once the packages are measured, the estimate follows them; before
+          // that, nothing to say
+          pricing.packed && <p className="mt-4 text-xs text-muted">{p("estimatePacked")}</p>
         )}
       </div>
 

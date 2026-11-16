@@ -62,8 +62,8 @@ const FAQ: ExpatFaqSource[] = [
   {
     q: { id: "Bisakah saya mengirim furnitur?", en: "Can I ship furniture?" },
     a: {
-      id: "Bisa, kalau carrier partner kami punya layanannya. Seperti barang lainnya, kamu yang mengemasnya: dikosongkan, dibongkar sebisa mungkin, dibungkus, lalu masuk kardus double wall atau crate kayu yang heat-treated dan berstempel ISPM 15. Ukur dan timbang setiap koli setelah dikemas, lalu kirim angkanya ke kami untuk konfirmasi harga. Sebagai barang pindahan, furnitur juga bebas bea.",
-      en: "Yes, where our carrier partner offers it. Like everything else, you pack it yourself: emptied, taken apart where you can, wrapped, and in a double-wall box or a wooden crate heat-treated and stamped ISPM 15. Measure and weigh each packed piece and send us the numbers to confirm the price. As relocation goods, furniture is duty-free too.",
+      id: "Bisa, kalau carrier partner kami punya layanannya. Seperti barang lainnya, kamu yang mengemasnya: dikosongkan, dibongkar sebisa mungkin, dibungkus, lalu masuk kardus double wall atau crate kayu yang heat-treated dan berstempel ISPM 15. Sebagai barang pindahan, furnitur juga bebas bea.",
+      en: "Yes, where our carrier partner offers it. Like everything else, you pack it yourself: emptied, taken apart where you can, wrapped, and in a double-wall box or a wooden crate heat-treated and stamped ISPM 15. As relocation goods, furniture is duty-free too.",
     },
   },
   {
