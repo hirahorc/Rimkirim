@@ -1,9 +1,10 @@
 "use client";
 
 import * as React from "react";
-import { BadgePercent, ChevronDown, ChevronUp } from "lucide-react";
+import { ChevronDown, ChevronUp } from "lucide-react";
 import { CollapseHeight } from "@/components/ui/disclosure";
 import { CarrierLogo } from "@/components/rates/CarrierMark";
+import { SpecialRateTab } from "@/components/rates/OfferCard";
 import { getCountry } from "@/lib/data/countries";
 import { placeLine } from "@/lib/data/expat-places";
 import type { ExpatRate } from "@/lib/pricing/expat-rates";
@@ -11,7 +12,7 @@ import type { CheckRateInput } from "@/lib/order/expat-order";
 import { formatIDR } from "@/lib/utils/currency";
 import { useT } from "@/lib/i18n/LanguageProvider";
 import { cn } from "@/lib/utils/cn";
-import { Chip, PRESS, TYPE } from "./kit";
+import { PRESS, TYPE } from "./kit";
 
 /**
  * The picked rate beside the plan, after the live page's "Selected
@@ -76,11 +77,8 @@ export function SelectedService({
     </span>
   );
 
-  const special = rate.special && (
-    <Chip className="justify-self-start">
-      <BadgePercent aria-hidden /> {t("expatOrder.rates.special")}
-    </Chip>
-  );
+  // the offer it's on, in the rate card's own red tab
+  const special = rate.special && <SpecialRateTab className="justify-self-start" />;
 
   // the card's one figure, under its only hairline
   const price = (

@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { CollapseHeight } from "@/components/ui/disclosure";
 import { ReviewNote } from "@/components/expat/ReviewNote";
+import { SpecialRateTab } from "@/components/rates/OfferCard";
 import { ORDER_REVIEW_NOTES } from "@/lib/data/expat-order-notes";
 import { waLink } from "@/lib/contact";
 import { useExpatOrderHydrated, useExpatOrderStore } from "@/lib/store/useExpatOrderStore";
@@ -163,11 +164,13 @@ export function BookingView({ number }: { number: string }) {
                 {f.to.detail && <p className="text-muted">{f.to.detail}</p>}
               </Row>
               <Row label={bk("shipping")}>
-                <p className="font-medium">{f.shipping.service}</p>
+                {/* the service, and the offer it's on in the rate card's red tab */}
+                <p className="flex flex-wrap items-center gap-2 font-medium">
+                  {f.shipping.service}
+                  {f.shipping.special && <SpecialRateTab />}
+                </p>
                 <p className="text-muted">
-                  {[f.shipping.special && t("expatOrder.rates.special"), f.shipping.transit, f.shipping.weight]
-                    .filter(Boolean)
-                    .join(" · ")}
+                  {f.shipping.transit} · {f.shipping.weight}
                 </p>
                 {/* an estimate, not the figure to keep: the booking number is */}
                 <p className="mt-2 font-mono text-base font-semibold tabular-nums">{f.shipping.estimate}</p>

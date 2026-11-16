@@ -456,8 +456,9 @@ white card.
 - **Go Green / Info Blue** — progress, no verdict about you. Routine phases are blue, terminal
   good news is green.
 - **Stop Red** — cancelled. Terminal bad news only. The one red that is not a verdict is the
-  Special Rate tab on the Check Rate card (The offer card), the live page's offer mark; it never
-  sits on a shipment.
+  Special Rate's mark (The offer card), the live page's offer mark: its tab and border on the
+  rate cards, and its tab wherever the expat flow names the rate as the offer; it never sits on
+  a shipment's status.
 - A **voucher** is a record, never a move: its lifecycle (reserved → redeemed → finalized, or
   released) reads in Info Blue on the timeline and as neutral mono text in the summary. The
   discount line is the one place it earns Go Green ink — a deduction, not a struck-out price.
@@ -1721,16 +1722,22 @@ the footer) takes them untouched.
 | Ink | `#1f1f1f` | the words, and the way to say chosen, done or told |
 | Muted | `#52525b` | the second voice: a hint, a note, the label beside a value |
 | Lime | `#c1ff00` | the action, and nothing else |
-| Red | `#e60000` (Stop Red) | what's wrong, and nothing else |
+| Red | `#e60000` (Stop Red) | what's wrong, and the Special Rate's mark |
 
-**Red is an error's.** The edge of the field that's wrong, the words under it that say why
-(medium, with a mark, so it isn't said in colour alone), and the toast that counts what's
-missing. Never an offer, a warning, a notice or a button: the Special Rate's tab and the button
-that confirms removing a package are Ink, and in the calendar every day that can be picked is
-Ink, Sundays too.
+**Red is an error's, and the offer's mark.** The edge of the field that's wrong, the words under
+it that say why (medium, with a mark, so it isn't said in colour alone), and the toast that
+counts what's missing. Never a warning, a notice or a button: the button that confirms removing
+a package is Ink, and in the calendar every day that can be picked is Ink, Sundays too. The one
+red that isn't an error is the Special Rate's, as the offer card wears it (The offer card): its
+tab (`SpecialRateTab`, a pill in red on its 9% tint inside a red hairline, the words in Stop Red
+mixed 20% toward black so they read at AA on the tint) wherever the rate is named as the offer
+(the rate card, Selected Service, the Booking Summary and its email), and on the rate card the
+`.offer-special` border, red at the tab and fading to the hairline. A notice that only mentions
+the Special Rate (a toast, "Special Rate starts at 21 kg") stays Ink and Muted. Restored
+2026-11-16, after a round with the tab in Ink.
 
 There is no blue or green in the flow. What's told is fenced by a hairline; a chosen answer, a
-done mark, the Special Rate's tab and every other toast are Ink. Two "down" shades (wash and
+done mark and every toast are Ink. Two "down" shades (wash and
 lime, each mixed a step toward Ink) are states only: a hover, a press, the option under the
 pointer. Carrier logos and flags are pictures, not tokens.
 
@@ -1808,8 +1815,9 @@ the action is paper with an Ink line (`QUIET`), since a wash fill here is a fiel
   same order, on the flow's system. The price per kg is the card's figure, with "Estimated … for
   30 kg" under it for the chargeable weight. Every card carries the lime "Select this rate"
   (The One-Voice Rule's one list), under the price and as wide as the price's column, never
-  across a wide card (a phone's card is one column, so there it is). A Special Rate wears an Ink
-  tab on the card's top edge and no border of its own.
+  across a wide card (a phone's card is one column, so there it is). A Special Rate wears the
+  offer card's red tab on the card's top edge and its `.offer-special` border (red at the tab,
+  fading to the hairline), in the field too, where the other cards have no line.
 - **Questions** (the Eligibility Check): a question's number sits before its words, small and
   Muted, and gives way to an Ink check once it's answered; the answers run the part's whole
   width. A follow-up sits close under the answer that asks it, its words a step below the

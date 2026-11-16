@@ -42,6 +42,28 @@ export interface OfferCardProps {
 }
 
 /**
+ * The Special Rate's tab, after the live rimkirim.com card's offer mark: a
+ * pill in red on its 9% tint, with a red hairline. Wherever a Special Rate is
+ * named as the offer (this card, the expat flow's rate card, its Selected
+ * Service and Booking Summary), it wears this. Its words take the darker
+ * red (Stop Red mixed 20% toward black) on any page, so they read at AA on
+ * the tint even where a page sets its danger ink to the plain red.
+ */
+export function SpecialRateTab({ className }: { className?: string }) {
+  const t = useT();
+  return (
+    <span
+      className={cn(
+        "inline-flex shrink-0 items-center gap-1.5 rounded-full border border-danger/45 bg-[color-mix(in_oklab,var(--danger)_9%,var(--background))] px-3 py-1 font-display text-xs font-semibold text-[color-mix(in_srgb,var(--danger)_80%,black)]",
+        className,
+      )}
+    >
+      <BadgePercent aria-hidden className="size-3.5" /> {t("offer.special")}
+    </span>
+  );
+}
+
+/**
  * The rate card both check-rate pages share, after the live rimkirim.com
  * card: on the left the carrier's logo and service, the route in flags and
  * codes, the transit days and the weight band; on the right the price per
@@ -80,16 +102,7 @@ export function OfferCard({
       {o("days").replace("{min}", String(etaMin)).replace("{max}", String(etaMax))}
     </span>
   );
-  const tab = (
-    <span
-      className={cn(
-        "inline-flex shrink-0 items-center gap-1.5 rounded-full border border-danger/45 bg-[color-mix(in_oklab,var(--danger)_9%,var(--background))] px-3 py-1 font-display text-xs font-semibold text-danger-ink",
-        onEdge && "absolute -top-3.5 left-5",
-      )}
-    >
-      <BadgePercent aria-hidden className="size-3.5" /> {o("special")}
-    </span>
-  );
+  const tab = <SpecialRateTab className={cn(onEdge && "absolute -top-3.5 left-5")} />;
   return (
     <article
       className={cn(

@@ -12,6 +12,11 @@ const MUTED = "#5f6368";
 const LINE = "#e5e7eb";
 const DUSK = "#4a1e67";
 const DUSK_SOFT = "#ead6fc";
+/** the Special Rate's tab, as the rate card wears it: Stop Red's darker
+ *  ink (20% toward black) on its 9% tint, inside a red hairline */
+const OFFER_RED = "#b80000";
+const OFFER_TINT = "#fde8e8";
+const OFFER_LINE = "#f38c8c";
 const FONT = "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif";
 
 function Row({ label, children }: { label: string; children: React.ReactNode }) {
@@ -70,7 +75,25 @@ export function BookingEmail({ facts: f, t }: { facts: BookingFacts; t: T }) {
                         </Row>
                         <Row label={bk("shipping")}>
                           <strong>{f.shipping.service}</strong>
-                          {f.shipping.special && ` · ${t("expatOrder.rates.special")}`}
+                          {f.shipping.special && (
+                            <span
+                              style={{
+                                display: "inline-block",
+                                marginLeft: 8,
+                                padding: "2px 10px",
+                                border: `1px solid ${OFFER_LINE}`,
+                                borderRadius: 999,
+                                background: OFFER_TINT,
+                                color: OFFER_RED,
+                                fontSize: 12,
+                                fontWeight: 600,
+                                lineHeight: "16px",
+                                verticalAlign: "1px",
+                              }}
+                            >
+                              {t("expatOrder.rates.special")}
+                            </span>
+                          )}
                           <br />
                           {f.shipping.transit} · {f.shipping.weight}
                           <br />

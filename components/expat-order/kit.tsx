@@ -183,22 +183,14 @@ export function Note({
   );
 }
 
-/** a mark on a card: ink for what it's offered as (a Special Rate), wash
- *  for the state it's in (Selected) */
-export function Chip({
-  tone = "ink",
-  className,
-  children,
-}: {
-  tone?: "ink" | "wash";
-  className?: string;
-  children: React.ReactNode;
-}) {
+/** a mark on a card for the state it's in (Selected), in wash. What a rate
+ *  is offered as (a Special Rate) wears the offer card's red tab instead
+ *  (`SpecialRateTab`) */
+export function Chip({ className, children }: { className?: string; children: React.ReactNode }) {
   return (
     <span
       className={cn(
-        "inline-flex shrink-0 items-center gap-1 rounded-full px-3 py-1 font-display text-xs font-medium [&_svg]:size-3.5",
-        tone === "ink" ? "bg-foreground text-background" : "bg-surface-2 text-foreground",
+        "inline-flex shrink-0 items-center gap-1 rounded-full bg-surface-2 px-3 py-1 font-display text-xs font-medium text-foreground [&_svg]:size-3.5",
         className,
       )}
     >

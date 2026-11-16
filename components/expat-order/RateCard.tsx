@@ -1,9 +1,10 @@
 "use client";
 
-import { ArrowRight, BadgePercent, Check, Clock, Package } from "lucide-react";
+import { ArrowRight, Check, Clock, Package } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Flag } from "@/components/shared/Flag";
 import { CarrierLogo, CarrierMark } from "@/components/rates/CarrierMark";
+import { SpecialRateTab } from "@/components/rates/OfferCard";
 import { SurchargeInfoDialog } from "@/components/rates/SurchargeInfoDialog";
 import { carrierLogo } from "@/lib/data/carriers";
 import type { ExpatRate } from "@/lib/pricing/expat-rates";
@@ -20,8 +21,9 @@ import { Chip, TYPE } from "./kit";
  * price per kg as the card's one figure, the estimate for the weight entered
  * ("Estimated … for 30 kg"), what it excludes with the way to the surcharge
  * details, and the lime button under them, as wide as the price and no
- * wider (across the card on a phone). A Special Rate wears an Ink tab on the
- * card's top edge. The landing shows this very card in its pictures:
+ * wider (across the card on a phone). A Special Rate wears the offer card's
+ * red tab on its top edge and its border fading from red at the tab to the
+ * hairline (`.offer-special`), as the live page marks an offer. The landing shows this very card in its pictures:
  * `display` drops the button, `stacked` keeps the phone's one column at any
  * width, and `plain` drops the card's own frame where the picture's card is
  * the frame; `figures={false}` draws the price per kg as a filler line, as
@@ -66,20 +68,18 @@ export function RateCard({
       {o("days").replace("{min}", String(rate.etaMin)).replace("{max}", String(rate.etaMax))}
     </span>
   );
-  const tab = (
-    <Chip className={cn(onEdge && "absolute -top-3 left-4 sm:left-6")}>
-      <BadgePercent aria-hidden /> {o("special")}
-    </Chip>
-  );
+  const tab = <SpecialRateTab className={cn(onEdge && "absolute -top-3.5 left-4 sm:left-6")} />;
   return (
     <article
       className={cn(
         "relative",
+        !plain && "rounded-lg bg-background p-4 sm:p-6",
         // inside the field a card has no line; on a dialog's paper it wears
-        // its hairline again (--card-border)
-        !plain && "rounded-lg border border-[var(--card-border,var(--border))] bg-background p-4 sm:p-6",
+        // its hairline again (--card-border). A Special Rate's border fades
+        // from red at its tab to the hairline, in the field too
+        !plain && (rate.special ? "offer-special" : "border border-[var(--card-border,var(--border))]"),
         // room for the tab that rides the edge
-        onEdge && "pt-6",
+        onEdge && "pt-7 sm:pt-7",
       )}
     >
       {onEdge && tab}
@@ -93,7 +93,7 @@ export function RateCard({
               <CarrierMark carrier={rate.carrier} className="size-7 rounded-xs text-xs" />
             )}
             {selected && (
-              <Chip tone="wash">
+              <Chip>
                 <Check aria-hidden strokeWidth={3} /> {t("expatOrder.service.selected")}
               </Chip>
             )}
