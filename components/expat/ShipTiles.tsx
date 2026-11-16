@@ -4,7 +4,7 @@ import { ChevronUp } from "lucide-react";
 import { useT } from "@/lib/i18n/LanguageProvider";
 import { cn } from "@/lib/utils/cn";
 import { at, Bar } from "./SceneParts";
-import { BooksObjects, ClothesObjects, HobbyObjects, HomeObjects, RecordPlayerObjects } from "./ShipObjects";
+import { BooksObjects, ClothesObjects, HobbyObjects, HomeObjects, VinylRecordsObjects } from "./ShipObjects";
 
 /**
  * The pictures of What you can send's bento (WhatYouCanShip): on every tile
@@ -191,7 +191,7 @@ const ASKS = [
 
 /**
  * What people ask about, as the questions themselves, and one of the odd
- * things they ask about in the corner: a record player. On a tile too
+ * things they ask about in the corner: vinyl records. On a tile too
  * narrow for both (under 20rem) the questions keep the room.
  */
 export function AsksPicture() {
@@ -199,8 +199,14 @@ export function AsksPicture() {
   let n = 0;
   return (
     <>
-      <div className="jr jr-rise absolute bottom-1 right-4 w-[9.5rem] @max-xs:hidden" style={at(0)}>
-        <RecordPlayerObjects className="h-auto w-full" />
+      {/* as wide as the room right of the questions (about 14.25rem of the
+          stage is theirs and the gutter's), between 6.5rem and 9.5rem, so
+          it never runs into a chip at any tile's width */}
+      <div
+        className="jr jr-rise absolute bottom-1 right-4 w-[clamp(6.5rem,calc(100cqw-14.25rem),9.5rem)] @max-xs:hidden"
+        style={at(0)}
+      >
+        <VinylRecordsObjects className="h-auto w-full" />
       </div>
       <div className="absolute left-6 right-6 top-6 grid gap-2">
         {ASKS.map((row, i) => (

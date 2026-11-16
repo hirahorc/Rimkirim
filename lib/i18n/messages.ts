@@ -422,9 +422,9 @@ const id = {
       less: "Tampilkan lebih sedikit",
     },
     ship: {
-      eyebrow: "Barang yang bisa dikirim",
-      heading: "Mau kirim barang pribadimu ke Indonesia?",
-      subtitle: "Hampir semua barang pribadi bisa dikirim. Berikut yang paling sering dikirim customer kami.",
+      eyebrow: "Isi kiriman & kemasan",
+      heading: "Barang yang bisa dikirim ke Indonesia",
+      subtitle: "Hampir semua barang pribadi bisa dikirim. Berikut yang paling sering dikirim customer kami, dan cara mengemasnya.",
       charges: "Lihat semua biaya penanganan",
       price: "Cek harga",
       clothes: {
@@ -2713,9 +2713,9 @@ const en: Messages = {
       less: "Show less",
     },
     ship: {
-      eyebrow: "Things you can ship",
-      heading: "Shipping your personal belongings to Indonesia?",
-      subtitle: "Almost any personal belonging can go. Here's what our customers send most.",
+      eyebrow: "Items & packing",
+      heading: "Things you can ship to Indonesia",
+      subtitle: "Almost any personal belonging can go. Here's what our customers send most, and how to pack it.",
       charges: "See every handling charge",
       price: "Check the price",
       clothes: {

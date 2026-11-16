@@ -359,142 +359,468 @@ export function ClothesObjects({ className }: { className?: string }) {
   );
 }
 
-/** a hardcover lying flat: its front (the spine, or the page edges with the
- *  boards over and under them), its top cover, and its pages on the right */
-function Book({
-  x,
-  y,
-  w,
-  h,
-  k,
-  front,
-  top,
-  board,
-  pages,
-}: {
-  x: number;
-  y: number;
-  w: number;
-  h: number;
-  k: number;
-  front: string;
-  top: string;
-  board: string;
-  pages: string;
-}) {
-  const dy = k * BOX_DEPTH;
-  return (
-    <>
-      <path d={`M${x} ${y}L${x + k} ${y - dy}H${x + w + k}L${x + w} ${y}Z`} fill={top} />
-      {/* the page block on the right, between the boards */}
-      <path d={`M${x + w} ${y}L${x + w + k} ${y - dy}V${y + h - dy}L${x + w} ${y + h}Z`} fill={board} />
-      <path d={`M${x + w} ${y + 3}L${x + w + k - 3} ${y - dy + 4.8}V${y + h - dy - 3.2}L${x + w} ${y + h - 3}Z`} fill={pages} />
-      <rect x={x} y={y} width={w} height={h} rx="3" fill={front} />
-    </>
-  );
+/** the books on a scale of their own, units per centimetre: they're the
+ *  tile's only things, so what counts is their sizes against each other */
+const BOOK_CM = 6.4;
+/** a book's depth is drawn at half its length along the bento's slope
+ *  (`BOX_DEPTH`): how far across each centimetre of it reaches */
+const RECEDE = 0.5 / Math.hypot(1, BOX_DEPTH);
+/** a case binding's boards, 1/8 in, and the squares they stand past the
+ *  pages by at the head, tail and fore-edge, 1/8 in */
+const BOARD = 0.3;
+const SQUARE = 0.3;
+/** a rounded spine stands out, and its fore-edge falls in, by this much of
+ *  the book's thickness */
+const ROUND = 0.12;
+/** a ribbon marker: Müller Martini's "usually 5 mm, sometimes 8" */
+const RIBBON = 0.8;
+
+type BookSize = { long: number; deep: number; thick: number };
+/** a hardcover from its trim (inches) and its thickness (cm, Lulu's
+ *  casewrap spine table for its pages): the boards are the pages plus a
+ *  square at the head, tail and fore-edge */
+const hardcover = (trimW: number, trimH: number, thick: number): BookSize => ({
+  long: trimH * 2.54 + 2 * SQUARE,
+  deep: trimW * 2.54 + SQUARE,
+  thick,
+});
+/** an art book, US Letter (8.5 × 11 in), 280 pages */
+const ART_BOOK = hardcover(8.5, 11, 2.4);
+/** a long novel, Royal (6.14 × 9.21 in), 600 pages */
+const NOVEL = hardcover(6.14, 9.21, 4.1);
+/** a shorter one, 5.5 × 8.5 in, 360 pages */
+const SMALL_BOOK = hardcover(5.5, 8.5, 2.7);
+
+/** a book where it lies, in cm: across from the bottom one's left end, up
+ *  from the floor, back from the bottom one's spine */
+type Placed = BookSize & { x: number; y: number; z: number };
+const ART_AT: Placed = { ...ART_BOOK, x: 0, y: 0, z: 0 };
+const NOVEL_AT: Placed = { ...NOVEL, x: 1.2, y: ART_BOOK.thick, z: 1.6 };
+const SMALL_AT: Placed = { ...SMALL_BOOK, x: 2.4, y: ART_BOOK.thick + NOVEL.thick, z: 2.7 };
+
+type Pt = readonly [number, number];
+/** a point of the stack (cm) on the picture */
+const bp = (x: number, y: number, z: number): Pt => [4 + (x + z * RECEDE) * BOOK_CM, 92 - (y + z * RECEDE * BOX_DEPTH) * BOOK_CM];
+const xy = (p: Pt) => `${p[0].toFixed(2)} ${p[1].toFixed(2)}`;
+const poly = (...pts: Pt[]) => `M${pts.map(xy).join("L")}Z`;
+/** a flat box on the picture, from its bottom left and top right corners */
+const box = (a: Pt, b: Pt) => ({ x: a[0], y: b[1], width: b[0] - a[0], height: a[1] - b[1] });
+
+/**
+ * A hardcover lying flat, as paths: its cover on top; its right end, the
+ * boards' cloth-covered edges with the pages set in between them by the
+ * square; and its front, which is either its spine (rounded, standing out
+ * at the middle, so its ends bow) or its fore-edge (the pages falling in
+ * between the boards' edges, the way a rounded book's do).
+ */
+function bookPaths(b: Placed, spineFront: boolean) {
+  const { x, y, z, long, deep, thick } = b;
+  const r = thick * ROUND;
+  const right = x + long;
+  const top = y + thick;
+  const mid = y + thick / 2;
+  const back = z + deep;
+  const inner = right - SQUARE;
+  const lo = y + BOARD;
+  const hi = top - BOARD;
+  const cover = poly(bp(x, top, z), bp(right, top, z), bp(right, top, back), bp(x, top, back));
+  if (spineFront) {
+    const pf = z + BOARD;
+    return {
+      cover,
+      end: `M${xy(bp(right, y, z))}L${xy(bp(right, y, back))}L${xy(bp(right, top, back))}L${xy(bp(right, top, z))}Q${xy(bp(right, mid, z - 2 * r))} ${xy(bp(right, y, z))}Z`,
+      endPages: `M${xy(bp(inner, lo, pf))}L${xy(bp(inner, lo, back - SQUARE))}L${xy(bp(inner, hi, back - SQUARE))}L${xy(bp(inner, hi, pf))}Q${xy(bp(inner, mid, pf - 2 * r))} ${xy(bp(inner, lo, pf))}Z`,
+      front:
+        `M${xy(bp(x, top, z))}L${xy(bp(right, top, z))}Q${xy(bp(right, mid, z - 2 * r))} ${xy(bp(right, y, z))}` +
+        `L${xy(bp(x, y, z))}Q${xy(bp(x, mid, z - 2 * r))} ${xy(bp(x, top, z))}Z`,
+    };
+  }
+  const pf = z + SQUARE;
+  return {
+    cover,
+    end: `M${xy(bp(right, y, z))}L${xy(bp(right, y, back))}Q${xy(bp(right, mid, back + 2 * r))} ${xy(bp(right, top, back))}L${xy(bp(right, top, z))}Z`,
+    endPages: `M${xy(bp(inner, lo, pf))}L${xy(bp(inner, lo, back - BOARD))}L${xy(bp(inner, hi, back - BOARD))}L${xy(bp(inner, hi, pf))}Q${xy(bp(inner, mid, pf + 2 * r))} ${xy(bp(inner, lo, pf))}Z`,
+    front: poly(bp(x, y, z), bp(right, y, z), bp(right, top, z), bp(x, top, z)),
+    frontPages:
+      `M${xy(bp(x + SQUARE, hi, pf))}L${xy(bp(inner, hi, pf))}Q${xy(bp(inner, mid, pf + 2 * r))} ${xy(bp(inner, lo, pf))}` +
+      `L${xy(bp(x + SQUARE, lo, pf))}Q${xy(bp(x + SQUARE, mid, pf + 2 * r))} ${xy(bp(x + SQUARE, hi, pf))}Z`,
+    lowerBoard: poly(bp(x, y, z), bp(right, y, z), bp(right, lo, z), bp(x, lo, z)),
+    upperBoard: poly(bp(x, hi, z), bp(right, hi, z), bp(right, top, z), bp(x, top, z)),
+    /** the lower board's top, in front of the pages, inside the square */
+    ledge: poly(bp(x, lo, z), bp(right, lo, z), bp(right, lo, pf), bp(x, lo, pf)),
+    /** the headband, at the spine's end of the pages, at the back */
+    headband: `M${xy(bp(inner, lo + 0.05, back - BOARD - 0.15))}L${xy(bp(inner, hi - 0.05, back - BOARD - 0.15))}`,
+  };
 }
+
+/** what a book on top throws on the cover under it: its own footprint,
+ *  softened and cast a little to the right, away from the light */
+const footprint = (b: Placed) => {
+  const s = 0.35;
+  return poly(bp(b.x + s, b.y, b.z - 0.1), bp(b.x + b.long + s, b.y, b.z - 0.1), bp(b.x + b.long + s, b.y, b.z + b.deep), bp(b.x + s, b.y, b.z + b.deep));
+};
+
+/** a stamped line of a spine's title, on the spine's crown */
+const spineText = (b: Placed, from: number, to: number, height: number, at = 0.5) => {
+  const c = -b.thick * ROUND * 0.9;
+  const yc = b.y + b.thick * at;
+  return { ...box(bp(b.x + from, yc - height / 2, c), bp(b.x + to, yc + height / 2, c)), rx: (height * BOOK_CM) / 2 };
+};
+
+/** the ribbon: out of the novel's fore-edge 3.2 cm from its head, down its
+ *  front, along the art book's cover and over its spine, hanging with its
+ *  end cut in a V. (y, z) along the ribbon, in cm; it's a ribbon's width
+ *  across */
+const RIBBON_X = NOVEL_AT.x + NOVEL_AT.long - SQUARE - 3.2 - RIBBON;
+const RIBBON_OUT = { y: NOVEL_AT.y + BOARD + 0.62 * (NOVEL.thick - 2 * BOARD), z: NOVEL_AT.z + SQUARE + 0.46 };
+const RIBBON_HANG = NOVEL_AT.z - 0.1;
+const ART_ROUND = ART_BOOK.thick * ROUND;
+const band = (pts: [number, number][], end?: number) => {
+  const left = pts.map(([y, z]) => bp(RIBBON_X, y, z));
+  const right = pts.map(([y, z]) => bp(RIBBON_X + RIBBON, y, z)).reverse();
+  const last = pts[pts.length - 1];
+  const notch = end === undefined ? [] : [bp(RIBBON_X + RIBBON / 2, last[0] + end, last[1])];
+  return poly(...left, ...notch, ...right);
+};
+const RIBBON_DOWN = band([
+  [RIBBON_OUT.y, RIBBON_OUT.z],
+  [RIBBON_OUT.y - 0.12, RIBBON_HANG + 0.18],
+  [RIBBON_OUT.y - 0.35, RIBBON_HANG],
+  [ART_BOOK.thick + 0.2, RIBBON_HANG],
+]);
+const RIBBON_FLAT = band([
+  [ART_BOOK.thick + 0.2, RIBBON_HANG],
+  [ART_BOOK.thick + 0.03, RIBBON_HANG - 0.2],
+  [ART_BOOK.thick + 0.03, 0.15],
+]);
+const RIBBON_OVER = band(
+  [
+    [ART_BOOK.thick + 0.03, 0.15],
+    [ART_BOOK.thick - 0.1, -ART_ROUND * 0.55],
+    [ART_BOOK.thick - 0.45, -ART_ROUND - 0.04],
+    [0.55, -ART_ROUND - 0.04],
+  ],
+  0.42,
+);
 
 /**
  * Books: three hardcovers stacked, each set back a little on the one under
- * it, the middle one's ribbon a lime marker hanging over the front: the
- * one lime in the bento, the brand's mark (DESIGN.md, The One-Voice Rule).
+ * it, drawn to their real sizes on one scale (`BOOK_CM`): an art book at
+ * the bottom, a long novel on it with its fore-edge to the front, and a
+ * shorter book on top. Each is a case binding as photographed (Wikimedia
+ * Commons): boards a square past the pages at the head, tail and
+ * fore-edge, a rounded spine (so the fore-edge falls in), the joint's
+ * groove along the cover by the spine, a headband at the spine's end of the
+ * pages, a title stamped along the spine and a publisher's mark at its
+ * foot. The novel's ribbon marker comes out of its fore-edge and over the
+ * art book's spine: the one lime in the bento, the brand's mark (DESIGN.md,
+ * The One-Voice Rule).
  */
 export function BooksObjects({ className }: { className?: string }) {
   const id = React.useId().replace(/[^a-zA-Z0-9]/g, "");
   const u = (name: string) => `url(#${id}-${name})`;
   const teal = (n: number) => `color-mix(in oklab, var(--art-hue), var(--art-ink) ${n}%)`;
+  const sky = (n: number) => `color-mix(in oklab, var(--art-hue), white ${n}%)`;
+  const art = bookPaths(ART_AT, true);
+  const novel = bookPaths(NOVEL_AT, false);
+  const small = bookPaths(SMALL_AT, true);
+  const foil = "#f4ecd6";
+  /** the groove of a joint along a cover, 7 mm in from the spine */
+  const groove = (b: Placed) => {
+    const t = b.y + b.thick;
+    return {
+      dark: `M${xy(bp(b.x + 0.15, t, b.z + 0.7))}L${xy(bp(b.x + b.long - 0.15, t, b.z + 0.7))}`,
+      lit: `M${xy(bp(b.x + 0.15, t, b.z + 0.86))}L${xy(bp(b.x + b.long - 0.15, t, b.z + 0.86))}`,
+    };
+  };
+  const artGroove = groove(ART_AT);
+  const smallGroove = groove(SMALL_AT);
+  /** the small book's cover: a blind-stamped rule 9 mm in */
+  const st = SMALL_AT.y + SMALL_AT.thick;
+  const blind = poly(
+    bp(SMALL_AT.x + 0.9, st, SMALL_AT.z + 1.5),
+    bp(SMALL_AT.x + SMALL_AT.long - 0.9, st, SMALL_AT.z + 1.5),
+    bp(SMALL_AT.x + SMALL_AT.long - 0.9, st, SMALL_AT.z + SMALL_AT.deep - 0.9),
+    bp(SMALL_AT.x + 0.9, st, SMALL_AT.z + SMALL_AT.deep - 0.9),
+  );
+  const floor = bp(0, 0, 0);
+
   return (
-    <svg viewBox="12 40 256 152" className={cn("ship-art block overflow-visible", className)} aria-hidden>
+    <svg viewBox="0 2 264 96" className={cn("ship-art block overflow-visible", className)} aria-hidden>
       <defs>
         <filter id={`${id}-soft`} x="-20%" y="-40%" width="140%" height="180%">
-          <feGaussianBlur stdDeviation="3.5" />
+          <feGaussianBlur stdDeviation="3" />
         </filter>
-        <filter id={`${id}-blur`} x="-50%" y="-50%" width="200%" height="200%">
-          <feGaussianBlur stdDeviation="2" />
+        <filter id={`${id}-blur`} x="-20%" y="-50%" width="140%" height="200%">
+          <feGaussianBlur stdDeviation="1.1" />
         </filter>
-        {/* page edges: fine lines along the face, level on the front and
-            along the depth on the side */}
-        <pattern id={`${id}-leaves`} width="6" height="3" patternUnits="userSpaceOnUse">
-          <rect width="6" height="3" fill="#fbf8f1" />
-          <path d="M0 2.5H6" stroke="#000" strokeOpacity="0.07" strokeWidth="0.8" />
+        <filter id={`${id}-fine`} x="-50%" y="-50%" width="200%" height="200%">
+          <feGaussianBlur stdDeviation="0.45" />
+        </filter>
+        {/* the pages' edges: fine lines, level on a fore-edge and along the
+            depth on a head or tail */}
+        <pattern id={`${id}-leaves`} width="8" height="1.7" patternUnits="userSpaceOnUse">
+          <path d="M0 1.45H8" stroke="#000" strokeOpacity="0.075" strokeWidth="0.45" />
         </pattern>
-        <pattern id={`${id}-leavesSide`} width="6" height="3" patternUnits="userSpaceOnUse" patternTransform="skewY(-31)">
-          <rect width="6" height="3" fill="#f3eee3" />
-          <path d="M0 2.5H6" stroke="#000" strokeOpacity="0.08" strokeWidth="0.8" />
+        <pattern id={`${id}-leavesEnd`} width="8" height="1.7" patternUnits="userSpaceOnUse" patternTransform={`skewY(${-(Math.atan(BOX_DEPTH) * 180) / Math.PI})`}>
+          <path d="M0 1.45H8" stroke="#000" strokeOpacity="0.09" strokeWidth="0.45" />
         </pattern>
         <linearGradient id={`${id}-cream`} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor="#f3ebda" />
-          <stop offset="1" stopColor="#d6c8ac" />
+          <stop offset="0" stopColor="#f5eedf" />
+          <stop offset="1" stopColor="#d8cbb0" />
+        </linearGradient>
+        <linearGradient id={`${id}-creamTop`} x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" stopColor="#f8f3e8" />
+          <stop offset="1" stopColor="#ece3d1" />
         </linearGradient>
         <linearGradient id={`${id}-tealSpine`} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" style={{ stopColor: teal(48) }} />
-          <stop offset="1" style={{ stopColor: teal(82) }} />
+          <stop offset="0" style={{ stopColor: teal(40) }} />
+          <stop offset="1" style={{ stopColor: teal(80) }} />
         </linearGradient>
         <linearGradient id={`${id}-tealTop`} x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0" style={{ stopColor: teal(34) }} />
-          <stop offset="1" style={{ stopColor: teal(60) }} />
+          <stop offset="0" style={{ stopColor: teal(30) }} />
+          <stop offset="1" style={{ stopColor: teal(58) }} />
         </linearGradient>
-        <linearGradient id={`${id}-skyBoard`} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" style={{ stopColor: "color-mix(in oklab, var(--art-hue), white 55%)" }} />
-          <stop offset="1" style={{ stopColor: "color-mix(in oklab, var(--art-hue), var(--art-ink) 25%)" }} />
+        <linearGradient id={`${id}-skyTop`} x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" style={{ stopColor: sky(66) }} />
+          <stop offset="1" style={{ stopColor: sky(48) }} />
         </linearGradient>
-        {/* a spine rounds: lit along its top, shaded under */}
+        {/* a spine rounds: lit along its crown, shaded under */}
         <linearGradient id={`${id}-round`} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor="#fff" stopOpacity="0.35" />
-          <stop offset="0.35" stopColor="#fff" stopOpacity="0" />
-          <stop offset="1" stopColor="#000" stopOpacity="0.14" />
+          <stop offset="0" stopColor="#fff" stopOpacity="0.3" />
+          <stop offset="0.4" stopColor="#fff" stopOpacity="0" />
+          <stop offset="1" stopColor="#000" stopOpacity="0.16" />
         </linearGradient>
+        {/* a fore-edge falls in: its upper half faces down, out of the light */}
+        <linearGradient id={`${id}-hollow`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#000" stopOpacity="0.1" />
+          <stop offset="0.55" stopColor="#000" stopOpacity="0" />
+          <stop offset="1" stopColor="#fff" stopOpacity="0.25" />
+        </linearGradient>
+        <clipPath id={`${id}-artCover`}>
+          <path d={art.cover} />
+        </clipPath>
+        <clipPath id={`${id}-novelCover`}>
+          <path d={novel.cover} />
+        </clipPath>
       </defs>
 
       <g className="ship-art-ground">
-        <BoxShadow x={20} y={184} w={160} k={64} cast={18} filter={u("soft")} />
+        <BoxShadow
+          x={floor[0]}
+          y={floor[1]}
+          w={ART_BOOK.long * BOOK_CM}
+          k={ART_BOOK.deep * RECEDE * BOOK_CM}
+          cast={10}
+          filter={u("soft")}
+        />
       </g>
 
       <g className="ship-art-lift">
-        {/* the bottom one: cream cloth, its spine to the front with two bands */}
-        <Book x={20} y={150} w={160} h={34} k={64} front={u("cream")} top="#f6f0e3" board="#d6c8ac" pages={u("leavesSide")} />
-        <rect x={20} y={150} width={160} height={34} rx="3" fill={u("round")} />
-        <path d="M36 152V182M164 152V182" style={{ stroke: "var(--art-ink)" }} strokeOpacity="0.5" strokeWidth="3" />
-        <rect x={74} y={164} width={52} height={5} rx="2.5" style={{ fill: "var(--art-ink)" }} opacity="0.3" />
-        <ellipse cx="110" cy="146" rx="78" ry="3" fill="#000" opacity="0.22" filter={u("blur")} />
+        {/* the art book: cream cloth, its spine to the front, its title
+            stamped in ink and the publisher's mark at its foot */}
+        <path d={art.cover} fill={u("creamTop")} />
+        <path d={art.end} fill={CREAM.deep} />
+        <path d={art.endPages} fill="#efe9dc" />
+        <path d={art.endPages} fill={u("leavesEnd")} />
+        <path d={art.front} fill={u("cream")} />
+        <path d={art.front} fill={u("round")} />
+        <rect {...spineText(ART_AT, 2.6, 11.8, 0.5)} style={{ fill: "var(--art-ink)" }} opacity="0.5" />
+        <rect {...spineText(ART_AT, 13.6, 18.4, 0.3)} style={{ fill: "var(--art-ink)" }} opacity="0.32" />
+        <rect {...spineText(ART_AT, 26.2, 26.8, 0.6)} rx="0.6" style={{ fill: "var(--art-ink)" }} opacity="0.4" />
+        <path d={artGroove.dark} style={{ stroke: "var(--art-ink)" }} strokeOpacity="0.16" strokeWidth="0.55" />
+        <path d={artGroove.lit} stroke="#fff" strokeOpacity="0.5" strokeWidth="0.4" />
+        <path d={footprint(NOVEL_AT)} clipPath={u("artCover")} filter={u("blur")} style={{ fill: "var(--art-ink)" }} opacity="0.3" />
 
-        {/* the middle one, its page edges to the front between sky boards */}
-        <Book x={36} y={114} w={146} h={30} k={56} front={u("skyBoard")} top="color-mix(in oklab, var(--art-hue), white 62%)" board={u("skyBoard")} pages={u("leavesSide")} />
-        <rect x={38} y={117} width={142} height={24} rx="1.5" fill={u("leaves")} />
-        <ellipse cx="114" cy="112" rx="72" ry="3" fill="#000" opacity="0.22" filter={u("blur")} />
+        {/* the novel, its fore-edge to the front: the pages between the
+            boards' edges, falling in, its head on the right with the
+            headband at the back */}
+        <path d={novel.cover} fill={u("skyTop")} />
+        <path d={novel.end} style={{ fill: sky(14) }} />
+        <path d={novel.endPages} fill="#ece4d1" />
+        <path d={novel.endPages} fill={u("leavesEnd")} />
+        <path d={novel.headband} stroke="#f2e9d6" strokeWidth="0.85" />
+        <path d={novel.headband} style={{ stroke: "var(--art-ink)" }} strokeOpacity="0.7" strokeWidth="0.85" strokeDasharray="0.55 0.55" />
+        <path d={novel.front} style={{ fill: `color-mix(in oklab, var(--art-ink) 12%, ${CREAM.mid})` }} />
+        <path d={novel.ledge} style={{ fill: sky(40) }} />
+        <path d={novel.frontPages} fill="#f8f2e4" />
+        <path d={novel.frontPages} fill={u("leaves")} />
+        <path d={novel.frontPages} fill={u("hollow")} />
+        <path d={novel.upperBoard} style={{ fill: sky(30) }} />
+        <path d={novel.lowerBoard} style={{ fill: teal(8) }} />
+        <path d={footprint(SMALL_AT)} clipPath={u("novelCover")} filter={u("blur")} style={{ fill: "var(--art-ink)" }} opacity="0.32" />
 
-        {/* the top one: the chapter's blue, a cream label on its spine */}
-        <Book x={44} y={78} w={140} h={32} k={50} front={u("tealSpine")} top={u("tealTop")} board={teal(70)} pages={u("leavesSide")} />
-        <rect x={44} y={78} width={140} height={32} rx="3" fill={u("round")} />
-        <rect x={88} y={86} width={52} height={16} rx="2" fill="#f6f0e3" />
-        <path d="M96 92H132M100 97H128" style={{ stroke: "var(--art-ink)" }} strokeOpacity="0.45" strokeWidth="1.6" strokeLinecap="round" />
+        {/* the small book: the chapter's blue, its title in foil between
+            two pairs of rules, a blind rule round its cover */}
+        <path d={small.cover} fill={u("tealTop")} />
+        {/* pressed in: shaded on its far side, catching the light on its near one */}
+        <path d={blind} fill="none" style={{ stroke: teal(78) }} strokeOpacity="0.6" strokeWidth="0.55" />
+        <path d={blind} fill="none" stroke="#fff" strokeOpacity="0.22" strokeWidth="0.4" transform="translate(0.45 0.35)" />
+        <path d={smallGroove.dark} style={{ stroke: "var(--art-ink)" }} strokeOpacity="0.35" strokeWidth="0.6" />
+        <path d={smallGroove.lit} stroke="#fff" strokeOpacity="0.22" strokeWidth="0.45" />
+        <path d={small.end} style={{ fill: teal(66) }} />
+        <path d={small.endPages} fill="#ece6d7" />
+        <path d={small.endPages} fill={u("leavesEnd")} />
+        <path d={small.front} fill={u("tealSpine")} />
+        <path d={small.front} fill={u("round")} />
+        {[1.0, 1.3, SMALL_AT.long - 1.3, SMALL_AT.long - 1.0].map((at) => (
+          <rect key={at} {...spineText(SMALL_AT, at, at + 0.07, SMALL_AT.thick - 0.7)} rx="0" fill={foil} opacity="0.8" />
+        ))}
+        <rect {...spineText(SMALL_AT, 3.0, 10.6, 0.5)} fill={foil} />
+        <rect {...spineText(SMALL_AT, 12.2, 16.4, 0.3)} fill={foil} opacity="0.8" />
+        <rect {...spineText(SMALL_AT, SMALL_AT.long - 2.75, SMALL_AT.long - 2.25, 0.5)} rx="0.5" fill={foil} opacity="0.85" />
 
-        {/* the ribbon, out of the middle one's pages and over the front */}
-        <path d="M150 128H160V181L155 176L150 181Z" fill="#c1ff00" />
-        <path d="M150 128H153V178.4L150 181Z" fill="#a3d600" />
+        {/* the ribbon, out of the novel's pages, along the art book's cover
+            and over its spine; its shadow a hair to the right */}
+        <g filter={u("fine")} style={{ fill: "var(--art-ink)" }} opacity="0.28" transform="translate(0.7 0.35)">
+          <path d={RIBBON_DOWN} />
+          <path d={RIBBON_OVER} />
+        </g>
+        <path d={RIBBON_DOWN} fill="#c1ff00" />
+        <path d={RIBBON_FLAT} fill="#d8ff6a" />
+        <path d={RIBBON_OVER} fill="#b4ef00" />
       </g>
     </svg>
   );
 }
 
+/** one scale for every thing in the hobbies' pile, so they keep their real
+ *  sizes against each other: units per centimetre */
+const PER_CM = 2.1;
+const cm = (n: number) => n * PER_CM;
+
+/** the guitar: a dreadnought (Taylor's and Martin's specs; Wikimedia
+ *  Commons, "Martin-dreadnought-shapes" and a Yamaha FG403S): its body,
+ *  from the tail along the strings, with its widths at the lower bout,
+ *  waist and upper bout, then a 14-fret neck on a 64.5 cm scale and a
+ *  3+3 headstock */
+const GUITAR = {
+  body: cm(50.8),
+  neck: cm(35.8),
+  head: cm(15),
+  lower: cm(40.6),
+  waist: cm(27.9),
+  upper: cm(29.2),
+  scale: cm(64.5),
+  soundhole: cm(10.2),
+  nut: cm(4.3),
+  heel: cm(5.6),
+} as const;
+/** the racket, inside the BWF's limits (680 by 230 mm): its head, the
+ *  throat, the shaft and the handle, with the grip's thickness */
+const RACKET = { head: cm(27.5), width: cm(22), throat: cm(3), shaft: cm(18), handle: cm(19.5), grip: cm(2.6) } as const;
+/** a feather shuttle, by the BWF's laws: a 26 mm base, 66 mm feathers
+ *  whose tips sit on a 64 mm circle */
+const SHUTTLE = { base: cm(2.6), cork: cm(2.5), feather: cm(6.6), tips: cm(6.4) } as const;
+/** a golf ball: 42.67 mm across, the Rules of Golf's least */
+const GOLF = cm(4.267);
+
 /**
- * Sports & hobbies, staged as one pile, back to front: a badminton racket, an acoustic guitar leaning up to the
- * right across it (the racket's head shows over the guitar's body, its
- * shaft and grip under the neck), then a shuttlecock and a golf ball in
- * front, each over the thing behind it.
+ * Sports & hobbies, staged as one pile, back to front: a badminton racket,
+ * an acoustic guitar leaning up to the right across it (the racket's head
+ * shows over the guitar's body, its shaft and grip out past its shoulder,
+ * under the neck), then a shuttlecock standing on its cork and a golf ball
+ * in front. Each is drawn to its real size on one scale (`PER_CM`), so the
+ * golf ball is the size of the soundhole's half and the shuttle a little
+ * taller than the guitar's bridge is wide, and each has the parts that make
+ * it itself: the guitar's rosette, pickguard, bridge with its saddle and
+ * pins, fret dots, nut, and a headstock with its string posts and six
+ * tuner buttons; the racket's isometric head strung at its real density,
+ * its T-joint, a grip wrapped in a spiral and a butt cap; the shuttle's
+ * leather cork with its band, sixteen feathers tied with two threads; the
+ * ball's dimples.
  */
 export function HobbyObjects({ className }: { className?: string }) {
   const id = React.useId().replace(/[^a-zA-Z0-9]/g, "");
   const u = (name: string) => `url(#${id}-${name})`;
   const blue = (n: number) => ({ stopColor: `color-mix(in oklab, var(--art-hue), var(--art-ink) ${n}%)` });
-  // the body seen from above: lower bout, waist, upper bout, into the neck
+  const f = (n: number) => +n.toFixed(2);
+
+  /* the guitar, along its strings from the tail (x 0), its top to us */
+  const G = GUITAR;
+  const lo = G.lower / 2;
+  const wa = G.waist / 2;
+  const up = G.upper / 2;
+  const L = G.body;
+  // the widest of each bout and the waist, along the body from the tail
+  const atLower = L * 0.29;
+  const atWaist = L * 0.64;
+  const atUpper = L * 0.875;
+  const half = [
+    `C0 ${-lo * 0.61} ${f(L * 0.11)} ${-lo} ${f(atLower)} ${-lo}`,
+    `C${f(L * 0.47)} ${-lo} ${f(L * 0.52)} ${-wa} ${f(atWaist)} ${-wa}`,
+    `C${f(L * 0.73)} ${-wa} ${f(L * 0.81)} ${-up} ${f(atUpper)} ${-up}`,
+    `C${f(L * 0.95)} ${-up} ${L} ${f(-up * 0.85)} ${L} ${f(-up * 0.55)}`,
+  ];
   const body =
-    "M0 92C0 74 12 63.3 26 63.3C40 63.3 48 71 62 73.8C72 76 78 69.6 86 69.6C98 69.6 106 76 108 83.6" +
-    "V100.4C106 108 98 114.4 86 114.4C78 114.4 72 108 62 110.2C48 113 40 120.7 26 120.7C12 120.7 0 110 0 92Z";
-  // frets from the nut toward the body, closer as they climb
-  const frets = Array.from({ length: 12 }, (_, i) => 190 - 160 * (1 - 2 ** (-(i + 1) / 12)));
+    `M0 0${half.join("")}V${f(up * 0.55)}` +
+    `C${L} ${f(up * 0.85)} ${f(L * 0.95)} ${up} ${f(atUpper)} ${up}` +
+    `C${f(L * 0.81)} ${up} ${f(L * 0.73)} ${wa} ${f(atWaist)} ${wa}` +
+    `C${f(L * 0.52)} ${wa} ${f(L * 0.47)} ${lo} ${f(atLower)} ${lo}` +
+    `C${f(L * 0.11)} ${lo} 0 ${f(lo * 0.61)} 0 0Z`;
+  const nutX = L + G.neck;
+  const tipX = nutX + G.head;
+  // the frets, measured from the nut on the scale, the 20th at the
+  // soundhole's edge; and the bridge's saddle a scale's length from the nut
+  const fret = (n: number) => nutX - G.scale * (1 - 2 ** (-n / 12));
+  const saddleX = nutX - G.scale;
+  const holeX = L - cm(14);
+  const boardEnd = fret(20);
+  /** the fretboard's half-width at x, from the heel to the nut */
+  const board = (x: number) => G.heel / 2 - ((G.heel - G.nut) / 2) * ((x - L) / G.neck);
+  const strings = [-5, -3, -1, 1, 3, 5];
+  // the headstock flares a little to its tip; its tuners three a side
+  const headHalf = (x: number) => cm(3.2) + cm(0.45) * ((x - nutX) / G.head);
+  const tuners = [cm(4.1), cm(7.7), cm(10.9)].map((d) => nutX + d);
+  const post = cm(1.85);
+
+  /* the racket, from its head's tip (x 0) to its butt */
+  const R = RACKET;
+  const ra = R.head / 2;
+  const rb = R.width / 2;
+  /** an isometric head: an oval squared a little (a superellipse) */
+  const oval = (a: number, b: number, n = 2.6) =>
+    Array.from({ length: 72 }, (_, i) => {
+      const t = (i / 72) * Math.PI * 2;
+      const c = Math.cos(t);
+      const s2 = Math.sin(t);
+      return `${i ? "L" : "M"}${f(ra + a * Math.sign(c) * Math.abs(c) ** (2 / n))} ${f(b * Math.sign(s2) * Math.abs(s2) ** (2 / n))}`;
+    }).join("") + "Z";
+  const shaftFrom = R.head + R.throat;
+  const handleFrom = shaftFrom + R.shaft;
+  const butt = handleFrom + R.handle;
+
+  /* the shuttle, from its cork's tip (x 0) to its feathers' tips */
+  const S = SHUTTLE;
+  const cr = S.base / 2;
+  const tr = S.tips / 2;
+  const skirtFrom = S.cork;
+  const skirtLen = Math.sqrt(S.feather ** 2 - (tr - cr) ** 2);
+  const skirtTo = skirtFrom + skirtLen;
+  const across = (x: number) => cr + (tr - cr) * ((x - skirtFrom) / skirtLen);
+  // the feathers we see, round the near half of the cone
+  const quills = Array.from({ length: 9 }, (_, i) => Math.sin(((i - 4) / 4) * (Math.PI / 2)));
+
+  /* the golf ball's dimples: a hex grid, foreshortened toward its edge */
+  const gr = GOLF / 2;
+  const dimples: [number, number, number][] = [];
+  for (let row = -4; row <= 4; row++) {
+    for (let col = -4; col <= 4; col++) {
+      const x = (col + (row % 2 ? 0.5 : 0)) * 1.05;
+      const y = row * 0.91;
+      const d = Math.hypot(x, y);
+      if (d < gr - 0.55) dimples.push([f(x), f(y), f(0.42 * Math.sqrt(1 - (d / gr) ** 2) + 0.12)]);
+    }
+  }
+
+  // where each thing stands: the floor, the guitar leaning across the racket
+  const FLOOR = 162;
+  const guitarAt = `translate(4 ${FLOOR - 37.4}) rotate(-17)`;
+  const racketAt = "translate(42.3 46.9) rotate(47)";
+  const shuttleAt = `translate(100 ${FLOOR - 0.6}) rotate(-70)`;
+
   return (
-    <svg viewBox="-2 44 230 128" className={cn("ship-art block overflow-visible", className)} aria-hidden>
+    <svg viewBox="-4 26 222 142" className={cn("ship-art block overflow-visible", className)} aria-hidden>
       <defs>
         <filter id={`${id}-soft`} x="-20%" y="-200%" width="140%" height="500%">
           <feGaussianBlur stdDeviation="3.5" />
@@ -507,193 +833,348 @@ export function HobbyObjects({ className }: { className?: string }) {
           <stop offset="0.6" style={blue(50)} />
           <stop offset="1" style={blue(72)} />
         </radialGradient>
+        <radialGradient id={`${id}-hole`} cx="0.4" cy="0.35" r="0.7">
+          <stop offset="0" stopColor="#2b3740" />
+          <stop offset="1" stopColor="#141c22" />
+        </radialGradient>
         <linearGradient id={`${id}-wood`} x1="0" y1="0" x2="0" y2="1">
           <stop offset="0" stopColor="#9a6a3f" />
           <stop offset="1" stopColor="#6e4527" />
         </linearGradient>
-        <radialGradient id={`${id}-ball`} cx="0.35" cy="0.3" r="0.75">
-          <stop offset="0" stopColor="#ffffff" />
-          <stop offset="1" stopColor="#d3d9df" />
-        </radialGradient>
+        <linearGradient id={`${id}-board`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#3d2a1f" />
+          <stop offset="1" stopColor="#24180f" />
+        </linearGradient>
+        {/* tortoiseshell: amber through to near black */}
+        <linearGradient id={`${id}-guard`} x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stopColor="#7a4a2b" />
+          <stop offset="0.45" stopColor="#4a2a18" />
+          <stop offset="1" stopColor="#24140c" />
+        </linearGradient>
+        <linearGradient id={`${id}-metal`} x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stopColor="#f4f6f8" />
+          <stop offset="1" stopColor="#9aa4ad" />
+        </linearGradient>
+        <linearGradient id={`${id}-shaft`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#cfd6dc" />
+          <stop offset="1" stopColor="#7f8b95" />
+        </linearGradient>
         <linearGradient id={`${id}-grip`} x1="0" y1="0" x2="0" y2="1">
           <stop offset="0" stopColor="#fbf6ea" />
           <stop offset="1" stopColor="#d9ccb2" />
         </linearGradient>
+        <radialGradient id={`${id}-ball`} cx="0.35" cy="0.3" r="0.75">
+          <stop offset="0" stopColor="#ffffff" />
+          <stop offset="1" stopColor="#cfd6dc" />
+        </radialGradient>
+        <radialGradient id={`${id}-cork`} cx="0.3" cy="0.4" r="0.8">
+          <stop offset="0" stopColor="#ffffff" />
+          <stop offset="1" stopColor="#d6dbe0" />
+        </radialGradient>
+        <linearGradient id={`${id}-skirt`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#ffffff" />
+          <stop offset="1" stopColor="#e4e9ee" />
+        </linearGradient>
         <clipPath id={`${id}-strings`}>
-          <ellipse cx="0" cy="0" rx="21" ry="16.5" />
+          <path d={oval(ra - 1.5, rb - 1.5)} />
         </clipPath>
       </defs>
 
-      {/* the pile's one shadow on the floor, cast a little to the right */}
+      {/* the pile's shadows on the floor, cast a little to the right */}
       <g className="ship-art-ground">
         <g filter={u("soft")} style={{ fill: "var(--art-ink)" }}>
-          <ellipse cx="74" cy="161" rx="66" ry="5.5" opacity="0.28" />
-          <ellipse cx="150" cy="162" rx="46" ry="4.5" opacity="0.22" />
+          <ellipse cx="62" cy={FLOOR} rx="60" ry="5" opacity="0.28" />
+          <ellipse cx="146" cy={FLOOR} rx="20" ry="3.5" opacity="0.22" />
+          <ellipse cx="104" cy={FLOOR} rx="8" ry="2.2" opacity="0.24" />
         </g>
       </g>
 
       <g className="ship-art-lift">
-        {/* the racket, at the back, head up to the left: strung, its throat,
-            the shaft, and a grip that swells to its butt cap */}
-        <g transform="translate(68 70) rotate(37)">
-          <ellipse cx="0" cy="0" rx="23" ry="18.5" fill="#fff" opacity="0.3" />
-          <g clipPath={`url(#${id}-strings)`}>
-            {Array.from({ length: 11 }, (_, i) => -20 + i * 4).map((d) => (
-              <g key={d}>
-                <path d={`M${d} -20V20`} stroke="#fff" strokeOpacity="0.9" strokeWidth="0.6" />
-                <path d={`M-24 ${d * 0.8}H24`} stroke="#fff" strokeOpacity="0.9" strokeWidth="0.6" />
-              </g>
+        {/* the racket, at the back, head up to the left */}
+        <g transform={racketAt}>
+          <path d={oval(ra, rb)} fill="#fff" opacity="0.3" />
+          <g clipPath={u("strings")} stroke="#fff" strokeOpacity="0.85" strokeWidth="0.3">
+            {/* the mains along the racket and the crosses over them, at
+                about a string every centimetre */}
+            {Array.from({ length: 21 }, (_, i) => -rb + 2 + i * ((2 * rb - 4) / 20)).map((y) => (
+              <path key={`m${y}`} d={`M0 ${f(y)}H${R.head}`} />
+            ))}
+            {Array.from({ length: 23 }, (_, i) => 2 + i * ((R.head - 4) / 22)).map((x) => (
+              <path key={`c${x}`} d={`M${f(x)} ${-rb}V${rb}`} />
             ))}
           </g>
-          <ellipse cx="0" cy="0" rx="22.5" ry="18" fill="none" style={{ stroke: "var(--art-ink)" }} strokeWidth="3.2" />
-          <path d="M21 -4.5L31 0L21 4.5Z" style={{ fill: "var(--art-ink)" }} />
-          <path d="M30 0H86" stroke="#8d99a3" strokeWidth="2" />
-          <path d="M82 -2.4H112Q118 -4.2 118 0Q118 4.2 112 2.4H82Q80 0 82 -2.4Z" fill={u("grip")} />
-          <path d="M112 -3.4Q119.5 -4.8 119.5 0Q119.5 4.8 112 3.4Z" style={{ fill: "var(--art-ink)" }} />
-          <path d="M88 -2.4L91 2.4M95 -2.4L98 2.4M102 -2.4L105 2.4" style={{ stroke: "var(--art-ink)" }} strokeOpacity="0.28" strokeWidth="1" />
+          <path d={oval(ra, rb)} fill="none" style={{ stroke: "var(--art-ink)" }} strokeWidth="1.9" />
+          <path d={oval(ra - 0.7, rb - 0.7)} fill="none" stroke="#fff" strokeOpacity="0.22" strokeWidth="0.4" />
+          {/* the T-joint into the shaft */}
+          <path d={`M${R.head - 1} -2.6L${shaftFrom} -0.8V0.8L${R.head - 1} 2.6Z`} style={{ fill: "var(--art-ink)" }} />
+          <rect x={shaftFrom} y="-0.75" width={R.shaft + 1} height="1.5" fill={u("shaft")} />
+          {/* the handle: a cone off the shaft, the grip wound in a spiral,
+              the butt cap */}
+          <path d={`M${handleFrom} -0.9L${handleFrom + 3} ${-R.grip / 2}V${R.grip / 2}L${handleFrom} 0.9Z`} style={{ fill: "var(--art-ink)" }} />
+          <rect x={handleFrom + 3} y={-R.grip / 2} width={R.handle - 5} height={R.grip} rx="1" fill={u("grip")} />
+          {Array.from({ length: 13 }, (_, i) => handleFrom + 4.5 + i * 2.6).map((x) => (
+            <path key={x} d={`M${f(x)} ${-R.grip / 2}L${f(x + 1.4)} ${R.grip / 2}`} style={{ stroke: "var(--art-ink)" }} strokeOpacity="0.25" strokeWidth="0.45" />
+          ))}
+          <rect x={butt - 2.6} y={-R.grip / 2 - 0.3} width="2.6" height={R.grip + 0.6} rx="1.1" style={{ fill: "var(--art-ink)" }} />
         </g>
 
-        {/* the guitar, leaning across it: the shade it throws on the racket,
-            its side under the top, the top with its binding */}
-        <g transform="translate(3 130) rotate(-16) translate(0 -92)">
-          <path d={body} transform="translate(3 12)" fill="#000" opacity="0.16" filter={u("blur")} />
-          <path d={body} transform="translate(0 8)" style={{ fill: "color-mix(in oklab, var(--art-hue), var(--art-ink) 84%)" }} />
-          <path d={body} fill={u("top")} stroke="#f6f0e3" strokeWidth="1.8" />
-          <ellipse cx="74" cy="92" rx="14" ry="10" fill="none" stroke="#f6f0e3" strokeWidth="2" />
-          <ellipse cx="74" cy="92" rx="10.5" ry="7.5" fill="#1d2a33" />
-          <rect x="24" y="84" width="7" height="16" rx="2" fill="#3b2a20" />
-          {/* the neck, its side, the fretboard and frets; the headstock and pegs */}
-          <rect x="106" y="96.5" width="86" height="4.5" fill="#6e4527" />
-          <rect x="106" y="87.5" width="86" height="9" fill="#3b2a20" />
-          {frets.map((x) => (
-            <path key={x} d={`M${x} 87.5V96.5`} stroke="#c9ced4" strokeWidth="1" />
+        {/* the guitar, leaning across it */}
+        <g transform={guitarAt}>
+          {/* the shade it throws on the racket, then its side under the top */}
+          <path d={body} transform="translate(3 11)" fill="#000" opacity="0.16" filter={u("blur")} />
+          <path d={body} transform="translate(0 6.5)" style={{ fill: "color-mix(in oklab, var(--art-hue), var(--art-ink) 84%)" }} />
+          <path d={body} fill={u("top")} stroke="#f6f0e3" strokeWidth="1.6" />
+          {/* the pickguard, round the soundhole on the treble side */}
+          <path
+            d={`M${f(holeX + 10)} 9.2C${f(holeX + 10)} 16 ${f(holeX + 6)} 22.5 ${f(holeX - 3)} 23.5C${f(holeX - 14)} 24.5 ${f(holeX - 23)} 20.5 ${f(holeX - 23)} 14.5C${f(holeX - 23)} 10.5 ${f(holeX - 19)} 8 ${f(holeX - 13.6)} 8.6A15 15 0 0 0 ${f(holeX + 10)} 9.2Z`}
+            fill={u("guard")}
+            opacity="0.92"
+          />
+          {/* the rosette's rings, and the soundhole */}
+          <circle cx={f(holeX)} cy="0" r={f(G.soundhole / 2 + 2.9)} fill="none" stroke="#f6f0e3" strokeWidth="1.3" />
+          <circle cx={f(holeX)} cy="0" r={f(G.soundhole / 2 + 1.2)} fill="none" stroke="#f6f0e3" strokeOpacity="0.8" strokeWidth="0.5" />
+          <circle cx={f(holeX)} cy="0" r={f(G.soundhole / 2)} fill={u("hole")} />
+          {/* the bridge: rosewood, its saddle on the neck's side, six pins */}
+          <rect x={f(saddleX - 5.2)} y={-cm(7.5)} width="6.6" height={cm(15)} rx="2.6" fill="#3b2a20" />
+          <path d={`M${f(saddleX + 0.1)} -8.2L${f(saddleX + 0.7)} 8.2`} stroke="#f6f0e3" strokeWidth="0.9" strokeLinecap="round" />
+          {strings.map((k) => (
+            <circle key={k} cx={f(saddleX - 3)} cy={k * 1.15} r="0.75" fill="#f6f0e3" />
           ))}
-          <rect x="189" y="87" width="2.5" height="10" fill="#f6f0e3" />
-          <path d="M191 90.5L219 88.5Q222 88.5 222 91V102Q222 104.5 219 104.5L191 102.5Z" fill="#5a3820" />
-          <path d="M191 86L219 83Q222 83 222 86V97Q222 100 219 100L191 97Z" fill={u("wood")} />
-          {[198, 206, 214].map((x) => (
-            <g key={x}>
-              {/* the tuners stand off the headstock's edges, which close in
-                  toward its tip */}
-              <ellipse cx={x} cy={86 - ((x - 191) * 3) / 28 - 1} rx="2.6" ry="2" fill="#e4e8ec" />
-              <ellipse cx={x} cy={102.5 + ((x - 191) * 2) / 28 + 1.5} rx="2.6" ry="2" fill="#c9ced4" />
-            </g>
+
+          {/* the neck: its side, the fretboard to the soundhole, frets and dots */}
+          <path d={`M${L} ${f(board(L))}L${nutX} ${f(board(nutX))}V${f(board(nutX) + 2.4)}L${L} ${f(board(L) + 3)}Z`} fill="#6e4527" />
+          <path d={`M${f(boardEnd)} ${f(-board(L))}L${nutX} ${f(-board(nutX))}V${f(board(nutX))}L${f(boardEnd)} ${f(board(L))}Z`} fill={u("board")} />
+          {Array.from({ length: 20 }, (_, i) => fret(i + 1)).map((x) => (
+            <path key={x} d={`M${f(x)} ${f(-board(Math.max(x, L)))}V${f(board(Math.max(x, L)))}`} stroke="#c9ced4" strokeWidth="0.45" />
           ))}
-          {/* six strings, bridge to nut */}
-          {[-5, -3, -1, 1, 3, 5].map((k) => (
-            <path key={k} d={`M28 ${92 + k}L190 ${92 + k * 0.7}`} stroke="#e8edf1" strokeWidth="0.7" />
+          {[3, 5, 7, 9, 15].map((n) => (
+            <circle key={n} cx={f((fret(n) + fret(n - 1)) / 2)} cy="0" r="0.7" fill="#efe7d6" />
+          ))}
+          {[-2, 2].map((y) => (
+            <circle key={y} cx={f((fret(12) + fret(11)) / 2)} cy={y} r="0.7" fill="#efe7d6" />
+          ))}
+          <rect x={nutX} y={f(-board(nutX) - 0.2)} width="1.1" height={f(2 * board(nutX) + 0.4)} fill="#f6f0e3" />
+
+          {/* the headstock: its side, its face, the tuners' shafts and
+              buttons off both edges, the string posts */}
+          <path d={`M${f(nutX + 1.1)} ${f(-headHalf(nutX) + 1.8)}L${f(tipX)} ${f(-headHalf(tipX) + 1.8)}V${f(headHalf(tipX) + 1.8)}L${f(nutX + 1.1)} ${f(headHalf(nutX) + 1.8)}Z`} fill="#5a3820" />
+          {tuners.map((x) =>
+            [-1, 1].map((side) => (
+              <g key={`${x}${side}`}>
+                <rect x={f(x - 0.5)} y={f(side < 0 ? -headHalf(x) - 2.4 : headHalf(x))} width="1" height="2.4" fill="#aeb7bf" />
+                <rect x={f(x - 1.5)} y={f(side < 0 ? -headHalf(x) - 5.6 : headHalf(x) + 2.2)} width="3" height="3.4" rx="1.3" fill={u("metal")} />
+              </g>
+            )),
+          )}
+          <path d={`M${f(nutX + 1.1)} ${f(-headHalf(nutX))}L${f(tipX)} ${f(-headHalf(tipX))}Q${f(tipX + 0.8)} ${f(-headHalf(tipX))} ${f(tipX + 0.8)} ${f(-headHalf(tipX) + 1)}V${f(headHalf(tipX) - 1)}Q${f(tipX + 0.8)} ${f(headHalf(tipX))} ${f(tipX)} ${f(headHalf(tipX))}L${f(nutX + 1.1)} ${f(headHalf(nutX))}Z`} fill={u("wood")} />
+          {tuners.map((x) =>
+            [-1, 1].map((side) => (
+              <g key={`p${x}${side}`}>
+                <circle cx={f(x)} cy={side * post} r="1.5" fill="#3b2a20" opacity="0.55" />
+                <circle cx={f(x)} cy={side * post} r="1" fill={u("metal")} />
+              </g>
+            )),
+          )}
+
+          {/* six strings, bridge to nut, and on from the nut to their posts:
+              each outer string to the post nearest the nut */}
+          {strings.map((k, i) => (
+            <path
+              key={k}
+              d={`M${f(saddleX + 0.4)} ${f(k * 1.15)}L${nutX} ${f(k * 0.72)}L${f(tuners[i < 3 ? i : 5 - i])} ${(k < 0 ? -1 : 1) * post}`}
+              fill="none"
+              stroke="#e8edf1"
+              strokeWidth={i === 0 || i === 1 || i === 2 ? 0.55 : 0.4}
+            />
           ))}
         </g>
 
-        {/* in front: a shuttlecock tipped on its cork against the guitar,
-            and a golf ball over the racket's grip */}
-        <g transform="translate(98 158) rotate(-52)">
-          <path d="M3 -4L24 -11Q27 0 24 11L3 4Z" fill="#fbfcfd" />
-          <path d="M4 -2L24 -8M4 0L25 0M4 2L24 8" stroke="#b9c2ca" strokeWidth="0.8" />
-          <ellipse cx="24" cy="0" rx="3.5" ry="11" fill="none" stroke="#c9d0d6" strokeWidth="1.2" />
-          <path d="M3 -4.5A6 6 0 0 0 3 4.5Z" fill="#f6f0e3" />
-          <circle cx="0" cy="0" r="5.5" fill="#efe3cc" />
-          <rect x="2" y="-5" width="2.5" height="10" style={{ fill: "var(--art-ink)" }} opacity="0.6" />
+        {/* in front: a shuttlecock standing on its cork */}
+        <g transform={shuttleAt}>
+          <path
+            d={`M${f(skirtFrom)} ${f(-cr)}L${f(skirtTo)} ${f(-tr)}V${f(tr)}L${f(skirtFrom)} ${f(cr)}Z`}
+            fill={u("skirt")}
+          />
+          {/* the vanes' overlapping tips, a scallop round the rim */}
+          <path
+            d={quills
+              .slice(0, -1)
+              .map((q, i) => `${i ? "" : `M${f(skirtTo)} ${f(q * tr)}`}Q${f(skirtTo + 1.1)} ${f(((q + quills[i + 1]) / 2) * tr)} ${f(skirtTo)} ${f(quills[i + 1] * tr)}`)
+              .join("")}
+            fill="#fbfcfd"
+            stroke="#d5dce2"
+            strokeWidth="0.25"
+          />
+          {/* the quills, base to tip, and the two threads that tie them */}
+          {quills.map((q) => (
+            <path key={q} d={`M${f(skirtFrom)} ${f(q * cr)}L${f(skirtTo)} ${f(q * tr)}`} stroke="#e9dfca" strokeWidth="0.35" />
+          ))}
+          {[0.28, 0.46].map((t) => {
+            const x = skirtFrom + skirtLen * t;
+            return <ellipse key={t} cx={f(x)} cy="0" rx="0.5" ry={f(across(x))} fill="none" stroke="#e9dfca" strokeWidth="0.45" />;
+          })}
+          {/* the cork: its leather dome, and the band where the feathers go in */}
+          <path d={`M${f(cr)} ${f(-cr)}A${f(cr)} ${f(cr)} 0 0 0 ${f(cr)} ${f(cr)}H${f(skirtFrom)}V${f(-cr)}Z`} fill={u("cork")} />
+          <rect x={f(skirtFrom - 0.8)} y={f(-cr)} width="0.8" height={f(S.base)} style={{ fill: "var(--art-ink)" }} />
         </g>
-        <circle cx="166" cy="151" r="9" fill={u("ball")} />
-        {[
-          [163, 147],
-          [168, 148],
-          [165, 152],
-          [170, 153],
-          [162, 154],
-        ].map(([x, y]) => (
-          <circle key={`${x}-${y}`} cx={x} cy={y} r="0.9" fill="#000" opacity="0.1" />
-        ))}
+
+        {/* and a golf ball, by the racket's butt */}
+        <g transform={`translate(154 ${f(FLOOR - gr)})`}>
+          <circle r={f(gr)} fill={u("ball")} />
+          {dimples.map(([x, y, r]) => (
+            <circle key={`${x},${y}`} cx={x} cy={y} r={r} fill="#000" opacity="0.08" />
+          ))}
+        </g>
       </g>
     </svg>
   );
 }
 
 /**
- * Anything else: a record player, its lid up, a record on the platter and
- * the tonearm at rest. The things on its deck are drawn in plan and laid
- * onto the deck's face (one shear), so the record sits flat on it.
+ * Anything else: vinyl records, as they'd be packed. A sleeve stands in
+ * front of another, with its record out of the opening on its left, in its
+ * paper inner sleeve, far enough that the label shows whole. The record
+ * leads on the left, toward the tile's questions, so the corner nearest
+ * them is the record's curve and not a sleeve's square corner. Drawn to a 12-inch LP's own sizes (Wikimedia Commons, Evan-Amos's
+ * public-domain "12in Vinyl LP Record Angle"): the jacket 31.4 cm square,
+ * the record 30 cm across, its label a third of it with a pin-sized
+ * spindle hole, a band of dead wax around the label, the tracks' gaps as
+ * fine lighter rings, the lead-in a lighter rim, and the grooves' sheen as
+ * two opposite wedges toward the light. The front sleeve wears the
+ * chapter's blue, darker than the tile's wash, with a faint ring where the
+ * record inside has rubbed it; the one behind is cream.
  */
-export function RecordPlayerObjects({ className }: { className?: string }) {
+export function VinylRecordsObjects({ className }: { className?: string }) {
   const id = React.useId().replace(/[^a-zA-Z0-9]/g, "");
   const u = (name: string) => `url(#${id}-${name})`;
-  // the case: its front's top-left corner, its width, height and depth
-  const X = 10;
-  const Y = 104;
-  const W = 124;
-  const H = 26;
-  const K = 70;
-  const dy = K * BOX_DEPTH;
-  const LID = 58;
-  // plan (x across, z into the deck) onto the deck's face
-  const deck = `matrix(1 0 1 ${-BOX_DEPTH} ${X} ${Y})`;
+  const hue = (n: number) => `color-mix(in oklab, var(--art-hue), var(--art-ink) ${n}%)`;
+  /** k into the picture, drawn k across and 0.6k up */
+  const depth = (k: number) => [k, -k * BOX_DEPTH] as const;
+  // the front sleeve: its face's top-left corner, its side, its thickness;
+  // the second one stands BACK behind it
+  const X = 70;
+  const Y = 28;
+  const S = 100;
+  const T = 3;
+  const BACK = 20;
+  const [bx, by] = depth(BACK);
+  const [tx, ty] = depth(T);
+  // the record, in the sleeve's middle: 0.96 of the jacket across, out of
+  // its opening until the label clears it
+  const [mx, my] = depth(T / 2);
+  const R = 48;
+  const CX = X - 23 + mx;
+  const CY = Y + S / 2 + my;
+  const LABEL = 16.3;
+  const point = (deg: number, r: number) => {
+    const a = (deg * Math.PI) / 180;
+    return `${(CX + r * Math.cos(a)).toFixed(2)} ${(CY + r * Math.sin(a)).toFixed(2)}`;
+  };
+  /** a wedge of the grooves' sheen, centred on `deg`, `half` either side */
+  const wedge = (deg: number, half: number) =>
+    `M${CX} ${CY}L${point(deg - half, R)}A${R} ${R} 0 0 1 ${point(deg + half, R)}Z`;
+  /** the grooves: fine rings from the dead wax out to the lead-in */
+  const grooves = Array.from({ length: 30 }, (_, i) => 19.6 + i * 0.9);
+  /** the gaps between tracks, a touch lighter than the grooves */
+  const gaps = [24.2, 29.6, 35.3, 41.1];
   return (
-    <svg viewBox="0 -4 222 140" className={cn("ship-art block overflow-visible", className)} aria-hidden>
+    <svg viewBox="0 8 200 128" className={cn("ship-art block overflow-visible", className)} aria-hidden>
       <defs>
         <filter id={`${id}-soft`} x="-20%" y="-40%" width="140%" height="180%">
           <feGaussianBlur stdDeviation="3.5" />
         </filter>
         <filter id={`${id}-blur`} x="-50%" y="-50%" width="200%" height="200%">
-          <feGaussianBlur stdDeviation="2.5" />
+          <feGaussianBlur stdDeviation="2.2" />
         </filter>
-        <linearGradient id={`${id}-front`} x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stopColor="#f7f0e2" />
-          <stop offset="1" stopColor="#dccfb6" />
+        <filter id={`${id}-edge`} x="-50%" y="-10%" width="200%" height="120%">
+          <feGaussianBlur stdDeviation="1.2" />
+        </filter>
+        <linearGradient id={`${id}-cover`} x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" style={{ stopColor: "color-mix(in oklab, var(--art-hue), white 8%)" }} />
+          <stop offset="1" style={{ stopColor: hue(42) }} />
         </linearGradient>
-        <linearGradient id={`${id}-lid`} x1="0" y1="0" x2="0" y2="1">
+        <linearGradient id={`${id}-cream`} x1="0" y1="0" x2="1" y2="1">
           <stop offset="0" stopColor="#f6efe1" />
-          <stop offset="1" stopColor="#e2d6bf" />
+          <stop offset="1" stopColor="#d9ccb2" />
         </linearGradient>
-        <radialGradient id={`${id}-vinyl`} cx="0.4" cy="0.35" r="0.7">
-          <stop offset="0" stopColor="#3a4249" />
-          <stop offset="1" stopColor="#14191d" />
+        <linearGradient id={`${id}-paper`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#ffffff" />
+          <stop offset="1" stopColor="#e9e3d6" />
+        </linearGradient>
+        <radialGradient id={`${id}-vinyl`} cx="0.36" cy="0.3" r="0.8">
+          <stop offset="0" stopColor="#323a41" />
+          <stop offset="0.55" stopColor="#181d21" />
+          <stop offset="1" stopColor="#0c0f12" />
         </radialGradient>
-        <linearGradient id={`${id}-metal`} x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stopColor="#f2f4f6" />
-          <stop offset="1" stopColor="#9aa4ad" />
-        </linearGradient>
+        <radialGradient id={`${id}-label`} cx="0.35" cy="0.3" r="0.8">
+          <stop offset="0" stopColor="#fffaf0" />
+          <stop offset="1" stopColor="#e3d7bf" />
+        </radialGradient>
+        <clipPath id={`${id}-grooveArea`}>
+          <circle cx={CX} cy={CY} r={R - 0.8} />
+        </clipPath>
       </defs>
 
       <g className="ship-art-ground">
-        <BoxShadow x={X} y={Y + H} w={W} k={K} cast={16} filter={u("soft")} />
+        {/* the two sleeves' footprint, and the record's, a little off the floor */}
+        <BoxShadow x={X} y={Y + S} w={S} k={BACK + T} cast={14} filter={u("soft")} />
+        <ellipse cx={CX + 4} cy={Y + S} rx="34" ry="3" style={{ fill: "var(--art-ink)" }} opacity="0.22" filter={u("blur")} />
       </g>
 
       <g className="ship-art-lift">
-        {/* the lid, up on its hinges at the deck's back edge: its inside */}
-        <path
-          d={`M${X + K} ${Y - dy}L${X + K + 8} ${Y - dy - LID}H${X + K + W + 8}L${X + K + W} ${Y - dy}Z`}
-          fill={u("lid")}
-        />
-        <path
-          d={`M${X + K + 7} ${Y - dy - 5}L${X + K + 13} ${Y - dy - LID + 6}H${X + K + W + 3}L${X + K + W - 3} ${Y - dy - 5}Z`}
-          fill="#000"
-          opacity="0.06"
-        />
-        {/* the deck, the case's right side, its front */}
-        <path d={`M${X} ${Y}L${X + K} ${Y - dy}H${X + K + W}L${X + W} ${Y}Z`} fill="#f9f4ea" />
-        <path d={`M${X + K} ${Y - dy}H${X + K + W}`} stroke="#000" strokeOpacity="0.12" strokeWidth="3" filter={u("blur")} />
-        <path d={`M${X + W} ${Y}L${X + W + K} ${Y - dy}V${Y + H - dy}L${X + W} ${Y + H}Z`} fill="#d3c4a7" />
-        <rect x={X} y={Y} width={W} height={H} rx="3" fill={u("front")} />
-        {/* the knobs and the speaker grille on its front */}
-        <path d={`M${X + 12} ${Y + 9}H${X + 54}M${X + 12} ${Y + 13}H${X + 54}M${X + 12} ${Y + 17}H${X + 54}`} stroke="#000" strokeOpacity="0.12" strokeWidth="1.6" strokeLinecap="round" />
-        <circle cx={X + 96} cy={Y + 13} r="4.5" fill={u("metal")} />
-        <circle cx={X + 110} cy={Y + 13} r="4.5" fill={u("metal")} />
+        {/* the sleeve behind: cream, a band of the chapter's blue along its top */}
+        <path d={`M${X + bx + S} ${Y + by}l${tx} ${ty}v${S}l${-tx} ${-ty}Z`} fill="#cdbfa3" />
+        <path d={`M${X + bx} ${Y + by}h${S}l${tx} ${ty}h${-S}Z`} fill="#fbf6ec" />
+        <rect x={X + bx} y={Y + by} width={S} height={S} rx="1.5" fill={u("cream")} />
+        <rect x={X + bx} y={Y + by + 3.5} width={S} height="4" style={{ fill: hue(25) }} />
 
-        {/* on the deck: the platter, the record, its label, the tonearm */}
-        <g transform={deck}>
-          <circle cx="50" cy="36" r="31" fill="#000" opacity="0.18" />
-          <circle cx="49" cy="35" r="31" fill="#2a3036" />
-          <circle cx="49" cy="35" r="29" fill={u("vinyl")} />
-          {[24, 19, 14].map((r) => (
-            <circle key={r} cx="49" cy="35" r={r} fill="none" stroke="#fff" strokeOpacity="0.08" strokeWidth="0.8" />
+        {/* the front sleeve's top and its open side */}
+        <path d={`M${X} ${Y}h${S}l${tx} ${ty}h${-S}Z`} style={{ fill: "var(--art-hue-top)" }} />
+        <path d={`M${X + S} ${Y}l${tx} ${ty}v${S}l${-tx} ${-ty}Z`} style={{ fill: "var(--art-hue-side)" }} />
+
+        {/* the paper inner sleeve, pulled out a little way behind the record */}
+        <rect x={X - 16 + mx} y={Y + 1.5 + my} width="100" height={S - 3} rx="2.5" fill={u("paper")} />
+
+        {/* the record */}
+        <circle cx={CX} cy={CY} r={R} fill={u("vinyl")} />
+        <g clipPath={u("grooveArea")}>
+          {grooves.map((r) => (
+            <circle key={r} cx={CX} cy={CY} r={r} fill="none" stroke="#fff" strokeOpacity="0.035" strokeWidth="0.4" />
           ))}
-          <circle cx="49" cy="35" r="9" style={{ fill: "color-mix(in oklab, var(--art-hue), var(--art-ink) 30%)" }} />
-          <circle cx="49" cy="35" r="1.6" fill="#e4e8ec" />
-          <circle cx="104" cy="56" r="7" fill={u("metal")} />
-          <path d="M104 56L98 30Q96 20 84 16" fill="none" stroke="#c9d0d6" strokeWidth="2.6" strokeLinecap="round" />
-          <rect x="78" y="12" width="9" height="6" rx="1.5" fill="#6b747c" transform="rotate(-18 82 15)" />
+          {gaps.map((r) => (
+            <circle key={r} cx={CX} cy={CY} r={r} fill="none" stroke="#fff" strokeOpacity="0.13" strokeWidth="0.55" />
+          ))}
+          {/* the sheen across the grooves: toward the light and away */}
+          <path d={wedge(225, 13) + wedge(45, 13)} fill="#fff" opacity="0.2" filter={u("blur")} />
+          <path d={wedge(225, 30) + wedge(45, 30)} fill="#fff" opacity="0.06" filter={u("blur")} />
         </g>
+        {/* the lead-in's lighter rim, and the edge */}
+        <circle cx={CX} cy={CY} r={R - 0.9} fill="none" stroke="#fff" strokeOpacity="0.14" strokeWidth="0.8" />
+        <circle cx={CX} cy={CY} r={R - 0.2} fill="none" stroke="#000" strokeOpacity="0.5" strokeWidth="0.5" />
+        {/* the dead wax: smoother, a shade lighter, around the label */}
+        <circle cx={CX} cy={CY} r={LABEL + 2.6} fill="#20262b" />
+        <circle cx={CX} cy={CY} r={LABEL + 2.6} fill="none" stroke="#fff" strokeOpacity="0.08" strokeWidth="0.5" />
+        {/* the label: cream, a printed ring, its lines of type, the hole */}
+        <circle cx={CX} cy={CY} r={LABEL} fill={u("label")} />
+        <circle cx={CX} cy={CY} r={LABEL - 1.8} fill="none" style={{ stroke: hue(30) }} strokeOpacity="0.55" strokeWidth="0.7" />
+        <path
+          d={`M${CX - 7} ${CY - 7}H${CX + 7}M${CX - 4.5} ${CY - 4}H${CX + 4.5}M${CX - 6} ${CY + 5}H${CX + 6}M${CX - 3.5} ${CY + 8}H${CX + 3.5}`}
+          style={{ stroke: "var(--art-ink)" }}
+          strokeOpacity="0.4"
+          strokeWidth="1.2"
+          strokeLinecap="round"
+        />
+        <circle cx={CX} cy={CY} r="1.1" fill="#bfb398" />
+
+        {/* the sleeve's edge, where the record comes out from under it */}
+        <path d={`M${X - 0.5} ${Y + 2}V${Y + S - 2}`} stroke="#000" strokeOpacity="0.35" strokeWidth="1.6" filter={u("edge")} />
+
+        {/* the front sleeve: the chapter's blue, lit from the top left, the
+            ring the record has worn into it, its title */}
+        <rect x={X} y={Y} width={S} height={S} rx="1.5" fill={u("cover")} />
+        <circle cx={X + S / 2} cy={Y + S / 2} r={R - 1} fill="none" stroke="#fff" strokeOpacity="0.1" strokeWidth="1.6" />
+        <path d={`M${X + 12} ${Y + 14}H${X + 46}M${X + 12} ${Y + 20}H${X + 32}`} stroke="#fdf8ee" strokeOpacity="0.85" strokeWidth="2.6" strokeLinecap="round" />
+        <path d={`M${X + 0.8} ${Y + 1}V${Y + S - 1}`} stroke="#fff" strokeOpacity="0.3" strokeWidth="1" />
       </g>
     </svg>
   );

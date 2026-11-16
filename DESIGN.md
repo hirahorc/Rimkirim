@@ -1359,8 +1359,9 @@ in ink it stays neutral and lime stays the one colour in the action row.
   chapter's Panel 3, filled and with no hairline, so it reads off the white desk, with the `lg`
   corner, three across from `lg`, two from `sm`; clothes, what's sent most, takes two columns, so
   no row is left with a hole. Every tile shares that one ground except **anything else**, the one
-  that asks rather than tells, set apart on the chapter's wash (its record player is cream and
-  black, so nothing in it is lost in the wash); no other tile, the books stat included, gets a
+  that asks rather than tells, set apart on the chapter's wash (its records are a black disc, a
+  cream sleeve and a sleeve in the chapter's blue darker than the wash, so nothing in it is lost
+  in the wash); no other tile, the books stat included, gets a
   ground of its own. Every tile shows the things themselves, drawn in the round (`ShipObjects`,
   below), so the bento says "what you can send" at a glance; beside them three say their one thing
   in a picture of its own kind (`ShipTiles`), and none of those sits beside or over another at
@@ -1370,12 +1371,34 @@ in ink it stays neutral and lime stays the one colour in the action row.
   before it on a stage of their own, past the fade, low enough that no listed row is covered; the
   books' one number (0%, page text at 32, Space Grotesk 500 in the chapter's ink, not a picture)
   with the books stacked in the corner beside it, its words kept clear of them; and what people
-  ask about as white chips, a record player in the corner, which gives way to the chips on a tile
-  under 20rem. The two between them stand alone, each one group centred over its words: the home's
+  ask about as white chips, vinyl records in the corner, as wide as the room right of the chips
+  (`clamp(6.5rem, 100cqw − 14.25rem, 9.5rem)`, at least 14px clear of every chip from a 326px
+  tile up), giving way to the chips on a tile under 20rem. The records: a sleeve in the chapter's
+  blue in front of a cream one, the record out of its opening on the left in a paper inner sleeve,
+  far enough that its label shows whole, to a 12-inch LP's own sizes (the record 0.96 of the
+  jacket, the label a third of the record, a pin-sized hole, dead wax around the label, the
+  tracks' gaps as lighter rings, the grooves' sheen as two opposite wedges toward the light, a
+  ring worn into the cover). The record leads on the left, toward the chips, so the corner nearest
+  them is its curve, not a sleeve's square corner. It replaced a record player (2026-11-14): its
+  lid a flat panel floating behind, its deck long and shallow and the record small at its front
+  edge, it read as a box, and the chip asks about the records. The books are drawn to their real sizes on a scale of their own (`BOOK_CM` in `ShipObjects`, 6.4 units a centimetre, their depth at half its length; 2026-11-14): an art book at US Letter (8.5 by 11 in, 2.4 cm thick for 280 pages) at the bottom, a long novel at Royal (6.14 by 9.21 in, 4.1 cm for 600) on it with its fore-edge to the front, and a shorter one at 5.5 by 8.5 in (2.7 cm for 360) on top, each its trim plus 1/8 in squares and as thick as Lulu's casewrap spine table gives. Before, the three were nearly one size and about 5 cm thick for it. Each is a case binding as photographed (Wikimedia Commons): 1/8 in boards standing a square past the pages, a rounded spine (so its ends bow, and the novel's fore-edge falls in between its boards), the joint's groove 7 mm in along the cover, the novel's headband, a title stamped along each spine and a publisher's mark at its foot (ink on the cream cloth; foil on the blue, between two pairs of rules) and a blind rule round the top cover. The novel's ribbon, 8 mm wide, comes out of its fore-edge near the head, down its front, along the art book's cover and over its spine, its end cut in a V. The two between them stand alone, each one group centred over its words: the home's
   things (the lamp at the back, the pot, the bowls in front over the lamp's base and the pot's
   handle) and the hobby things (an acoustic guitar leaning up to the right, a racket crossed
-  behind it, a shuttlecock and a golf ball in front), with no measure drawn on them: the size rule
-  is a fact in the card's details. Text in a picture is pinned at 1:1, so a wider tile shows more ground, never larger
+  behind it, a shuttlecock standing on its cork and a golf ball in front), with no measure drawn
+  on them: the size rule is a fact in the card's details. The hobby things are drawn to their real
+  sizes on one scale (`PER_CM` in `ShipObjects`, 2.1 units a centimetre; 2026-11-14): a
+  dreadnought (body 50.8 cm long, 40.6 at the lower bout, 27.9 at the waist, 29.2 at the upper
+  bout, a 14-fret neck on a 64.5 cm scale, a 15 cm headstock, Taylor's and Martin's specs), a
+  racket inside the BWF's 680 by 230 mm (a 27.5 by 22 cm head), a shuttle by the BWF's laws (a
+  26 mm base, 66 mm feathers on a 64 mm circle) and a golf ball of 42.67 mm, the Rules of Golf's
+  least. Before, the ball was twice its size and the shuttle half again, the racket's head three
+  quarters of its own and the guitar's body two thirds as wide as a dreadnought's. Each has the
+  parts that make it itself, from photographs (Wikimedia Commons): the guitar's rosette,
+  tortoiseshell pickguard, bridge with its saddle and six pins, fret dots (3, 5, 7, 9, a pair at
+  12, 15), nut, and a headstock with its string posts, six tuner buttons and each string run to
+  its post; the racket's isometric head strung at about a string a centimetre, its T-joint, a grip
+  wound in a spiral and a butt cap; the shuttle's leather cork with its band, the feathers' quills
+  tied with two threads and their scalloped tips; the ball's dimples. Text in a picture is pinned at 1:1, so a wider tile shows more ground, never larger
   type, and each picture builds once as the grid comes into view, one small beat a tile, 110ms
   apart (`SceneStage`). Then its name at the Title role, then
   one Dim Grey line that says what's in it, held to two lines from `sm` so a row's titles share a
@@ -1448,17 +1471,17 @@ in ink it stays neutral and lime stays the one colour in the action row.
   round, as the doorstep's door is (plain SVG, after a reference: a 3D render of the bento):
   every surface its own gradient lit from the top left, matte, a soft blurred shadow in the
   chapter's ink where each thing meets the floor and a thin one where it rests on another, no
-  outline. A round foot stands on a level ellipse; a box (the books, the record player) on its
+  outline. A round foot stands on a level ellipse; a box (the books, the record sleeves) on its
   own footprint, softened and cast to the right as the doorstep's parcels' are, since a level
   ellipse parts from a side that climbs away. Several things are staged as one group, back to
   front, each over the one behind it, never set apart in a row. Painted and dyed things (the pot's enamel, the denim, a cap, a book's cloth, a guitar's
   top) take the chapter's hue pulled toward its ink (`color-mix`, so they read as paint, not
   plastic); everything else is the colour of the thing: cream ceramic and knit, white leather,
   brass, wood, a black record. Anything with depth is in the doorstep's projection made steeper
-  (0.6 up for each one across), so a book's cover or a turntable's deck reads as one; what lies on
-  a deck is drawn in plan and sheared onto it. The bento's one lime is the books' ribbon, the
-  brand's mark, not a "press this" (The One-Voice Rule); the record's label is the chapter's
-  blue. Under a mouse the things lift off their shadows (`.ship-art-lift`, `.ship-art-ground`).
+  (0.6 up for each one across), so a book's cover or a record sleeve reads as one; what lies on
+  a face is drawn in plan and sheared onto it. The bento's one lime is the books' ribbon, the
+  brand's mark, not a "press this" (The One-Voice Rule); the record's label is cream, its printed
+  ring the chapter's blue. Under a mouse the things lift off their shadows (`.ship-art-lift`, `.ship-art-ground`).
   Decorative: the tile's words carry the meaning.
 - **The item drawings** (`ShipArt`, on what it all travels in): flat
   things on one ground line in one 168 × 112 frame, in the chapter's hue in three values, its ink

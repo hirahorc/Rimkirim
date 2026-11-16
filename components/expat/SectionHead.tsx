@@ -36,7 +36,7 @@ export function SectionHead({
       <h2 id={id} className={cn("text-balance font-display text-heading font-bold tracking-tight", !compact && "lg:text-display")}>
         {title}
       </h2>
-      {subtitle && <p className="mt-3 max-w-xl text-muted">{subtitle}</p>}
+      {subtitle && <p className="mt-3 max-w-xl text-pretty text-muted">{subtitle}</p>}
     </div>
   );
 }

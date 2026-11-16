@@ -195,8 +195,8 @@ export function WhatYouCanShip() {
             the chapter's Panel 3, filled, so each reads as a tile off the
             desk without a hairline; what differs is the picture over them.
             Anything else, the one that asks rather than tells, is set apart
-            on the chapter's wash; its record player is cream and black, so
-            nothing in it is lost in the wash */}
+            on the chapter's wash; its records are black, cream and a blue
+            darker than the wash, so nothing in them is lost in it */}
         <div
           ref={gridRef}
           data-ship-grid
