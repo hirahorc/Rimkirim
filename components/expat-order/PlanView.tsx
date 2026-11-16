@@ -348,9 +348,12 @@ function Plan({
   );
 
   return (
-    // the flow's field, as Check Rate sits: paper cards on wash
-    <div data-field data-flow>
-      <div className="mx-auto max-w-5xl px-4 pb-12 pt-6 sm:px-6 sm:pt-8">
+    // the flow's field, as Check Rate sits: paper cards on wash. At least
+    // the screen under the header (the expat bar's h-16 and its hairline),
+    // so with every part folded the phone's bar still meets the screen's
+    // foot: the flow has no footer, and nothing else would fill under it
+    <div data-field data-flow className="flex min-h-[calc(100dvh-4rem-1px)] flex-col">
+      <div className="mx-auto w-full max-w-5xl px-4 pb-12 pt-6 sm:px-6 sm:pt-8">
         <h1 className={cn(TYPE.title, "text-balance")}>{p("title")}</h1>
         <p className="mt-1 max-w-xl text-pretty text-sm text-muted">{p("subtitle")}</p>
 
@@ -520,7 +523,7 @@ function Plan({
       {/* a phone: the estimate and the one action, always in reach. It keeps
           to the foot of the screen while the plan is under it and takes its
           own place at the plan's end, so nothing has to be padded clear of it */}
-      <div className="sticky bottom-0 z-30 border-t border-border bg-background px-4 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-3 lg:hidden">
+      <div className="sticky bottom-0 z-30 mt-auto border-t border-border bg-background px-4 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-3 lg:hidden">
         {/* an amount is never cut: when the estimate and the button can't
             share the line (a narrow phone, a nine-figure estimate, "Confirm
             application"), the button takes the line under it, full width */}

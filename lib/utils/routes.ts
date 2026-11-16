@@ -32,3 +32,12 @@ export function isOrderFlowRoute(pathname: string): boolean {
 export function isExpatRoute(pathname: string): boolean {
   return pathname === "/expat-relocation" || pathname.startsWith("/expat-relocation/");
 }
+
+/**
+ * The expat order flow: every expat page past the landing (rates, plan,
+ * booking), where ExpatHeader trades its "Check your rate" for "Need help?".
+ * Like the WNI flow (/pesan), it drops the footer to keep the form focused.
+ */
+export function isExpatOrderFlowRoute(pathname: string): boolean {
+  return pathname.startsWith("/expat-relocation/");
+}

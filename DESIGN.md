@@ -1584,6 +1584,8 @@ forces the locale on this route, whatever the visitor saved), so neither bar nor
 language switch. No site menu, no sign-in, no bell: expat orders run in their own flow, not the
 account system. The logo stays on the page, so the only door back to the main site is the footer's
 two service links (Back For Good, Moving Abroad); the footer also carries contacts and legal.
+Inside the flow (rates, plan, booking) there is no footer, as in the WNI flow (`isExpatOrderFlowRoute`):
+the form is the page, and the bar's "Need help?" is the way to a person.
 Under 350px the divider and name drop out, because beside the button they would clip; the hero
 eyebrow names the service right below.
 
