@@ -1868,7 +1868,11 @@ the action is paper with an Ink line (`QUIET`), since a wash fill here is a fiel
 - **Questions** (the Eligibility Check): a question's number sits before its words, small and
   Muted, and gives way to an Ink check once it's answered; the answers run the part's whole
   width. A follow-up sits close under the answer that asks it, its words a step below the
-  question's, with no box of its own.
+  question's, with no box of its own. What can't be shipped is told, never asked: right under
+  Q1's choices, fenced by a hairline as anything told is, with the no-entry mark, one line on why,
+  each thing in a ring struck through (the landing's "Not allowed" drawing, in Ink, since red is
+  an error's here) and the way to the full list; it comes before the packing note, so it's read
+  as part of choosing what ships (2026-11-16).
 - **Choice cards:** wash wells, as a field is, that turn to paper framed in Ink (2px) when
   chosen. A single choice fills its dot with Ink; a multiple choice fills its box with Ink under
   a paper tick.

@@ -466,7 +466,11 @@ export function WhatYouCanShip() {
                 ))}
               </ul>
             </div>
-            <div className="part-rule mt-8 border-t pt-6 lg:mt-0 lg:border-l lg:border-t-0 lg:pl-12 lg:pt-0">
+            {/* the order flow's "See everything we can't ship" lands here */}
+            <div
+              id="not-allowed"
+              className="part-rule mt-8 scroll-mt-24 border-t pt-6 lg:mt-0 lg:border-l lg:border-t-0 lg:pl-12 lg:pt-0"
+            >
               <h4 className="flex items-center gap-2 font-display text-base font-semibold tracking-tight">
                 <Ban aria-hidden className="size-4 text-danger" strokeWidth={2.25} />
                 {t("expat.ship.before.banned.title")}

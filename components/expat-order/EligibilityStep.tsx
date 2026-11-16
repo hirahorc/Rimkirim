@@ -1,15 +1,16 @@
 "use client";
 
 import * as React from "react";
-import { ArrowUpRight, PackageOpen } from "lucide-react";
+import { ArrowUpRight, Ban, Car, Flame, PackageOpen, Wine, type LucideIcon } from "lucide-react";
 import { DatePicker } from "@/components/ui/date-picker";
 import { CollapseHeight } from "@/components/ui/disclosure";
 import {
+  BLOCKED_ITEMS,
   ITEM_CATEGORIES,
   REASONS,
-  STAY_LENGTHS,
   eligibilityProgress,
   todayIso,
+  type BlockedItem,
   type EligibilityAnswers,
 } from "@/lib/order/expat-order";
 import { useT } from "@/lib/i18n/LanguageProvider";
@@ -111,13 +112,33 @@ function FollowUp({
   );
 }
 
+/** what can't be shipped, each with its picture */
+const BLOCKED_ICON: Record<BlockedItem, LucideIcon> = { vehicle: Car, excise: Wine, hazard: Flame };
+
+/** a thing that can't go, in its ring and struck through, as the landing's
+ *  "Not allowed" list draws it, but in Ink: in the flow red is an error's */
+function Struck({ icon: Icon }: { icon: LucideIcon }) {
+  return (
+    <span
+      aria-hidden
+      className="relative grid size-8 shrink-0 place-items-center rounded-full border-[1.5px] border-foreground/70 bg-background"
+    >
+      <Icon className="size-4" strokeWidth={1.75} />
+      <span className="absolute inset-x-0.5 top-1/2 h-[1.5px] -translate-y-1/2 rotate-45 rounded-full bg-foreground/70" />
+    </span>
+  );
+}
+
 /**
  * The Eligibility Check: the epic's four questions in its words, each
  * follow-up opening under the answer that asks it. Changing an answer clears
  * the follow-ups it asked, so the ticket never mixes two stories. Nothing here
  * turns the customer away: what they pack, they pack themselves, and the
- * order goes on. `tried` is the plan's action pressed while a question was
- * still open: from then each unanswered group says so.
+ * order goes on. What no customs path lets in (the PM's rule v1) is told
+ * right under Q1's categories, where what's shipping is decided: each thing
+ * pictured and struck through, and the way to the full list. Q2 asks a date
+ * in both branches, the arrival ahead or the one already made. `tried` is the plan's action pressed while
+ * a question was still open: from then each unanswered group says so.
  */
 export function EligibilityStep({
   value,
@@ -171,6 +192,38 @@ export function EligibilityStep({
             </Field>
           </Under>
         </div>
+        {/* what no customs path lets in, told where what's shipping is
+            decided, first under the choice: fenced as anything told is, its
+            things pictured and struck through so they're seen before
+            they're read, and the way to everything else that can't go */}
+        <section aria-labelledby="q1-blocked" className="flex gap-2 rounded-md border border-border px-4 py-3 text-sm">
+          <span className="flex h-5 shrink-0 items-center">
+            <Ban aria-hidden className="size-4" />
+          </span>
+          <div className="min-w-0 flex-1">
+            <h4 id="q1-blocked" className="font-medium">
+              {e("blockedTitle")}
+            </h4>
+            <p className="mt-1 text-muted">{e("blockedBody")}</p>
+            <ul className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-3">
+              {BLOCKED_ITEMS.map((b) => (
+                <li key={b} className="flex items-center gap-3 font-medium">
+                  <Struck icon={BLOCKED_ICON[b]} />
+                  {e(`blockedItems.${b}`)}
+                </li>
+              ))}
+            </ul>
+            <a
+              href="/expat-relocation#not-allowed"
+              target="_blank"
+              rel="noreferrer"
+              className="link-mark tap-row relative mt-3 inline-flex items-center gap-1"
+            >
+              {e("blockedLink")}
+              <ArrowUpRight aria-hidden className="size-3.5" />
+            </a>
+          </div>
+        </section>
         {/* who packs, for every customer and whatever they ship: told, not
             asked, and nothing they chose brought it on. Furniture only adds
             to its words and points at its own steps, so the notice never
@@ -191,14 +244,14 @@ export function EligibilityStep({
         </Note>
       </Question>
 
-      <Question n={2} id="q2" title={e("q2")} done={answered.q2}>
+      <Question n={2} id="q2" title={e("q2")} sub={e("q2Sub")} done={answered.q2}>
         <div>
           <Asked missing={miss(!value.location, "chooseOne")}>
             <RadioCards
               labelledBy="q2"
               value={value.location}
               onChange={(location) =>
-                location !== value.location && onChange({ location, arrivalDate: undefined, stayLength: undefined })
+                location !== value.location && onChange({ location, arrivalDate: undefined })
               }
               options={[
                 { value: "abroad" as const, label: e("abroad") },
@@ -207,7 +260,12 @@ export function EligibilityStep({
             />
           </Asked>
           <Under open={abroad}>
-            <FollowUp id="q2-arrival" title={e("arrival")} missing={miss(abroad && !value.arrivalDate, "chooseDate")}>
+            <FollowUp
+              id="q2-arrival"
+              title={e("arrival")}
+              hint={e("arrivalHint")}
+              missing={miss(abroad && !value.arrivalDate, "chooseDate")}
+            >
               <DatePicker
                 value={value.arrivalDate}
                 onChange={(arrivalDate) => onChange({ arrivalDate })}
@@ -217,14 +275,20 @@ export function EligibilityStep({
               />
             </FollowUp>
           </Under>
+          {/* already in Indonesia: the day they arrived, so up to today */}
           <Under open={inIndonesia}>
-            <FollowUp id="q2-stay" title={e("stay")} missing={miss(inIndonesia && !value.stayLength, "chooseOne")}>
-              <RadioCards
-                labelledBy="q2-stay"
-                columns={4}
-                value={value.stayLength}
-                onChange={(stayLength) => onChange({ stayLength })}
-                options={STAY_LENGTHS.map((s) => ({ value: s, label: e(`stays.${s}`) }))}
+            <FollowUp
+              id="q2-arrived"
+              title={e("arrival")}
+              hint={e("arrivedHint")}
+              missing={miss(inIndonesia && !value.arrivalDate, "chooseDate")}
+            >
+              <DatePicker
+                value={value.arrivalDate}
+                onChange={(arrivalDate) => onChange({ arrivalDate })}
+                max={todayIso()}
+                placeholder={e("arrivalPh")}
+                ariaLabel={e("arrival")}
               />
             </FollowUp>
           </Under>

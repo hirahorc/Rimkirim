@@ -52,8 +52,11 @@ export function bookingFacts(b: ExpatBooking, t: T) {
   const yesNo = (v: boolean | undefined) => (v === undefined ? "" : v ? e("yes") : e("no"));
 
   const answers: [string, string][] = [
-    [bk("location"), a.location === "abroad" ? e("abroad") : a.location === "indonesia" ? e("indonesia") : ""],
-    a.location === "abroad" ? [bk("arrival"), longDate(a.arrivalDate)] : [bk("stay"), a.stayLength ? e(`stays.${a.stayLength}`) : ""],
+    // Q2 in one line: when they arrive, ahead or already made
+    [
+      bk("arrival"),
+      a.arrivalDate ? bk(a.location === "indonesia" ? "arrivalDone" : "arrivalPlanned").replace("{date}", longDate(a.arrivalDate)) : "",
+    ],
     [bk("visa"), yesNo(a.hasVisa)],
     ...(a.hasVisa ? ([[bk("vitas"), yesNo(a.hasVitas)], [bk("itas"), yesNo(a.hasItas)]] as [string, string][]) : []),
     [bk("reason"), a.reason === "others" ? `${e("reasons.others")}: ${a.reasonOther.trim()}` : a.reason ? e(`reasons.${a.reason}`) : ""],

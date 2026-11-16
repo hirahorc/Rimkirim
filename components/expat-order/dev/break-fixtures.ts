@@ -185,7 +185,8 @@ const worst: Order = {
     itemsOther:
       "A 1920s Bechstein upright piano, two Persian rugs, my grandmother's porcelain dinner service and forty framed maps",
     location: "indonesia",
-    stayLength: "gt1y",
+    // here a long while: the arrival years back
+    arrivalDate: "2019-02-28",
     hasVisa: true,
     hasVitas: false,
     hasItas: true,
@@ -300,7 +301,7 @@ const one: Order = {
     items: ["others"],
     itemsOther: "A",
     location: "indonesia",
-    stayLength: "lt3m",
+    arrivalDate: "2026-11-01",
     hasVisa: false,
     reason: "others",
     reasonOther: "X",

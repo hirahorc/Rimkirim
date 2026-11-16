@@ -44,9 +44,10 @@ export function checkComplete(c: CheckRateInput): boolean {
 export const ITEM_CATEGORIES = ["furniture", "personal", "fineArt", "electronics", "office", "others"] as const;
 export type ItemCategory = (typeof ITEM_CATEGORIES)[number];
 
-/** Q2's follow-up for someone already in Indonesia, in the epic's order */
-export const STAY_LENGTHS = ["lt3m", "3to6m", "6to12m", "gt1y"] as const;
-export type StayLength = (typeof STAY_LENGTHS)[number];
+/** what Q1 tells the customer can't be shipped (the PM's eligibility rule
+ *  v1): none of the three customs paths lets these in. Told, not asked */
+export const BLOCKED_ITEMS = ["vehicle", "excise", "hazard"] as const;
+export type BlockedItem = (typeof BLOCKED_ITEMS)[number];
 
 /** Q4's options, in the epic's order */
 export const REASONS = ["working", "student", "others"] as const;
@@ -58,10 +59,10 @@ export interface EligibilityAnswers {
   itemsOther: string;
   /** Q2 */
   location?: "abroad" | "indonesia";
-  /** Q2 follow-up when still abroad, "YYYY-MM-DD"; recorded for ops only */
+  /** Q2's follow-up in both branches, "YYYY-MM-DD": the expected arrival when
+   *  still abroad, the day they arrived when already in Indonesia (the PM's
+   *  rule v1 asks the date either way); recorded for ops only */
   arrivalDate?: string;
-  /** Q2 follow-up when in Indonesia; recorded for ops only, never a gate */
-  stayLength?: StayLength;
   /** Q3, then its two follow-ups when yes */
   hasVisa?: boolean;
   hasVitas?: boolean;
@@ -76,8 +77,7 @@ export const EMPTY_ELIGIBILITY: EligibilityAnswers = { items: [], itemsOther: ""
 /** each question answered, follow-ups and "Others" text included */
 export function eligibilityProgress(a: EligibilityAnswers) {
   const q1 = a.items.length > 0 && (!a.items.includes("others") || a.itemsOther.trim().length > 0);
-  const q2 =
-    (a.location === "abroad" && !!a.arrivalDate) || (a.location === "indonesia" && !!a.stayLength);
+  const q2 = !!a.location && !!a.arrivalDate;
   const q3 = a.hasVisa === false || (a.hasVisa === true && a.hasVitas !== undefined && a.hasItas !== undefined);
   const q4 = !!a.reason && (a.reason !== "others" || a.reasonOther.trim().length > 0);
   return { q1, q2, q3, q4, done: q1 && q2 && q3 && q4 };
@@ -90,8 +90,9 @@ export type CustomsCategory = "eligible_pindahan" | "personal_shipment" | "needs
 
 /**
  * The team's dummy rule table, read top down, first match wins. Q1 never
- * moves the flag (furniture only warns), and neither do the arrival date or
- * the length of stay: ops weighs those. A draft until ops confirms it.
+ * moves the flag (furniture only warns, and what can't be shipped is told
+ * beside it, not asked), and neither does the arrival date:
+ * ops weighs it. A draft until ops confirms it.
  *
  * | # | When                                              | Flag                |
  * |---|---------------------------------------------------|---------------------|
