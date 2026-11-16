@@ -656,7 +656,8 @@ The expat page runs:
 8. What to expect at customs (band, magenta), once the reader has seen how a shipment runs
 9. FAQ (desk, neutral): on the content edge like the rest, the head and the way to ask in a
    column of their own from `lg` (sticky; below `lg` the way to ask comes after the questions,
-   where "still have a question?" belongs), the questions beside it ruled one from the next,
+   where "still have a question?" belongs; the question is said in muted text and only "Ask us
+   on WhatsApp" is the link), the questions beside it ruled one from the next,
    each one step up the scale (`Disclosure strong`)
 10. The dusk ticket (see Components)
 

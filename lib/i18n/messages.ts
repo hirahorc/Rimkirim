@@ -813,7 +813,8 @@ const id = {
     faq: {
       eyebrow: "FAQ",
       heading: "Pertanyaan umum sebelum mengirim",
-      wa: "Masih ada pertanyaan? Tanya kami di WhatsApp",
+      waLead: "Masih ada pertanyaan?",
+      wa: "Tanya kami di WhatsApp",
     },
     closing: {
       heading: "Siap kirim barangmu ke Indonesia?",
@@ -3111,7 +3112,8 @@ const en: Messages = {
     faq: {
       eyebrow: "FAQ",
       heading: "Common questions before you ship",
-      wa: "Still have a question? Ask us on WhatsApp",
+      waLead: "Still have a question?",
+      wa: "Ask us on WhatsApp",
     },
     closing: {
       heading: "Ready to ship your belongings to Indonesia?",

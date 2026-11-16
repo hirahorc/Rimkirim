@@ -30,9 +30,13 @@ export function ExpatFaq() {
   // the way to ask: under the heading from lg, after the questions on a
   // phone, where "still have a question?" before the first one read backwards
   const ask = (
-    <a href={WA_URL} target="_blank" rel="noreferrer" className="link-mark tap-row relative text-sm">
-      {t("expat.faq.wa")}
-    </a>
+    // the question is said, the way to ask is the link
+    <p className="text-sm text-muted">
+      {t("expat.faq.waLead")}{" "}
+      <a href={WA_URL} target="_blank" rel="noreferrer" className="link-mark tap-row relative">
+        {t("expat.faq.wa")}
+      </a>
+    </p>
   );
 
   return (
@@ -48,7 +52,7 @@ export function ExpatFaq() {
           <ReviewNote note={REVIEW_NOTES.faq} className="mb-8" />
           <div className="lg:sticky lg:top-28">
             <SectionHead id="faq-heading" eyebrow={t("expat.faq.eyebrow")} title={t("expat.faq.heading")} compact />
-            <p className="mt-6 hidden lg:block">{ask}</p>
+            <div className="mt-6 hidden lg:block">{ask}</div>
           </div>
         </div>
         <div className="divide-y divide-border border-y border-border">
@@ -58,7 +62,7 @@ export function ExpatFaq() {
             </Disclosure>
           ))}
         </div>
-        <p className="lg:hidden">{ask}</p>
+        <div className="lg:hidden">{ask}</div>
       </div>
     </section>
   );
