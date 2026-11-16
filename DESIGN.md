@@ -1313,7 +1313,9 @@ in ink it stays neutral and lime stays the one colour in the action row.
   event dot, the glyph of a stat tile — is **Heroicons solid** (`@heroicons/react/24/solid`),
   a single-colour filled glyph at 18–20px. A solid glyph reads at a glance on a tint where a 2px
   outline dissolves into it; a line glyph stays quiet beside text where a solid one would
-  shout. Never duotone.
+  shout. Never duotone. The expat order flow's small action buttons (Edit, Change, Add, Remove)
+  wear Heroicons solid too, at their micro size (`16/solid`), so an action reads as one beside
+  the line glyphs of its fields.
 - The set is swappable: the solid imports are the only coupling, so a licensed set (Central
   filled, say) can replace Heroicons by changing the import line.
 
@@ -1825,6 +1827,16 @@ packages, the summary's rows, the customs paths) by hairlines, and what's told o
 "Select this rate" (The One-Voice Rule's one list). Chosen and done are Ink. A button that isn't
 the action is paper with an Ink line (`QUIET`), since a wash fill here is a field's.
 
+**An action on what's already there looks like a button.** Edit, Change, Add and Remove are small
+paper buttons with an Ink line and a solid glyph (`ACTION` in the kit, Heroicons micro
+`@heroicons/react/16/solid`, 16px), never a word that might be a link (2026-11-16): the plan's
+"Edit" (a pencil; "Open" a chevron), the Selected Service's "Change" (two arrows, it swaps the
+service), the address cards' "Change" (a pencil) and "Add detail address" (a pin), and the
+Packages' "Add an item", "Add a package" (a plus), "Remove" (a bin, left ghost: it takes away)
+and an item's own remove (a cross). Where the action sits on a press surface that's already a
+button (a folded part's head), `ACTION_LOOK` dresses a span as one, filling on the head's hover and
+press. A link inside a sentence ("check your rate again") stays a link: it goes somewhere.
+
 - **The plan, one page:** the Eligibility Check, Your details and the Packages are three parts
   down a single sheet, a paper card each, one open at a time; there is no stepper and no page
   between them. Each part's head carries a dot (done is Ink with a paper check, the one in hand
@@ -1834,8 +1846,8 @@ the action is paper with an Ink line (`QUIET`), since a wash fill here is a fiel
   (`line-clamp-2`), the date in its short form so it's the last thing to go. Under the head a
   part's content runs the card's whole width: nothing is stepped in under the dot. A
   finished part folds (the disclosure's height motion) and the next opens under it, brought to
-  the top; a folded part reopens from its whole line, marked "Edit" (or "Open", if it's still to
-  do); a part whose earlier parts aren't in stands at 60% and doesn't open. Check Rate comes
+  the top; a folded part reopens from its whole line, marked by an "Edit" button (or "Open", if
+  it's still to do); a part whose earlier parts aren't in stands at 60% and doesn't open. Check Rate comes
   before the plan and isn't one of its parts; the way back to it is the quiet Back under them.
 - **The plan's one action:** a single lime button runs the page, reading Continue until the last
   part is in, then Confirm application. It is never disabled: a dead button can't say what it

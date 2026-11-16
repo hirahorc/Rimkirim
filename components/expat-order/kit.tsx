@@ -52,6 +52,20 @@ export const PRESS =
 export const QUIET = "border-foreground bg-background hover:bg-surface-2";
 
 /**
+ * An action on what's already there (Edit, Change, Add, Remove): a small
+ * button that looks like one at a glance, paper with an Ink line and a
+ * solid glyph (Heroicons micro, `@heroicons/react/16/solid`), never a word
+ * that might be a link. Pair it with `<Button variant="secondary" size="sm">`
+ * (plus `tap-target relative` for the 44px touch). Where it can't be a button
+ * of its own, on a press surface that already is one (the plan's part
+ * heads), `ACTION_LOOK` dresses a span as it, answering the surface's hover
+ * and press through `group`.
+ */
+export const ACTION = `${QUIET} gap-1.5`;
+export const ACTION_LOOK =
+  "inline-flex h-8 shrink-0 items-center gap-1.5 rounded-sm border border-foreground bg-background px-3 font-display text-xs font-medium transition-colors [&_svg]:size-4 [&_svg]:shrink-0 group-hover:bg-surface-2 group-active:bg-surface-2";
+
+/**
  * A typed field: a wash well with what it wears inside it (an icon, a unit,
  * a currency) in a row, so nothing is laid over the input and padded around.
  * Its edge turns ink in hand and red in error, and stays red while what's

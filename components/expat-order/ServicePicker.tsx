@@ -10,6 +10,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { ArrowsRightLeftIcon } from "@heroicons/react/16/solid";
+import { Button } from "@/components/ui/button";
 import { ReviewNote } from "@/components/expat/ReviewNote";
 import { ORDER_REVIEW_NOTES } from "@/lib/data/expat-order-notes";
 import type { ExpatRate } from "@/lib/pricing/expat-rates";
@@ -17,6 +19,7 @@ import { serviceOptions, type CheckRateInput, type PackedPricing } from "@/lib/o
 import { useT } from "@/lib/i18n/LanguageProvider";
 import { cn } from "@/lib/utils/cn";
 import { RateCard } from "./RateCard";
+import { ACTION } from "./kit";
 
 /**
  * The service changed without leaving the plan: "Change" on the Selected
@@ -42,9 +45,9 @@ export function ServicePicker({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <button type="button" aria-label={s("changeTitle")} className="link-mark tap-target relative text-sm">
-          {s("change")}
-        </button>
+        <Button type="button" variant="secondary" size="sm" aria-label={s("changeTitle")} className={cn(ACTION, "tap-target relative")}>
+          <ArrowsRightLeftIcon /> {s("change")}
+        </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-3xl">
         <Options

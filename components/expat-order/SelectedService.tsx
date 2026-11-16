@@ -101,7 +101,9 @@ export function SelectedService({
       aria-labelledby="selected-service"
       className="rounded-lg border border-[var(--card-border,var(--border))] bg-[var(--card-surface,var(--surface))] p-4 sm:p-6"
     >
-      <div className="flex items-baseline justify-between gap-3">
+      {/* the title and its Change, centred on each other: the action is a
+          button now, taller than the title's line */}
+      <div className="flex items-center justify-between gap-3">
         <h2 id="selected-service" className={TYPE.subhead}>
           {s("title")}
         </h2>

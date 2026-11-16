@@ -4,6 +4,7 @@ import * as React from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, ArrowRight, Check } from "lucide-react";
+import { ChevronDownIcon, PencilIcon } from "@heroicons/react/16/solid";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -32,7 +33,7 @@ import { CustomsGuide, CustomsGuideButton } from "./CustomsGuide";
 import { DetailsStep } from "./DetailsStep";
 import { EligibilityStep } from "./EligibilityStep";
 import { FlowLoading } from "./FlowLoading";
-import { TYPE } from "./kit";
+import { ACTION_LOOK, TYPE } from "./kit";
 import { PACE, paced } from "./pace";
 import { PackingStep } from "./PackingStep";
 import { SelectedService } from "./SelectedService";
@@ -417,7 +418,7 @@ function Plan({
                       )}
                     >
                       {/* its own stacking context, so the press's wash stays under the words */}
-                      <div className="relative isolate flex gap-3 p-4 sm:p-6">
+                      <div className={cn("relative isolate flex gap-3 p-4 sm:p-6", foldable && "group")}>
                         <PartDot state={isDone ? "done" : isOpen ? "here" : "ahead"} n={i + 1} />
                         <div className="min-w-0 flex-1">
                           <h2
@@ -456,8 +457,11 @@ function Plan({
                           </p>
                         </div>
                         {foldable && (
-                          // the title's line, so the word sits level with it
-                          <span aria-hidden className="link-mark flex h-7 shrink-0 items-center text-sm">
+                          // dressed as a button, so the way back in is seen at
+                          // a glance; the whole head is the press surface, and
+                          // this answers its hover (ACTION_LOOK)
+                          <span aria-hidden className={ACTION_LOOK}>
+                            {isDone ? <PencilIcon /> : <ChevronDownIcon />}
                             {isDone ? p("edit") : p("open")}
                           </span>
                         )}

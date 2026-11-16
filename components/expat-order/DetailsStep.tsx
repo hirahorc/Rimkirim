@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { MapPin } from "lucide-react";
+import { MapPinIcon, PencilIcon } from "@heroicons/react/16/solid";
 import { Button } from "@/components/ui/button";
 import { DatePicker } from "@/components/ui/date-picker";
 import { DialCodeSelect } from "@/components/order/DialCodeSelect";
@@ -21,7 +21,7 @@ import type { AddressChange } from "@/lib/store/useExpatOrderStore";
 import { useT } from "@/lib/i18n/LanguageProvider";
 import { cn } from "@/lib/utils/cn";
 import { AddressField } from "./AddressField";
-import { Field, Note, QUIET, Well } from "./kit";
+import { ACTION, Field, Note, QUIET, Well } from "./kit";
 
 type Side = "origin" | "destination";
 
@@ -189,16 +189,18 @@ function AddressCard({
         </div>
       ) : (
         <div key="card" className={cn("[overflow-wrap:anywhere]", swapped && "swap-in")}>
-          <div className="flex items-baseline justify-between gap-3">
+          <div className="flex items-center justify-between gap-3">
             <p className="text-xs font-medium">{label}</p>
-            <button
+            <Button
               ref={change}
               type="button"
+              variant="secondary"
+              size="sm"
               onClick={() => swap(true)}
-              className="link-mark tap-target relative shrink-0 text-xs"
+              className={cn(ACTION, "tap-target relative")}
             >
-              {d("change")}
-            </button>
+              <PencilIcon /> {d("change")}
+            </Button>
           </div>
           <p className="mt-1 text-sm font-medium">{getCountry(country)?.name}</p>
           {value.place && <p className="text-sm text-muted">{placeLine(value.place)}</p>}
@@ -206,8 +208,8 @@ function AddressCard({
           {note && <Note className="mt-3">{note}</Note>}
           {!detail && (
             <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-2">
-              <Button type="button" variant="secondary" size="sm" className={cn(QUIET, "tap-target relative")} onClick={() => swap(true)}>
-                <MapPin /> {d("addDetail")}
+              <Button type="button" variant="secondary" size="sm" className={cn(ACTION, "tap-target relative")} onClick={() => swap(true)}>
+                <MapPinIcon /> {d("addDetail")}
               </Button>
               <span className="text-xs text-muted">{d(side === "origin" ? "addDetailHintFrom" : "addDetailHintTo")}</span>
             </div>

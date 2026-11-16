@@ -1,7 +1,8 @@
 "use client";
 
 import * as React from "react";
-import { ChevronDown, ChevronUp, Plus, Ruler, Trash2, X } from "lucide-react";
+import { ChevronDown, ChevronUp, Ruler } from "lucide-react";
+import { PlusIcon, TrashIcon, XMarkIcon } from "@heroicons/react/16/solid";
 import { Button } from "@/components/ui/button";
 import { SelectField } from "@/components/ui/select-field";
 import { CollapseHeight } from "@/components/ui/disclosure";
@@ -33,7 +34,7 @@ import {
 import { formatNumber } from "@/lib/utils/currency";
 import { useT } from "@/lib/i18n/LanguageProvider";
 import { cn } from "@/lib/utils/cn";
-import { Done, Field, Note, PRESS, QUIET, TYPE, Well, Worn } from "./kit";
+import { ACTION, Done, Field, Note, PRESS, QUIET, TYPE, Well, Worn } from "./kit";
 
 /** digits and one decimal point, a comma read as one */
 function decimal(s: string): string {
@@ -214,8 +215,8 @@ export function PackingStep({
             </li>
           ))}
         </ol>
-        <Button ref={addRef} type="button" variant="secondary" className={cn(QUIET, "mt-4 w-full")} onClick={addPackage}>
-          <Plus /> {p("addPackage")}
+        <Button ref={addRef} type="button" variant="secondary" className={cn(ACTION, "mt-4 w-full")} onClick={addPackage}>
+          <PlusIcon /> {p("addPackage")}
         </Button>
       </div>
 
@@ -371,7 +372,7 @@ function PackageBlock({
             aria-label={p("removePackage").replace("{n}", String(n))}
             className="tap-target relative shrink-0"
           >
-            <Trash2 /> {p("remove")}
+            <TrashIcon /> {p("remove")}
           </Button>
         )}
       </div>
@@ -491,25 +492,28 @@ function PackageBlock({
                           aria-label={p("removeItem").replace("{n}", String(j + 1))}
                           className="size-11"
                         >
-                          <X />
+                          <XMarkIcon />
                         </Button>
                       )}
                     </li>
                   );
                 })}
               </ul>
-              <button
+              {/* a button, not a link: it adds a row here */}
+              <Button
                 type="button"
+                variant="secondary"
+                size="sm"
                 onClick={() => {
                   const it = newPackingItem();
                   onChange({ items: [...pkg.items, it] });
                   // the new row's name is what's typed next
                   onceRendered(() => document.querySelector<HTMLElement>(`[data-item="${it.id}"] input`)?.focus());
                 }}
-                className="link-mark tap-row relative mt-2 inline-flex items-center gap-1 text-sm"
+                className={cn(ACTION, "tap-target relative mt-3")}
               >
-                <Plus aria-hidden className="size-4" /> {p("addItem")}
-              </button>
+                <PlusIcon /> {p("addItem")}
+              </Button>
             </fieldset>
           </div>
         </CollapseHeight>
