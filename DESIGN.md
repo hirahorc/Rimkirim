@@ -1339,7 +1339,10 @@ in ink it stays neutral and lime stays the one colour in the action row.
   Inside such a card everything shares **one left rail**: a selection control never indents the
   title (the clearance picker's radio sits right of its title for exactly this reason).
 - **The expat review card** (`ExpatReviews`, `.review-card`): the band's white plane, as any
-  card in a band. The reviewer's avatar is a coin: their own colour (by name, from the page's
+  card in a band. Three of them, in words only (2026-11-16): an expat's own review and two from
+  Rimkirim's Google reviews, three across from `lg`, the long one over the two short ones from
+  `sm`; under the section's head, Rimkirim's whole Google rating (the home's stars, 4.9 and "out
+  of 5 · Google reviews"), linked to Google so it can be checked, never framed as the expats'. The reviewer's avatar is a coin: their own colour (by name, from the page's
   palette, never lime or a status colour), a white rim, and their origin's flag tucked on its
   corner, so the route reads before the words do. Under a mouse it answers the way
   stripe.com's bento cards do: the card paints nothing itself, its white face and a 1px edge
@@ -1512,10 +1515,10 @@ by an `IntersectionObserver` rooted on the strip.
 **Cards in a strip share one height.** Unlike the `sm+` masonry, where a card sizes to its own
 content, slides stretch to the tallest so the deck reads as one object under the thumb. The slack
 is spent at the foot — attribution pinned with `mt-auto` — never by re-centring each card, which
-lands the first line at a different height on every swipe. **One written-down exception:** the
-expat reviews, which run from two lines to a customer photo and a page of words, so one shared
-height left the short ones with a hollow taller than their quote. There each slide keeps its own
-height, top-aligned, so every first line still lands at the same height on every swipe.
+lands the first line at a different height on every swipe. The expat reviews share one height
+too (2026-11-16; they were the one exception, each slide its own height); only while their long
+review is unfolded does each slide go back to its own height, so the short ones don't stand a
+page tall beside it.
 
 **Use it only when the cards are supporting content.** Four "why us" reasons are a good strip: they
 reward compactness and nobody has to read all of them. A two-card row offering a *choice* — Back For

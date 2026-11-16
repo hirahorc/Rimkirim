@@ -41,8 +41,9 @@ export interface Testimonial {
    */
   photo?: string;
   /**
-   * A review given to us for the expat landing only. The home section, whose
-   * rating links to Google, leaves it out.
+   * A review the expat landing shows and the home section leaves out: one
+   * given to us for the expat page (Leticia's), or one from Google picked for
+   * it (Phoebe's, 2026-11-16).
    */
   expatOnly?: boolean;
 }
@@ -72,7 +73,7 @@ export const TESTIMONIALS: Testimonial[] = [
   {
     name: "Nurul",
     quote:
-      "The delivery is smooth and really from door to door (Germany-Indonesia). I don't expect all my belongings are safely landed. Thanks, Rimkirim Team!",
+      "The delivery is smooth and really from door to door (Germany-Indonesia). I don’t expect all my belongings are safely landed. Thanks, Rimkirim Team!",
     origin: "germany",
     affiliation: "munich",
     highlights: ["smooth and really from door to door"],
@@ -96,7 +97,7 @@ export const TESTIMONIALS: Testimonial[] = [
   {
     name: "Blandina Pella",
     quote:
-      "Rate harganya bersaing. Customer Service responsif. Penanganan cepat dan bertanggung jawab. No Fussy, No drama.\n\n1 Agustus barang dikirim dari NY, 8 Agustus sudah keluar dari Bea Cukai Indonesia. Sampai di rumah JKT 20 Agustus. Semoga ke depannya lebih cepat dalam proses di Indonesia.\n\nAll in all a very recommended logistic provider.",
+      "Rate harganya bersaing. Customer Service responsif. Penanganan cepat dan bertanggung jawab. No Fussy, No drama.\n\n1 Agustus barang dikirim dari NY, 8 Agustus sudah keluar dari Bea Cukai Indonesia. Sampai di rumah JKT  20 Agustus. Semoga ke depannya lebih cepat dalam proses di Indonesia.\n\nAll in all a very recommended logistic provider.",
     origin: "newYork",
     affiliation: "kbri",
     highlights: ["No Fussy, No drama"],
@@ -108,6 +109,14 @@ export const TESTIMONIALS: Testimonial[] = [
       "The team responsiveness was exceptional, with answers sometimes coming within minutes. Communication throughout the process was always forthcoming.\n\nThe most challenging part for me was getting clear instructions on what could or couldn’t be packed. With each revision, different items would be flagged as not okay, including items previously approved, meaning I had to unpack and repack about 5x.\n\nWhen I had a problem with some items arriving damaged, the team tried to claim with FedEx. Although the claim was rejected, they proactively asked management to refund me on the item's declared amount, which I was very thankful!\n\nMoving countries (like UK to Indonesia) is not easy, but the team tried their best to help.\n\nI also recommend getting EXTRA SUPER sturdy boxes, not IKEA moving boxes! Mine arrived completely torn apart, and I was shocked nothing was missing (luckily).",
     origin: "uk",
     highlights: ["answers sometimes coming within minutes"],
+    expatOnly: true,
+  },
+  {
+    name: "Phoebe Abigaille",
+    quote:
+      "Amazing service from the team. Sent my stuff from Sydney to Jakarta and they really helped me through it all. From documents, shipping, pick up, it was all handled by their team! Their door-to-door service was definitely the highlight, so all I had to do was pack my stuff and they’ll take care of the rest. Quick response as well and all of my stuff arrived in Jakarta safely. Made moving back home so much easier 🥹 Thanks Rimkirim!!",
+    origin: "sydney",
+    highlights: ["all I had to do was pack my stuff"],
     expatOnly: true,
   },
 ];

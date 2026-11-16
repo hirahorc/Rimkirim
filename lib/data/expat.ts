@@ -126,27 +126,20 @@ export function expatFaq(locale: Locale): ExpatFaq[] {
 }
 
 /**
- * PLACEHOLDER reviews for the expat page, by `name` in lib/data/testimonials.ts
- * (verbatim, English-language, Europe and Australia routes). They are
- * Indonesians who moved home, not expats, so the copy never calls them
- * expats, and the page shows no Google rating: no expat has reviewed us there
- * yet. Replace with real reviews from the expat customers being approached.
+ * The expat page's reviews, by `name` in lib/data/testimonials.ts (verbatim).
+ * Leticia's is an expat's, given to us for this page; daelyn's and Phoebe's
+ * are from Rimkirim's Google reviews (Bristol and Sydney to Jakarta), picked
+ * 2026-11-16 because no expat has reviewed us on Google yet. They're
+ * Indonesians who moved home, so the copy never calls the reviewers expats,
+ * and the rating beside them is Rimkirim's whole Google rating, linked there.
+ * No photos: the cards are words only (2026-11-16).
  */
 export const EXPAT_REVIEWS: {
   name: string;
   /** a customer photo for this review: `null` asks for one (a placeholder
    *  shows until there is a real, consented photo), a path shows it */
   photo?: string | null;
-}[] = [
-  // a local preview photo can stand in while the real one is awaited: set
-  // NEXT_PUBLIC_EXPAT_REVIEW_PHOTO in .env.local (never committed); without
-  // it the card asks for the photo
-  { name: "Ratna sari", photo: process.env.NEXT_PUBLIC_EXPAT_REVIEW_PHOTO || null },
-  // no photo: Leticia asked for her review to run without one
-  { name: "Leticia Marina Bevilaqua" },
-  { name: "Nurul" },
-  { name: "Elita Nuraeny" },
-];
+}[] = [{ name: "Leticia Marina Bevilaqua" }, { name: "daelyn" }, { name: "Phoebe Abigaille" }];
 
 /**
  * The hero's photo deck: real shipments with Rimkirim's FedEx labels, each
@@ -215,7 +208,7 @@ export const REVIEW_NOTES = {
   hero: "Pastikan klaim 'by air', pickup dari pintu, dan antar sampai pintu berlaku untuk semua negara asal expat. Papan keberangkatan di eyebrow menampilkan negara asal GBR, NLD, DEU, AUS, USA, FRA, JPN, SGP: konfirmasi daftarnya (RouteBoard.tsx). Foto hero adalah kiriman asli: pastikan ada izin customer. Label FedEx (nama, alamat, nomor AWB) dan nama yang ditulis di kardus sudah disensor mosaik. Notifikasi WhatsApp di pojok foto adalah contoh ('Your boxes have cleared customs in Indonesia. Next stop: your door.'), bukan tentang kiriman di foto: konfirmasi tim memang mengabarkan clearance lewat WhatsApp.",
   cta: "Semua 'Check your rate' mengarah ke order flow di situs ini (/expat-relocation/rates): Check Rate, Eligibility Check, data diri, lalu Booking Summary dan email. Data harga, alamat, peta, dan pengiriman email masih dummy; lihat docs/expat-order-flow.md. Semua link WhatsApp sudah ke nomor live (+62 817 1717 7008).",
   reviews:
-    "Ulasan Leticia Marina Bevilaqua (Inggris Raya ke Indonesia) adalah ulasan expat asli pertama. Ulasan ditampilkan utuh atas permintaan customer, dan dipotong dengan tombol 'Read more' di kartunya. Leticia tidak ingin memakai foto, jadi kartunya tanpa foto. Tiga ulasan lainnya masih placeholder dari WNI yang pulang, bukan expat, dan akan diganti ulasan asli dari customer expat yang sedang di-approach (EXPAT_REVIEWS di lib/data/expat.ts). Kartu pertama menunggu foto asli customer: isi `photo` dengan path fotonya (dengan izin). Selama belum ada foto, slot 'Photo to add' tampil di tempatnya untuk semua pengunjung, karena kartu foto tinggi itu bagian dari desain. Rating bintang dan link Google sengaja dihapus karena belum ada ulasan expat di Google.",
+    "Tiga ulasan, tanpa foto (2026-11-16). Ulasan Leticia Marina Bevilaqua (Inggris Raya ke Indonesia) adalah ulasan expat asli, ditampilkan utuh atas permintaannya dan dipotong dengan tombol 'Read more'. Dua lainnya diambil verbatim dari Google Review Rimkirim: daelyn (Bristol ke Jakarta) dan Phoebe Abigaille (Sydney ke Jakarta). Belum ada expat yang mengulas Rimkirim di Google, jadi keduanya WNI yang pulang, dan copy-nya tidak pernah menyebut mereka expat. Rating di bawah judul adalah rating Google Rimkirim secara keseluruhan (4.9), dengan link ke Google. Kalau ada ulasan expat baru di Google atau lewat WhatsApp (dengan izin), ganti daelyn atau Phoebe di EXPAT_REVIEWS (lib/data/expat.ts).",
   ship:
     "DRAFT dari update ops (6 Nov 2026), diselaraskan dengan dokumen ops 'Ringkasan Product Import Rimkirim' sebagai source of truth. Susunannya: (A) lima tile barang yang paling sering dikirim, disusun sebagai bento (Pakaian dua kolom sebagai hero), tiap tile bisa dibuka (kartu Sepeda dihapus atas feedback Alvin, 10 Nov 2026: kemungkinan besar sepeda tidak bisa dikirim; sepeda juga dihapus dari FAQ, panduan pengemasan, dan tabel tarif); (B) 'How to pack your belongings', panduan pengemasan yang dituju link di order flow (#packing): customer mengemas semua barangnya sendiri, termasuk furnitur, lalu koper & tas, kardus, kemasan khusus di bawah aturan harga per koli, satu baris soal klaim, lalu panduan mengemas furnitur langkah demi langkah (bagian 10 dokumen ops); (C) 'Before you send': yang perlu konfirmasi dulu di samping yang tidak boleh dikirim. Dari dokumen ops: kartu Pakaian sekarang menyebut pakaian bekas curah (HS 6309) dilarang, jadi pakaian dikemas dilipat, jumlah wajar, dan dicatat per kardus; buku bea masuk 0% dan tanpa PPh untuk semua buku lewat barang kiriman, bukan hanya buku ilmu pengetahuan (revisi Alvin, 10 Nov 2026: buku cetak, dan PPN mungkin tetap berlaku tergantung jenis bukunya); furnitur bisa dikirim kalau 3PL punya layanannya dan customer mengemas sendiri. Yang perlu dikonfirmasi: (1) dua angka [X] dari dokumen ops sebelumnya masih diisi dari tabel surcharge: sisi terpanjang 121 cm dan 25 kg per kardus (di engine, 25 kg ambang biaya overweight, bukan batas); (2) dikonfirmasi tim (9 Nov 2026): tidak ada repack di gudang, semua barang dikemas customer, dan barang yang kemasannya tidak sesuai panduan tidak ditolak saat pickup, tapi kalau rusak tidak bisa diklaim sesuai nilai yang dideklarasikan. Panduan pengemasan Rimkirim dibuat dari packing guidelines FedEx: isi koper, kardus, dan kemasan khusus belum dicocokkan dengan dokumen itu; (3) biaya tambahan furnitur ('menyusul' di dokumen ops) belum ditampilkan; (4) tombol 'Cek Harga' mengarah ke kalkulator relocation (EXPAT_QUOTE_URL); (5) daftar 'Not allowed' (alkohol, rokok & vape, senjata & bahan peledak, barang mudah terbakar, uang tunai, perhiasan, tanaman) belum ada di dokumen mana pun: dokumen import hanya menyebut Barang Dilarang Impor (Permendag 47/2025, termasuk HS 6309), barang kena cukai yang tidak bebas bea, dan 11 jenis barang di Pasal 42 ayat (8) yang belum dirinci. Pastikan daftar ini, mungkin dari aturan carrier. Gambar di tiap tile adalah ilustrasi contoh (barang digambar sebagai SVG: baju terlipat, sneakers dan topi; tiga buku dengan pita lime; lampu, mangkuk dan panci; gitar akustik, raket, kok dan bola golf, tanpa garis ukuran; piringan hitam dan sampulnya), bukan foto kiriman asli: isi paket di tile Pakaian (Winter coats 3, Jeans 5, Trainers 2) dan pertanyaan di tile Barang lainnya (teleskop, piringan hitam, mesin kopi, mesin jahit) bukan data ops; mesin kopi dan mesin jahit memang elektronik yang perlu dicek dulu, sesuai pesan tile itu. Angka 0% di tile Buku dibaca langsung dari tabel tarif bea cukai, jadi keduanya selalu sama.",
   coordinate:

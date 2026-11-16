@@ -2,9 +2,10 @@
 
 import * as React from "react";
 import Image from "next/image";
+import { ArrowUpRight } from "lucide-react";
 import { Card } from "@/components/ui/card";
-import { highlightQuote } from "@/components/landing/TestimonialSection";
-import { TESTIMONIALS, testimonialAnchor } from "@/lib/data/testimonials";
+import { Stars, highlightQuote } from "@/components/landing/TestimonialSection";
+import { GOOGLE_REVIEWS_URL, RATING_SCORE, TESTIMONIALS, testimonialAnchor } from "@/lib/data/testimonials";
 import { EXPAT_REVIEWS, REVIEW_NOTES } from "@/lib/data/expat";
 import { useT } from "@/lib/i18n/LanguageProvider";
 import { cn } from "@/lib/utils/cn";
@@ -40,6 +41,7 @@ const ORIGIN_COUNTRY: Record<string, string> = {
   england: "uk",
   bristol: "uk",
   adelaide: "australia",
+  sydney: "australia",
   germany: "germany",
   czechia: "czechia",
   newYork: "usa",
@@ -93,7 +95,7 @@ function followPointer(e: React.PointerEvent<HTMLElement>) {
 }
 
 /** a name's colour, by a small hash of the name (FNV-1a); the seed is the
- *  one that gives the four reviews on the page four different colours */
+ *  one that gives the reviews on the page a colour each */
 function avatarFor(name: string) {
   let h = (2166136261 ^ 24) >>> 0;
   for (const c of name.trim().toLowerCase()) {
@@ -106,21 +108,19 @@ function avatarFor(name: string) {
 /**
  * Brief 02. People are handing their things to a company they may not know;
  * reviews with a route attached are the reason to ask for a quote anyway.
- * One is a real expat's, Leticia's, in full as she asked and without a photo,
- * also at her request: it opens on a few lines that trail off, and "Read
- * more" unfolds the rest in place. The others are placeholders: verbatim reviews
- * from Indonesians who moved home stand in until more expat customers send
- * theirs (EXPAT_REVIEWS), so there is no star rating and no Google link,
- * since no expat has reviewed us on Google yet. Name and route only, no
- * invented affiliations. The first review carries the customer's own photo
- * and, from sm, stands as a tall card beside the other three stacked. Until
- * a consented photo exists, the slot asking for it stands in its place, for
- * every visitor: the tall photo card is part of the design, and the slot
- * keeps it. The photo takes up whatever height the stack has at rest, so the
- * two columns end level; once a review
- * unfolds, the photo keeps the height it had folded and its card stops
- * stretching (globals.css, .reviews-grid), so the frame and its crop never
- * change and the unfolded card simply grows. On phones the cards become the house swipe
+ * Three, in words only (2026-11-16): Leticia's, a real expat's, in full as
+ * she asked, opening on a few lines that trail off with "Read more" to unfold
+ * the rest in place; then daelyn's and Phoebe's, verbatim from Rimkirim's
+ * Google reviews (EXPAT_REVIEWS). No expat has reviewed us on Google yet, so
+ * those two are Indonesians who moved home and the copy never calls them
+ * expats. Under the heading, Rimkirim's own Google rating, linked to Google
+ * so it can be checked: it's every customer's, not the expats' alone, and
+ * says so ("Google reviews"). Name and route only, no invented affiliations.
+ * Three across from lg; from sm to lg, Leticia's long one runs the width
+ * over the two short ones. A review can still carry a photo (`photo` in
+ * EXPAT_REVIEWS): the first then stands as a tall card beside the others,
+ * the photo keeping the height it had while every review was folded
+ * (globals.css, .reviews-grid). On phones the cards become the house swipe
  * strip (DESIGN.md, Card grid → scroll strip): supporting content, so the
  * peek is enough.
  */
@@ -135,6 +135,9 @@ export function ExpatReviews() {
     return review ? [{ ...review, photo }] : [];
   });
   const hasPhoto = reviews.some((r) => r.photo !== undefined);
+  // three in words only: three across from lg, the first over the other two
+  // before that
+  const three = !hasPhoto && reviews.length === 3;
 
   // the photo's height while every review is folded: what it keeps once one
   // unfolds (a frozen frame, not a stretched one)
@@ -191,14 +194,38 @@ export function ExpatReviews() {
           title={t("expat.reviews.heading")}
           subtitle={t("expat.reviews.subtitle")}
         />
+        {/* the score is every customer's, not the expats' alone: it says
+            Google reviews, and it goes there, so it can be checked (an
+            unlinked score reads as an invented one) */}
+        <a
+          href={GOOGLE_REVIEWS_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label={`${t("testimonial.ratingScore")} ${t("testimonial.ratingLabel")} — ${t("testimonial.ratingLinkLabel")}`}
+          className="group mt-5 inline-flex min-h-11 items-center gap-2.5 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/60"
+        >
+          <Stars value={RATING_SCORE} starClass="size-5" />
+          <span className="font-display text-2xl font-semibold leading-none text-foreground">
+            {t("testimonial.ratingScore")}
+          </span>
+          <span className="text-sm text-muted">{t("testimonial.ratingLabel")}</span>
+          <ArrowUpRight
+            aria-hidden
+            className="size-4 text-muted-2 motion-safe:transition-transform motion-safe:group-hover:-translate-y-px motion-safe:group-hover:translate-x-px motion-reduce:transition-colors motion-reduce:group-hover:text-foreground"
+          />
+        </a>
 
-        {/* on a phone each slide keeps its own height, top-aligned: these
-            reviews run from two lines to a photo and a page, so one shared
-            height left the short ones hollow (DESIGN.md, Card grid → scroll
-            strip, the one exception) */}
+        {/* on a phone the slides share the tallest one's height, each name
+            pinned to its card's foot, so the strip reads as one deck
+            (DESIGN.md, Card grid → scroll strip); while Leticia's review is
+            unfolded, each slide goes back to its own height, so the short
+            ones don't stand a page tall beside it */}
         <div
           ref={gridRef}
-          className="reviews-grid scroll-strip -mx-2 mt-8 flex snap-x snap-mandatory items-start sm:items-stretch scroll-px-2 gap-4 overflow-x-auto px-2 pb-1 sm:mt-8 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-foreground/60 sm:mx-0 sm:grid sm:snap-none sm:grid-cols-2 sm:overflow-visible sm:px-0 sm:pb-0"
+          className={cn(
+            "reviews-grid scroll-strip -mx-2 mt-8 flex snap-x snap-mandatory items-stretch max-sm:has-[[aria-expanded=true]]:items-start scroll-px-2 gap-4 overflow-x-auto px-2 pb-1 sm:mt-8 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-foreground/60 sm:mx-0 sm:grid sm:snap-none sm:grid-cols-2 sm:overflow-visible sm:px-0 sm:pb-0",
+            three && "lg:grid-cols-3",
+          )}
           // a strip to scroll on a phone, a grid from sm with nothing to
           // scroll, so a tab stop only where it scrolls
           tabIndex={grid ? undefined : 0}
@@ -219,6 +246,7 @@ export function ExpatReviews() {
                 // only a card with a photo stands tall beside the other three;
                 // without one, the four are an even two by two
                 i === 0 && photo !== undefined && "sm:row-span-3",
+                three && i === 0 && "sm:col-span-2 lg:col-span-1",
                 photo !== undefined && "review-photo-card",
               )}
             >

@@ -1007,6 +1007,7 @@ const id = {
     origins: {
       bristol: "Bristol",
       adelaide: "Adelaide",
+      sydney: "Sydney",
       czechia: "Ceko",
       england: "Inggris",
       uk: "Inggris Raya",
@@ -3289,6 +3290,7 @@ const en: Messages = {
     origins: {
       bristol: "Bristol",
       adelaide: "Adelaide",
+      sydney: "Sydney",
       czechia: "Czechia",
       england: "England",
       uk: "United Kingdom",
