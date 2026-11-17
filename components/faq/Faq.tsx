@@ -3,11 +3,13 @@
 import * as React from "react";
 import { Check, Search, X, MessageCircle } from "lucide-react";
 import {
+  answerText,
   faqTabs,
   type FaqTab,
   type FaqCategory,
   type FaqItem,
 } from "@/lib/data/faq";
+import { AnswerExtras } from "./AnswerExtras";
 import { SegmentedRoot, SegmentedItem } from "@/components/ui/toggle-group";
 import { Disclosure } from "@/components/ui/disclosure";
 import { Button } from "@/components/ui/button";
@@ -19,7 +21,8 @@ type TabId = FaqTab["id"];
 const isTabId = (v: string | null): v is TabId =>
   v === "bfg" || v === "moving-abroad";
 
-/** answer text plus the optional document checklist, shared by both views */
+/** answer text plus the optional document checklist and extras (a table, a
+ *  closing line), shared by both views */
 function AnswerBody({ f }: { f: FaqItem }) {
   return (
     <div className="max-w-[65ch] text-sm leading-relaxed text-muted">
@@ -34,6 +37,7 @@ function AnswerBody({ f }: { f: FaqItem }) {
           ))}
         </ul>
       )}
+      <AnswerExtras rows={f.rows} after={f.after} cta={f.cta} />
     </div>
   );
 }
@@ -117,16 +121,17 @@ export function Faq() {
   const q = query.trim().toLowerCase();
   const searching = q.length > 0;
 
-  // Filter to categories with matching questions (match on question + answer,
-  // so content is findable too), dropping empty categories. Cheap enough to
-  // run per render; the React Compiler memoizes it.
+  // Filter to categories with matching questions (match on question + the
+  // whole answer, its table included, so content is findable too), dropping
+  // empty categories. Cheap enough to run per render; the React Compiler
+  // memoizes it.
   const filtered: FaqCategory[] = !searching
     ? tab.categories
     : tab.categories
         .map((cat) => ({
           ...cat,
           faqs: cat.faqs.filter((f) =>
-            `${f.q} ${f.a}`.toLowerCase().includes(q),
+            `${f.q} ${answerText(f)}`.toLowerCase().includes(q),
           ),
         }))
         .filter((cat) => cat.faqs.length > 0);

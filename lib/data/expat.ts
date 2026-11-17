@@ -9,24 +9,35 @@
  * already says in lib/data/faq.ts and content/articles, never invented.
  */
 import type { Locale } from "@/lib/i18n/messages";
+import { DOMESTIC_DELIVERY_ROWS } from "@/lib/data/delivery-times";
+import { resolveExtras, type AnswerExtras, type AnswerExtrasSource } from "@/lib/data/faq";
 
 interface Txt {
   id: string;
   en: string;
 }
 
-interface ExpatFaqSource {
+/** an answer can carry a table, a closing paragraph and a link, as /faq's do */
+interface ExpatFaqSource extends AnswerExtrasSource {
   /** the question's anchor, for a question the page links to */
   slug?: string;
   q: Txt;
   a: Txt;
 }
 
-export interface ExpatFaq {
+export interface ExpatFaq extends AnswerExtras {
   slug?: string;
   q: string;
   a: string;
 }
+
+/**
+ * Where every "Check your rate" on the expat page goes: the order flow's
+ * start, Check Rate (docs/expat-order-flow.md), which runs on to the plan
+ * (the Eligibility Check, Personal Information, the Packages) and the
+ * Booking Summary. Above the FAQ, which links to it.
+ */
+export const EXPAT_QUOTE_URL = "/expat-relocation/rates";
 
 const FAQ: ExpatFaqSource[] = [
   {
@@ -88,10 +99,21 @@ const FAQ: ExpatFaqSource[] = [
     },
   },
   {
+    // after OPS's ETA infographic (lib/data/delivery-times.ts), 2026-11-17
     q: { id: "Berapa lama pengirimannya?", en: "How long does it take?" },
     a: {
-      id: "Lewat udara dari Eropa, biasanya sekitar 4–8 hari perjalanan, ditambah sekitar 4–10 hari kerja untuk clearance di Indonesia. Estimasi untuk rutemu tampil saat kamu cek tarif.",
-      en: "By air from Europe, usually around 4–8 days in transit, plus about 4–10 working days for customs clearance in Indonesia. You'll see the estimate for your route when you check your rate.",
+      id: "Totalnya adalah jumlah tiga tahap: perjalanan internasional sekitar 4–8 hari, clearance bea cukai di Indonesia sekitar 4–10 hari kerja, dan pengantaran ke alamatmu, yang lamanya tergantung daerah tujuan:",
+      en: "It's three stages added up: about 4–8 days in transit, about 4–10 working days for customs clearance in Indonesia, and delivery to your door, which depends on where in Indonesia you're moving to:",
+    },
+    rows: DOMESTIC_DELIVERY_ROWS,
+    after: {
+      id: "Ini waktu rata-rata untuk kiriman dari Eropa, Australia dan Selandia Baru, Amerika, serta Asia (Malaysia, Thailand, Singapura, Jepang, Korea Selatan, dan Tiongkok). Waktunya bisa lebih cepat atau lebih lama, tergantung clearance dan kondisi operasional.",
+      en: "These are averages for shipments from Europe, Australia and New Zealand, the Americas, and Asia (Malaysia, Thailand, Singapore, Japan, South Korea and China). Times can be shorter or longer, depending on customs clearance and operational conditions.",
+    },
+    cta: {
+      lead: { id: "Pindah dari negara lain?", en: "Moving from somewhere else?" },
+      label: { id: "Cek ETA dari negaramu", en: "Check the ETA from your country" },
+      href: EXPAT_QUOTE_URL,
     },
   },
   {
@@ -113,16 +135,8 @@ const FAQ: ExpatFaqSource[] = [
   },
 ];
 
-/**
- * Where every "Check your rate" on the expat page goes: the order flow's
- * start, Check Rate (docs/expat-order-flow.md), which runs on to the plan
- * (the Eligibility Check, Personal Information, the Packages) and the
- * Booking Summary.
- */
-export const EXPAT_QUOTE_URL = "/expat-relocation/rates";
-
 export function expatFaq(locale: Locale): ExpatFaq[] {
-  return FAQ.map((f) => ({ slug: f.slug, q: f.q[locale], a: f.a[locale] }));
+  return FAQ.map((f) => ({ slug: f.slug, q: f.q[locale], a: f.a[locale], ...resolveExtras(f, locale) }));
 }
 
 /**
@@ -225,5 +239,5 @@ export const REVIEW_NOTES = {
     "Section 07 (contoh pengiriman nyata) disembunyikan sampai ada contoh asli: asal, jenis barang, komentar, foto. Isi SHIPMENT_EXAMPLES di lib/data/expat.ts.",
   closing:
     "Tiap langkah 'What happens next' menampilkan layar order flow yang asli, digambar oleh komponennya sendiri dengan data contoh: kartu Special Rate dari Inggris untuk 30 kg (tarif dummy), pertanyaan pertama Eligibility Check, dan kepala tiket Booking Summary dengan nomor dan email contoh.",
-  faq: "Brief: semua jawaban wajib disetujui Rimkirim, terutama bea cukai & pengantaran. Waktu 4–8 hari + 4–10 hari kerja diambil dari FAQ & artikel yang sudah ada.",
+  faq: "Brief: semua jawaban wajib disetujui Rimkirim, terutama bea cukai & pengantaran. Revisi 17 Nov 2026: 'How long' mengikuti infografis ETA dari tim OPS (sama dengan FAQ /faq): transit 4–8 hari, clearance 4–10 hari kerja, lalu pengantaran domestik per daerah dalam tabel, dijumlahkan; berlaku untuk kiriman dari Eropa, Australia dan Selandia Baru, Amerika, dan enam negara Asia, dan dari negara lain pembaca diarahkan ke Check Rate ('Check the ETA from your country'). Tabel diurutkan dari yang tercepat (urutan infografis berbeda), dan 'Jawa' di infografis berarti di luar Jabodetabek. 'By air' dan kalimat 'estimasi tampil saat cek tarif' dihapus: infografis tidak menyebut moda, dan Check Rate hanya menampilkan waktu transit.",
 } as const;

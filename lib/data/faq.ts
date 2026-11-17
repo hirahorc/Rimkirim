@@ -7,6 +7,7 @@
  * Hierarchy: service tab -> category -> question/answer.
  */
 import type { Locale } from "@/lib/i18n/messages";
+import { DOMESTIC_DELIVERY_ROWS } from "@/lib/data/delivery-times";
 
 /** one string in both languages */
 interface Txt {
@@ -14,7 +15,51 @@ interface Txt {
   en: string;
 }
 
-interface FaqItemSource {
+/** an answer's parts past its paragraph, in both languages */
+export interface AnswerExtrasSource {
+  /** a two-column table under the answer (what, then how much) */
+  rows?: { label: Txt; value: Txt }[];
+  /** a paragraph after the table */
+  after?: Txt;
+  /** a closing line that ends on a link: the lead in the answer's ink */
+  cta?: { lead: Txt; label: Txt; href: string };
+}
+
+/** the same, resolved to one language (components/faq/AnswerExtras) */
+export interface AnswerExtras {
+  rows?: { label: string; value: string }[];
+  after?: string;
+  cta?: { lead: string; label: string; href: string };
+}
+
+/** an answer's extras in one language */
+export function resolveExtras(src: AnswerExtrasSource, locale: Locale): AnswerExtras {
+  return {
+    ...(src.rows ? { rows: src.rows.map((r) => ({ label: r.label[locale], value: r.value[locale] })) } : {}),
+    ...(src.after ? { after: src.after[locale] } : {}),
+    ...(src.cta
+      ? { cta: { lead: src.cta.lead[locale], label: src.cta.label[locale], href: src.cta.href } }
+      : {}),
+  };
+}
+
+/**
+ * An answer as one run of text, for search and FAQPage structured data,
+ * so a reader searching "Bali" finds the question its table answers.
+ */
+export function answerText(f: { a: string; list?: string[] } & AnswerExtras): string {
+  return [
+    f.a,
+    f.list && `${f.list.join(", ")}.`,
+    f.rows && `${f.rows.map((r) => `${r.label}: ${r.value}`).join(", ")}.`,
+    f.after,
+    f.cta && `${f.cta.lead} ${f.cta.label}.`,
+  ]
+    .filter(Boolean)
+    .join(" ");
+}
+
+interface FaqItemSource extends AnswerExtrasSource {
   q: Txt;
   a: Txt;
   /** optional checklist rendered under the answer (e.g. document requirements) */
@@ -32,7 +77,7 @@ interface FaqTabSource {
 }
 
 /** resolved, single-locale shapes consumed by the page */
-export interface FaqItem {
+export interface FaqItem extends AnswerExtras {
   /** stable anchor id, derived from the Indonesian question */
   slug: string;
   q: string;
@@ -119,9 +164,22 @@ const SOURCE: FaqTabSource[] = [
               id: "Berapa lama waktu pengirimannya?",
               en: "How long does shipping take?",
             },
+            // after OPS's ETA infographic (lib/data/delivery-times.ts),
+            // 2026-11-17; the question text stays, it's the slug the landing
+            // picks and deep links use
             a: {
-              id: "Sekitar 4-8 hari perjalanan (contoh rute UK-Indonesia), ditambah proses bea cukai sekitar 4-10 hari kerja.",
-              en: "Around 4-8 days in transit (UK-Indonesia route as an example), plus a customs process of around 4-10 working days.",
+              id: "Totalnya adalah jumlah tiga tahap: perjalanan internasional sekitar 4–8 hari, clearance bea cukai di Indonesia sekitar 4–10 hari kerja, dan pengantaran ke alamatmu, yang lamanya tergantung daerah tujuan:",
+              en: "It's three stages added up: about 4–8 days in transit, about 4–10 working days for customs clearance in Indonesia, and delivery to your address, which depends on where in Indonesia it's going:",
+            },
+            rows: DOMESTIC_DELIVERY_ROWS,
+            after: {
+              id: "Ini waktu rata-rata untuk kiriman dari Eropa, Australia dan Selandia Baru, Amerika, serta Asia (Malaysia, Thailand, Singapura, Jepang, Korea Selatan, dan Tiongkok). Waktunya bisa lebih cepat atau lebih lama, tergantung clearance dan kondisi operasional.",
+              en: "These are averages for shipments from Europe, Australia and New Zealand, the Americas, and Asia (Malaysia, Thailand, Singapore, Japan, South Korea and China). Times can be shorter or longer, depending on customs clearance and operational conditions.",
+            },
+            cta: {
+              lead: { id: "Kirim dari negara lain?", en: "Shipping from another country?" },
+              label: { id: "Cek ETA dari negaramu", en: "Check the ETA from your country" },
+              href: "/#kalkulator",
             },
           },
           {
@@ -1185,6 +1243,7 @@ export function faqTabs(locale: Locale): FaqTab[] {
         q: f.q[locale],
         a: f.a[locale],
         ...(f.list ? { list: f.list.map((x) => x[locale]) } : {}),
+        ...resolveExtras(f, locale),
       })),
     })),
   }));

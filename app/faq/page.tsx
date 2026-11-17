@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Faq } from "@/components/faq/Faq";
-import { faqTabs, type FaqItem } from "@/lib/data/faq";
+import { answerText, faqTabs, type FaqItem } from "@/lib/data/faq";
 
 // FAQPage structured data, generated from the same source as the page so it
 // can never drift. Emitted in Indonesian (the page's default render); the
@@ -24,7 +24,7 @@ function faqJsonLd() {
       name: f.q,
       acceptedAnswer: {
         "@type": "Answer",
-        text: f.list ? `${f.a} ${f.list.join(", ")}.` : f.a,
+        text: answerText(f),
       },
     })),
   };

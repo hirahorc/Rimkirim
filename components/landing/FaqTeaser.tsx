@@ -4,6 +4,7 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Disclosure } from "@/components/ui/disclosure";
+import { AnswerExtras } from "@/components/faq/AnswerExtras";
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
 import { faqTabs, faqSlug } from "@/lib/data/faq";
 import { WA_URL } from "@/lib/contact";
@@ -34,7 +35,8 @@ export function FaqTeaser() {
       <div className="mt-10 border-t border-border">
         {items.map((f) => (
           <Disclosure key={f.slug} question={f.q}>
-            {f.a}
+            <p>{f.a}</p>
+            <AnswerExtras rows={f.rows} after={f.after} cta={f.cta} />
           </Disclosure>
         ))}
       </div>

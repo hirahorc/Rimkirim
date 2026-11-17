@@ -11,6 +11,7 @@ import { ShipmentExamples } from "@/components/expat/ShipmentExamples";
 import { ExpatFaq } from "@/components/expat/ExpatFaq";
 import { ExpatClosing } from "@/components/expat/ExpatClosing";
 import { expatFaq } from "@/lib/data/expat";
+import { answerText } from "@/lib/data/faq";
 
 // English first: the page opens in English for a new visitor (LanguageProvider,
 // ROUTE_LOCALE), so search engines and link previews read it in English too
@@ -36,7 +37,7 @@ function faqJsonLd() {
     mainEntity: expatFaq("en").map((f) => ({
       "@type": "Question",
       name: f.q,
-      acceptedAnswer: { "@type": "Answer", text: f.a },
+      acceptedAnswer: { "@type": "Answer", text: answerText(f) },
     })),
   };
 }

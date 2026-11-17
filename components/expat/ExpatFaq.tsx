@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { Disclosure } from "@/components/ui/disclosure";
+import { AnswerExtras } from "@/components/faq/AnswerExtras";
 import { REVIEW_NOTES, expatFaq } from "@/lib/data/expat";
 import { WA_URL } from "@/lib/contact";
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
@@ -58,7 +59,8 @@ export function ExpatFaq() {
         <div className="divide-y divide-border border-y border-border">
           {expatFaq(locale).map((f) => (
             <Disclosure key={f.q} id={f.slug} question={f.q} strong>
-              {f.a}
+              <p>{f.a}</p>
+              <AnswerExtras rows={f.rows} after={f.after} cta={f.cta} />
             </Disclosure>
           ))}
         </div>

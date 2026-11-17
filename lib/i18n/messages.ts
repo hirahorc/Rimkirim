@@ -1674,7 +1674,7 @@ const id = {
     tdAwbPending:
       "Nomor AWB & detail pengiriman muncul setelah pickup dibooking. Biasanya pickup terjadwal 1–3 hari kerja setelah quotation disetujui.",
     tdClearancePending:
-      "Proses clearance akan muncul setelah barang tiba di Indonesia. Proses normalnya 3–7 hari kerja.",
+      "Proses clearance akan muncul setelah barang tiba di Indonesia. Proses normalnya 4–10 hari kerja.",
     tdCancelledNotice: "Pesanan ini dibatalkan.",
     tdCancelledBody: "Mau tahu alasannya, atau kirim ulang?",
     tdMaNote:
@@ -1715,7 +1715,7 @@ const id = {
     clDescSubmitted:
       "Diajukan ke Bea Cukai (link Barpin) dan ke FedEx (link Barpin + dokumen) untuk diproses.",
     clDescBcReview:
-      "Bea Cukai sedang memproses pengajuan kirimanmu. Biasanya 3–7 hari kerja. Kami kabari setiap perkembangan.",
+      "Bea Cukai sedang memproses pengajuan kirimanmu. Biasanya 4–10 hari kerja. Kami kabari setiap perkembangan.",
     clDescNpd:
       "Bea Cukai meminta dokumen tambahan (NPD). Tim kami melengkapi lalu mengajukan ulang.",
     clDescSppb: "SPPB terbit. Barang disetujui untuk dikeluarkan dari Bea Cukai.",
@@ -3950,7 +3950,7 @@ const en: Messages = {
     tdAwbPending:
       "The AWB number & shipping details appear once the pickup is booked. Pickup is usually scheduled 1–3 business days after the quotation is approved.",
     tdClearancePending:
-      "Clearance status will appear once the goods arrive in Indonesia. The normal process takes 3–7 business days.",
+      "Clearance status will appear once the goods arrive in Indonesia. The normal process takes 4–10 business days.",
     tdCancelledNotice: "This order was cancelled.",
     tdCancelledBody: "Need the reason, or a re-shipment?",
     tdMaNote:
@@ -3991,7 +3991,7 @@ const en: Messages = {
     clDescSubmitted:
       "Submitted to Customs (Barpin link) and to FedEx (Barpin link + documents) for processing.",
     clDescBcReview:
-      "Customs is processing your submission. Usually 3–7 business days. We'll update you at every step.",
+      "Customs is processing your submission. Usually 4–10 business days. We'll update you at every step.",
     clDescNpd:
       "Customs requested additional documents (NPD). Our team completes them and resubmits.",
     clDescSppb: "SPPB issued. The goods are approved for release by Customs.",
