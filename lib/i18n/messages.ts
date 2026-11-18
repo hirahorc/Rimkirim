@@ -405,7 +405,7 @@ const id = {
     cta: "Cek tarifmu",
     headerHome: "Rimkirim Expat Relocation, kembali ke atas",
     footer: {
-      tagline: "Kirim barang pribadimu ke Indonesia, untuk kamu yang relokasi ke sini.",
+      tagline: "Kirim barang pribadimu ke Indonesia.",
       contacts: "Kontak",
       legal: "Legal",
     },
@@ -2714,7 +2714,7 @@ const en: Messages = {
     cta: "Check your rate",
     headerHome: "Rimkirim Expat Relocation, back to top",
     footer: {
-      tagline: "Shipping personal belongings to Indonesia, for people relocating here.",
+      tagline: "Shipping personal belongings to Indonesia.",
       contacts: "Contacts",
       legal: "Legal",
     },
