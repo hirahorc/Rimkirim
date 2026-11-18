@@ -1729,7 +1729,8 @@ full `rounded-lg` card at the standard `px-5 → sm:px-6` padding.
 
 - **Left, the service:** the carrier's logo (with Cheapest or Fastest beside it on Advance), the
   service in `muted`, the route as flags and ISO codes ("GB to ID"), then the transit days with
-  "clearance process excluded" wrapping as a sentence (the days never break from their unit),
+  "excludes clearance and domestic delivery" wrapping as a sentence (the days never break
+  from their unit; the days are transit only, after OPS's ETA, 2026-11-17),
   and the weight band the price holds for.
 - **Right, the price:** the price per kg as the card's one big figure (mono, `text-2xl`), the
   total under it, "Starting from … for 21 kg" for a tier or "Estimated … for 30 kg" for the

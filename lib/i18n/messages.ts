@@ -1242,7 +1242,11 @@ const id = {
     to: "ke",
     perKg: "/kg",
     days: "{min}–{max} hari",
-    clearance: "belum termasuk proses clearance",
+    // the days are transit only (OPS's ETA, lib/data/delivery-times.ts).
+    // "waktu", so it can't read as the service leaving out the delivery
+    // to the door. "Domestik" is the destination's: Indonesia for Back For
+    // Good and expats, the country moved to for Moving Abroad
+    clearance: "belum termasuk waktu clearance dan pengantaran domestik",
     startingFrom: "Mulai dari",
     estimated: "Estimasi",
     forKg: "untuk {kg} kg",
@@ -3534,7 +3538,7 @@ const en: Messages = {
     to: "to",
     perKg: "/kg",
     days: "{min}–{max} days",
-    clearance: "clearance process excluded",
+    clearance: "excludes clearance and domestic delivery",
     startingFrom: "Starting from",
     estimated: "Estimated",
     forKg: "for {kg} kg",
