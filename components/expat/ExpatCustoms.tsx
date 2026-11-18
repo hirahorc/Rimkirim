@@ -22,9 +22,6 @@ export const CUSTOMS_ROUTES: readonly { key: string; docs: readonly string[] }[]
   { key: "kiriman", docs: ["doc1", "doc2"] },
 ];
 
-/** what a personal shipment pays, by what's inside (the CN flat rates) */
-const RATES = ["general", "books", "regulated", "apparel"] as const;
-
 /**
  * What to expect at Indonesian customs, from ops' import summary, the
  * source of truth for the service: the question every relocating visitor
@@ -37,22 +34,20 @@ const RATES = ["general", "books", "regulated", "apparel"] as const;
  * documents it needs, so a shorter list ends a card early and leaves no gap
  * inside it; under all three, that customs may ask for more. Each card carries its own rules, as ops wrote
  * them (the timing, what isn't covered, the NPWP), so nothing under the
- * cards says them again. The one route with no exemption gets its rates under them,
- * one number big on each row, since that's the one a visitor has to work
- * out, then a way to ask. On the desk in the
+ * cards says them again; then a way to ask. On the desk in the
  * magenta chapter, between How it works and the FAQ on the desk. Every
  * rule here is a draft until ops confirms it (REVIEW_NOTES.customs).
  *
- * The four cards are set in three type sizes and five steps of space, and
+ * The three cards are set in three type sizes and five steps of space, and
  * nothing else (DESIGN.md, The customs cards):
  *   20/28 display 600  a card's title and its answer (a path's duty and
- *                      tax, a rate)
+ *                      tax)
  *   14/20              what's read, a paragraph on a looser line; medium
- *                      for a value and a row's name
+ *                      for a value
  *   12/16              a label (medium), a count, a help line, small print
  *   4   a label and its value, a name and the line under it
  *   8   one list item and the next, a paragraph and its small print
- *   12  a table row's top and bottom, a label and the list under it
+ *   12  a label and the list under it
  *   16  one fact and the next, a rule and what's under it, a card's sides
  *       on a phone, one card and the next
  *   24  one group and the next, a card's padding
@@ -95,9 +90,8 @@ export function ExpatCustoms() {
       return next;
     });
   // the section reveals once, as the journey does: its head, the three
-  // routes, the rates, then the way to ask
+  // routes, then the way to ask
   const rootRef = useSectionReveal<HTMLElement>();
-  const r = (path: string) => t(`expat.customs.rates.${path}`);
   return (
     <section ref={rootRef} aria-labelledby="customs-heading" data-tone="magenta">
       <div className="section-shell mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:py-24">
@@ -112,8 +106,7 @@ export function ExpatCustoms() {
         </div>
 
         {/* the three ways in are solid on the chapter's deep (.deep-panel),
-            no outline, their titles white; the personal shipment's rates
-            under them are a white card with an outline. A card reads from
+            no outline, their titles white. A card reads from
             the top in three groups, 24px apart: what it's called, who it's
             for and what it pays; why, with its small print; the documents.
             From lg the three cards share their rows (a subgrid): a "For"
@@ -193,92 +186,6 @@ export function ExpatCustoms() {
         <p className="jr-reveal mt-4 text-sm leading-relaxed text-muted" style={order(4)}>
           {t("expat.customs.extraDocs")}
         </p>
-
-        {/* the personal shipment's rates: its title, the flat rates up to
-            USD 1,500, and under a line what applies over it and that every
-            item is listed with its value; then what's inside, its duty as
-            the one big number on the row, the tax on top. From xl the words
-            take the left third and the table the rest, so its three columns
-            sit close enough to read across (from lg, where two thirds is
-            too narrow for the tax, the words stand over the table). Below
-            lg a list, as the comparison does on a phone: a name and its
-            duty share the first line, and what's under the name has the
-            whole width. The column names are the chapter's ink; a rate sits
-            on its name's baseline (on its own 28px line it sat 6px under) */}
-        <div
-          className="jr-reveal mt-6 grid gap-y-6 rounded-lg border border-border-strong bg-background px-4 py-6 sm:px-6 xl:grid-cols-[minmax(0,1fr)_minmax(0,2fr)] xl:gap-x-12"
-          style={order(4)}
-        >
-          <div>
-            <h3 className="text-balance font-display text-xl font-semibold tracking-tight">{r("title")}</h3>
-            {/* a currency stays on the line of its amount */}
-            <p className="mt-2 text-sm leading-relaxed text-muted">{r("subtitle").replaceAll("USD ", "USD\u00a0")}</p>
-            <p className="mt-4 border-t border-border pt-4 text-sm leading-relaxed text-muted">
-              {r("foot").replaceAll("USD ", "USD\u00a0")}
-            </p>
-            <p className="mt-3 text-sm leading-relaxed text-muted">{r("packing")}</p>
-          </div>
-
-          <div className="lg:hidden">
-            {/* the columns' names, for the eye: each rate says its own to a
-                screen reader */}
-            <p aria-hidden className="flex justify-between gap-4 border-b border-border pb-3 font-display text-sm font-medium text-tone-ink">
-              <span>{r("what")}</span>
-              <span>{r("duty")}</span>
-            </p>
-            <ul className="divide-y divide-border text-sm">
-              {RATES.map((row) => (
-                <li key={row} className="py-3">
-                  <p className="flex items-baseline justify-between gap-4">
-                    <span className="font-medium">{r(`${row}.label`)}</span>
-                    <span className="shrink-0 font-display text-xl leading-5 font-semibold tracking-tight tabular-nums">
-                      <span className="sr-only">{r("duty")}: </span>
-                      {r(`${row}.duty`)}
-                    </span>
-                  </p>
-                  {row === "general" && <p className="mt-0.5 text-muted">{r("general.hint")}</p>}
-                  <p className="mt-1 text-muted">
-                    {r("tax")}: {r(`${row}.tax`)}
-                  </p>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <table className="hidden w-full border-collapse text-left text-sm lg:table">
-            <thead>
-              <tr className="border-b border-border font-display text-sm text-tone-ink">
-                <th scope="col" className="pb-3 pr-4 font-medium">
-                  {r("what")}
-                </th>
-                <th scope="col" className="whitespace-nowrap pb-3 pr-4 font-medium">
-                  {r("duty")}
-                </th>
-                <th scope="col" className="pb-3 font-medium">
-                  {r("tax")}
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {RATES.map((row) => (
-                <tr key={row} className="border-b border-border last:border-b-0">
-                  <th scope="row" className="py-3 pr-4 align-top font-medium">
-                    {r(`${row}.label`)}
-                    {row === "general" && (
-                      <span className="mt-0.5 block font-normal text-muted">{r("general.hint")}</span>
-                    )}
-                  </th>
-                  <td className="whitespace-nowrap py-3 pr-4 align-top font-display text-xl leading-5 font-semibold tracking-tight tabular-nums">
-                    {r(`${row}.duty`)}
-                  </td>
-                  {/* a tax that wraps breaks into two even lines, never
-                      leaving "(PPh)" alone */}
-                  <td className="text-balance py-3 align-top text-muted">{r(`${row}.tax`)}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
 
         {/* the message arrives already asking the question, so the team
             starts where the visitor is */}

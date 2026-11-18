@@ -251,33 +251,30 @@ deep, magenta `#690873` (the hue 40% toward black, `--tone-deep`), with no outli
 (`.deep-panel`), dark enough that their titles are white. Inside the card the neutrals turn
 over, re-pointed on the panel as a chapter re-points them: words white (11.2:1), labels,
 small print and icons the soft tint `#f5befa` (7.2:1, `--tone-deep-soft`), hairlines white at
-16%, the focus ring white at 50% (3.7:1). The personal shipment's rates under them are a
-white card with the chapter's outline (`border-border-strong bg-background`).
+16%, the focus ring white at 50% (3.7:1).
 
-**The customs cards (2026-11-12).** The four cards are set in three type sizes, five steps of
-space and five colours, and nothing else:
+**The customs cards (2026-11-12).** The three cards are set in three type sizes, five steps of
+space and three colours, and nothing else:
 
 | Type | Set in | For |
 | --- | --- | --- |
-| 20 / 28 | Space Grotesk 600 | a card's title, and its answer: a path's duty and tax, a rate |
-| 14 / 20 | Geist 400, 500 for a value and a row's name | what's read; a paragraph on a looser line |
+| 20 / 28 | Space Grotesk 600 | a card's title, and its answer: a path's duty and tax |
+| 14 / 20 | Geist 400, 500 for a value | what's read; a paragraph on a looser line |
 | 12 / 16 | Geist 400, 500 for a label | a label, a count, a help line, small print |
 
 | Space | Between |
 | --- | --- |
 | 4 | a label and its value; a name and the line under it |
 | 8 | one list item and the next; a paragraph and its small print |
-| 12 | a table row's top and bottom; a label and the list under it |
+| 12 | a label and the list under it |
 | 16 | one fact and the next; a rule and what's under it; a card's sides on a phone; one card and the next |
 | 24 | one group and the next; a card's padding |
 
 | Colour | Value | For |
 | --- | --- | --- |
 | Deep | `#690873` | the three path cards' fill |
-| Paper | `#ffffff` | the words on Deep (and its hairlines, at 16%); the rates card's fill |
+| Paper | `#ffffff` | the words on Deep (and its hairlines, at 16%) |
 | Soft | `#f5befa` | on Deep: labels, small print, icons |
-| Ink | `#1f1f1f` | the words on Paper |
-| Muted | `#64426c` | on Paper: labels, small print, the tax column |
 
 A path card reads from the top in three groups: its name, who it's for and its duty and tax;
 the explanation with its small print 8px under it; the documents, last, under their count. The
@@ -285,23 +282,12 @@ duty and tax is the answer to the section's heading, so it is the one fact set a
 size of the card's name. From lg the three share their rows (subgrid), so the answers, the
 explanations and the document lists each start on one line across the cards; a shorter list
 ends its card early, at the foot. On a phone the document list folds behind its label.
-**The rates card (2026-11-13).** "What you'll pay on a personal shipment" keeps the layout it had
-before the day's audits, which reads better: from `xl` its words take the left third (the title,
-the flat rates up to USD 1,500, then under a hairline what applies over it and that every item
-is listed with its value, all 14px Muted on a loose line) and the table the rest, its column
-names in the chapter's ink (Space Grotesk 14, medium), the duty as the one 20px figure on a
-row, the tax in Muted. Tried the same day and taken back: one column, the rules over a
-full-width table, a 320px name column and a 12px descriptor. What stayed from those passes:
-a rate sits on its name's baseline (on its own 28px line it sat 6px under it); a tax that wraps
-(the longer copy, "11% VAT (PPN) + 5% income tax (PPh)", does in two thirds of the card) breaks
-into two even lines, never leaving "(PPh)" alone; the title is balanced; a currency keeps to its
-amount's line ("USD 1,500"). From `lg` to `xl` two thirds is too narrow for the tax, so the
-words stand over the table. Below `lg` the words come first and then a list, as the comparison
-does on a phone: a name and its duty share the first line, the tax under the name ("Tax: 11%
-VAT (PPN), no income tax (PPh)") has the card's whole width, and the column names stand over it
-for the eye only, each rate naming its column to a screen reader. The card repeats on purpose
-what the Personal shipment card above it already says (customs sets the final duty and tax, and
-income tax can be higher without an NPWP): each one is read on its own, so neither is cut.
+
+**The rates card, taken off (2026-11-17).** "What you'll pay on a personal shipment", the white
+card with the flat-rates table under the three paths, is no longer on the landing (Hira's call).
+The rates still show in two places: the Personal shipment card (flat rates by item type, 0% for
+books to 25% for clothes, bags and shoes) and the FAQ's duty answer. The books tile's 0% keeps
+its own copy (`expat.ship.books.stat.figure`).
 Tried first and dropped: numbered eyebrows on a rule, a lime index tab, an ink tile, and a
 cover that opened each section.
 Two sections in the frame have a ground of their own, so the page isn't white all the way
@@ -1475,10 +1461,7 @@ in ink it stays neutral and lime stays the one colour in the action row.
   and tax answers, the explanations, the lists and the notes each start on one line. Each card
   carries its own rules as ops wrote them (the timing, what isn't covered, the NPWP), so nothing
   under the cards repeats them. Under them, one Dim Grey line for all three lists, that customs
-  may ask for more, then one more white plane for the only route with no exemption: what you'll
-  pay on a personal shipment, its words in the left third from `xl` and a real table beside them
-  (what's inside, its duty as the one number at the Title role, the tax on top; a list below
-  `lg`), then one WhatsApp link.
+  may ask for more, then one WhatsApp link.
 - **The bento's things** (`ShipObjects`, on every item tile): the things people send drawn in the
   round, as the doorstep's door is (plain SVG, after a reference: a 3D render of the bento):
   every surface its own gradient lit from the top left, matte, a soft blurred shadow in the

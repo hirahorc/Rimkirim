@@ -472,6 +472,7 @@ const id = {
         },
         stat: {
           lead: "Bea masuk",
+          figure: "0%",
           label: "untuk buku cetak lewat barang kiriman pribadi",
         },
         duty: {
@@ -730,28 +731,6 @@ const id = {
         doc1: "Paspor atau NPWP-mu",
         doc2: "Commercial invoice/packing list dengan nilai tiap barang",
         note: "Harga kami mencakup ongkos kirim. Bea dan pajak ditetapkan oleh Bea Cukai Indonesia dan ditagihkan terpisah. Tanpa NPWP, beberapa barang kena tarif PPh yang lebih tinggi.",
-      },
-      rates: {
-        title: "Yang kamu bayar untuk barang kiriman pribadi",
-        subtitle: "Tarif flat per kiriman sampai USD 1.500 (FOB), dihitung dari nilai isinya.",
-        what: "Isinya",
-        duty: "Bea masuk (BM)",
-        tax: "Pajak",
-        general: {
-          label: "Sebagian besar barang",
-          hint: "Elektronik, peralatan dapur, mainan, dan lainnya",
-          duty: "7,5%",
-          tax: "PPN 11%, tanpa PPh",
-        },
-        books: { label: "Buku", duty: "0%", tax: "PPN mungkin berlaku, tanpa PPh" },
-        regulated: { label: "Kosmetik, jam tangan, besi dan baja", duty: "15%", tax: "PPN 11% + PPh 5%" },
-        apparel: {
-          label: "Pakaian dan tekstil (termasuk seprai, handuk, gorden), tas, sepatu, dan sepeda",
-          duty: "25%",
-          tax: "PPN 11% + PPh 5%",
-        },
-        foot: "Di atas USD 1.500, berlaku tarif umum, ditambah PPN dan PPh. PPh bisa lebih tinggi tanpa NPWP.",
-        packing: "Setiap barang wajib dicantumkan di packing list beserta nilainya. Bea cukai yang menetapkan bea dan pajak finalnya.",
       },
       ask: "Belum yakin jalur mana yang cocok untukmu?",
       cta: "Tanya kami di WhatsApp",
@@ -2779,6 +2758,7 @@ const en: Messages = {
         },
         stat: {
           lead: "Import duty",
+          figure: "0%",
           label: "on printed books sent as a personal shipment",
         },
         duty: {
@@ -3033,28 +3013,6 @@ const en: Messages = {
         doc1: "Your passport or NPWP",
         doc2: "Commercial invoice/packing list with each item's value",
         note: "Our price covers shipping. Any duties and taxes are set by Indonesian Customs and charged separately. Without an NPWP, some items carry a higher income tax (PPh) rate.",
-      },
-      rates: {
-        title: "What you'll pay on a personal shipment",
-        subtitle: "Flat rates for each shipment up to USD 1,500 (FOB), on the value of what's inside.",
-        what: "What's inside",
-        duty: "Import duty (BM)",
-        tax: "Tax",
-        general: {
-          label: "Most things",
-          hint: "Electronics, kitchenware, toys and the rest",
-          duty: "7.5%",
-          tax: "11% VAT (PPN), no income tax (PPh)",
-        },
-        books: { label: "Books", duty: "0%", tax: "VAT (PPN) may apply, no income tax (PPh)" },
-        regulated: { label: "Cosmetics, watches, iron and steel", duty: "15%", tax: "11% VAT (PPN) + 5% income tax (PPh)" },
-        apparel: {
-          label: "Clothes and textiles (incl. bedding, towels, curtains), bags, shoes and bikes",
-          duty: "25%",
-          tax: "11% VAT (PPN) + 5% income tax (PPh)",
-        },
-        foot: "Over USD 1,500, standard tariffs apply instead, plus VAT (PPN) and income tax (PPh). Income tax can be higher without an NPWP.",
-        packing: "Every item must be listed in your packing list with its value. Customs sets the final duty and tax.",
       },
       ask: "Not sure which applies to you?",
       cta: "Ask us on WhatsApp",

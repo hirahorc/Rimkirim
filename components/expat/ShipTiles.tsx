@@ -115,7 +115,7 @@ export function ClothesPicture() {
 /*  Books: the one number                                              */
 /* ------------------------------------------------------------------ */
 
-/** the duty books pay, as the customs table states it, at a part's title
+/** the duty books pay as a personal shipment, at a part's title
  *  size (32): the tile's figure, a step over its 20px name and a step under
  *  the section's heading, where at 48 it outranked both. Page text, not a
  *  picture, so it's read as well as seen */
@@ -127,7 +127,7 @@ export function BooksStat() {
     <div className="pl-6 pr-[12rem] pt-6">
       <p className="text-sm font-medium text-tone-ink">{t("expat.ship.books.stat.lead")}</p>
       <p className="mt-1 whitespace-nowrap font-display text-heading font-medium tracking-tight text-tone-ink tabular-nums">
-        {t("expat.customs.rates.books.duty")}
+        {t("expat.ship.books.stat.figure")}
       </p>
       <p className="mt-1 text-sm text-muted">{t("expat.ship.books.stat.label")}</p>
     </div>
