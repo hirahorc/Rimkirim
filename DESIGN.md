@@ -640,7 +640,7 @@ The expat page runs:
 6. Pricing (band, violet)
 7. How it works (desk, magenta)
 8. What to expect at customs (band, magenta), once the reader has seen how a shipment runs
-9. FAQ (desk, neutral): on the content edge like the rest, the head and the way to ask in a
+9. FAQ (desk, neutral): on the content edge like the rest, the head and the way to ask (The ask) in a
    column of their own from `lg` (sticky; below `lg` the way to ask comes after the questions,
    where "still have a question?" belongs; the question is said in muted text and only "Ask us
    on WhatsApp" is the link), the questions beside it ruled one from the next,
@@ -1635,6 +1635,43 @@ eyebrow names the service right below.
   28px hit target on mouse and 44px on touch, `cursor: help`) opening an Ink bubble: white 14px text, 6px radius, small
   arrow, soft shadow, `max-width: 16rem`, above by default and shifted/flipped off the viewport
   edge. Motion 100ms in (lift + 0.95 scale) / 100ms out; opens on hover, focus, and tap.
+
+### The ask (`AskLine`, the expat landing)
+The landing leaves a question open in three places (Before you send, customs, the FAQ), and each
+closes on the same line: the question, then the way to ask a person. Audited on 2026-11-17, when
+the four asks (with the "Anything else" card's) were four anatomies: an icon on two, a lead on
+three, three labels ("Ask our team on WhatsApp", "Ask on WhatsApp", "Ask us on WhatsApp"); the
+customs link sat 4px over its question's baseline (an `inline-flex` whose first item was the
+icon), the icon outside the underline, and on a phone it wrapped to the next line's start like a
+bullet; and the customs ask stood 48px under a line that stood 16 under the cards, so it belonged
+to nothing. Rebuilt with one component and only these:
+
+| Type | Set in | For |
+| --- | --- | --- |
+| 14 / 20 | Geist 400 | the question |
+| 14 / 20 | Geist 500 | the link |
+
+| Space | Between |
+| --- | --- |
+| 8 | a card action's words and its arrow |
+| 16 | the rule that closes what it's about, and the ask |
+| 24 | a heading and the ask under it (the FAQ's head, from `lg`) |
+| 32 | a section's last line and the dashed rule over its ask |
+
+| Colour | Token | For |
+| --- | --- | --- |
+| Quiet ink | `--muted` (the chapter re-points it) | the question |
+| Link blue | `.link-mark` | the link, its underline at 45% |
+| Section rule | `--frame-line`, dashed (`.part-rule`) | over a section's ask |
+| Card rule | `--border` | over a card's action |
+
+The link says "Ask us on WhatsApp" everywhere (`expat.ask.cta`), never breaks inside itself, and
+carries no icon: it sits in a sentence, as every inline link on the page does. In a section it
+stands on the frame's dashed rule, 32 under the last line, 16 over it (Before you send,
+customs); in the FAQ it is the questions' foot on a phone (16 under their last rule) and the
+head's from `lg` (24 under the heading). A card's action is the other shape, alone on its
+line under the card's rule: its words, then where it goes, 8 after them, an arrow across
+staying on the site ("Check the price"), one up and out leaving it for WhatsApp.
 
 ### The comparison lane (signature)
 The expat "Why Rimkirim" table, Rimkirim against the typical options. It is a real table at

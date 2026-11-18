@@ -404,6 +404,8 @@ const id = {
   expat: {
     cta: "Cek tarifmu",
     headerHome: "Rimkirim Expat Relocation, kembali ke atas",
+    // every way to ask on the landing says the same thing (AskLine)
+    ask: { cta: "Tanya kami di WhatsApp" },
     footer: {
       tagline: "Kirim barang pribadimu ke Indonesia.",
       contacts: "Kontak",
@@ -530,7 +532,6 @@ const id = {
           value: "Beda tiap barang dan negara",
           body: "Bisa atau tidaknya tergantung jenis barangnya, dan aturannya berbeda di tiap negara.",
         },
-        cta: "Tanya tim kami di WhatsApp",
         wa: "Halo Rimkirim, saya relokasi ke Indonesia dan mau cek apakah barang ini bisa dikirim. Ini foto atau daftarnya:",
       },
       pack: {
@@ -604,7 +605,6 @@ const id = {
           vehicles: "Kendaraan bermotor",
         },
         ask: "Ragu soal sesuatu? Kirim foto atau daftarnya sebelum dikemas.",
-        cta: "Tanya di WhatsApp",
         wa: "Halo Rimkirim, saya relokasi ke Indonesia dan mau cek apakah barang ini bisa dikirim:",
       },
     },
@@ -733,7 +733,6 @@ const id = {
         note: "Harga kami mencakup ongkos kirim. Bea dan pajak ditetapkan oleh Bea Cukai Indonesia dan ditagihkan terpisah. Tanpa NPWP, beberapa barang kena tarif PPh yang lebih tinggi.",
       },
       ask: "Belum yakin jalur mana yang cocok untukmu?",
-      cta: "Tanya kami di WhatsApp",
       wa: "Halo Rimkirim, saya relokasi ke Indonesia. Bisa dicek barang saya bisa masuk lewat jalur mana: barang pindahan, barang penumpang, atau barang kiriman pribadi?",
     },
     steps: {
@@ -792,8 +791,7 @@ const id = {
     faq: {
       eyebrow: "FAQ",
       heading: "Pertanyaan umum sebelum mengirim",
-      waLead: "Masih ada pertanyaan?",
-      wa: "Tanya kami di WhatsApp",
+      ask: "Masih ada pertanyaan?",
     },
     closing: {
       heading: "Siap kirim barangmu ke Indonesia?",
@@ -2692,6 +2690,8 @@ const en: Messages = {
   expat: {
     cta: "Check your rate",
     headerHome: "Rimkirim Expat Relocation, back to top",
+    // every way to ask on the landing says the same thing (AskLine)
+    ask: { cta: "Ask us on WhatsApp" },
     footer: {
       tagline: "Shipping personal belongings to Indonesia.",
       contacts: "Contacts",
@@ -2816,7 +2816,6 @@ const en: Messages = {
           value: "Vary by item and country",
           body: "What can go depends on what it is, and the rules change from country to country.",
         },
-        cta: "Ask our team on WhatsApp",
         wa: "Hi Rimkirim, I'm relocating to Indonesia and want to check whether I can ship this. Here's a photo or a list:",
       },
       pack: {
@@ -2890,7 +2889,6 @@ const en: Messages = {
           vehicles: "Motor vehicles",
         },
         ask: "Not sure about something? Send us a photo or a list before you pack it.",
-        cta: "Ask on WhatsApp",
         wa: "Hi Rimkirim, I'm relocating to Indonesia and want to check whether I can ship this:",
       },
     },
@@ -3015,7 +3013,6 @@ const en: Messages = {
         note: "Our price covers shipping. Any duties and taxes are set by Indonesian Customs and charged separately. Without an NPWP, some items carry a higher income tax (PPh) rate.",
       },
       ask: "Not sure which applies to you?",
-      cta: "Ask us on WhatsApp",
       wa: "Hi Rimkirim, I'm relocating to Indonesia. Can you check which way my belongings can go: as relocation goods, passenger goods or a personal shipment?",
     },
     steps: {
@@ -3074,8 +3071,7 @@ const en: Messages = {
     faq: {
       eyebrow: "FAQ",
       heading: "Common questions before you ship",
-      waLead: "Still have a question?",
-      wa: "Ask us on WhatsApp",
+      ask: "Still have a question?",
     },
     closing: {
       heading: "Ready to ship your belongings to Indonesia?",

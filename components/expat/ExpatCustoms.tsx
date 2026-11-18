@@ -1,11 +1,11 @@
 "use client";
 
 import * as React from "react";
-import { ChevronDown, ChevronUp, FileText, MessageCircle } from "lucide-react";
+import { ChevronDown, ChevronUp, FileText } from "lucide-react";
 import { CollapseHeight } from "@/components/ui/disclosure";
 import { REVIEW_NOTES } from "@/lib/data/expat";
-import { waLink } from "@/lib/contact";
 import { useT } from "@/lib/i18n/LanguageProvider";
+import { AskLine } from "./AskLine";
 import { SectionHead } from "./SectionHead";
 import { ReviewNote } from "./ReviewNote";
 import { revealOrder as order, useSectionReveal } from "./useSectionReveal";
@@ -187,19 +187,14 @@ export function ExpatCustoms() {
           {t("expat.customs.extraDocs")}
         </p>
 
-        {/* the message arrives already asking the question, so the team
-            starts where the visitor is */}
-        <p className="jr-reveal mt-12 text-sm text-muted" style={order(5)}>
-          {t("expat.customs.ask")}{" "}
-          <a
-            href={waLink(t("expat.customs.wa"))}
-            target="_blank"
-            rel="noreferrer"
-            className="link-mark tap-row relative inline-flex items-start gap-2"
-          >
-            <MessageCircle aria-hidden className="mt-0.5 size-4 shrink-0" /> {t("expat.customs.cta")}
-          </a>
-        </p>
+        {/* the way to ask closes the section as Before you send's does: on
+            the frame's dashed rule, 32 under the last line, 16 over it */}
+        <AskLine
+          question={t("expat.customs.ask")}
+          message={t("expat.customs.wa")}
+          className="jr-reveal part-rule mt-8 border-t pt-4"
+          style={order(5)}
+        />
       </div>
     </section>
   );

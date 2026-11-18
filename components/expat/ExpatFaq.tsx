@@ -4,8 +4,8 @@ import * as React from "react";
 import { Disclosure } from "@/components/ui/disclosure";
 import { AnswerExtras } from "@/components/faq/AnswerExtras";
 import { REVIEW_NOTES, expatFaq } from "@/lib/data/expat";
-import { WA_URL } from "@/lib/contact";
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
+import { AskLine } from "./AskLine";
 import { SectionHead } from "./SectionHead";
 import { ReviewNote } from "./ReviewNote";
 
@@ -28,17 +28,10 @@ export function ExpatFaq() {
     return () => window.removeEventListener("hashchange", adoptHash);
   }, []);
 
-  // the way to ask: under the heading from lg, after the questions on a
-  // phone, where "still have a question?" before the first one read backwards
-  const ask = (
-    // the question is said, the way to ask is the link
-    <p className="text-sm text-muted">
-      {t("expat.faq.waLead")}{" "}
-      <a href={WA_URL} target="_blank" rel="noreferrer" className="link-mark tap-row relative">
-        {t("expat.faq.wa")}
-      </a>
-    </p>
-  );
+  // the way to ask: under the heading from lg (24, a group's step), the
+  // questions' foot on a phone (16 under their last rule), where "still
+  // have a question?" before the first one read backwards
+  const question = t("expat.faq.ask");
 
   return (
     // on the desk, as every section is: the questions read as a page of
@@ -53,18 +46,20 @@ export function ExpatFaq() {
           <ReviewNote note={REVIEW_NOTES.faq} className="mb-8" />
           <div className="lg:sticky lg:top-28">
             <SectionHead id="faq-heading" eyebrow={t("expat.faq.eyebrow")} title={t("expat.faq.heading")} compact />
-            <div className="mt-6 hidden lg:block">{ask}</div>
+            <AskLine question={question} className="mt-6 hidden lg:block" />
           </div>
         </div>
-        <div className="divide-y divide-border border-y border-border">
-          {expatFaq(locale).map((f) => (
-            <Disclosure key={f.q} id={f.slug} question={f.q} strong>
-              <p>{f.a}</p>
-              <AnswerExtras rows={f.rows} after={f.after} cta={f.cta} />
-            </Disclosure>
-          ))}
+        <div>
+          <div className="divide-y divide-border border-y border-border">
+            {expatFaq(locale).map((f) => (
+              <Disclosure key={f.q} id={f.slug} question={f.q} strong>
+                <p>{f.a}</p>
+                <AnswerExtras rows={f.rows} after={f.after} cta={f.cta} />
+              </Disclosure>
+            ))}
+          </div>
+          <AskLine question={question} className="mt-4 lg:hidden" />
         </div>
-        <div className="lg:hidden">{ask}</div>
       </div>
     </section>
   );

@@ -3,6 +3,7 @@
 import * as React from "react";
 import {
   ArrowRight,
+  ArrowUpRight,
   Ban,
   Banknote,
   Bomb,
@@ -14,7 +15,6 @@ import {
   Flame,
   Gem,
   Laptop,
-  MessageCircle,
   Pill,
   ShieldAlert,
   Sofa,
@@ -29,6 +29,7 @@ import { EXPAT_QUOTE_URL, REVIEW_NOTES } from "@/lib/data/expat";
 import { waLink } from "@/lib/contact";
 import { useT } from "@/lib/i18n/LanguageProvider";
 import { cn } from "@/lib/utils/cn";
+import { AskLine } from "./AskLine";
 import { SectionHead } from "./SectionHead";
 import { ReviewNote } from "./ReviewNote";
 import { ShipArt } from "./ShipArt";
@@ -315,21 +316,23 @@ export function WhatYouCanShip() {
                             </div>
                           ))}
                         </dl>
+                        {/* the card's one action, 16 under its rule: its words,
+                            then where it goes, 8 after them. An arrow on
+                            across stays on the site, one up and out leaves
+                            it for WhatsApp, with the message already typed */}
                         <div className="mt-6 border-t border-border pt-4">
                           {action === "price" ? (
                             <a href={EXPAT_QUOTE_URL} className="link-mark tap-row relative inline-flex items-center gap-2 text-sm">
                               {t("expat.ship.price")} <ArrowRight aria-hidden className="size-4 shrink-0" />
                             </a>
                           ) : (
-                            // the message arrives already saying what it's
-                            // about, so the team starts where the visitor is
                             <a
                               href={waLink(k("wa"))}
                               target="_blank"
                               rel="noreferrer"
-                              className="link-mark tap-row relative inline-flex items-start gap-2 text-sm"
+                              className="link-mark tap-row relative inline-flex items-center gap-2 text-sm"
                             >
-                              <MessageCircle aria-hidden className="mt-0.5 size-4 shrink-0" /> {k("cta")}
+                              {t("expat.ask.cta")} <ArrowUpRight aria-hidden className="size-4 shrink-0" />
                             </a>
                           )}
                         </div>
@@ -491,17 +494,11 @@ export function WhatYouCanShip() {
                 ))}
               </ul>
             </div>
-            <p className="part-rule mt-8 border-t pt-4 text-sm text-muted lg:col-span-2">
-              {t("expat.ship.before.ask")}{" "}
-              <a
-                href={waLink(t("expat.ship.before.wa"))}
-                target="_blank"
-                rel="noreferrer"
-                className="link-mark whitespace-nowrap"
-              >
-                {t("expat.ship.before.cta")}
-              </a>
-            </p>
+            <AskLine
+              question={t("expat.ship.before.ask")}
+              message={t("expat.ship.before.wa")}
+              className="part-rule mt-8 border-t pt-4 lg:col-span-2"
+            />
           </div>
         </div>
       </div>
