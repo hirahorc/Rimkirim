@@ -19,13 +19,23 @@ colors:
   warning: "hsl(22 95% 52%)" # ≈ #fb5a0f, orange not amber: tinted amber read as cardboard
   danger: "hsl(360 100% 45%)" # ≈ #e60000
   info: "hsl(210 92% 45%)" # ≈ #0973dc
-  accent: "#9c26f5" # Move Purple: "your move" surfaces, inline links, the Expat nav
+  # status ink: the hue darkened to clear 4.5:1 as 12px words on its own 15% tint
+  success-ink: "color-mix(in srgb, hsl(140 100% 27%) 80%, black)"
+  warning-ink: "color-mix(in srgb, hsl(22 95% 52%) 68%, black)"
+  danger-ink: "color-mix(in srgb, hsl(360 100% 45%) 80%, black)"
+  info-ink: "color-mix(in srgb, hsl(210 92% 45%) 80%, black)"
+  # inline links (.link-mark); 80% toward black on a band or a section's ground, Ink inside the expat order flow
+  link: "color-mix(in srgb, hsl(210 92% 45%) 92%, black)"
+  accent: "#9c26f5" # Move Purple: "your move" surfaces
   accent-ink: "color-mix(in srgb, #9c26f5 80%, black)"
   # expat chapter tones (data-tone): hue / wash / tone-ink, see The Chapter Rule
   expat-sky: "#21b1ec" # wash #c8e8fb, ink #0e668a
   expat-violet: "#7a66e9" # wash #dfdefd, ink #5c4db3
-  expat-magenta: "#d41ce6" # wash #fadafc, ink #a213b0, deep #690873 (soft #f5befa) for the customs path cards
-  dusk: "#4a1e67" # the expat ticket; dusk-soft #ead6fc for its secondary words
+  expat-magenta: "#d41ce6" # wash #fadafc, ink #a213b0
+  expat-magenta-deep: "#690873" # the customs path cards' fill (.deep-panel), white words on it
+  expat-magenta-deep-soft: "#f5befa" # labels, small print and icons on the deep fill
+  dusk: "#4a1e67" # the expat ticket
+  dusk-soft: "#ead6fc" # the ticket's secondary words
 typography:
   display:
     fontFamily: "Space Grotesk, Geist, sans-serif"
@@ -75,6 +85,18 @@ typography:
     fontWeight: 500
     lineHeight: 1.3
     letterSpacing: "0.02em"
+  expat-heading:
+    fontFamily: "Space Grotesk, Geist, sans-serif"
+    fontSize: "2rem"
+    fontWeight: 700
+    lineHeight: 1.25
+    letterSpacing: "-0.025em"
+  expat-display:
+    fontFamily: "Space Grotesk, Geist, sans-serif"
+    fontSize: "3rem"
+    fontWeight: 700
+    lineHeight: 1.0833
+    letterSpacing: "-0.025em"
   mono:
     fontFamily: "Geist Mono, ui-monospace, SFMono-Regular, Menlo, monospace"
     fontSize: "0.875rem"
@@ -84,20 +106,21 @@ typography:
     fontFeature: "tabular-nums"
 rounded:
   mark: "0.12em"
+  2xs: "0.25rem"
   xs: "0.5rem"
   sm: "0.75rem"
   md: "1rem"
   lg: "1.75rem"
   full: "9999px"
 spacing:
+  2xs: "4px"
   xs: "8px"
   sm: "12px"
   md: "16px"
   lg: "20px"
   xl: "24px"
-shadow:
-  float: "0 4px 24px rgba(0, 0, 0, 0.06)"
-  overlay: "0 16px 48px -12px rgba(0, 0, 0, 0.18)"
+  2xl: "32px"
+  3xl: "48px"
 components:
   button-primary:
     backgroundColor: "{colors.brand}"
@@ -126,6 +149,26 @@ components:
     rounded: "{rounded.md}"
     height: "2.5rem"
     padding: "0 1rem"
+  button-danger:
+    backgroundColor: "color-mix(in srgb, hsl(360 100% 45%) 15%, transparent)"
+    textColor: "{colors.danger}"
+    rounded: "{rounded.md}"
+    height: "2.5rem"
+    padding: "0 1rem"
+  button-quiet:
+    backgroundColor: "{colors.background}"
+    textColor: "{colors.foreground}"
+    rounded: "{rounded.md}"
+    height: "2.5rem"
+    padding: "0 1rem"
+  button-action:
+    backgroundColor: "{colors.background}"
+    textColor: "{colors.foreground}"
+    rounded: "{rounded.sm}"
+    height: "2rem"
+    padding: "0 0.75rem"
+  link:
+    textColor: "{colors.link}"
   card:
     backgroundColor: "{colors.surface}"
     textColor: "{colors.foreground}"
@@ -146,7 +189,6 @@ components:
     backgroundColor: "{colors.background}"
     textColor: "{colors.foreground}"
     rounded: "{rounded.md}"
-    shadow: "{shadow.float}"
 ---
 
 # Design System: Rimkirim
@@ -218,8 +260,9 @@ A daylight field with one electric accent and a small, disciplined status set.
   toward black.
 - **Move Purple** (`#9c26f5`, `--accent`): the second sanctioned colour. Where lime says *press
   this*, purple says *this waits on you* — the attention banner, the "perlu tindakan kamu" strip,
-  the docs-to-upload strip, the quotation-pending chip, the in-progress module tile. It is also
-  the inline link hue and the Expat nav gradient's far end, so the two jobs share one family.
+  the docs-to-upload strip, the quotation-pending chip, the in-progress module tile. It is not a
+  link colour (links are blue, The Marker Rule) and no longer ends the Expat nav, whose gradient
+  now walks the chapters, sky to magenta.
   Ink at 80% toward black (`--accent-ink`) for words on its own tint.
 
 ### Expat chapters (the expat landing only)
@@ -377,7 +420,7 @@ link blue (`.link-mark`) so they read as links at a glance. This is the load-bea
 light system.
 
 **The No-Gradient Rule.** Surfaces are solid fills. No gradient backgrounds, no ambient glows, no
-glass blur used as *decoration*. Depth comes from panels, hairlines, and the two sanctioned shadows.
+glass blur used as *decoration*. Depth comes from panels, hairlines, and the three sanctioned shadows.
 The one sanctioned translucency is functional: sticky chrome (the header capsule) is
 `bg-background/85` + `backdrop-blur-xl` so the page reads legibly as it scrolls underneath — an
 effect doing a specific job, not a texture.
@@ -655,17 +698,20 @@ hairline border. On daylight, tonal steps alone are subtle, so **the 1px hairlin
 depth device** — more load-bearing here than it was on black.
 
 ### Shadow Vocabulary
-Exactly two shadows exist. Anything else is a tonal step or a hairline.
+Exactly three shadows exist. Anything else is a tonal step or a hairline.
 - **Float** (`0 4px 24px rgba(0,0,0,0.06)` — `shadow-float`): For chrome that lifts off its own
   track: the header capsule, the selected segment in a segmented control or tab list, the active
   language pill. A lift cue, not decoration.
 - **Overlay** (`0 16px 48px -12px rgba(0,0,0,0.18)` — `shadow-overlay`): For portalled surfaces
   that must separate from the whole page behind them: dialogs, the mobile sheet, popovers,
-  tooltips, and the landing calculator. Deeper than Float because it has more to clear.
+  and the landing calculator. Deeper than Float because it has more to clear.
+- **Tip** (`0 4px 12px -2px rgba(16,24,40,0.16), 0 2px 4px -2px rgba(16,24,40,0.1)` —
+  `shadow-tip`): the tooltip's Ink bubble only. Small and close, as a bubble a few words long
+  needs; Overlay's 48px spread would read as a dialog.
 
 ### Named Rules
 **The Flat-By-Default Rule.** Surfaces are flat at rest. Elevation is only ever `shadow-float` on
-lifted chrome or `shadow-overlay` on a portalled surface. If you reach for a drop shadow to
+lifted chrome, `shadow-overlay` on a portalled surface, or `shadow-tip` under a tooltip. If you reach for a drop shadow to
 separate two things in the page flow, use a tonal step or a hairline instead.
 
 **The Light-Scrim Rule.** Modal scrims are `bg-foreground/25` with a light backdrop blur. A
