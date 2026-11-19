@@ -16,7 +16,7 @@ import { bookingFacts } from "./booking-facts";
 import { BookingHead } from "./BookingHead";
 import { CustomsPaths } from "./CustomsPaths";
 import { FlowLoading } from "./FlowLoading";
-import { Fold, TYPE } from "./kit";
+import { Fold, InspectLink, TYPE } from "./kit";
 import { clearJustBooked, justBooked } from "./visit";
 
 /** how many packages the summary lists before it folds the rest */
@@ -218,6 +218,12 @@ export function BookingView({ number }: { number: string }) {
                         : bk("packagesAll").replace("{n}", String(f.packing.packages.length))}
                     </button>
                   )}
+                  {/* that any of them can be opened, said with them, quiet
+                      as the packing reminder above it is; not a step of
+                      What happens next, which stays three */}
+                  <p className="mt-2 text-xs text-muted">
+                    {bk("inspection")} <InspectLink />
+                  </p>
                 </Row>
               )}
               <Row label={bk("pickup")}>

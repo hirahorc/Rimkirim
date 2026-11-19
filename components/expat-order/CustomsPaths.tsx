@@ -4,7 +4,7 @@ import { FileText } from "lucide-react";
 import { CUSTOMS_ROUTES } from "@/components/expat/ExpatCustoms";
 import { useT } from "@/lib/i18n/LanguageProvider";
 import { cn } from "@/lib/utils/cn";
-import { Fold, TYPE } from "./kit";
+import { Fold, InspectLink, TYPE } from "./kit";
 
 /**
  * The three Customs Paths inside the order flow: each path's name, who it's
@@ -15,9 +15,11 @@ import { Fold, TYPE } from "./kit";
  * give away the internal Customs Category (docs/adr/0002). It ends on the
  * promise that ops recommends a path at review and the choice stays the
  * customer's. `lead` off where a dialog's description says it already
- * (CustomsGuide, on the plan).
+ * (CustomsGuide, on the plan); `inspection` on where nothing else on the
+ * screen says a package can be opened (the guide; the Booking Summary says
+ * it with its packages).
  */
-export function CustomsBody({ lead = true }: { lead?: boolean }) {
+export function CustomsBody({ lead = true, inspection = false }: { lead?: boolean; inspection?: boolean }) {
   const t = useT();
   return (
     <>
@@ -55,6 +57,11 @@ export function CustomsBody({ lead = true }: { lead?: boolean }) {
         })}
       </ul>
       <p className="mt-4 text-sm text-muted">{t("expat.customs.extraDocs")}</p>
+      {inspection && (
+        <p className="mt-2 text-sm text-muted">
+          {t("expatOrder.customs.inspection")} <InspectLink />
+        </p>
+      )}
       <p className="mt-2 text-sm text-muted">{t("expatOrder.customs.close")}</p>
     </>
   );

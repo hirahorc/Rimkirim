@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { ChevronDown, ChevronUp, Ruler } from "lucide-react";
+import { ChevronDown, ChevronUp, PackageSearch, Ruler } from "lucide-react";
 import { PlusIcon, TrashIcon, XMarkIcon } from "@heroicons/react/16/solid";
 import { Button } from "@/components/ui/button";
 import { SelectField } from "@/components/ui/select-field";
@@ -34,7 +34,7 @@ import {
 import { formatNumber } from "@/lib/utils/currency";
 import { useT } from "@/lib/i18n/LanguageProvider";
 import { cn } from "@/lib/utils/cn";
-import { ACTION, Done, Field, Note, PRESS, QUIET, TYPE, Well, Worn } from "./kit";
+import { ACTION, Done, Field, InspectLink, Note, PRESS, QUIET, TYPE, Well, Worn } from "./kit";
 
 /** digits and one decimal point, a comma read as one */
 function decimal(s: string): string {
@@ -156,6 +156,16 @@ export function PackingStep({
         </span>
         {p("guess")}
       </p>
+
+      {/* that any package can be opened, told once, where what's in them is
+          listed: the list is what an inspection checks, so the worry comes
+          with the one thing to do about it. Told, as the plan's other
+          notes are, in the quiet note, never the colour of a warning */}
+      <Note icon={PackageSearch} title={p("inspectTitle")}>
+        <p className="mt-1 text-muted">
+          {p("inspectBody")} <InspectLink />
+        </p>
+      </Note>
 
       {/* before the packages: every value typed in them wears it */}
       <Field label={p("currency")}>

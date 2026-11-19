@@ -38,6 +38,9 @@ export interface ExpatFaq extends AnswerExtras {
  * Booking Summary. Above the FAQ, which links to it.
  */
 export const EXPAT_QUOTE_URL = "/expat-relocation/rates";
+/** the whole answer on packages being opened, until a page of its own is
+ *  written: the FAQ's, which opens itself at its slug (ExpatFaq) */
+export const EXPAT_INSPECTION_URL = "/expat-relocation#faq-inspection";
 
 const FAQ: ExpatFaqSource[] = [
   {
@@ -96,6 +99,16 @@ const FAQ: ExpatFaqSource[] = [
     a: {
       id: "Tergantung jalurnya. Sebagai barang pindahan, dengan ITAS kerja atau belajar 12 bulan atau lebih, barang rumah tanggamu bebas bea masuk tanpa batas nilai. Sebagai barang penumpang yang dikirim terpisah, USD 500 pertama per orang per kedatangan bebas, dan kelebihannya kena bea masuk 10% plus PPN. Sebagai barang kiriman pribadi tidak ada pembebasan: sampai USD 1.500, tarif flat dari 0% (buku cetak) sampai 25% (pakaian, tas, dan alas kaki), plus PPN, dan tanpa NPWP beberapa barang kena tarif PPh yang lebih tinggi. Harga kami mencakup ongkos kirim; bea dan pajak ditetapkan oleh Bea Cukai Indonesia dan ditagihkan terpisah. Kamu tidak perlu memilih jalur sekarang: saat mereview pesananmu, kami tunjukkan jalur yang paling menguntungkan, dan keputusannya di kamu. Dari packing list-mu, kami beri tahu barang yang kemungkinan kena pajak, supaya bisa kamu keluarkan kalau mau.",
       en: "It depends on the route. As relocation goods, with a work or study ITAS of 12 months or more, your household things are duty-free with no value limit. As passenger goods sent separately, the first USD 500 per person per arrival is free, and the amount above it pays 10% duty plus VAT. As a personal shipment there's no duty-free allowance: up to USD 1,500, flat rates from 0% (printed books) to 25% (clothes, bags and shoes), plus VAT, and without an NPWP some items carry a higher income tax rate. Our price covers shipping; any duties and taxes are set by Indonesian Customs and charged separately. You don't need to choose a way now: when we review your booking, we'll point out the one that saves you the most, and the choice is yours. From your packing list, we tell you what's likely to be taxed, so you can leave it out if you'd rather.",
+    },
+  },
+  {
+    // the order flow links here (EXPAT_INSPECTION_URL): what happens when a
+    // package is opened, from Hira (2026-11-18), until ops writes it in full
+    slug: "faq-inspection",
+    q: { id: "Apakah paket saya bisa dibuka?", en: "Can my packages be opened?" },
+    a: {
+      id: "Bisa, paket mana pun. Setiap kiriman melewati Bea Cukai Indonesia, dan kalau hasil X-ray sebuah paket perlu dilihat lebih dekat, Bea Cukai bisa meminta pemeriksaan fisik. Mitra logistik kami lalu membuka paketnya di bawah pengawasan petugas Bea Cukai, mencocokkan isinya dengan packing list-mu, lalu menutupnya kembali. Kalau ada barang yang rusak dalam proses ini, kamu bisa mengajukan klaim selama memenuhi syarat klaim kami. Kemas setiap paket supaya bisa dibuka dan ditutup lagi, dan cantumkan setiap barang beserta nilainya.",
+      en: "Yes, any package can be. Every shipment clears Indonesian Customs, and when a package's X-ray shows something customs wants to see up close, it can ask for a physical inspection. Our logistics partner then opens the package under a customs officer's supervision, checks what's inside against your packing list, and closes it again. If anything is damaged in the process, you can claim for it, as long as your claim meets our claim requirements. Pack each package so it can be opened and closed again, and list every item with its value.",
     },
   },
   {
@@ -239,5 +252,5 @@ export const REVIEW_NOTES = {
     "Section 07 (contoh pengiriman nyata) disembunyikan sampai ada contoh asli: asal, jenis barang, komentar, foto. Isi SHIPMENT_EXAMPLES di lib/data/expat.ts.",
   closing:
     "Tiap langkah 'What happens next' menampilkan layar order flow yang asli, digambar oleh komponennya sendiri dengan data contoh: kartu Special Rate dari Inggris untuk 30 kg (tarif dummy), pertanyaan pertama Eligibility Check, dan kepala tiket Booking Summary dengan nomor dan email contoh.",
-  faq: "Brief: semua jawaban wajib disetujui Rimkirim, terutama bea cukai & pengantaran. Revisi 17 Nov 2026: 'How long' mengikuti infografis ETA dari tim OPS (sama dengan FAQ /faq): transit 4–8 hari, clearance 4–10 hari kerja, lalu pengantaran domestik per daerah dalam tabel, dijumlahkan; berlaku untuk kiriman dari Eropa, Australia dan Selandia Baru, Amerika, dan enam negara Asia, dan dari negara lain pembaca diarahkan ke Check Rate ('Check the ETA from your country'). Tabel diurutkan dari yang tercepat (urutan infografis berbeda), dan 'Jawa' di infografis berarti di luar Jabodetabek. 'By air' dan kalimat 'estimasi tampil saat cek tarif' dihapus: infografis tidak menyebut moda, dan Check Rate hanya menampilkan waktu transit.",
+  faq: "Brief: semua jawaban wajib disetujui Rimkirim, terutama bea cukai & pengantaran. Revisi 17 Nov 2026: 'How long' mengikuti infografis ETA dari tim OPS (sama dengan FAQ /faq): transit 4–8 hari, clearance 4–10 hari kerja, lalu pengantaran domestik per daerah dalam tabel, dijumlahkan; berlaku untuk kiriman dari Eropa, Australia dan Selandia Baru, Amerika, dan enam negara Asia, dan dari negara lain pembaca diarahkan ke Check Rate ('Check the ETA from your country'). Tabel diurutkan dari yang tercepat (urutan infografis berbeda), dan 'Jawa' di infografis berarti di luar Jabodetabek. 'By air' dan kalimat 'estimasi tampil saat cek tarif' dihapus: infografis tidak menyebut moda, dan Check Rate hanya menampilkan waktu transit. Draft 18 Nov 2026: 'Can my packages be opened?' ditulis dari info Hira, sebelum info lengkap OPS: yang membuka paket adalah 3PL atas rekomendasi Bea Cukai (biasanya setelah ada kejanggalan di X-ray) dan diawasi Bea Cukai; 3PL juga yang menutup kembali; Rimkirim tidak mendampingi pemeriksaan; kerusakan bisa diklaim selama memenuhi syarat klaim. Belum ada halaman lengkap, jadi link 'How inspections work' di order flow mengarah ke jawaban ini (#faq-inspection).",
 } as const;

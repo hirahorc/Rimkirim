@@ -165,7 +165,7 @@ export function CustomsGuide({ children }: { children: React.ReactNode }) {
             <DialogDescription>{c("lead")}</DialogDescription>
           </DialogHeader>
           <DialogBody>
-            <CustomsBody lead={false} />
+            <CustomsBody lead={false} inspection />
           </DialogBody>
           <DialogFooter>
             <DialogClose asChild>

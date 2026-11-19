@@ -1,5 +1,6 @@
 import type * as React from "react";
 import { WA_URL } from "@/lib/contact";
+import { EXPAT_INSPECTION_URL } from "@/lib/data/expat";
 import type { BookingFacts } from "./booking-facts";
 
 type T = (path: string) => string;
@@ -17,6 +18,9 @@ const DUSK_SOFT = "#ead6fc";
 const OFFER_RED = "#b80000";
 const OFFER_TINT = "#fde8e8";
 const OFFER_LINE = "#f38c8c";
+/** an email's links leave the site, so they're whole: the live domain
+ *  (docs/expat-order-flow.md, Stand-ins) */
+const SITE = "https://rimkirim.com";
 const FONT = "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif";
 
 function Row({ label, children }: { label: string; children: React.ReactNode }) {
@@ -117,6 +121,13 @@ export function BookingEmail({ facts: f, t }: { facts: BookingFacts; t: T }) {
                                 <span style={{ color: MUTED }}>{pk.items.map((it) => `${it.name} × ${it.quantity}`).join(", ")}</span>
                               </span>
                             ))}
+                            <br />
+                            <span style={{ color: MUTED, fontSize: 12 }}>
+                              {bk("inspection")}{" "}
+                              <a href={`${SITE}${EXPAT_INSPECTION_URL}`} style={{ color: DUSK, fontWeight: 600 }}>
+                                {t("expatOrder.inspectLink")}
+                              </a>
+                            </span>
                           </Row>
                         )}
                         <Row label={bk("pickup")}>{f.pickup}</Row>

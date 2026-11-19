@@ -1979,7 +1979,14 @@ press. A link inside a sentence ("check your rate again") stays a link: it goes 
   it's charged on, and the items, each a row of three fields that wear what they are (the name's
   example, "Qty", the currency and "each"), so no label repeats down the list; a phone sets the
   name over the other two. There are no
-  measurement photos. "Add a package" is a quiet button across the card. The values' currency is
+  measurement photos. "Add a package" is a quiet button across the card. Over the currency, once
+  for every package, the quiet note (`Note`, a package with a magnifier) says any package can be
+  opened for inspection (2026-11-18): there, because the list is what an inspection checks it
+  against, so the worry comes with the one thing to do about it, and never in a warning's colour.
+  It ends on "How inspections work", out to the landing FAQ's answer (`EXPAT_INSPECTION_URL`)
+  until a page of its own is written; the customs guide's foot and the Booking Summary's
+  packages (and its email) say it in a line with the same link, and nothing else in the flow
+  does. The values' currency is
   chosen above the packages, with no hint under it (every value typed in a package wears it,
   so it comes first); the totals (packages, chargeable weight, declared value) sit
   below the list; the price never

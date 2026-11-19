@@ -102,6 +102,8 @@ const id = {
   expatOrder: {
     help: "Butuh bantuan?",
     helpWa: "Halo Rimkirim, saya sedang memesan relokasi ke Indonesia dan punya pertanyaan.",
+    // the way to the whole answer on packages being opened (EXPAT_INSPECTION_URL)
+    inspectLink: "Cara pemeriksaan berjalan",
     rates: {
       title: "Cek tarifmu",
       subtitle: "Ceritakan dari mana dan ke mana kamu pindah, dan kira-kira berapa beratnya. Estimasinya langsung muncul.",
@@ -244,6 +246,7 @@ const id = {
       lead: "Ada tiga jalur, masing-masing dengan dokumen yang dibutuhkan.",
       needed: "Dokumen yang dibutuhkan",
       close: "Tidak perlu memilih sekarang. Saat mereview pesananmu, kami tunjukkan jalur yang paling menguntungkan dan dokumen yang dibutuhkan. Keputusannya tetap di kamu.",
+      inspection: "Bea Cukai juga bisa meminta paket mana pun dibuka untuk diperiksa.",
       gotIt: "Oke, paham",
       reopen: "Buka lagi di sini, kapan saja.",
     },
@@ -302,6 +305,8 @@ const id = {
       checkedKg: "Di Check Rate {kg} kg",
       estimatePacked: "Estimasimu kini memakai berat ini. Harga final ada di invoice.",
       estimateNoSpecial: "Special Rate mulai dari {min} kg, jadi estimasimu tetap di {kg} kg.",
+      inspectTitle: "Paket mana pun bisa dibuka untuk diperiksa",
+      inspectBody: "Kalau hasil X-ray-nya perlu dilihat lebih dekat, Bea Cukai bisa meminta paket dibuka dan dicocokkan dengan daftar ini. Cantumkan setiap barang beserta nilainya, supaya yang ditemukan sesuai dengan yang kamu deklarasikan.",
       required: "Wajib diisi.",
       aboveZero: "Lebih dari 0.",
     },
@@ -372,6 +377,7 @@ const id = {
       next3Title: "Kami menjemput barangmu",
       next3Body: "Pada {date}, di alamat asal kirimanmu. Pastikan semua sudah terkemas.",
       nextInvoice: "Invoice-mu menyusul, setelah barangmu tiba di gudang kami di Indonesia. Di sana tertera harga finalmu.",
+      inspection: "Paket mana pun bisa dibuka untuk pemeriksaan Bea Cukai selama perjalanan.",
       help: "Ada pertanyaan?",
       helpCta: "Chat dengan kami di WhatsApp",
       helpWa: "Halo Rimkirim, saya punya pertanyaan tentang pesanan {number}.",
@@ -2388,6 +2394,8 @@ const en: Messages = {
   expatOrder: {
     help: "Need help?",
     helpWa: "Hi Rimkirim, I'm booking my relocation to Indonesia and have a question.",
+    // the way to the whole answer on packages being opened (EXPAT_INSPECTION_URL)
+    inspectLink: "How inspections work",
     rates: {
       title: "Check your rate",
       subtitle: "Tell us where you're relocating from and to, and roughly what it all weighs. You'll see an estimate straight away.",
@@ -2530,6 +2538,7 @@ const en: Messages = {
       lead: "There are three ways in, each with the documents it needs.",
       needed: "Documents needed",
       close: "No need to choose now. When we review your booking, we'll point out the one that saves you the most and what it needs. The choice is yours.",
+      inspection: "Customs can also have any package opened for inspection.",
       gotIt: "Got it",
       reopen: "Open this again here, any time.",
     },
@@ -2588,6 +2597,8 @@ const en: Messages = {
       checkedKg: "You checked {kg} kg",
       estimatePacked: "Your estimate uses this weight now. Your invoice has the final price.",
       estimateNoSpecial: "The Special Rate starts at {min} kg, so your estimate stays at {kg} kg.",
+      inspectTitle: "Any package can be opened for inspection",
+      inspectBody: "If its X-ray needs a closer look, customs can have a package opened and checked against this list. List every item and its value, so what's found matches what you declared.",
       required: "Required.",
       aboveZero: "More than 0.",
     },
@@ -2658,6 +2669,7 @@ const en: Messages = {
       next3Title: "We pick up your belongings",
       next3Body: "On {date}, at the address you're shipping from. Have everything packed by then.",
       nextInvoice: "Your invoice comes later, once your belongings have arrived at our warehouse in Indonesia. It shows your final price.",
+      inspection: "Any package can be opened for a customs inspection along the way.",
       help: "Questions?",
       helpCta: "Chat with us on WhatsApp",
       helpWa: "Hi Rimkirim, I have a question about my booking {number}.",

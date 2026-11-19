@@ -1,8 +1,10 @@
 "use client";
 
 import * as React from "react";
-import { Check, ChevronDown, ChevronUp, CircleAlert, Info, type LucideIcon } from "lucide-react";
+import { ArrowUpRight, Check, ChevronDown, ChevronUp, CircleAlert, Info, type LucideIcon } from "lucide-react";
 import { CollapseHeight } from "@/components/ui/disclosure";
+import { EXPAT_INSPECTION_URL } from "@/lib/data/expat";
+import { useT } from "@/lib/i18n/LanguageProvider";
 import { cn } from "@/lib/utils/cn";
 
 /**
@@ -194,6 +196,24 @@ export function Note({
         {children}
       </div>
     </div>
+  );
+}
+
+/** the way to the whole answer on packages being opened, closing the line
+ *  that says they can be: a new tab, so the draft stays where it is, with
+ *  the arrow up and out every way from the flow to the landing wears */
+export function InspectLink() {
+  const t = useT();
+  return (
+    <a
+      href={EXPAT_INSPECTION_URL}
+      target="_blank"
+      rel="noreferrer"
+      className="link-mark tap-row relative inline-flex items-center gap-1"
+    >
+      {t("expatOrder.inspectLink")}
+      <ArrowUpRight aria-hidden className="size-3.5" />
+    </a>
   );
 }
 
