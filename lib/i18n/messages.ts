@@ -1084,7 +1084,7 @@ const id = {
   footer: {
     tagline: "International Moving Assistant",
     address:
-      "Jl. Jambu Blok FA 5 No. 15, Menteng Bintaro, Bintaro Jaya Sektor 7, South Tangerang, Banten, 15412",
+      "Jl. Garuda Blok D1 No. 4B RT.13/RW.8, Bintaro, Kec. Pesanggrahan, Kota Jakarta Selatan, Daerah Khusus Ibukota Jakarta 12330",
     colLayanan: "Layanan",
     colPerusahaan: "Perusahaan",
     colBantuan: "Bantuan",
@@ -3364,7 +3364,7 @@ const en: Messages = {
   footer: {
     tagline: "International Moving Assistant",
     address:
-      "Jl. Jambu Blok FA 5 No. 15, Menteng Bintaro, Bintaro Jaya Sektor 7, South Tangerang, Banten, 15412",
+      "Jl. Garuda Blok D1 No. 4B RT.13/RW.8, Bintaro, Kec. Pesanggrahan, Kota Jakarta Selatan, Daerah Khusus Ibukota Jakarta 12330",
     colLayanan: "Services",
     colPerusahaan: "Company",
     colBantuan: "Help",
