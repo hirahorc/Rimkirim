@@ -47,7 +47,7 @@ What the flow says back is in DESIGN.md (The expat order flow, "The plan's one a
 | Ticket registration | pushed into localStorage | the internal system's API | `submit()` in `useExpatOrderStore.ts` |
 | Confirmation email | previewed in the simulator only | the mail service; the template is email-safe HTML (tables, inline styles) | `components/expat-order/BookingEmail.tsx` |
 | Booking number | `RK` + 8 characters, made in the browser | issued by the server | `lib/utils/order-ids.ts` |
-| Inspection info | "Any package can be opened for inspection" on the Packages, the customs guide, the Booking Summary and its email, each linking to the landing FAQ's answer (`#faq-inspection`); the facts are Hira's draft (2026-11-18), not ops' yet; the email's link is absolute to `https://rimkirim.com` | the full inspection page once it's written, with ops' facts; the live domain and route | `EXPAT_INSPECTION_URL` in `lib/data/expat.ts`; `SITE` in `BookingEmail.tsx` |
+| Inspection info | "Any package can be opened for inspection" on the Packages, the customs guide, the Booking Summary and its email, each linking to the landing FAQ (`#faq-inspection`, the first of three questions); the facts are ops' brief "Pemeriksaan Fisik Barang Impor" (2026-11-20; air couriers only, Rimkirim relays customs' questions, storage fees billed to the customer) with Hira's on closing the package and claims; the email's link is absolute to `https://rimkirim.com` | the full inspection page once it's written, with ops' facts; the live domain and route | `EXPAT_INSPECTION_URL` in `lib/data/expat.ts`; `SITE` in `BookingEmail.tsx` |
 
 ## The Customs Category rule (dummy, for ops to confirm)
 

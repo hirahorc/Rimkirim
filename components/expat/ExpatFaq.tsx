@@ -54,6 +54,15 @@ export function ExpatFaq() {
             {expatFaq(locale).map((f) => (
               <Disclosure key={f.q} id={f.slug} question={f.q} strong>
                 <p>{f.a}</p>
+                {/* a few points the paragraph leads into, plain bullets in
+                    the answer's ink (not /faq's ticks: these aren't a checklist) */}
+                {f.list && (
+                  <ul className="mt-2 list-disc space-y-1 pl-5 marker:text-muted">
+                    {f.list.map((x) => (
+                      <li key={x}>{x}</li>
+                    ))}
+                  </ul>
+                )}
                 <AnswerExtras rows={f.rows} after={f.after} cta={f.cta} />
               </Disclosure>
             ))}

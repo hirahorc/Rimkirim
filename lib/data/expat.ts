@@ -17,18 +17,21 @@ interface Txt {
   en: string;
 }
 
-/** an answer can carry a table, a closing paragraph and a link, as /faq's do */
+/** an answer can carry a list, a table, a closing paragraph and a link, as /faq's do */
 interface ExpatFaqSource extends AnswerExtrasSource {
   /** the question's anchor, for a question the page links to */
   slug?: string;
   q: Txt;
   a: Txt;
+  /** points under the answer's paragraph, before what follows it */
+  list?: Txt[];
 }
 
 export interface ExpatFaq extends AnswerExtras {
   slug?: string;
   q: string;
   a: string;
+  list?: string[];
 }
 
 /**
@@ -101,14 +104,63 @@ const FAQ: ExpatFaqSource[] = [
       en: "It depends on the route. As relocation goods, with a work or study ITAS of 12 months or more, your household things are duty-free with no value limit. As passenger goods sent separately, the first USD 500 per person per arrival is free, and the amount above it pays 10% duty plus VAT. As a personal shipment there's no duty-free allowance: up to USD 1,500, flat rates from 0% (printed books) to 25% (clothes, bags and shoes), plus VAT, and without an NPWP some items carry a higher income tax rate. Our price covers shipping; any duties and taxes are set by Indonesian Customs and charged separately. You don't need to choose a way now: when we review your booking, we'll point out the one that saves you the most, and the choice is yours. From your packing list, we tell you what's likely to be taxed, so you can leave it out if you'd rather.",
     },
   },
+  // physical inspection, from ops' brief "Pemeriksaan Fisik Barang Impor"
+  // (2026-11-20), in three questions; the first is where the order flow
+  // links (EXPAT_INSPECTION_URL). Who closes the package and the damage
+  // claim are Hira's (2026-11-18)
   {
-    // the order flow links here (EXPAT_INSPECTION_URL): what happens when a
-    // package is opened, from Hira (2026-11-18), until ops writes it in full
     slug: "faq-inspection",
     q: { id: "Apakah paket saya bisa dibuka?", en: "Can my packages be opened?" },
     a: {
-      id: "Bisa, paket mana pun. Setiap kiriman melewati Bea Cukai Indonesia, dan kalau hasil X-ray sebuah paket perlu dilihat lebih dekat, Bea Cukai bisa meminta pemeriksaan fisik. Mitra logistik kami lalu membuka paketnya di bawah pengawasan petugas Bea Cukai, mencocokkan isinya dengan packing list-mu, lalu menutupnya kembali. Kalau ada barang yang rusak dalam proses ini, kamu bisa mengajukan klaim selama memenuhi syarat klaim kami. Kemas setiap paket supaya bisa dibuka dan ditutup lagi, dan cantumkan setiap barang beserta nilainya.",
-      en: "Yes, any package can be. Every shipment clears Indonesian Customs, and when a package's X-ray shows something customs wants to see up close, it can ask for a physical inspection. Our logistics partner then opens the package under a customs officer's supervision, checks what's inside against your packing list, and closes it again. If anything is damaged in the process, you can claim for it, as long as your claim meets our claim requirements. Pack each package so it can be opened and closed again, and list every item with its value.",
+      id: "Bisa. Setiap kiriman yang masuk ke Indonesia bisa diperiksa fisik oleh Bea Cukai: paketnya dibuka dan isinya dicocokkan dengan dokumennya, yaitu jenis, jumlah, kondisi, dan nilainya. Tidak semua kiriman dibuka, tapi tidak ada yang bisa menjamin kiriman tidak dibuka, termasuk kami dan kurirnya, karena Bea Cukai memilih kiriman satu per satu berdasarkan risiko, dan sebagian secara acak. Kiriman yang sebelumnya lolos tanpa dibuka belum tentu lolos lagi. Dibuka bukan berarti ada masalah, dan pemeriksaan ini tidak menentukan bea masuk dan pajakmu, yang dihitung terpisah.",
+      en: "Yes. Customs can physically inspect any shipment coming into Indonesia: the package is opened and what's inside is checked against its documents, for type, quantity, condition and value. Not every shipment is opened, but no one can rule it out, not us and not the courier, because customs picks shipments one by one, on risk and partly at random. A shipment that went through unopened before may be opened next time. Being opened doesn't mean anything's wrong, and it isn't what sets your duty and tax, which are worked out separately.",
+    },
+  },
+  {
+    slug: "faq-inspection-likely",
+    q: { id: "Apa yang membuat paket lebih mungkin diperiksa?", en: "What makes an inspection more likely?" },
+    a: {
+      id: "Bea Cukai menilai setiap kiriman dari dokumennya, jenis barangnya, profil importir dan barangnya, serta hasil X-ray-nya, dan sebagian dipilih secara acak. Penilaiannya per kiriman, bukan per orang. Sebuah kiriman lebih mungkin dibuka kalau:",
+      en: "Customs weighs each shipment's documents, the kind of goods, the importer's and the goods' profiles and the X-ray, and picks some at random. It's judged shipment by shipment, not person by person. A shipment is more likely to be opened when:",
+    },
+    list: [
+      { id: "uraian, jenis, atau nilai barangnya tidak jelas", en: "what's inside, its type or its value isn't clear" },
+      {
+        id: "jumlah atau jenis barangnya diduga tidak sesuai dengan dokumen atau hasil X-ray",
+        en: "the count or kind of goods doesn't seem to match the documents or the X-ray",
+      },
+      { id: "ada dugaan barang larangan atau pembatasan (lartas)", en: "it may hold prohibited or restricted goods" },
+      {
+        id: "isinya barang yang memang wajib diperiksa, seperti produk hewan dan tumbuhan, obat-obatan, atau barang non-pribadi",
+        en: "it holds goods that are always checked, such as animal and plant products, medicines, or goods that aren't personal",
+      },
+    ],
+    after: {
+      id: "Jadi tulis isi setiap paket dengan jelas, beserta jumlah dan nilainya. Barang lartas tidak selalu dibuka, tapi izinnya selalu dicek lewat dokumen.",
+      en: "So list what's in each package clearly, with how many and what it's worth. Restricted goods aren't always opened, but their permits are always checked on paper.",
+    },
+  },
+  {
+    slug: "faq-inspection-steps",
+    q: { id: "Apa yang terjadi kalau paket diperiksa?", en: "What happens if a package is inspected?" },
+    a: {
+      id: "Petugas kurir (FedEx, DHL, atau lainnya) membukanya dengan disaksikan petugas Bea Cukai, mencocokkan isinya dengan dokumen, termasuk izin yang diperlukan, lalu menutupnya kembali. Kalau Bea Cukai butuh informasi tambahan, kami teruskan pertanyaannya ke kamu: balas dalam 5 hari kerja, karena kalau tidak, Bea Cukai menetapkan tarif dan nilainya dari informasi yang ada. Setelah itu, ada tiga kemungkinan:",
+      en: "Staff from the courier (FedEx, DHL or another) open it while a customs officer watches, check what's inside against the documents, including any permits, and close it again. If customs needs more information, we'll pass the question on to you: reply within 5 working days, or customs sets the rate and value from what it already has. Then one of three things happens:",
+    },
+    list: [
+      { id: "Semuanya cocok dan tanpa pungutan: barang dirilis.", en: "Everything matches and nothing is due: it's released." },
+      {
+        id: "Ada bea masuk atau pajak, atau nilainya ditetapkan ulang: barang dirilis setelah tagihannya dibayar. Kalau tidak setuju dengan tagihannya, minta penjelasan tertulis sebelum membayar, karena pembayaran bisa dianggap menerima penetapan.",
+        en: "Duty or tax is due, or the value is set again: it's released once that's paid. If you disagree with the amount, ask for a written explanation before you pay, since paying can count as accepting it.",
+      },
+      {
+        id: "Barang lartas yang izinnya belum ada: penuhi izinnya, keluarkan barang lain yang tidak kena lartas, atau ekspor kembali. Barang yang dilarang impor tidak bisa dikeluarkan sama sekali, jadi diekspor kembali atau dimusnahkan.",
+        en: "Restricted goods without their permit: get the permit, release the rest without them, or send them back. Prohibited goods can't be released at all, so they're sent back or destroyed.",
+      },
+    ],
+    after: {
+      id: "Pemeriksaan fisik menambah waktu proses, dan bisa menambah biaya sewa gudang yang ditagihkan ke kamu. Kalau ada barang yang rusak dalam prosesnya, kamu bisa mengajukan klaim selama memenuhi syarat klaim kami. Kemas setiap paket supaya bisa dibuka dan ditutup lagi.",
+      en: "An inspection adds time, and can add storage fees, which are billed to you. If anything is damaged in the process, you can claim for it, as long as your claim meets our claim requirements. Pack each package so it can be opened and closed again.",
     },
   },
   {
@@ -149,7 +201,13 @@ const FAQ: ExpatFaqSource[] = [
 ];
 
 export function expatFaq(locale: Locale): ExpatFaq[] {
-  return FAQ.map((f) => ({ slug: f.slug, q: f.q[locale], a: f.a[locale], ...resolveExtras(f, locale) }));
+  return FAQ.map((f) => ({
+    slug: f.slug,
+    q: f.q[locale],
+    a: f.a[locale],
+    ...(f.list ? { list: f.list.map((x) => x[locale]) } : {}),
+    ...resolveExtras(f, locale),
+  }));
 }
 
 /**
@@ -252,5 +310,5 @@ export const REVIEW_NOTES = {
     "Section 07 (contoh pengiriman nyata) disembunyikan sampai ada contoh asli: asal, jenis barang, komentar, foto. Isi SHIPMENT_EXAMPLES di lib/data/expat.ts.",
   closing:
     "Tiap langkah 'What happens next' menampilkan layar order flow yang asli, digambar oleh komponennya sendiri dengan data contoh: kartu Special Rate dari Inggris untuk 30 kg (tarif dummy), pertanyaan pertama Eligibility Check, dan kepala tiket Booking Summary dengan nomor dan email contoh.",
-  faq: "Brief: semua jawaban wajib disetujui Rimkirim, terutama bea cukai & pengantaran. Revisi 17 Nov 2026: 'How long' mengikuti infografis ETA dari tim OPS (sama dengan FAQ /faq): transit 4–8 hari, clearance 4–10 hari kerja, lalu pengantaran domestik per daerah dalam tabel, dijumlahkan; berlaku untuk kiriman dari Eropa, Australia dan Selandia Baru, Amerika, dan enam negara Asia, dan dari negara lain pembaca diarahkan ke Check Rate ('Check the ETA from your country'). Tabel diurutkan dari yang tercepat (urutan infografis berbeda), dan 'Jawa' di infografis berarti di luar Jabodetabek. 'By air' dan kalimat 'estimasi tampil saat cek tarif' dihapus: infografis tidak menyebut moda, dan Check Rate hanya menampilkan waktu transit. Draft 18 Nov 2026: 'Can my packages be opened?' ditulis dari info Hira, sebelum info lengkap OPS: yang membuka paket adalah 3PL atas rekomendasi Bea Cukai (biasanya setelah ada kejanggalan di X-ray) dan diawasi Bea Cukai; 3PL juga yang menutup kembali; Rimkirim tidak mendampingi pemeriksaan; kerusakan bisa diklaim selama memenuhi syarat klaim. Belum ada halaman lengkap, jadi link 'How inspections work' di order flow mengarah ke jawaban ini (#faq-inspection).",
+  faq: "Brief: semua jawaban wajib disetujui Rimkirim, terutama bea cukai & pengantaran. Revisi 17 Nov 2026: 'How long' mengikuti infografis ETA dari tim OPS (sama dengan FAQ /faq): transit 4–8 hari, clearance 4–10 hari kerja, lalu pengantaran domestik per daerah dalam tabel, dijumlahkan; berlaku untuk kiriman dari Eropa, Australia dan Selandia Baru, Amerika, dan enam negara Asia, dan dari negara lain pembaca diarahkan ke Check Rate ('Check the ETA from your country'). Tabel diurutkan dari yang tercepat (urutan infografis berbeda), dan 'Jawa' di infografis berarti di luar Jabodetabek. 'By air' dan kalimat 'estimasi tampil saat cek tarif' dihapus: infografis tidak menyebut moda, dan Check Rate hanya menampilkan waktu transit. Draft 18 Nov 2026: 'Can my packages be opened?' ditulis dari info Hira, sebelum info lengkap OPS: yang membuka paket adalah 3PL atas rekomendasi Bea Cukai (biasanya setelah ada kejanggalan di X-ray) dan diawasi Bea Cukai; 3PL juga yang menutup kembali; Rimkirim tidak mendampingi pemeriksaan; kerusakan bisa diklaim selama memenuhi syarat klaim. Belum ada halaman lengkap, jadi link 'How inspections work' di order flow mengarah ke jawaban ini (#faq-inspection). Revisi 20 Nov 2026: draft itu diganti tiga pertanyaan dari brief ops 'Pemeriksaan Fisik Barang Impor' (berlaku untuk semua produk impor; sumber PMK 203/2017 Pasal 1 angka 8–9 dan 17–19, PMK 25/2025 Pasal 9–13, PMK 96/2023 Pasal 24–27, 31–32, 36, 40): (1) 'Can my packages be opened?': semua kiriman bisa diperiksa fisik, tidak bisa dihindari atau dijamin, dipilih per kiriman berdasarkan manajemen risiko dan sebagian acak, bukan berarti ada masalah, tidak menentukan bea dan pajak; (2) 'What makes an inspection more likely?': pemicu dari brief dan catatan lartas; (3) 'What happens if a package is inspected?': dibuka petugas kurir disaksikan Bea Cukai, permintaan informasi tambahan dijawab dalam 5 hari kerja, tiga kemungkinan hasil, tambahan waktu dan biaya gudang. Dari Hira (20 Nov 2026): kiriman expat selalu lewat kurir udara (FedEx, DHL, Aramex, dan lainnya), jadi jalur kargo dari brief tidak ditulis; permintaan informasi Bea Cukai diteruskan Rimkirim ke customer; biaya gudang tambahan ditagihkan ke customer; bea dan pajak kadang dibayar lewat Rimkirim, kadang langsung ke Bea Cukai, dan sengaja tidak dijelaskan. Tetap dari Hira (18 Nov): 3PL menutup kembali paketnya, kerusakan bisa diklaim. Masih kosong: link ke syarat klaim, dan halaman lengkap (brief ini cukup untuk satu halaman yang juga dipakai flow WNI).",
 } as const;
