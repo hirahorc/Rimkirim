@@ -227,7 +227,7 @@ const id = {
       itas: "Kamu sudah punya ITAS?",
       itasHint: "Izin tinggal yang kamu dapat setelah tiba di Indonesia.",
       q4: "Apa alasan utama kepindahanmu?",
-      q4Sub: "Ini membantu kami menyiapkan dokumen bea cukai yang tepat untukmu.",
+      q4Sub: "Kami pakai ini untuk memandumu menyiapkan dokumen bea cukai yang dibutuhkan.",
       reasons: {
         working: "Bekerja",
         student: "Studi",
@@ -2576,7 +2576,7 @@ const en: Messages = {
       itas: "Do you already have an ITAS?",
       itasHint: "The stay permit you get once you're in Indonesia.",
       q4: "What's the primary reason for your relocation?",
-      q4Sub: "This helps us prepare the right customs documents for you.",
+      q4Sub: "We'll use this to guide you on which customs documents to prepare.",
       reasons: {
         working: "Working",
         student: "Student",
