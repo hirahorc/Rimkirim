@@ -24,7 +24,7 @@ colors:
   warning-ink: "color-mix(in srgb, hsl(22 95% 52%) 68%, black)"
   danger-ink: "color-mix(in srgb, hsl(360 100% 45%) 80%, black)"
   info-ink: "color-mix(in srgb, hsl(210 92% 45%) 80%, black)"
-  # inline links (.link-mark); 80% toward black on a band or a section's ground, Ink inside the expat order flow
+  # inline links (.link-mark); 80% toward black on a band or a section's ground, the expat order flow included
   link: "color-mix(in srgb, hsl(210 92% 45%) 92%, black)"
   accent: "#9c26f5" # Move Purple: "your move" surfaces
   accent-ink: "color-mix(in srgb, #9c26f5 80%, black)"
@@ -1617,7 +1617,8 @@ own pair is in view, and arrives (a fade and a 4px rise on the hover curve) once
 away, so two limes saying the same thing never show at once; it gives way again to the closing
 ticket's button, the page's last ask (`data-door` marks both). Past the mid-page buttons it
 stays: a button coming and going all the way down would be its own noise. Inside the flow it gives way to
-"Need help?"; the service name keeps its gradient there too. The page is English only (LanguageProvider
+"Need help?", a quiet action button like Edit and Change (paper, an Ink line, an outline chat bubble; it
+was a link until 2026-11-20); the service name keeps its gradient there too. The page is English only (LanguageProvider
 forces the locale on this route, whatever the visitor saved), so neither bar nor footer carries a
 language switch. No site menu, no sign-in, no bell: expat orders run in their own flow, not the
 account system. The logo stays on the page, so the only door back to the main site is the footer's
@@ -1823,13 +1824,13 @@ landing, and keeps the landing's bar, which trades the lime "Check your rate" fo
 help?" on WhatsApp, since each screen's own action is its one lime.
 
 **The flow's system.** The flow runs on a cut of the system small enough to hold in the head:
-five colours and a sixth for errors, five type sizes and seven steps of space (`data-flow` in
+five colours and a sixth for errors and removing, five type sizes and seven steps of space (`data-flow` in
 `globals.css`, and `components/expat-order/kit.tsx`). Nothing in the flow picks a colour, a size
 or a gap outside it, and there is no gradient anywhere in it. The bar above it is the site's
 chrome, not the flow's, so its service name keeps the `.nav-expat` gradient (the team's call: it
 was Ink here for a while).
 
-*Five colours, and red for what's wrong.* `data-flow` re-points the system's own tokens, as a
+*Five colours, and red for what's wrong or takes away.* `data-flow` re-points the system's own tokens, as a
 chapter does, so every shared control inside the flow (the pickers, a dialog, a toast, the bar,
 the footer) takes them untouched.
 
@@ -1840,13 +1841,19 @@ the footer) takes them untouched.
 | Ink | `#1f1f1f` | the words, and the way to say chosen, done or told |
 | Muted | `#52525b` | the second voice: a hint, a note, the label beside a value |
 | Lime | `#c1ff00` | the action, and nothing else |
-| Red | `#e60000` (Stop Red) | what's wrong, the Special Rate's mark, and what can't be shipped |
+| Red | `#e60000` (Stop Red) | what's wrong, what takes something away, the Special Rate's mark, and what can't be shipped |
 
 **Red is an error's, and the offer's mark.** The edge of the field that's wrong, the words under
 it that say why (medium, with a mark, so it isn't said in colour alone), and the toast that
-counts what's missing. Never a warning, a notice or a button: the button that confirms removing
-a package is Ink, and in the calendar every day that can be picked is Ink, Sundays too. The one
-red that isn't an error is the Special Rate's, as the offer card wears it (The offer card): its
+counts what's missing. Never a warning or a notice, and in the calendar every day that can be
+picked is Ink, Sundays too. **The buttons that take something away are red** (2026-11-20, the
+team's call; the confirm was Ink before): a package's "Remove" and a category row's ×
+(`REMOVE`: the word and the outline glyph in red, no fill at rest, a 10% red wash under the
+pointer and on a press), and the dialog's "Yes, remove" (`REMOVE_CONFIRM`, solid red, paper
+words, a step toward black under the pointer), so a removal reads as one before it's pressed and
+the button that does it is the colour of what it does. Nothing else in the flow is a red button:
+"Collapse all", Edit and Change stay Ink. The first red that isn't an error or a removal is the
+Special Rate's, as the offer card wears it (The offer card): its
 tab (`SpecialRateTab`, a pill in red on its 9% tint inside a red hairline, the words in Stop Red
 mixed 20% toward black so they read at AA on the tint) wherever the rate is named as the offer
 (the rate card, Selected Service, the Booking Summary and its email), and on the rate card the
@@ -1856,7 +1863,8 @@ the Special Rate (a toast, "Special Rate starts at 21 kg") stays Ink and Muted. 
 shipped, under Q1: its no-entry mark and each thing's ring and slash, as the landing draws its "Not
 allowed" list, so it's seen before a box is packed (2026-11-16).
 
-There is no blue or green in the flow. What's told is fenced by a hairline; a chosen answer, a
+There is no green in the flow, and its one blue is the link's (`.link-mark`, as on the rest
+of the site; restored 2026-11-20). What's told is fenced by a hairline; a chosen answer, a
 done mark and every toast are Ink. Two "down" shades (wash and
 lime, each mixed a step toward Ink) are states only: a hover, a press, the option under the
 pointer. Carrier logos and flags are pictures, not tokens.
@@ -1903,10 +1911,14 @@ paper buttons with an Ink line and a solid glyph (`ACTION` in the kit, Heroicons
 `@heroicons/react/16/solid`, 16px), never a word that might be a link (2026-11-16): the plan's
 "Edit" (a pencil; "Open" a chevron), the Selected Service's "Change" (two arrows, it swaps the
 service), the address cards' "Change" (a pencil) and "Add detail address" (a pin), and the
-Packages' "Add an item", "Add a package" (a plus), "Remove" (a bin, left ghost: it takes away)
+Packages' "Add a category", "Add a package" (a plus), "Remove" (a bin in outline, left ghost: it takes away)
 and an item's own remove (a cross). Where the action sits on a press surface that's already a
 button (a folded part's head), `ACTION_LOOK` dresses a span as one, filling on the head's hover and
-press. A link inside a sentence ("check your rate again") stays a link: it goes somewhere.
+press. A link inside a sentence ("check your rate again") stays a link: it goes somewhere, and
+it wears the site's link blue here too (2026-11-20; it was Ink in the flow). The header's "Need
+help?" is the one way out that is a button, an `ACTION` with an outline chat bubble (Heroicons
+24 outline at stroke 2, as the Packages' "Remove" bin is; the other actions' glyphs stay solid:
+the team's call, 2026-11-20).
 
 - **The plan, one page:** the Eligibility Check, Your details and the Packages are three parts
   down a single sheet, a paper card each, one open at a time; there is no stepper and no page
@@ -2017,19 +2029,30 @@ press. A link inside a sentence ("check your rate again") stays a link: it goes 
   - *The loading spinner* (the saved draft loading, as each page of the flow opens) stays out
     of sight for its first 200ms: a load shorter than that, which is nearly all of them, shows
     the field alone instead of a flash of spinner.
-- **The Packages step:** the packages are a ruled list on the part's own paper, one package, a
-  hairline, the next. A package's head opens and
-  closes it with the swapped chevron and names it in one line while closed. Inside: its
-  packaging (Others opens what it's packed in beside it from sm, its examples in the placeholder
-  and the hint, as the Eligibility Check's Others does under its answer), the weight and three
-  sides with their units worn in the fields and one line on what
-  it's charged on, and the items, each a row of three fields that wear what they are (the name's
-  example, "Qty", the currency and "each"), so no label repeats down the list; a phone sets the
-  name over the other two. There are no
+- **The Packages step** ("Estimate your shipment", 2026-11-20): the packages are a ruled list on the
+  part's own paper, one package, a hairline, the next. A package's head opens and
+  closes it with the swapped chevron and names it in one line while closed ("Box B · 43 × 37 ×
+  37 cm · 32 items"). Inside, first the box it's closest to: four tiles (`RadioCards tiles`),
+  two across on a phone and four from sm, Box A, B and C (Rimkirim's standard sizes, a size to
+  pick by its sides, not a box we send) and Other. Each tile is its name and its sides on one
+  line, no picture (the team's call, 2026-11-20); Other's line says what it covers (a suitcase,
+  a crate, another size). A standard box asks nothing more (no
+  weight, no sides) and says in one line it's estimated at its volumetric weight. Other opens,
+  under the tiles, the measured package: its packaging (Others opens what it's packed in beside
+  it from sm, its examples in the placeholder and the hint, as the Eligibility Check's Others
+  does under its answer), the weight and three sides with their units worn in the fields and
+  one line on what it's charged on. Then what's inside, a row per kind of thing: a category
+  picked from a searchable list (each with examples under it, which the search matches too,
+  so "coat" finds Clothing & shoes; Others always stays in the list and opens "What is it?"
+  under its row), "Qty", and the row's value in total, each field wearing what it is, so no
+  label repeats down the list; a phone sets the category over the other two. A category
+  already in the package isn't offered again in it. There are no
   measurement photos. "Add a package" is a quiet button across the card. Over the currency, once
   for every package, the quiet note (`Note`, a package with a magnifier) says any package can be
-  opened for inspection (2026-11-18): there, because the list is what an inspection checks it
-  against, so the worry comes with the one thing to do about it, and never in a warning's colour.
+  opened for inspection (2026-11-18), then two short lines from ops' brief (2026-11-20): it doesn't
+  mean anything's wrong, and a clear list that matches what's inside makes it less likely. There,
+  because the list is what an inspection checks it against, so the worry comes with the
+  reassurance and the one thing to do about it, and never in a warning's colour.
   It ends on "How inspections work", out to the landing FAQ's answer (`EXPAT_INSPECTION_URL`)
   until a page of its own is written; the customs guide's foot and the Booking Summary's
   packages (and its email) say it in a line with the same link, and nothing else in the flow
@@ -2041,7 +2064,7 @@ press. A link inside a sentence ("check your rate again") stays a link: it goes 
   and an amount ("AUD 300") to match the fields. Past three packages the finished ones
   open folded, so a house listed package by package is a screen of lines, not dozens of forms;
   the ones still to fill stay open. A size or weight that reads like the wrong unit (a side over
-  3 m, a package over 500 kg) is asked about in a notice under the measures, never refused.
+  3 m, a package over 500 kg) is asked about in a notice under Other's measures, never refused.
 - **Selected Service:** a paper card beside the plan, sticky from lg, its estimate under the
   card's one hairline. On a phone it is a
   strip over the parts, the service on a line of its own so its name reads
