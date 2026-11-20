@@ -1970,8 +1970,9 @@ press. A link inside a sentence ("check your rate again") stays a link: it goes 
   the plan's action. There is no map and no pin.
 - **Notices, not errors:** the packing notice (you pack everything yourself) stands under the
   first question for every customer, fenced by a hairline with its mark, as the changed-address
-  notice is; ticking furniture only adds to its words and points its link at furniture's own
-  steps. Nothing in the flow turns a customer away. Field errors appear once a field is left,
+  notice is, and says the largest a package can be (302 × 203 × 178 cm, 2026-11-20); ticking
+  furniture only adds to its words and points its link at furniture's own steps. Nothing in the
+  flow turns a customer away. Field errors appear once a field is left,
   never on every keystroke, or all at once when the action is pressed; a field in error turns
   its edge red, and keeps it while it's being put right, and says what's wrong under it, in red
   with a mark. A

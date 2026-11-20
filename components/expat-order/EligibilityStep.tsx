@@ -232,6 +232,8 @@ export function EligibilityStep({
         <Note icon={PackageOpen} title={e("packTitle")}>
           <p className="mt-1 text-muted">
             {e("packBody").replace("{furniture}", furniture ? e("packFurniture") : "")}{" "}
+            {/* the largest a package can be, whatever is shipping */}
+            {e("packSize")}{" "}
             <a
               href={furniture ? "/expat-relocation#packing-furniture" : "/expat-relocation#packing"}
               target="_blank"
