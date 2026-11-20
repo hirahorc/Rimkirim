@@ -265,7 +265,7 @@ export function EligibilityStep({
           <Under open={abroad}>
             <FollowUp
               id="q2-arrival"
-              title={e("arrival")}
+              title={e("arrivalEstimated")}
               hint={e("arrivalHint")}
               missing={miss(abroad && !value.arrivalDate, "chooseDate")}
             >
@@ -275,7 +275,7 @@ export function EligibilityStep({
                 min={todayIso()}
                 placeholder={e("arrivalPh")}
                 monthJump
-                ariaLabel={e("arrival")}
+                ariaLabel={e("arrivalEstimated")}
               />
             </FollowUp>
           </Under>
