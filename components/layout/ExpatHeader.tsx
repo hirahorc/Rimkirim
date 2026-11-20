@@ -2,9 +2,10 @@
 
 import * as React from "react";
 import { usePathname } from "next/navigation";
-import { MessageCircle } from "lucide-react";
+import { ChatBubbleOvalLeftIcon } from "@heroicons/react/24/outline";
 import { Logo } from "./Logo";
 import { Button } from "@/components/ui/button";
+import { ACTION } from "@/components/expat-order/kit";
 import { EXPAT_QUOTE_URL } from "@/lib/data/expat";
 import { waLink } from "@/lib/contact";
 import { useT } from "@/lib/i18n/LanguageProvider";
@@ -79,14 +80,14 @@ export function ExpatHeader() {
         </div>
         {/* no language switch: the page is English only (LanguageProvider) */}
         {inFlow ? (
-          <a
-            href={waLink(t("expatOrder.helpWa"))}
-            target="_blank"
-            rel="noreferrer"
-            className="link-mark tap-row relative inline-flex shrink-0 items-center gap-1.5 text-sm"
-          >
-            <MessageCircle aria-hidden className="size-4" /> {t("expatOrder.help")}
-          </a>
+          // the flow's quiet action button, as Edit and Change are: paper and
+          // an Ink line (2026-11-20; it was a link), its chat bubble in
+          // outline, drawn at 2 so it holds its weight at 16px
+          <Button asChild variant="secondary" size="sm" className={cn(ACTION, "tap-target relative shrink-0")}>
+            <a href={waLink(t("expatOrder.helpWa"))} target="_blank" rel="noreferrer">
+              <ChatBubbleOvalLeftIcon aria-hidden strokeWidth={2} /> {t("expatOrder.help")}
+            </a>
+          </Button>
         ) : (
           <span
             inert={doorInView || undefined}

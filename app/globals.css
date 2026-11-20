@@ -505,6 +505,9 @@ body:has(main > [data-flow]),
   --flow-muted: #52525b;
   --flow-lime: #c1ff00;
   --flow-red: #e60000;
+  /* the site's link blue (.link-mark), kept here because --info turns Ink */
+  --flow-link: color-mix(in srgb, hsl(210 92% 45%) 92%, black);
+  --flow-link-down: color-mix(in srgb, hsl(210 92% 45%) 80%, black);
   --flow-wash-down: color-mix(in oklab, var(--flow-wash) 92%, var(--flow-ink));
   --flow-lime-down: color-mix(in oklab, var(--flow-lime) 88%, var(--flow-ink));
 
@@ -533,20 +536,20 @@ body:has(main > [data-flow]),
   --info: var(--flow-ink);
   --info-ink: var(--flow-ink);
 }
-/* a link is ink with a line under it; under the pointer the line thickens */
+/* a link is the site's link blue, as everywhere else (2026-11-20; it was
+   Ink in here): its line at 45%, darker and solid under the pointer or a press */
 body:has(main > [data-flow]) .link-mark {
-  color: var(--flow-ink);
-  text-decoration-color: currentColor;
-  text-decoration-thickness: 1px;
+  color: var(--flow-link);
+  text-decoration-color: color-mix(in srgb, var(--flow-link) 45%, transparent);
 }
-body:has(main > [data-flow]) .link-mark:active,
-body:has(main > [data-flow]) .link-mark:focus-visible {
-  text-decoration-thickness: 2px;
+body:has(main > [data-flow]) .link-mark:active {
+  color: var(--flow-link-down);
+  text-decoration-color: currentColor;
 }
 @media (hover: hover) {
   body:has(main > [data-flow]) .link-mark:hover {
-    color: var(--flow-ink);
-    text-decoration-thickness: 2px;
+    color: var(--flow-link-down);
+    text-decoration-color: currentColor;
   }
 }
 body:has(main > [data-flow]) .link-mark:focus-visible {
