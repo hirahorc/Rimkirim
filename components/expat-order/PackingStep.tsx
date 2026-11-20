@@ -17,7 +17,11 @@ import {
 import { PACKAGING_TYPES } from "@/components/order/module-options";
 import { CURRENCIES } from "@/lib/data/currencies";
 import {
+  BOX_CHOICES,
+  BOX_SIZES,
+  CONTENT_CATEGORIES,
   declaredValue,
+  isStandardBox,
   itemDescribed,
   newPackingItem,
   newPackingPackage,
@@ -34,7 +38,8 @@ import {
 import { formatNumber } from "@/lib/utils/currency";
 import { useT } from "@/lib/i18n/LanguageProvider";
 import { cn } from "@/lib/utils/cn";
-import { ACTION, Done, Field, InspectLink, Note, PRESS, QUIET, TYPE, Well, Worn } from "./kit";
+import { RadioCards } from "./ChoiceCards";
+import { ACTION, Done, Field, InspectLink, Note, PRESS, QUIET, TYPE, Well, Worn, Wrong } from "./kit";
 
 /** digits and one decimal point, a comma read as one */
 function decimal(s: string): string {
@@ -51,7 +56,15 @@ const FOLD_FROM = 3;
 const complete = (pk: PackingPackage) => packageMeasured(pk) && packagingDescribed(pk) && pk.items.every(itemDescribed);
 /** something typed that removing it would take along */
 const hasContent = (pk: PackingPackage) =>
-  !!(pk.weight || pk.length || pk.width || pk.height || pk.packagingOther?.trim() || pk.items.some((it) => it.name.trim() || it.value));
+  !!(
+    pk.box ||
+    pk.weight ||
+    pk.length ||
+    pk.width ||
+    pk.height ||
+    pk.packagingOther?.trim() ||
+    pk.items.some((it) => it.category || it.name.trim() || it.value)
+  );
 /** after the click's render has landed */
 const onceRendered = (run: () => void) => window.requestAnimationFrame(run);
 
@@ -62,10 +75,11 @@ const ODD_SIDE_CM = 300;
 const ODD_WEIGHT_KG = 500;
 
 /**
- * The Packages step, the WNI flow's Items & Packages in the plan's dress: the
- * values' currency first, then the packages as a ruled list on the part's
- * own paper (each its packaging, weight and three sides, what's inside),
- * then the totals. The estimate
+ * The Packages step ("Estimate your shipment"), the WNI flow's Items & Packages
+ * in the plan's dress: the values' currency first, then the packages as a
+ * ruled list on the part's own paper (each the standard box it's closest
+ * to, or Other with its packaging, weight and three sides; then what's
+ * inside, a row per kind of thing), then the totals. The estimate
  * lives in the Selected Service beside it and follows the packages once
  * they're measured (packedPricing); this step says so under the totals.
  * Errors show once a field is left, as on Your details; `tried` (a count of
@@ -333,15 +347,32 @@ function PackageBlock({
     );
   };
 
-  const other = pkg.packaging === "other";
+  const std = isStandardBox(pkg.box);
+  const isOther = pkg.box === "other";
+  const packedOther = pkg.packaging === "other";
   const count = pkg.items.reduce((s, it) => s + (Number.parseFloat(it.quantity) || 0), 0);
   const done = complete(pkg);
-  const touched = !!(pkg.weight || pkg.length || pkg.width || pkg.height || pkg.items.some((it) => it.name.trim()));
+  const touched = !!(
+    pkg.box ||
+    pkg.weight ||
+    pkg.length ||
+    pkg.width ||
+    pkg.height ||
+    pkg.items.some((it) => it.category || it.name.trim())
+  );
+  const sides = (d: { length: number | string; width: number | string; height: number | string }) =>
+    `${d.length} × ${d.width} × ${d.height} cm`;
+  // a tile's line: one size, never broken across lines
+  const nb = (x: string) => x.replace(/ /g, "\u00a0");
   const summary = done
     ? [
-        other ? pkg.packagingOther!.trim() : p(`types.${pkg.packaging}`),
-        `${kg(Number.parseFloat(pkg.weight))} kg`,
-        `${pkg.length} × ${pkg.width} × ${pkg.height} cm`,
+        ...(std
+          ? [p(`boxes.${pkg.box}`), sides(BOX_SIZES[pkg.box as keyof typeof BOX_SIZES])]
+          : [
+              packedOther ? pkg.packagingOther!.trim() : p(`types.${pkg.packaging}`),
+              `${kg(Number.parseFloat(pkg.weight))} kg`,
+              sides(pkg),
+            ]),
         count === 1 ? p("itemsOne") : p("itemsMany").replace("{n}", String(count)),
       ].join(" · ")
     : touched
@@ -350,6 +381,8 @@ function PackageBlock({
   const charge = packageMeasured(pkg) ? packageCharge(pkg) : null;
   const longest = Math.max(...(["length", "width", "height"] as const).map((s) => Number.parseFloat(pkg[s]) || 0));
   const heavy = (Number.parseFloat(pkg.weight) || 0) > ODD_WEIGHT_KG;
+  const boxId = `${regionId}-box`;
+  const boxErr = tried && !pkg.box ? p("boxPick") : undefined;
 
   const setItem = (id: string, patch: Partial<PackingItem>) =>
     onChange({ items: pkg.items.map((it) => (it.id === id ? { ...it, ...patch } : it)) });
@@ -394,67 +427,114 @@ function PackageBlock({
       <div className="-mx-1">
         <CollapseHeight open={open} id={regionId} className="px-1 pb-1">
           <div className="grid grid-cols-1 gap-6 pt-4">
-            {/* Others asks what it's packed in, beside the choice from sm, as
-                Moving from sits beside Moving to */}
-            <div className="grid grid-cols-1 items-start gap-4 sm:grid-cols-2 sm:gap-6">
-              <Field label={p("packaging")} hint={pkg.packaging !== "box" ? p("surcharge") : undefined}>
-                <SelectField
-                  value={pkg.packaging}
-                  onChange={(packaging) => onChange({ packaging, ...(packaging === "other" ? {} : { packagingOther: "" }) })}
-                  ariaLabel={p("packaging")}
-                  options={PACKAGING_TYPES.map((o) => ({ value: o.value, label: p(`types.${o.value}`) }))}
-                />
-              </Field>
-              {other && (
-                <Field
-                  label={p("packagingOther")}
-                  hint={p("packagingOtherHint")}
-                  error={seen(`${pkg.id}.packagingOther`) && !packagingDescribed(pkg) ? p("required") : undefined}
-                >
-                  <Well
-                    value={pkg.packagingOther ?? ""}
-                    onChange={(e) => onChange({ packagingOther: e.target.value })}
-                    onBlur={leave(`${pkg.id}.packagingOther`)}
-                    placeholder={p("packagingOtherPh")}
-                    maxLength={60}
-                  />
-                </Field>
-              )}
-            </div>
-
+            {/* the box it's closest to: a size, not a box we send, picked
+                by its sides. A standard box isn't weighed or measured here;
+                anything else is Other, and asked what it's in, its weight
+                and its sides */}
             <div>
-              <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-                {measure("weight")}
-                {measure("length")}
-                {measure("width")}
-                {measure("height")}
-              </div>
-              {charge && (
-                <p className="mt-1 text-xs text-muted">
-                  {p(charge.by === "size" ? "chargeSize" : "chargeWeight").replace("{kg}", kg(charge.kg))}
+              <p id={boxId} className="mb-1 text-xs font-medium">
+                {p("box")}
+              </p>
+              <RadioCards
+                tiles
+                labelledBy={boxId}
+                describedBy={boxErr ? `${boxId}-error` : `${boxId}-hint`}
+                value={pkg.box || undefined}
+                onChange={(box) => onChange({ box })}
+                options={BOX_CHOICES.map((b) =>
+                  isStandardBox(b)
+                    ? { value: b, label: p(`boxes.${b}`), sub: nb(sides(BOX_SIZES[b])) }
+                    : { value: b, label: p("boxes.other"), sub: p("boxOtherSub") },
+                )}
+              />
+              {boxErr ? (
+                <Wrong id={`${boxId}-error`}>{boxErr}</Wrong>
+              ) : (
+                <p id={`${boxId}-hint`} className="mt-1 text-xs text-muted">
+                  {p("boxHint")}
                 </p>
               )}
-              {/* a number that looks like the wrong unit: asked about, not
-                  refused, since the estimate follows it at once */}
-              {(longest > ODD_SIDE_CM || heavy) && (
-                <Note className={cn("mt-3", enter && "banner-enter")}>
-                  {longest > ODD_SIDE_CM && p("oddSize").replace("{cm}", kg(longest)).replace("{m}", kg(longest / 100))}
-                  {longest > ODD_SIDE_CM && heavy && " "}
-                  {heavy && p("oddWeight").replace("{kg}", kg(Number.parseFloat(pkg.weight)))}
-                </Note>
+              {charge?.by === "box" && (
+                <p className="mt-1 text-xs text-muted">{p("chargeBox").replace("{kg}", kg(charge.kg))}</p>
               )}
+
+              <div className="-mx-1">
+                <CollapseHeight open={isOther} className="px-1 pb-1">
+                  <div className="grid grid-cols-1 gap-6 pt-6">
+                    {/* Others asks what it's packed in, beside the choice from sm, as
+                        Moving from sits beside Moving to */}
+                    <div className="grid grid-cols-1 items-start gap-4 sm:grid-cols-2 sm:gap-6">
+                      <Field label={p("packaging")} hint={pkg.packaging !== "box" ? p("surcharge") : undefined}>
+                        <SelectField
+                          value={pkg.packaging}
+                          onChange={(packaging) =>
+                            onChange({ packaging, ...(packaging === "other" ? {} : { packagingOther: "" }) })
+                          }
+                          ariaLabel={p("packaging")}
+                          options={PACKAGING_TYPES.map((o) => ({ value: o.value, label: p(`types.${o.value}`) }))}
+                        />
+                      </Field>
+                      {packedOther && (
+                        <Field
+                          label={p("packagingOther")}
+                          hint={p("packagingOtherHint")}
+                          error={seen(`${pkg.id}.packagingOther`) && !packagingDescribed(pkg) ? p("required") : undefined}
+                        >
+                          <Well
+                            value={pkg.packagingOther ?? ""}
+                            onChange={(e) => onChange({ packagingOther: e.target.value })}
+                            onBlur={leave(`${pkg.id}.packagingOther`)}
+                            placeholder={p("packagingOtherPh")}
+                            maxLength={60}
+                          />
+                        </Field>
+                      )}
+                    </div>
+
+                    <div>
+                      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+                        {measure("weight")}
+                        {measure("length")}
+                        {measure("width")}
+                        {measure("height")}
+                      </div>
+                      {charge && charge.by !== "box" && (
+                        <p className="mt-1 text-xs text-muted">
+                          {p(charge.by === "size" ? "chargeSize" : "chargeWeight").replace("{kg}", kg(charge.kg))}
+                        </p>
+                      )}
+                      {/* a number that looks like the wrong unit: asked about, not
+                          refused, since the estimate follows it at once */}
+                      {(longest > ODD_SIDE_CM || heavy) && (
+                        <Note className={cn("mt-3", enter && "banner-enter")}>
+                          {longest > ODD_SIDE_CM && p("oddSize").replace("{cm}", kg(longest)).replace("{m}", kg(longest / 100))}
+                          {longest > ODD_SIDE_CM && heavy && " "}
+                          {heavy && p("oddWeight").replace("{kg}", kg(Number.parseFloat(pkg.weight)))}
+                        </Note>
+                      )}
+                    </div>
+                  </div>
+                </CollapseHeight>
+              </div>
             </div>
 
             <fieldset>
               <legend className="text-sm font-medium">{p("inside")}</legend>
-              {/* each item a row of three fields that wear what they are (the
-                  name's example, "Qty", the currency and "each"), so no label
-                  is repeated down the list: a phone sets the name over the
-                  other two, closer to them than to the next item */}
+              {/* a row per kind of thing (its category, how many, what they're
+                  worth together), each field wearing what it is ("Qty", the
+                  currency and "total"), so no label is repeated down the
+                  list: a phone sets the category over the other two. A kind
+                  already listed isn't offered again in the same package;
+                  Others is, as often as needed, and asks what it is */}
               <ul className="mt-2 grid grid-cols-1 gap-4 sm:gap-2">
                 {pkg.items.map((it, j) => {
-                  const nameErr = seen(`${it.id}.name`) && !it.name.trim() ? p("required") : undefined;
+                  const catErr = tried && !it.category ? p("required") : undefined;
+                  const nameErr =
+                    it.category === "others" && seen(`${it.id}.name`) && !it.name.trim() ? p("required") : undefined;
                   const qtyErr = seen(`${it.id}.qty`) && !(Number.parseFloat(it.quantity) >= 1) ? p("required") : undefined;
+                  const used = new Set(
+                    pkg.items.filter((x) => x.id !== it.id && x.category !== "others").map((x) => x.category),
+                  );
                   return (
                     <li
                       key={it.id}
@@ -462,17 +542,25 @@ function PackageBlock({
                       className="grid grid-cols-[6rem_minmax(0,1fr)_2.75rem] items-start gap-2 sm:grid-cols-[minmax(0,1fr)_6rem_11rem_2.75rem]"
                     >
                       <div className="col-span-3 sm:col-span-1">
-                        <Field quiet label={`${p("itemName")} ${j + 1}`} error={nameErr}>
-                          <Well
-                            value={it.name}
-                            onChange={(e) => setItem(it.id, { name: e.target.value })}
-                            onBlur={leave(`${it.id}.name`)}
-                            placeholder={p("itemNamePh")}
-                            maxLength={120}
+                        <Field quiet label={`${p("category")} ${j + 1}`} error={catErr}>
+                          <SelectField
+                            value={it.category}
+                            onChange={(category) => setItem(it.id, { category })}
+                            ariaLabel={`${p("category")} ${j + 1}`}
+                            placeholder={p("categoryPh")}
+                            searchable
+                            searchPlaceholder={p("categorySearch")}
+                            emptyText={p("categoryEmpty")}
+                            options={CONTENT_CATEGORIES.filter((c) => !used.has(c)).map((c) => ({
+                              value: c,
+                              label: p(`contents.${c}`),
+                              hint: p(`contentsEx.${c}`),
+                              sticky: c === "others",
+                            }))}
                           />
                         </Field>
                       </div>
-                      <Field quiet label={`${p("itemName")} ${j + 1}: ${p("qty")}`} error={qtyErr}>
+                      <Field quiet label={`${p("category")} ${j + 1}: ${p("qty")}`} error={qtyErr}>
                         <Well
                           value={it.quantity}
                           onChange={(e) => setItem(it.id, { quantity: digits(e.target.value) })}
@@ -483,7 +571,7 @@ function PackageBlock({
                           before={<Worn>{p("qty")}</Worn>}
                         />
                       </Field>
-                      <Field quiet label={`${p("itemName")} ${j + 1}: ${p("value")}`}>
+                      <Field quiet label={`${p("category")} ${j + 1}: ${p("value")}`}>
                         <Well
                           value={it.value}
                           onChange={(e) => setItem(it.id, { value: decimal(e.target.value) })}
@@ -492,7 +580,7 @@ function PackageBlock({
                           placeholder="0"
                           maxLength={12}
                           before={<Worn>{currency}</Worn>}
-                          after={<Worn>{p("each")}</Worn>}
+                          after={<Worn>{p("total")}</Worn>}
                         />
                       </Field>
                       {pkg.items.length > 1 && (
@@ -507,6 +595,20 @@ function PackageBlock({
                           <XMarkIcon />
                         </Button>
                       )}
+                      {/* Others: what it is, under its row */}
+                      {it.category === "others" && (
+                        <div className="col-span-3">
+                          <Field quiet label={`${p("category")} ${j + 1}: ${p("otherWhat")}`} error={nameErr}>
+                            <Well
+                              value={it.name}
+                              onChange={(e) => setItem(it.id, { name: e.target.value })}
+                              onBlur={leave(`${it.id}.name`)}
+                              placeholder={p("otherWhatPh")}
+                              maxLength={120}
+                            />
+                          </Field>
+                        </div>
+                      )}
                     </li>
                   );
                 })}
@@ -519,8 +621,8 @@ function PackageBlock({
                 onClick={() => {
                   const it = newPackingItem();
                   onChange({ items: [...pkg.items, it] });
-                  // the new row's name is what's typed next
-                  onceRendered(() => document.querySelector<HTMLElement>(`[data-item="${it.id}"] input`)?.focus());
+                  // the new row's category is what's picked next
+                  onceRendered(() => document.querySelector<HTMLElement>(`[data-item="${it.id}"] button`)?.focus());
                 }}
                 className={cn(ACTION, "tap-target relative mt-3")}
               >

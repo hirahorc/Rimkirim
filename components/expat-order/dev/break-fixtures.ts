@@ -80,15 +80,27 @@ const days = (n: number) => {
   return iso(d);
 };
 
+/** a row of a package: its category, how many, their value together; `name`
+ *  is what's typed for "others" */
+const row = (id: string, category: string, quantity: string, value: string, name = "") => ({
+  id,
+  category,
+  name,
+  quantity,
+  value,
+});
+
+/** a package measured as Other unless `box` says a standard size */
 const box = (id: string, over: Partial<PackingPackage> = {}): PackingPackage => ({
   id,
+  box: "other",
   packaging: "box",
   packagingOther: "",
   weight: "14",
   length: "60",
   width: "40",
   height: "40",
-  items: [{ id: `${id}-a`, name: "Winter coats", quantity: "3", value: "120" }],
+  items: [row(`${id}-a`, "clothing", "3", "360")],
   ...over,
 });
 
@@ -128,10 +140,8 @@ const demo: Order = {
     currency: "",
     packages: [
       box("d0", {
-        items: [
-          { id: "d0-a", name: "Winter coats", quantity: "3", value: "120" },
-          { id: "d0-b", name: "Books", quantity: "12", value: "" },
-        ],
+        box: "B",
+        items: [row("d0-a", "clothing", "3", "360"), row("d0-b", "books", "12", "")],
       }),
       box("d1", {
         packaging: "suitcase",
@@ -139,7 +149,7 @@ const demo: Order = {
         length: "75",
         width: "50",
         height: "30",
-        items: [{ id: "d1-a", name: "Clothes", quantity: "20", value: "15" }],
+        items: [row("d1-a", "clothing", "20", "300")],
       }),
     ],
   },
@@ -222,24 +232,22 @@ const worst: Order = {
         width: "120.5",
         height: "95.25",
         items: [
-          {
-            id: "w0-a",
-            name: "Full-size cello by Jean-Baptiste Vuillaume with two bows, a carbon-fibre case, rosin and spare strings (insured)",
-            quantity: "1",
+          row(
+            "w0-a",
+            "others",
+            "1",
             // what such a cello is worth, in rupiah
-            value: "3700000000",
-          },
+            "3700000000",
+            "Full-size cello by Jean-Baptiste Vuillaume with two bows, a carbon-fibre case, rosin and spare strings (insured)",
+          ),
           // a quantity at its five digits
-          { id: "w0-b", name: "Spare screws and fittings", quantity: "99999", value: "250.5" },
+          row("w0-b", "tools", "99999", "25047499.5"),
         ],
       }),
-      // the smallest a package can be said to be
+      // the smallest box, with the shortest thing Others can be
       box("w1", {
-        weight: "0.1",
-        length: "1",
-        width: "1",
-        height: "1",
-        items: [{ id: "w1-a", name: "J", quantity: "1", value: "" }],
+        box: "A",
+        items: [row("w1-a", "others", "1", "", "J")],
       }),
       // a long list, in the scripts and characters customers really type
       box("w2", {
@@ -248,19 +256,27 @@ const worst: Order = {
         length: "81",
         width: "55",
         height: "36",
+        // every category once, and Others in the scripts and characters
+        // customers really type
         items: [
-          { id: "w2-a", name: "🦊 Fox plushie", quantity: "1", value: "75000.5" },
-          { id: "w2-b", name: "王秀英的书", quantity: "40", value: "180000" },
-          { id: "w2-c", name: "كتب نور الهدى عبد الرحمن", quantity: "7", value: "" },
-          { id: "w2-d", name: "Đặng Thị Ngọc Hân's áo dài", quantity: "2", value: "6750000" },
-          { id: "w2-e", name: "<script>alert(1)</script> & **bold**", quantity: "1", value: "1" },
-          { id: "w2-f", name: "  Sam   Lee's   records ", quantity: "120", value: "375000" },
-          { id: "w2-g", name: "Benachrichtigungseinstellungshandbuch", quantity: "1", value: "149999.99" },
-          { id: "w2-h", name: "Shoes", quantity: "9", value: "1200000" },
-          { id: "w2-i", name: "Kitchen knives (set)", quantity: "1", value: "9000000" },
-          { id: "w2-j", name: "Yoga mat", quantity: "1", value: "" },
-          { id: "w2-k", name: "Board games", quantity: "14", value: "450000" },
-          { id: "w2-l", name: "Framed photographs", quantity: "25", value: "0" },
+          row("w2-a", "others", "1", "75000.5", "🦊 Fox plushie"),
+          row("w2-b", "books", "40", "7200000"),
+          row("w2-c", "others", "7", "", "كتب نور الهدى عبد الرحمن"),
+          row("w2-d", "clothing", "2", "13500000"),
+          row("w2-e", "others", "1", "1", "<script>alert(1)</script> & **bold**"),
+          row("w2-f", "art", "120", "45000000"),
+          row("w2-g", "others", "1", "149999.99", "Benachrichtigungseinstellungshandbuch"),
+          row("w2-h", "bags", "9", "10800000"),
+          row("w2-i", "kitchen", "1", "9000000"),
+          row("w2-j", "sports", "1", ""),
+          row("w2-k", "toys", "14", "6300000"),
+          row("w2-l", "decor", "25", "0"),
+          row("w2-m", "textiles", "6", "1800000"),
+          row("w2-n", "furniture", "1", "2500000"),
+          row("w2-o", "appliances", "2", "1700000"),
+          row("w2-p", "electronics", "3", "21000000"),
+          row("w2-q", "instruments", "1", "4500000"),
+          row("w2-r", "stationery", "30", "300000"),
         ],
       }),
       // a crated dining table measured in millimetres, not centimetres: the
@@ -271,7 +287,7 @@ const worst: Order = {
         length: "2400",
         width: "1200",
         height: "900",
-        items: [{ id: "w3-a", name: "Antique teak dining table", quantity: "1", value: "125000000" }],
+        items: [row("w3-a", "furniture", "1", "125000000")],
       }),
     ],
   },
@@ -319,7 +335,7 @@ const one: Order = {
   packing: {
     currency: "",
     packages: [
-      box("o0", { weight: "1", length: "1", width: "1", height: "1", items: [{ id: "o0-a", name: "J", quantity: "1", value: "1" }] }),
+      box("o0", { box: "A", items: [row("o0-a", "books", "1", "1")] }),
     ],
   },
 };
@@ -336,14 +352,19 @@ const many: Order = {
     currency: "",
     packages: Array.from({ length: 40 }, (_, i) =>
       box(`m${i}`, {
-        packaging: (["box", "suitcase", "plastic", "crate"] as const)[i % 4],
+        // the three sizes and Other in turn, Other in a suitcase
+        box: (["A", "B", "C", "other"] as const)[i % 4],
+        packaging: "suitcase",
         weight: String(12 + (i % 9)),
-        items: Array.from({ length: 1 + (i % 5) }, (_, j) => ({
-          id: `m${i}-${j}`,
-          name: ["Books", "Clothes", "Kitchenware", "Toys", "Bedding"][j],
-          quantity: String(1 + ((i + j) % 12)),
-          value: String(10 * (j + 1)),
-        })),
+        items: Array.from({ length: 1 + (i % 5) }, (_, j) => {
+          const quantity = 1 + ((i + j) % 12);
+          return row(
+            `m${i}-${j}`,
+            ["books", "clothing", "kitchen", "toys", "textiles"][j],
+            String(quantity),
+            String(10 * (j + 1) * quantity),
+          );
+        }),
       }),
     ),
   },

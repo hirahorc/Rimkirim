@@ -17,6 +17,18 @@ const card = (on: boolean) =>
         "bg-surface-2 hover:bg-surface-3 active:bg-surface-3",
   );
 
+/** the radio's dot: filled with Ink when chosen, popping in for an answer just given */
+function Dot({ on, picked }: { on: boolean; picked: boolean }) {
+  return (
+    <span
+      aria-hidden
+      className={cn("grid size-5 shrink-0 place-items-center rounded-full", on ? "bg-foreground" : "bg-background")}
+    >
+      {on && <span className={cn("size-2 rounded-full bg-background", picked && "radio-check-in")} />}
+    </span>
+  );
+}
+
 /**
  * One answer from a few, as cards (Q2, Q3 and its follow-ups, Q4): real radio
  * semantics (labelled by its question, arrows move the choice, roving
@@ -29,12 +41,20 @@ export function RadioCards<T extends string | boolean>({
   options,
   labelledBy,
   columns = 2,
+  tiles = false,
+  describedBy,
 }: {
   value: T | undefined;
   onChange: (v: T) => void;
-  options: { value: T; label: string }[];
+  /** `sub` shows on tiles only: a line under the label */
+  options: { value: T; label: string; sub?: string }[];
   labelledBy: string;
   columns?: 2 | 3 | 4;
+  /** four answers that are things to compare (the Packages step's boxes):
+   *  two across on a phone, four from sm, each card's label over a line */
+  tiles?: boolean;
+  /** what's wrong with the choice, or its hint */
+  describedBy?: string;
 }) {
   const refs = React.useRef<(HTMLButtonElement | null)[]>([]);
   // the dot pops in for an answer just given, never for one a draft brought
@@ -53,11 +73,13 @@ export function RadioCards<T extends string | boolean>({
     <div
       role="radiogroup"
       aria-labelledby={labelledBy}
+      aria-describedby={describedBy}
       className={cn(
-        "grid grid-cols-1 gap-2",
-        columns === 2 && "sm:grid-cols-2",
-        columns === 3 && "sm:grid-cols-3",
-        columns === 4 && "sm:grid-cols-2 lg:grid-cols-4",
+        "grid gap-2",
+        tiles ? "grid-cols-2 sm:grid-cols-4" : "grid-cols-1",
+        !tiles && columns === 2 && "sm:grid-cols-2",
+        !tiles && columns === 3 && "sm:grid-cols-3",
+        !tiles && columns === 4 && "sm:grid-cols-2 lg:grid-cols-4",
       )}
     >
       {options.map((o, i) => {
@@ -82,15 +104,24 @@ export function RadioCards<T extends string | boolean>({
                 move(i, -1);
               }
             }}
-            className={card(on)}
+            className={cn(card(on), tiles && "flex-col items-stretch gap-1 p-3")}
           >
-            <span
-              aria-hidden
-              className={cn("grid size-5 shrink-0 place-items-center rounded-full", on ? "bg-foreground" : "bg-background")}
-            >
-              {on && <span className={cn("size-2 rounded-full bg-background", picked && "radio-check-in")} />}
-            </span>
-            {o.label}
+            {tiles ? (
+              <>
+                <span className="flex items-center gap-2">
+                  <Dot on={on} picked={picked} />
+                  {o.label}
+                </span>
+                {/* under the dot, not the label: a tile is narrow, and a
+                    size reads whole on one line */}
+                {o.sub && <span className="text-xs font-normal text-muted tabular-nums">{o.sub}</span>}
+              </>
+            ) : (
+              <>
+                <Dot on={on} picked={picked} />
+                {o.label}
+              </>
+            )}
           </button>
         );
       })}

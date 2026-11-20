@@ -9,6 +9,12 @@ import { cn } from "@/lib/utils/cn";
 export interface SelectOption {
   value: string;
   label: string;
+  /** a second line under the label in the list (e.g. examples of what it covers) */
+  hint?: string;
+  /** more words a search matches it on, never shown */
+  keywords?: string;
+  /** stays in the list whatever is searched (an "Others" that catches the rest) */
+  sticky?: boolean;
 }
 
 /**
@@ -32,6 +38,9 @@ export function SelectField({
   className,
   wrapperClassName,
   contentClassName,
+  id,
+  "aria-invalid": ariaInvalid,
+  "aria-describedby": ariaDescribedBy,
 }: {
   value: string;
   onChange: (value: string) => void;
@@ -45,6 +54,10 @@ export function SelectField({
   className?: string;
   wrapperClassName?: string;
   contentClassName?: string;
+  /** set by a wrapping field, so its label, hint and error reach the trigger */
+  id?: string;
+  "aria-invalid"?: boolean;
+  "aria-describedby"?: string;
 }) {
   const [open, setOpen] = React.useState(false);
   const selected = options.find((o) => o.value === value);
@@ -70,7 +83,8 @@ export function SelectField({
         <Command.Input className="sr-only" />
       )}
       <Command.List className="scroll-thin max-h-64 overflow-y-auto p-1">
-        {searchable && (
+        {/* a sticky option is always there to pick, so nothing is "not found" */}
+        {searchable && !options.some((o) => o.sticky) && (
           <Command.Empty className="py-6 text-center text-sm text-muted-2">
             {emptyText}
           </Command.Empty>
@@ -78,7 +92,8 @@ export function SelectField({
         {options.map((o) => (
           <Command.Item
             key={o.value}
-            value={`${o.label} ${o.value}`}
+            value={[o.label, o.value, o.hint, o.keywords].filter(Boolean).join(" ")}
+            forceMount={o.sticky}
             onSelect={() => {
               onChange(o.value);
               setOpen(false);
@@ -88,7 +103,14 @@ export function SelectField({
               "active:bg-surface-3 data-[selected=true]:bg-surface-3 aria-selected:bg-surface-3",
             )}
           >
-            <span className="flex-1 truncate">{o.label}</span>
+            {o.hint ? (
+              <span className="min-w-0 flex-1">
+                <span className="block truncate">{o.label}</span>
+                <span className="block truncate text-xs text-muted">{o.hint}</span>
+              </span>
+            ) : (
+              <span className="flex-1 truncate">{o.label}</span>
+            )}
             {value === o.value && (
               <Check className="size-4 shrink-0 text-foreground" />
             )}
@@ -105,12 +127,16 @@ export function SelectField({
           <button
             type="button"
             role="combobox"
+            id={id}
             aria-expanded={open}
             aria-label={ariaLabel}
+            aria-invalid={ariaInvalid}
+            aria-describedby={ariaDescribedBy}
             disabled={disabled}
             className={cn(
               "flex h-11 w-full items-center justify-between gap-2 rounded-md border border-border bg-surface-2 px-3 text-sm transition-colors",
               "hover:border-border-strong active:bg-surface-3 focus-visible:outline-none focus-visible:border-foreground focus-visible:ring-2 focus-visible:ring-foreground/40",
+              "aria-invalid:border-danger",
               "disabled:cursor-not-allowed disabled:opacity-50",
               className,
             )}

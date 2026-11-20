@@ -74,10 +74,23 @@ export function bookingFacts(b: ExpatBooking, t: T) {
           ...(declared > 0 ? [bk("declared").replace("{value}", declaredValue(declared, currency))] : []),
         ].join(" · "),
         packages: list.map((p, i) => ({
-          title: `${pk("packageN").replace("{n}", String(i + 1))} · ${p.packaging === "other" && p.packagingOther ? p.packagingOther : pk(`types.${p.packaging}`)}`,
-          measures: `${kg(p.weight)} kg · ${p.length} × ${p.width} × ${p.height} cm`,
+          // a standard box by its name and sides (it isn't weighed until it
+          // reaches the warehouse); anything else by what it's in, its
+          // weight and sides
+          title: `${pk("packageN").replace("{n}", String(i + 1))} · ${
+            p.box
+              ? pk(`boxes.${p.box}`)
+              : p.packaging === "other" && p.packagingOther
+                ? p.packagingOther
+                : pk(`types.${p.packaging}`)
+          }`,
+          measures: p.box
+            ? `${p.length} × ${p.width} × ${p.height} cm`
+            : `${kg(p.weight)} kg · ${p.length} × ${p.width} × ${p.height} cm`,
           items: p.items.map((it) => ({
-            name: it.name,
+            // a row by its category (Others by what was typed); a booking
+            // from before categories, by its name
+            name: it.category && it.category !== "others" ? pk(`contents.${it.category}`) : it.name,
             quantity: it.quantity,
             value: it.value > 0 ? declaredValue(it.value, currency) : "",
           })),

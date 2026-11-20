@@ -16,14 +16,21 @@ export interface Party {
 
 export interface ItemRow {
   name: string;
+  /** per item; the expat flow, which asks a row's total, divides it by the quantity */
   value: number;
   quantity: number;
+  /** what kind of thing it is (the expat flow's CONTENT_CATEGORIES); `name`
+   *  is then only what's typed for "others" */
+  category?: string;
 }
 
 export interface PackageRow {
   packaging: string;
   /** what it's packed in, typed, when packaging is "other" (the expat flow) */
   packagingOther?: string;
+  /** the standard size it's closest to (the expat flow's BOX_SIZES): its
+   *  sides are then the box's, and `weight` is 0, never asked */
+  box?: "A" | "B" | "C";
   weight: number;
   length: number;
   width: number;

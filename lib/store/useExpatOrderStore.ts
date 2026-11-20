@@ -16,6 +16,7 @@ import {
   customsCategory,
   detailsProgress,
   eligibilityProgress,
+  migratePacking,
   packedPricing,
   packingProgress,
   toItemsData,
@@ -151,7 +152,13 @@ export const useExpatOrderStore = create<ExpatOrderState>()(
     }),
     {
       name: "rimkirim:expat-order",
-      version: 1,
+      // 2: packages pick a standard box, items a category (migratePacking)
+      version: 2,
+      migrate: (persisted, version) => {
+        const s = persisted as { packing?: PackingInput };
+        if (version < 2 && s?.packing) s.packing = migratePacking(s.packing);
+        return s as never;
+      },
       partialize: (s) => ({
         check: s.check,
         rate: s.rate,
