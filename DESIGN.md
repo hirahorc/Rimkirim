@@ -1849,7 +1849,7 @@ counts what's missing. Never a warning or a notice, and in the calendar every da
 picked is Ink, Sundays too. **The buttons that take something away are red** (2026-11-20, the
 team's call; the confirm was Ink before): a package's "Remove" and a category row's ×
 (`REMOVE`: the word and the outline glyph in red, no fill at rest, a 10% red wash under the
-pointer and on a press), and the dialog's "Yes, remove" (`REMOVE_CONFIRM`, solid red, paper
+pointer and on a press), and the dialog's "Remove package" (`REMOVE_CONFIRM`, solid red, paper
 words, a step toward black under the pointer), so a removal reads as one before it's pressed and
 the button that does it is the colour of what it does. Nothing else in the flow is a red button:
 "Collapse all", Edit and Change stay Ink. The first red that isn't an error or a removal is the
@@ -2031,17 +2031,22 @@ the team's call, 2026-11-20).
     the field alone instead of a flash of spinner.
 - **The Packages step** ("Estimate your shipment", 2026-11-20): the packages are a ruled list on the
   part's own paper, one package, a hairline, the next. A package's head opens and
-  closes it with the swapped chevron and names it in one line while closed ("Box B · 43 × 37 ×
-  37 cm · 32 items"). Inside, first the box it's closest to: four tiles (`RadioCards tiles`),
-  two across on a phone and four from sm, Box A, B and C (Rimkirim's standard sizes, a size to
-  pick by its sides, not a box we send) and Other. Each tile is its name and its sides on one
-  line, no picture (the team's call, 2026-11-20); Other's line says what it covers (a suitcase,
-  a crate, another size). A standard box asks nothing more (no
-  weight, no sides) and says in one line it's estimated at its volumetric weight. Other opens,
-  under the tiles, the measured package: its packaging (Others opens what it's packed in beside
-  it from sm, its examples in the placeholder and the hint, as the Eligibility Check's Others
-  does under its answer), the weight and three sides with their units worn in the fields and
-  one line on what it's charged on. Then what's inside, a row per kind of thing: a category
+  closes it with the swapped chevron and names it in one line while closed ("Medium Box · 9 kg · 43 ×
+  37 × 37 cm · 32 items"). Inside, first its "Package size": four tiles (`RadioCards tiles`),
+  two across on a phone and four from sm, Small Box, Medium Box and Large Box (Rimkirim's
+  standard sizes, Box A, B and C on the boxes themselves and in the data; each name fits a
+  tile on one line down to a 360px phone; a size to
+  pick by its sides, not a box we send) and Custom. Each tile is its name and its sides on one
+  line, no picture (the team's call, 2026-11-20); Custom's line says what it covers (a suitcase,
+  a crate, another size). A standard box's sides are known; Custom opens, under the tiles, its
+  packaging (Others opens what it's packed in beside it from sm, its examples in the placeholder
+  and the hint, as the Eligibility Check's Others does under its answer) and its three sides in
+  a row of three, their unit worn in the fields. Once any size is picked, "Estimated weight"
+  opens under it (a third of the row from sm, half on a phone), with one line naming its
+  chargeable weight: the weight, or the volumetric weight when that's more. Custom's sides say
+  once, under them, to measure the outside at the widest point. Then what's inside, its shape
+  said in a line under the heading (a row for each kind of thing, how many, what they're worth
+  together); each row is a category
   picked from a searchable list (each with examples under it, which the search matches too,
   so "coat" finds Clothing & shoes; Others always stays in the list and opens "What is it?"
   under its row), "Qty", and the row's value in total, each field wearing what it is, so no
@@ -2064,7 +2069,8 @@ the team's call, 2026-11-20).
   and an amount ("AUD 300") to match the fields. Past three packages the finished ones
   open folded, so a house listed package by package is a screen of lines, not dozens of forms;
   the ones still to fill stay open. A size or weight that reads like the wrong unit (a side over
-  3 m, a package over 500 kg) is asked about in a notice under Other's measures, never refused.
+  3 m on a Custom package, a package over 500 kg) is asked about in a notice under the weight,
+  never refused.
 - **Selected Service:** a paper card beside the plan, sticky from lg, its estimate under the
   card's one hairline. On a phone it is a
   strip over the parts, the service on a line of its own so its name reads

@@ -79,8 +79,8 @@ const ODD_WEIGHT_KG = 500;
  * The Packages step ("Estimate your shipment"), the WNI flow's Items & Packages
  * in the plan's dress: the values' currency first, then the packages as a
  * ruled list on the part's own paper (each the standard box it's closest
- * to, or Other with its packaging, weight and three sides; then what's
- * inside, a row per kind of thing), then the totals. The estimate
+ * to, or Custom with its packaging and three sides, then its estimated
+ * weight; then what's inside, a row per kind of thing), then the totals. The estimate
  * lives in the Selected Service beside it and follows the packages once
  * they're measured (packedPricing); this step says so under the totals.
  * Errors show once a field is left, as on Your details; `tried` (a count of
@@ -367,20 +367,19 @@ function PackageBlock({
   const nb = (x: string) => x.replace(/ /g, "\u00a0");
   const summary = done
     ? [
-        ...(std
-          ? [p(`boxes.${pkg.box}`), sides(BOX_SIZES[pkg.box as keyof typeof BOX_SIZES])]
-          : [
-              packedOther ? pkg.packagingOther!.trim() : p(`types.${pkg.packaging}`),
-              `${kg(Number.parseFloat(pkg.weight))} kg`,
-              sides(pkg),
-            ]),
+        std ? p(`boxes.${pkg.box}`) : packedOther ? pkg.packagingOther!.trim() : p(`types.${pkg.packaging}`),
+        `${kg(Number.parseFloat(pkg.weight))} kg`,
+        sides(std ? BOX_SIZES[pkg.box as keyof typeof BOX_SIZES] : pkg),
         count === 1 ? p("itemsOne") : p("itemsMany").replace("{n}", String(count)),
       ].join(" · ")
     : touched
       ? p("unfinished")
       : p("empty");
   const charge = packageMeasured(pkg) ? packageCharge(pkg) : null;
-  const longest = Math.max(...(["length", "width", "height"] as const).map((s) => Number.parseFloat(pkg[s]) || 0));
+  // a Custom package's own sides only: a standard box's are known
+  const longest = isOther
+    ? Math.max(...(["length", "width", "height"] as const).map((s) => Number.parseFloat(pkg[s]) || 0))
+    : 0;
   const heavy = (Number.parseFloat(pkg.weight) || 0) > ODD_WEIGHT_KG;
   const boxId = `${regionId}-box`;
   const boxErr = tried && !pkg.box ? p("boxPick") : undefined;
@@ -431,9 +430,10 @@ function PackageBlock({
         <CollapseHeight open={open} id={regionId} className="px-1 pb-1">
           <div className="grid grid-cols-1 gap-6 pt-4">
             {/* the box it's closest to: a size, not a box we send, picked
-                by its sides. A standard box isn't weighed or measured here;
-                anything else is Other, and asked what it's in, its weight
-                and its sides */}
+                by its sides. Custom (anything else: a suitcase, a crate, a
+                bigger box) is asked what it's in and its sides. Once a size
+                is picked, every package is asked its estimated weight, and
+                is charged on that or its volumetric weight, whichever is more */}
             <div>
               <p id={boxId} className="mb-1 text-xs font-medium">
                 {p("box")}
@@ -456,9 +456,6 @@ function PackageBlock({
                 <p id={`${boxId}-hint`} className="mt-1 text-xs text-muted">
                   {p("boxHint")}
                 </p>
-              )}
-              {charge?.by === "box" && (
-                <p className="mt-1 text-xs text-muted">{p("chargeBox").replace("{kg}", kg(charge.kg))}</p>
               )}
 
               <div className="-mx-1">
@@ -493,29 +490,40 @@ function PackageBlock({
                         </Field>
                       )}
                     </div>
-
+                    {/* how to measure, said once for all three: a suitcase's
+                        wheels and handles count, as the carrier counts them */}
                     <div>
-                      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-                        {measure("weight")}
+                      <div className="grid grid-cols-3 gap-3">
                         {measure("length")}
                         {measure("width")}
                         {measure("height")}
                       </div>
-                      {charge && charge.by !== "box" && (
-                        <p className="mt-1 text-xs text-muted">
-                          {p(charge.by === "size" ? "chargeSize" : "chargeWeight").replace("{kg}", kg(charge.kg))}
-                        </p>
-                      )}
-                      {/* a number that looks like the wrong unit: asked about, not
-                          refused, since the estimate follows it at once */}
-                      {(longest > ODD_SIDE_CM || heavy) && (
-                        <Note className={cn("mt-3", enter && "banner-enter")}>
-                          {longest > ODD_SIDE_CM && p("oddSize").replace("{cm}", kg(longest)).replace("{m}", kg(longest / 100))}
-                          {longest > ODD_SIDE_CM && heavy && " "}
-                          {heavy && p("oddWeight").replace("{kg}", kg(Number.parseFloat(pkg.weight)))}
-                        </Note>
-                      )}
+                      <p className="mt-1 text-xs text-muted">{p("sidesHint")}</p>
                     </div>
+                  </div>
+                </CollapseHeight>
+              </div>
+
+              {/* the weight, once there's a size to weigh: a third of the row
+                  from sm, as a side is, half on a phone */}
+              <div className="-mx-1">
+                <CollapseHeight open={!!pkg.box} className="px-1 pb-1">
+                  <div className="pt-6">
+                    <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">{measure("weight")}</div>
+                    {charge && (
+                      <p className="mt-1 text-xs text-muted">
+                        {p(charge.by === "size" ? "chargeSize" : "chargeWeight").replace("{kg}", kg(charge.kg))}
+                      </p>
+                    )}
+                    {/* a number that looks like the wrong unit: asked about, not
+                        refused, since the estimate follows it at once */}
+                    {(longest > ODD_SIDE_CM || heavy) && (
+                      <Note className={cn("mt-3", enter && "banner-enter")}>
+                        {longest > ODD_SIDE_CM && p("oddSize").replace("{cm}", kg(longest)).replace("{m}", kg(longest / 100))}
+                        {longest > ODD_SIDE_CM && heavy && " "}
+                        {heavy && p("oddWeight").replace("{kg}", kg(Number.parseFloat(pkg.weight)))}
+                      </Note>
+                    )}
                   </div>
                 </CollapseHeight>
               </div>
@@ -523,6 +531,9 @@ function PackageBlock({
 
             <fieldset>
               <legend className="text-sm font-medium">{p("inside")}</legend>
+              {/* the row's shape, which no label says: one per kind of thing,
+                  its value for all of them */}
+              <p className="mt-1 text-xs text-muted">{p("insideHint")}</p>
               {/* a row per kind of thing (its category, how many, what they're
                   worth together), each field wearing what it is ("Qty", the
                   currency and "total"), so no label is repeated down the
@@ -592,7 +603,14 @@ function PackageBlock({
                           variant="ghost"
                           size="icon"
                           onClick={() => onChange({ items: pkg.items.filter((x) => x.id !== it.id) })}
-                          aria-label={p("removeItem").replace("{n}", String(j + 1))}
+                          aria-label={p("removeItem").replace(
+                            "{name}",
+                            it.category === "others"
+                              ? it.name.trim() || p("thisRow")
+                              : it.category
+                                ? p(`contents.${it.category}`)
+                                : p("thisRow"),
+                          )}
                           className={cn(REMOVE, "size-11")}
                         >
                           <XMarkIcon />

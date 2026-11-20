@@ -115,9 +115,11 @@ export function customsCategory(a: EligibilityAnswers): CustomsCategory {
 
 /**
  * Rimkirim's three standard boxes, inner sides in cm, from the boxes
- * themselves (photo, 20 Nov 2026). A size to pick the closest to, not a box
+ * themselves (photo, 20 Nov 2026, where they're Box A, B and C; the page
+ * calls them Small Box, Medium Box and Large Box). A size to pick the closest to, not a box
  * that's sent: the customer packs in their own. A package that fits none of
- * them (a suitcase, a crate, a bigger box) is "other" and is measured.
+ * them (a suitcase, a crate, a bigger box) is "other" (Custom) and is
+ * measured. Every package is then asked its estimated weight.
  */
 export const BOX_SIZES = {
   A: { length: 32, width: 23, height: 30 },
@@ -169,21 +171,22 @@ export interface PackingItem {
 }
 
 /**
- * One package as typed: the standard box it's closest to, or "other" and
- * then the WNI flow's fields (lib/types/packing), what it's packed in, its
- * weight and three sides. Measurements stay text while typed, so "12."
- * survives the keystroke, and become numbers in the booking (toItemsData).
+ * One package as typed: the standard box it's closest to, or "other"
+ * (Custom) and then the WNI flow's fields (lib/types/packing), what it's
+ * packed in and its three sides; and for every package, its estimated
+ * weight. Measurements stay text while typed, so "12." survives the
+ * keystroke, and become numbers in the booking (toItemsData).
  */
 export interface PackingPackage {
   id: string;
   /** "" until one is picked */
   box: BoxChoice | "";
-  /** a PACKAGING_TYPES value; asked of "other" only */
+  /** a PACKAGING_TYPES value; asked of "other" only, as are the three sides */
   packaging: string;
   /** what it's packed in, typed, when packaging is "other"; absent on drafts
    *  saved before it was asked */
   packagingOther?: string;
-  /** kg; asked of "other" only, as are the three sides */
+  /** kg, estimated; asked of every package once its size is picked */
   weight: string;
   /** cm */
   length: string;
@@ -259,17 +262,19 @@ export const packingCurrency = (p: PackingInput, originCountry: string) =>
 export const declaredValue = (n: number, code: string) =>
   `${code} ${new Intl.NumberFormat("en-GB", { maximumFractionDigits: 2 }).format(n)}`;
 
-/** a standard box picked, or "other" with its weight and all three sides
- *  in, each above 0 */
+/** a size picked and its estimated weight in: a standard box, or "other"
+ *  with all three sides, each above 0 */
 export const packageMeasured = (p: PackingPackage) =>
-  isStandardBox(p.box) ||
-  (p.box === "other" && num(p.weight) > 0 && num(p.length) > 0 && num(p.width) > 0 && num(p.height) > 0);
+  num(p.weight) > 0 &&
+  (isStandardBox(p.box) || (p.box === "other" && num(p.length) > 0 && num(p.width) > 0 && num(p.height) > 0));
 
-/** what a package is charged on: its weight, or its size when that's more. A
- *  standard box isn't weighed here, so it's estimated on its size ("box") */
-export function packageCharge(p: PackingPackage): { kg: number; by: "weight" | "size" | "box" } {
-  if (isStandardBox(p.box)) return { kg: volumetricWeight(BOX_SIZES[p.box]), by: "box" };
-  const dims = { weight: num(p.weight), length: num(p.length), width: num(p.width), height: num(p.height), quantity: 1 };
+/** a package's sides: a standard box's, or its own */
+const packageSides = (p: PackingPackage) =>
+  isStandardBox(p.box) ? BOX_SIZES[p.box] : { length: num(p.length), width: num(p.width), height: num(p.height) };
+
+/** what a package is charged on: its weight, or its size when that's more */
+export function packageCharge(p: PackingPackage): { kg: number; by: "weight" | "size" } {
+  const dims = { weight: num(p.weight), ...packageSides(p), quantity: 1 };
   return { kg: chargeableWeight(dims), by: volumetricWeight(dims) > dims.weight ? "size" : "weight" };
 }
 
@@ -367,7 +372,7 @@ export function toItemsData(p: PackingInput, originCountry: string): ItemsData {
           value: quantity > 0 ? num(it.value) / quantity : 0,
         };
       });
-      if (isStandardBox(pk.box)) return { box: pk.box, packaging: "box", weight: 0, ...BOX_SIZES[pk.box], items };
+      if (isStandardBox(pk.box)) return { box: pk.box, packaging: "box", weight: num(pk.weight), ...BOX_SIZES[pk.box], items };
       return {
         packaging: pk.packaging,
         ...(pk.packaging === "other" ? { packagingOther: pk.packagingOther?.trim() } : {}),

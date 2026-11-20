@@ -74,9 +74,8 @@ export function bookingFacts(b: ExpatBooking, t: T) {
           ...(declared > 0 ? [bk("declared").replace("{value}", declaredValue(declared, currency))] : []),
         ].join(" · "),
         packages: list.map((p, i) => ({
-          // a standard box by its name and sides (it isn't weighed until it
-          // reaches the warehouse); anything else by what it's in, its
-          // weight and sides
+          // a standard box by its name, anything else by what it's in;
+          // then its estimated weight and its sides
           title: `${pk("packageN").replace("{n}", String(i + 1))} · ${
             p.box
               ? pk(`boxes.${p.box}`)
@@ -84,9 +83,7 @@ export function bookingFacts(b: ExpatBooking, t: T) {
                 ? p.packagingOther
                 : pk(`types.${p.packaging}`)
           }`,
-          measures: p.box
-            ? `${p.length} × ${p.width} × ${p.height} cm`
-            : `${kg(p.weight)} kg · ${p.length} × ${p.width} × ${p.height} cm`,
+          measures: `${kg(p.weight)} kg · ${p.length} × ${p.width} × ${p.height} cm`,
           items: p.items.map((it) => ({
             // a row by its category (Others by what was typed); a booking
             // from before categories, by its name

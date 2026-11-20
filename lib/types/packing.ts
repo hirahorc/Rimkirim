@@ -29,7 +29,7 @@ export interface PackageRow {
   /** what it's packed in, typed, when packaging is "other" (the expat flow) */
   packagingOther?: string;
   /** the standard size it's closest to (the expat flow's BOX_SIZES): its
-   *  sides are then the box's, and `weight` is 0, never asked */
+   *  sides are then the box's, and `weight` the customer's estimate */
   box?: "A" | "B" | "C";
   weight: number;
   length: number;
