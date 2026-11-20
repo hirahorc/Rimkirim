@@ -40,8 +40,9 @@ export function checkComplete(c: CheckRateInput): boolean {
 
 /* --------------------------------------------------------- Eligibility Check */
 
-/** Q1's six options, in the epic's order */
-export const ITEM_CATEGORIES = ["furniture", "personal", "fineArt", "electronics", "office", "others"] as const;
+/** Q1's options, in the epic's order minus "Fine Art & High-Value Items"
+ *  (dropped 2026-11-20) */
+export const ITEM_CATEGORIES = ["furniture", "personal", "electronics", "office", "others"] as const;
 export type ItemCategory = (typeof ITEM_CATEGORIES)[number];
 
 /** what Q1 tells the customer can't be shipped (the PM's eligibility rule

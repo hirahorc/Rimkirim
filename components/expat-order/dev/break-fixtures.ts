@@ -181,7 +181,7 @@ const worst: Order = {
   },
   eligibility: {
     // every category, and both "Others" at their 120 characters
-    items: ["furniture", "personal", "fineArt", "electronics", "office", "others"],
+    items: ["furniture", "personal", "electronics", "office", "others"],
     itemsOther:
       "A 1920s Bechstein upright piano, two Persian rugs, my grandmother's porcelain dinner service and forty framed maps",
     location: "indonesia",

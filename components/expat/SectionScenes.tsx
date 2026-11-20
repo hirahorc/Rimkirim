@@ -278,7 +278,7 @@ export function EligibleScene() {
           labelledBy="scene-q1"
           value={["furniture", "personal"]}
           onChange={() => {}}
-          options={(["furniture", "personal", "fineArt", "electronics"] as const).map((c) => ({
+          options={(["furniture", "personal", "electronics", "office"] as const).map((c) => ({
             value: c,
             label: e(`items.${c}`),
           }))}

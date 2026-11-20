@@ -190,7 +190,6 @@ const id = {
       items: {
         furniture: "Furnitur & barang rumah tangga besar",
         personal: "Barang pribadi & non-furnitur",
-        fineArt: "Karya seni & barang bernilai tinggi",
         electronics: "Elektronik",
         office: "Peralatan kantor",
         others: "Lainnya",
@@ -2483,7 +2482,6 @@ const en: Messages = {
       items: {
         furniture: "Furniture & Large Household Goods",
         personal: "Personal Effects & Non-Furniture",
-        fineArt: "Fine Art & High-Value Items",
         electronics: "Electronics",
         office: "Office Equipment",
         others: "Others",
