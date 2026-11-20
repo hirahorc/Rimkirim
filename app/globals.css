@@ -571,7 +571,7 @@ body:has(main > [data-flow]) .pop-panel [role="gridcell"] > button[aria-pressed=
 }
 /* every day that can be picked is Ink, and Sunday's name is Muted as the
    other six are: the calendar's red Sunday is a custom, not an error, and
-   red here is only what's wrong */
+   red here is only what's wrong and what takes something away */
 body:has(main > [data-flow]) .pop-panel [role="gridcell"] > button:enabled:not([aria-pressed="true"]) {
   color: var(--flow-ink);
 }

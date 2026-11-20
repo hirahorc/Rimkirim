@@ -68,6 +68,19 @@ export const ACTION_LOOK =
   "inline-flex h-8 shrink-0 items-center gap-1.5 rounded-sm border border-foreground bg-background px-3 font-display text-xs font-medium transition-colors [&_svg]:size-4 [&_svg]:shrink-0 group-hover:bg-surface-2 group-active:bg-surface-2";
 
 /**
+ * An action that takes something away (a package's "Remove", a row's ×): the
+ * flow's red, as quiet as a ghost button at rest (the word and the glyph in
+ * red, no fill or line), a 10% red wash under the pointer and on a press. It
+ * says "this takes something away" before it's pressed, so it's never taken
+ * for "Collapse all" or an Edit beside it. Pair it with `variant="ghost"`.
+ * The dialog's button that does the removing is the solid red,
+ * `REMOVE_CONFIRM`, on `variant="danger"`.
+ */
+export const REMOVE = "text-danger hover:bg-danger/10 hover:text-danger active:bg-danger/10";
+export const REMOVE_CONFIRM =
+  "border-danger bg-danger text-background hover:bg-[color-mix(in_oklab,var(--danger)_86%,black)] active:bg-[color-mix(in_oklab,var(--danger)_86%,black)]";
+
+/**
  * A typed field: a wash well with what it wears inside it (an icon, a unit,
  * a currency) in a row, so nothing is laid over the input and padded around.
  * Its edge turns ink in hand and red in error, and stays red while what's
@@ -112,8 +125,9 @@ export function Worn({ children }: { children: React.ReactNode }) {
   );
 }
 
-/** what's wrong, where it is: red, the one thing in the flow that is, and
- *  medium with a mark, so it isn't said in colour alone */
+/** what's wrong, where it is: red (which in the flow is only what's wrong
+ *  and what takes something away, REMOVE), medium, with a mark, so it isn't
+ *  said in colour alone */
 export function Wrong({ id, className, children }: { id?: string; className?: string; children?: React.ReactNode }) {
   if (!children) return null;
   return (

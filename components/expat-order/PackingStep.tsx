@@ -2,7 +2,8 @@
 
 import * as React from "react";
 import { ChevronDown, ChevronUp, PackageSearch, Ruler } from "lucide-react";
-import { PlusIcon, TrashIcon, XMarkIcon } from "@heroicons/react/16/solid";
+import { PlusIcon, XMarkIcon } from "@heroicons/react/16/solid";
+import { TrashIcon } from "@heroicons/react/24/outline";
 import { Button } from "@/components/ui/button";
 import { SelectField } from "@/components/ui/select-field";
 import { CollapseHeight } from "@/components/ui/disclosure";
@@ -39,7 +40,7 @@ import { formatNumber } from "@/lib/utils/currency";
 import { useT } from "@/lib/i18n/LanguageProvider";
 import { cn } from "@/lib/utils/cn";
 import { RadioCards } from "./ChoiceCards";
-import { ACTION, Done, Field, InspectLink, Note, PRESS, QUIET, TYPE, Well, Worn, Wrong } from "./kit";
+import { ACTION, Done, Field, InspectLink, Note, PRESS, QUIET, REMOVE, REMOVE_CONFIRM, TYPE, Well, Worn, Wrong } from "./kit";
 
 /** digits and one decimal point, a comma read as one */
 function decimal(s: string): string {
@@ -415,9 +416,11 @@ function PackageBlock({
             size="sm"
             onClick={onRemove}
             aria-label={p("removePackage").replace("{n}", String(n))}
-            className="tap-target relative shrink-0"
+            className={cn(REMOVE, "tap-target relative shrink-0")}
           >
-            <TrashIcon /> {p("remove")}
+            {/* the bin in outline, drawn at 2 so it holds its weight at 16px
+                (the team's call, 2026-11-20), as "Need help?"'s bubble is */}
+            <TrashIcon strokeWidth={2} /> {p("remove")}
           </Button>
         )}
       </div>
@@ -590,7 +593,7 @@ function PackageBlock({
                           size="icon"
                           onClick={() => onChange({ items: pkg.items.filter((x) => x.id !== it.id) })}
                           aria-label={p("removeItem").replace("{n}", String(j + 1))}
-                          className="size-11"
+                          className={cn(REMOVE, "size-11")}
                         >
                           <XMarkIcon />
                         </Button>
@@ -674,12 +677,13 @@ function RemovePackageDialog({
           <Button type="button" variant="secondary" className={QUIET} onClick={() => onOpenChange(false)}>
             {p("removeCancel")}
           </Button>
-          {/* Ink, the dialog's one solid button: red in the flow is only what's
-              wrong, and lime is for going on, not for taking away */}
+          {/* the dialog's one solid button, in the red of what it does (it
+              takes the package away, as the Remove that opened it says);
+              lime is for going on, not for taking away */}
           <Button
             type="button"
             variant="danger"
-            className="border-foreground bg-foreground text-background hover:bg-foreground"
+            className={REMOVE_CONFIRM}
             onClick={() => {
               removed.current = true;
               onConfirm();
