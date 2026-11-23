@@ -88,11 +88,11 @@ export function CanvasSwitch() {
         </span>
         {/* plain links, so each is a page load: a scene's storage ends with its page */}
         <a href={board ? `/canvas/${board.id}#${encodeURIComponent(id)}` : "/canvas"} style={segment(true)}>
-          Kembali ke canvas
+          Back to canvas
         </a>
         {board && (
           <a href={boardHome(board)} style={segment(false)}>
-            Keluar dari scene
+            Leave scene
           </a>
         )}
       </div>
@@ -102,7 +102,7 @@ export function CanvasSwitch() {
   const board = boardForPath(pathname);
   if (!board) return null;
   return (
-    <div role="group" aria-label="Prototype atau canvas" className={place} style={BAR}>
+    <div role="group" aria-label="Prototype or canvas" className={place} style={BAR}>
       <span aria-current="page" style={segment(true)}>
         Prototype
       </span>

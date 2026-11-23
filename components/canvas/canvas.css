@@ -94,10 +94,37 @@ main:has(.rk-canvas) ~ [data-env-badge] {
   overflow-y: auto;
   padding: 8px 8px 24px;
 }
-.rk-outline h2 {
+.rk-lane-name {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 8px;
   margin: 12px 8px 4px;
+}
+.rk-outline h2 {
+  min-width: 0;
+  margin: 0;
   font-size: 12px;
   font-weight: 650;
+}
+/* a lane's own action, beside its name: not one of the list's rows below it */
+.rk-outline .rk-lane-name button {
+  display: block;
+  width: auto;
+  flex: none;
+  padding: 3px 7px;
+  border: 1px solid var(--rk-line);
+  border-radius: 6px;
+  background: none;
+  color: var(--rk-mute);
+  font-size: 11px;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.rk-outline .rk-lane-name button:hover {
+  border-color: var(--rk-ink);
+  background: none;
+  color: var(--rk-ink);
 }
 .rk-outline h2 span {
   display: block;
@@ -320,6 +347,38 @@ main:has(.rk-canvas) ~ [data-env-badge] {
   margin: calc(18px * var(--u)) 0 0;
   color: var(--rk-mute);
   font-size: calc(34px * var(--u));
+}
+.rk-notes {
+  display: flex;
+  align-items: flex-start;
+  gap: calc(48px * var(--u));
+}
+.rk-differs,
+.rk-confirm {
+  flex: none;
+}
+.rk-confirm {
+  max-width: calc(1500px * var(--u));
+  padding: calc(34px * var(--u)) calc(40px * var(--u));
+  border-radius: calc(8px * var(--u));
+  background: #e8f0fe;
+  box-shadow: 0 calc(6px * var(--u)) calc(18px * var(--u)) rgb(0 0 0 / 0.1);
+  font-size: calc(30px * var(--u));
+}
+.rk-confirm p {
+  margin: 0 0 calc(12px * var(--u));
+  font-weight: 680;
+}
+.rk-confirm p span {
+  color: var(--rk-mute);
+  font-weight: 400;
+}
+.rk-confirm ul {
+  margin: 0;
+  padding-left: 1.1em;
+}
+.rk-confirm li + li {
+  margin-top: calc(10px * var(--u));
 }
 .rk-differs {
   max-width: calc(1500px * var(--u));
@@ -557,6 +616,10 @@ main:has(.rk-canvas) ~ [data-env-badge] {
 }
 .rk-inspect button[aria-pressed="true"] {
   background: #2563eb;
+}
+.rk-inspect button:disabled {
+  opacity: 0.45;
+  cursor: default;
 }
 .rk-canvas .rk-inspect :focus-visible {
   outline-color: #fff;

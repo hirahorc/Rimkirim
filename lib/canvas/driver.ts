@@ -11,8 +11,6 @@ import type { Step, Target } from "./types";
 
 const FIND_MS = 6000;
 const TICK_MS = 80;
-/** what a sticky header takes off the top of the screen */
-const HEADER_ROOM = 72;
 
 /** the browser's own timer: scene mode holds long timers back, never these */
 const later = (fn: () => void, ms: number) => {
@@ -88,7 +86,7 @@ const say = (t: Target) =>
     .map(([k, v]) => `${k}: ${JSON.stringify(v)}`)
     .join(", ");
 
-async function find(t: Target): Promise<HTMLElement> {
+export async function find(t: Target): Promise<HTMLElement> {
   const until = Date.now() + FIND_MS;
   for (;;) {
     const hit = candidates(t).filter(onScreen)[t.nth ?? 0];
@@ -143,11 +141,6 @@ export async function play(steps: Step[]): Promise<void> {
         case "show":
           (await find(step.on)).scrollIntoView({ block: "center", behavior: "instant" });
           break;
-        case "to": {
-          const at = (await find(step.on)).getBoundingClientRect().top + window.scrollY;
-          window.scrollTo({ top: Math.max(0, at - HEADER_ROOM), behavior: "instant" });
-          break;
-        }
         case "top":
           window.scrollTo({ top: 0, behavior: "instant" });
           break;

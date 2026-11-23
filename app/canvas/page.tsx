@@ -21,8 +21,8 @@ export default function CanvasIndexPage() {
       <div>
         <h1>Canvas</h1>
         <p>
-          Tiap halaman prototype sebagai satu board: semua state yang diminta story-nya, jalur positive dan negative,
-          di-render langsung dari halaman aslinya. Bukan screenshot, jadi selalu mengikuti kode.
+          Every page of the prototype as a board: each state its stories ask for, the positive paths and the negative
+          ones, drawn live from the page itself. Not screenshots, so the boards follow the code.
         </p>
         <ul>
           {BOARDS.map((b) => {
@@ -34,7 +34,8 @@ export default function CanvasIndexPage() {
                   <code>{b.route}</code>
                   <p>{b.lead}</p>
                   <small>
-                    {n.lanes} story · {n.scenes} frame{n.gaps ? ` · ${n.gaps} belum ada` : ""}
+                    {n.lanes} {n.lanes === 1 ? "story" : "stories"} · {n.scenes} {n.scenes === 1 ? "frame" : "frames"}
+                    {n.gaps ? ` · ${n.gaps} not built` : ""}
                   </small>
                 </Link>
               </li>

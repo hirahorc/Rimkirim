@@ -85,8 +85,9 @@ const run = async (expression) => {
   if (r.exceptionDetails) throw new Error(r.exceptionDetails.exception?.description ?? r.exceptionDetails.text);
   return r.result.value;
 };
-const press = (selector, words) =>
-  run(`[...document.querySelectorAll(${JSON.stringify(selector)})].find((b) => b.textContent.includes(${JSON.stringify(words)}))?.click()`);
+const press = (selector) => run(`document.querySelector(${JSON.stringify(selector)})?.click()`);
+/** the whole board on screen: a frame only loads once it has been */
+const ALL = '.rk-zoom button[data-zoom="all"]';
 
 await send("Page.enable");
 await send("Runtime.enable");
@@ -114,23 +115,22 @@ try {
       }
       await sleep(1500);
       if (device === "Mobile") {
-        await press(".rk-seg button", "Mobile");
+        await press('.rk-seg button[data-device="mobile"]');
         await sleep(1500);
       }
-      // the whole board on screen, so every frame loads
-      await press(".rk-zoom button", "Semua");
+      await press(ALL);
 
       const until = Date.now() + BOARD_MS;
       let state = { total: 0, ready: 0, failed: [] };
       for (;;) {
         await sleep(1500);
-        // a frame only loads once it's been on screen: keep the board whole as it grows
-        await press(".rk-zoom button", "Semua");
+        // keep the board whole as its frames grow
+        await press(ALL);
         state = await run(`(() => {
-          const count = /(\\d+)\\/(\\d+)/.exec(document.querySelector(".rk-count")?.textContent ?? "");
+          const count = document.querySelector(".rk-count")?.dataset ?? {};
           const failed = [...document.querySelectorAll(".rk-failed")].map((f) =>
-            f.closest("[data-card]").querySelector("h3").childNodes[1].textContent + ": " + f.textContent.replace("Scene gagal", "").trim());
-          return { ready: Number(count?.[1] ?? 0), total: Number(count?.[2] ?? 0), failed };
+            f.closest("[data-card]").dataset.title + ": " + f.textContent.replace("Scene failed", "").trim());
+          return { ready: Number(count.ready ?? 0), total: Number(count.total ?? 0), failed };
         })()`);
         if (state.total && state.ready + state.failed.length >= state.total) break;
         if (Date.now() > until) {

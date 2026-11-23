@@ -1,4 +1,6 @@
 import { breakBookingNumber } from "@/components/expat-order/dev/break-fixtures";
+import { REVIEW_NOTES } from "@/lib/data/expat";
+import { ORDER_REVIEW_NOTES } from "@/lib/data/expat-order-notes";
 import { messages } from "@/lib/i18n/messages";
 import { EMPTY_CHECK, EMPTY_DETAILS, EMPTY_ELIGIBILITY } from "@/lib/order/expat-order";
 import { ownLocalStorage } from "../boot";
@@ -6,16 +8,16 @@ import type { Board, Gap, Scene, Step, Target } from "../types";
 import { DRAFT, booked, checked, dataset, days, demo, draft, pkg, placeOf, planned, seed, tickets } from "./seeds";
 
 /**
- * The Expat Relocation order flow as scenes: every state its stories ask
- * for, each one a page opened on a seed and, where a stored draft can't
- * reach the state, a few steps. Lanes are the brief's tickets (RPW-290 to
- * RPW-297); a row is a story's positive path, its negative ones, or its
- * edge data.
+ * Expat Relocation as scenes: every state its stories ask for, each one a
+ * page opened on a seed and, where a stored draft can't reach the state, a
+ * few steps. Lanes are the brief's tickets (RPW-281 to RPW-297); a row is a
+ * story's positive path, its negative ones, or its edge data.
  *
  * Steps find what they press by the flow's own copy (messages.en), so a
- * label that's reworded is still found. Notes and arrow labels are in
- * Indonesian, as the flow's review notes are; what's on the screen is
- * quoted as the screen says it.
+ * label that's reworded is still found. Titles, notes and arrow labels are
+ * in English, as the brief and its tickets are: they travel into the
+ * pictures copied to Jira. What's on the screen is quoted as the screen
+ * says it, and the review notes (`confirm`) as the prototype writes them.
  */
 
 const M = messages.en.expatOrder;
@@ -53,26 +55,26 @@ const START_DETAILS = { ...EMPTY_DETAILS, dialIso: d.check.originCountry };
 const rates: Scene[] = [
   {
     id: "rates-empty",
-    title: "Form kosong",
-    note: "Kunjungan pertama. Alamat terkunci sampai negara asal dipilih.",
+    title: "Empty form",
+    note: "A first visit. The address is locked until the origin country is chosen.",
     via: "Landing: “Check your rate”",
     path: RATES,
     seed: () => seed(draft()),
   },
   {
     id: "rates-address",
-    title: "Saran alamat",
-    note: "Mengetik di alamat membuka saran. Tempat tanpa kode pos ikut muncul, tapi ditolak saat dipilih.",
-    via: "Pilih negara, ketik alamat",
+    title: "Address suggestions",
+    note: "Typing in the address opens suggestions. A place without a postal code is listed too, but refused when it's picked.",
+    via: "Choose a country, type an address",
     path: RATES,
     seed: () => seed(draft({ check: { ...EMPTY_CHECK, originCountry: "AU" } })),
     steps: [fill(ORIGIN_ADDRESS, "syd")],
   },
   {
     id: "rates-filled",
-    title: "Form terisi",
-    note: "Asal, tujuan dan berat sudah diisi. Tombolnya lime: ada yang bisa dicek.",
-    via: "Pilih alamat, isi berat",
+    title: "Form filled in",
+    note: "Origin, destination and weight are in. The button is lime: there's something to check.",
+    via: "Pick the addresses, enter the weight",
     path: RATES,
     seed: () => seed(checked({ ...d.check, weightKg: null })),
     steps: [fill(WEIGHT, "30")],
@@ -80,17 +82,17 @@ const rates: Scene[] = [
   {
     id: "rates-checking",
     title: "Checking…",
-    note: "Loading selama tarif diambil. Di prototype tarifnya lokal, jadi jedanya sengaja (pace.ts).",
-    via: "Tekan “Check rates”",
+    note: "Loading while the rate is fetched. The prototype's rates are local, so the wait is deliberate (pace.ts).",
+    via: "Press “Check rates”",
     path: RATES,
     seed: () => seed(checked({ ...d.check, weightKg: null })),
     steps: [fill(WEIGHT, "30"), { do: "hold", over: 650 }, click(CHECK)],
   },
   {
     id: "rates-required",
-    title: "Check rates saat kosong",
-    note: "Tiap isian yang kurang ditandai di tempatnya, dan yang pertama mendapat fokus.",
-    via: "Tekan “Check rates” tanpa mengisi",
+    title: "Check rates with nothing filled in",
+    note: "Each missing field is marked where it is, and the first one takes focus.",
+    via: "Press “Check rates” on an empty form",
     from: "rates-empty",
     path: RATES,
     seed: () => seed(draft()),
@@ -98,9 +100,9 @@ const rates: Scene[] = [
   },
   {
     id: "rates-no-results",
-    title: "Alamat tidak ditemukan",
+    title: "No address found",
     note: "“No places found. Try a street name.”",
-    via: "Ketik alamat yang tidak ada",
+    via: "Type an address that doesn't exist",
     from: "rates-address",
     path: RATES,
     seed: () => seed(draft({ check: { ...EMPTY_CHECK, originCountry: "AU" } })),
@@ -108,9 +110,9 @@ const rates: Scene[] = [
   },
   {
     id: "rates-no-postal",
-    title: "Tempat tanpa kode pos",
-    note: "Ditolak saat itu juga, bukan menunggu Check rates: tarif dihitung dari kode pos.",
-    via: "Pilih “Sydney” (area, tanpa kode pos)",
+    title: "A place without a postal code",
+    note: "Refused at once, not on Check rates: the rate is priced on the postal code.",
+    via: "Pick “Sydney” (an area, no postal code)",
     from: "rates-address",
     path: RATES,
     seed: () => seed(draft({ check: { ...EMPTY_CHECK, originCountry: "AU", origin: placeOf("AU", "syd", 0) } })),
@@ -118,17 +120,17 @@ const rates: Scene[] = [
   {
     id: "rates-estimate",
     title: "Estimate: Special Rate",
-    note: "Satu tarif, yang termurah. Negara asal punya Special Rate, jadi itu yang tampil dulu.",
-    via: "Tarif ditemukan",
+    note: "One rate, the cheapest. The origin country has a Special Rate, so that's the one shown first.",
+    via: "A rate is found",
     from: "rates-checking",
     path: RATES,
     seed: () => seed(checked(d.check)),
   },
   {
     id: "rates-normal",
-    title: "Estimate: tanpa Special Rate",
-    note: "Brasil tidak punya Special Rate: Normal Rate termurah per kg yang tampil dulu.",
-    via: "Negara tanpa Special Rate",
+    title: "Estimate: no Special Rate",
+    note: "Brazil has no Special Rate: the cheapest Normal Rate per kg is shown first.",
+    via: "A country without a Special Rate",
     from: null,
     path: RATES,
     seed: () => seed(checked({ ...d.check, originCountry: "BR", origin: placeOf("BR", "rio", 1) })),
@@ -136,8 +138,8 @@ const rates: Scene[] = [
   {
     id: "rates-more",
     title: "See more rates",
-    note: "Tarif lain terbuka di bawahnya, termurah dulu.",
-    via: "Tekan “See more rates”",
+    note: "The other rates open under it, cheapest first.",
+    via: "Press “See more rates”",
     from: "rates-estimate",
     path: RATES,
     seed: () => seed(checked(d.check)),
@@ -145,27 +147,27 @@ const rates: Scene[] = [
   },
   {
     id: "rates-rounded",
-    title: "Berat dibulatkan",
-    note: "30,4 kg dihitung sebagai 31 kg: “Priced at 31 kg”.",
-    via: "Berat tidak bulat",
+    title: "Weight rounded up",
+    note: "30.4 kg is priced as 31 kg: “Priced at 31 kg”.",
+    via: "A weight that isn't whole",
     from: null,
     path: RATES,
     seed: () => seed(checked({ ...d.check, weightKg: 30.4 })),
   },
   {
     id: "rates-below-tier",
-    title: "Di bawah tier Special Rate",
-    note: "10 kg belum masuk Special Rate (mulai 21 kg): Normal Rate tampil, dengan keterangan mulai berapa.",
-    via: "Berat di bawah 21 kg",
+    title: "Below the Special Rate's first tier",
+    note: "10 kg isn't in the Special Rate yet (it starts at 21 kg): a Normal Rate is shown, with the weight the Special Rate starts at.",
+    via: "A weight under 21 kg",
     from: "rates-estimate",
     path: RATES,
     seed: () => seed(checked({ ...d.check, weightKg: 10 })),
   },
   {
     id: "rates-stale",
-    title: "Form diubah setelah estimate",
-    note: "Estimate lama redup dan tidak bisa dipilih sampai dicek lagi.",
-    via: "Ubah berat",
+    title: "Form changed after the estimate",
+    note: "The old estimate dims and can't be selected until the rate is checked again.",
+    via: "Change the weight",
     from: "rates-estimate",
     path: RATES,
     seed: () => seed(checked(d.check)),
@@ -177,8 +179,8 @@ const NO_SERVICE: Gap = {
   gap: true,
   id: "rates-no-service",
   title: "No rate available / country not served",
-  note: "Diminta RPW-290: pesan yang jelas dan langkah berikutnya. Belum ada di prototype (tarifnya lokal, jadi selalu ada); tercatat di “Still to build”.",
-  via: "Rute tidak dilayani",
+  note: "Asked by RPW-290: a clear message and a next action. Not in the prototype (its rates are local, so there's always one); listed under “Still to build”.",
+  via: "The route isn't served",
   from: "rates-checking",
 };
 
@@ -204,38 +206,40 @@ const ELIG_OTHERS = {
   reason: "others" as const,
   reasonOther: "Joining my partner",
 };
+/** every part of the plan answered: all three fold and the action reads Confirm application */
+const ALL_DONE = { eligibility: d.eligibility, details: d.details, packing: d.packing };
 
 const plan: Scene[] = [
   /* RPW-297: the shell */
   {
     id: "plan-start",
-    title: "Plan terbuka di Eligibility",
-    note: "Tiga bagian di satu halaman, satu terbuka. Yang belum bisa dicapai berdiri di belakang.",
+    title: "Plan opens on the Eligibility Check",
+    note: "Three parts on one page, one open. A part that can't be reached yet stands back.",
     via: "Check Rate: “Select this rate”",
     path: PLAN,
     seed: () => seed(planned()),
   },
   {
     id: "plan-part-done",
-    title: "Bagian selesai, berikutnya terbuka",
-    note: "Eligibility melipat jadi satu baris yang mengulang jawabannya; Your details terbuka di bawahnya.",
-    via: "Jawab semua, tekan “Continue”",
+    title: "A part done, the next one open",
+    note: "The Eligibility Check folds to a line that says the answers back; Your details opens under it.",
+    via: "Answer everything, press “Continue”",
     path: PLAN,
     seed: () => seed(planned({ eligibility: d.eligibility })),
   },
   {
     id: "plan-all-done",
-    title: "Semua selesai",
-    note: "Ketiganya terlipat, tombolnya jadi “Confirm application”. Tiap bagian bisa dibuka lagi lewat “Edit”.",
-    via: "Isi Your details dan Packages",
+    title: "All three done",
+    note: "All folded, and the button reads “Confirm application”. Any part reopens from “Edit”.",
+    via: "Fill in Your details and the packages",
     path: PLAN,
-    seed: () => seed(planned({ eligibility: d.eligibility, details: d.details, packing: d.packing })),
+    seed: () => seed(planned(ALL_DONE)),
   },
   {
     id: "plan-welcome",
-    title: "Kembali dengan draft",
-    note: "Draft bertahan di perangkat sampai dikirim. Kunjungan berikutnya menyapa sekali: “Welcome back. Your answers are still here.”",
-    via: "Tutup tab, buka lagi nanti",
+    title: "Back with a draft",
+    note: "The draft stays on the device until it's submitted. The next visit says so once: “Welcome back. Your answers are still here.”",
+    via: "Close the tab, come back later",
     from: "plan-part-done",
     path: PLAN,
     seed: () => seed(planned({ eligibility: d.eligibility }), { returning: true, hold: 2500 }),
@@ -243,9 +247,9 @@ const plan: Scene[] = [
   },
   {
     id: "plan-no-rate",
-    title: "Plan dibuka tanpa rate",
-    note: "Dikembalikan ke Check Rate, dengan alasannya: “Check your rate first, then plan your relocation.”",
-    via: "Buka /plan langsung, belum pilih rate",
+    title: "Plan opened without a rate",
+    note: "Sent back to Check Rate, with the reason: “Check your rate first, then plan your relocation.”",
+    via: "Open /plan directly, before picking a rate",
     from: null,
     path: PLAN,
     seed: () => seed(checked(d.check), { hold: 2500 }),
@@ -253,9 +257,9 @@ const plan: Scene[] = [
   },
   {
     id: "plan-missing",
-    title: "Continue saat belum lengkap",
-    note: "Tombolnya tidak pernah mati: yang kurang ditandai, yang pertama mendapat fokus, dan toast menghitung sisanya.",
-    via: "Tekan “Continue” tanpa menjawab",
+    title: "Continue with answers missing",
+    note: "The button is never disabled: what's missing is marked, the first of it takes focus, and a toast counts the rest.",
+    via: "Press “Continue” without answering",
     from: "plan-start",
     path: PLAN,
     seed: () => seed(planned()),
@@ -266,9 +270,9 @@ const plan: Scene[] = [
   /* RPW-296: the customs guide */
   {
     id: "customs-first",
-    title: "Kunjungan pertama: terbuka sendiri",
-    note: "Setengah detik setelah plan tampil, panduan keluar dari tombolnya. Dialog di desktop, sheet di mobile.",
-    via: "Masuk plan pertama kali",
+    title: "First visit: it opens itself",
+    note: "Half a second after the plan appears, the guide comes out of its button. A dialog on desktop, a sheet on a phone.",
+    via: "Enter the plan for the first time",
     path: PLAN,
     seed: () => seed(planned(), { firstVisit: true }),
     steps: [{ do: "see", on: DIALOG }, wait(700)],
@@ -276,9 +280,9 @@ const plan: Scene[] = [
   },
   {
     id: "customs-hint",
-    title: "Ditutup: tombolnya mengingatkan",
-    note: "Panduan kembali ke tombolnya, dan pertama kali itu ada tulisan “Open this again here, any time.”",
-    via: "Tekan “Got it”",
+    title: "Closed: the button says where it went",
+    note: "The guide goes back into its button, and that first time there are words beside it: “Open this again here, any time.”",
+    via: "Press “Got it”",
     path: PLAN,
     seed: () => seed(planned(), { firstVisit: true }),
     steps: [{ do: "see", on: DIALOG }, wait(600), { do: "hold", over: 3000 }, click(button(M.customs.gotIt)), wait(900)],
@@ -286,9 +290,9 @@ const plan: Scene[] = [
   },
   {
     id: "customs-reopen",
-    title: "Dibuka lagi dari tombol",
-    note: "Kunjungan berikutnya panduan tidak terbuka sendiri; tombolnya selalu ada di layar.",
-    via: "Tekan “How your belongings clear customs”",
+    title: "Opened again from its button",
+    note: "On later visits the guide doesn't open itself; its button is always on screen.",
+    via: "Press “How your belongings clear customs”",
     from: null,
     path: PLAN,
     seed: () => seed(planned()),
@@ -299,9 +303,9 @@ const plan: Scene[] = [
   /* RPW-292: the Eligibility Check */
   {
     id: "elig-abroad",
-    title: "Belum tiba, punya VITAS",
-    note: "Q2 “I have not arrived yet” meminta estimated arrival date; Q3 “Yes” membuka VITAS dan ITAS.",
-    via: "Jawab Q1–Q4",
+    title: "Not arrived yet, with a VITAS",
+    note: "Q2 “I have not arrived yet” asks the estimated arrival date; Q3 “Yes” opens VITAS and ITAS.",
+    via: "Answer Q1 to Q4",
     from: "plan-start",
     path: PLAN,
     seed: () => seed(planned({ eligibility: d.eligibility })),
@@ -309,9 +313,9 @@ const plan: Scene[] = [
   },
   {
     id: "elig-indonesia",
-    title: "Sudah tinggal di Indonesia, tanpa visa",
-    note: "Q2 meminta tanggal tiba (sampai hari ini); Q3 “No” menyembunyikan VITAS dan ITAS.",
-    via: "Cabang lain Q2 dan Q3",
+    title: "Already in Indonesia, no visa",
+    note: "Q2 asks the day they arrived (up to today); Q3 “No” hides VITAS and ITAS.",
+    via: "The other branch of Q2 and Q3",
     from: "plan-start",
     path: PLAN,
     seed: () => seed(planned({ eligibility: ELIG_INDONESIA })),
@@ -319,9 +323,9 @@ const plan: Scene[] = [
   },
   {
     id: "elig-others",
-    title: "“Others” di Q1 dan Q4",
-    note: "Keduanya meminta beberapa kata. Tidak ada jawaban yang menghentikan pesanan.",
-    via: "Pilih “Others”",
+    title: "“Others” in Q1 and Q4",
+    note: "Each asks for a few words. No answer stops the order.",
+    via: "Choose “Others”",
     from: "plan-start",
     path: PLAN,
     seed: () => seed(planned({ eligibility: ELIG_OTHERS })),
@@ -329,9 +333,9 @@ const plan: Scene[] = [
   },
   {
     id: "elig-missing",
-    title: "Belum ada yang dijawab",
-    note: "“Choose at least one.” di Q1, “Choose an answer.” di Q2–Q4.",
-    via: "Tekan “Continue” tanpa menjawab",
+    title: "Nothing answered",
+    note: "“Choose at least one.” on Q1, “Choose an answer.” on Q2 to Q4.",
+    via: "Press “Continue” without answering",
     from: "plan-start",
     path: PLAN,
     seed: () => seed(planned()),
@@ -339,9 +343,9 @@ const plan: Scene[] = [
   },
   {
     id: "elig-followups",
-    title: "Pertanyaan lanjutan kosong",
-    note: "Tanggal tiba, VITAS/ITAS dan isi “Others” ikut wajib begitu jawabannya memunculkan mereka.",
-    via: "Jawab, tapi lewati lanjutannya",
+    title: "Follow-ups left empty",
+    note: "The arrival date, VITAS/ITAS and the “Others” text are required once an answer brings them up.",
+    via: "Answer, but skip the follow-ups",
     from: "plan-start",
     path: PLAN,
     seed: () =>
@@ -356,18 +360,18 @@ const plan: Scene[] = [
   /* RPW-292 + RPW-295: the furniture warning */
   {
     id: "furn-off",
-    title: "Q1 tanpa furniture",
-    note: "Catatan “You pack everything yourself” selalu ada di bawah Q1, apa pun yang dipilih.",
-    via: "Pilih kategori selain furniture",
+    title: "Q1 without furniture",
+    note: "The note “You pack everything yourself” is always under Q1, whatever is chosen.",
+    via: "Choose a category other than furniture",
     from: "plan-start",
     path: PLAN,
     seed: () => seed(planned({ eligibility: { ...EMPTY_ELIGIBILITY, items: ["personal"] } })),
   },
   {
     id: "furn-on",
-    title: "Q1 dengan furniture",
-    note: "Catatannya bertambah “, furniture included” dan tautannya jadi “See how to pack furniture”.",
-    via: "Pilih “Furniture & Large Household Goods”",
+    title: "Q1 with furniture",
+    note: "The note gains “, furniture included” and its link becomes “See how to pack furniture”.",
+    via: "Choose “Furniture & Large Household Goods”",
     path: PLAN,
     seed: () => seed(planned({ eligibility: { ...EMPTY_ELIGIBILITY, items: ["furniture", "personal"] } })),
   },
@@ -375,9 +379,9 @@ const plan: Scene[] = [
   /* RPW-293: Personal Information */
   {
     id: "details-address",
-    title: "Kartu alamat diubah",
-    note: "“Change” mengganti kartu dengan editornya di tempat: alamat (dalam negaranya) dan detail address, yang opsional.",
-    via: "Tekan “Change” di kartu asal",
+    title: "An address card being changed",
+    note: "“Change” swaps the card for its editor in place: the Address (inside its country) and the Detail Address, which is optional.",
+    via: "Press “Change” on the origin card",
     from: "plan-part-done",
     path: PLAN,
     seed: () => seed(planned({ eligibility: d.eligibility })),
@@ -385,9 +389,9 @@ const plan: Scene[] = [
   },
   {
     id: "details-date",
-    title: "Within 3 months: pickup date",
-    note: "Kalender baru ada setelah pertanyaannya dijawab. Dalam 3 bulan: hari kerja dari besok sampai hari ke-90, dan tanggalnya wajib. Di mobile kalendernya bottom sheet.",
-    via: "Pilih “Within 3 months”, buka “Pickup date”",
+    title: "Within 3 months: Pickup Date",
+    note: "There's no calendar until the question is answered. Within 3 months: weekdays from tomorrow to day 90, and a date is required. On a phone the calendar is a bottom sheet.",
+    via: "Choose “Within 3 months”, open “Pickup date”",
     from: "plan-part-done",
     path: PLAN,
     seed: () => seed(planned({ eligibility: d.eligibility, details: { ...START_DETAILS, pickupWhen: "soon" } })),
@@ -396,18 +400,18 @@ const plan: Scene[] = [
   },
   {
     id: "details-later",
-    title: "More than 3 months: tanggal opsional",
-    note: "Kalender mulai hari ke-91, tanpa batas akhir. Tanggal boleh kosong: itu jawaban yang selesai, bukan kesalahan.",
-    via: "Pilih “More than 3 months”",
+    title: "More than 3 months: the date is optional",
+    note: "The calendar starts on day 91, with no end. An empty date is a finished answer, not a mistake.",
+    via: "Choose “More than 3 months”",
     from: "plan-part-done",
     path: PLAN,
     seed: () => seed(planned({ eligibility: d.eligibility, details: { ...START_DETAILS, pickupWhen: "later" } })),
   },
   {
     id: "details-filled",
-    title: "Your details terisi",
-    note: "Nama, email, telepon (kode negara dari negara asal) dan pickup date; detail address di kedua kartu.",
-    via: "Isi semuanya",
+    title: "Your details filled in",
+    note: "Name, email, phone (the dial code from the origin country), when to collect and the Pickup Date; a Detail Address on both cards.",
+    via: "Fill in everything",
     from: "plan-part-done",
     path: PLAN,
     seed: () => seed(planned({ eligibility: d.eligibility, details: d.details })),
@@ -415,9 +419,9 @@ const plan: Scene[] = [
   },
   {
     id: "details-left",
-    title: "Field ditinggal saat salah",
-    note: "Salahnya muncul begitu field ditinggal, bukan menunggu tombol: “Enter an email like name@domain.com.”",
-    via: "Isi email salah, pindah field",
+    title: "A field left while it's wrong",
+    note: "The error shows once the field is left, not on the button: “Enter an email like name@domain.com.”",
+    via: "Type a wrong email, move on",
     from: "plan-part-done",
     path: PLAN,
     seed: () => seed(planned({ eligibility: d.eligibility })),
@@ -429,54 +433,48 @@ const plan: Scene[] = [
   },
   {
     id: "details-required",
-    title: "Continue saat kosong",
-    note: "“Required.” di tiap isian, “Choose one to continue.” di pertanyaan kapan dijemput, dan toast menghitung yang kurang.",
-    via: "Tekan “Continue” tanpa mengisi",
+    title: "Continue with nothing filled in",
+    note: "“Required.” on each field, “Choose one to continue.” on when to collect, and a toast counts what's missing.",
+    via: "Press “Continue” without filling in",
     from: "plan-part-done",
     path: PLAN,
     seed: () => seed(planned({ eligibility: d.eligibility })),
     steps: [HOLD, click(CONTINUE)],
   },
   {
-    id: "details-pickup-past",
-    title: "Pickup date sudah lewat",
-    note: "Draft dari beberapa hari lalu: tanggalnya tidak bisa dipakai lagi, dan itu dikatakan saat itu juga.",
-    via: "Kembali ke draft lama",
-    from: null,
-    path: PLAN,
-    seed: () => seed(planned({ eligibility: d.eligibility, details: { ...d.details, pickupDate: days(-2) } })),
-  },
-  {
     id: "details-cleared",
-    title: "Jawaban diganti, tanggal dikosongkan",
-    note: "Dua rentangnya tidak pernah bertemu, jadi tanggal yang dipilih untuk jawaban lama dikosongkan, dan itu dikatakan: “We cleared … because it’s outside the dates this option allows.”",
-    via: "Sudah pilih tanggal, ganti ke “More than 3 months”",
+    title: "Answer changed, the date cleared",
+    note: "The two ranges never meet, so a date picked for the old answer is cleared, and that's said: “We cleared … because it's outside the dates this option allows.”",
+    via: "With a date picked, switch to “More than 3 months”",
     from: "details-date",
     path: PLAN,
     seed: () => seed(planned({ eligibility: d.eligibility, details: { ...d.details, fullName: "" } })),
     steps: [click({ role: "radio", name: M.details.whenLater, contains: true }), wait(500)],
   },
   {
+    id: "details-pickup-past",
+    title: "The Pickup Date has passed",
+    note: "A draft from days ago: its date can't be used any more, and that's said at once.",
+    via: "Come back to an old draft",
+    from: null,
+    path: PLAN,
+    seed: () => seed(planned({ eligibility: d.eligibility, details: { ...d.details, pickupDate: days(-2) } })),
+  },
+  {
     id: "details-changed",
-    title: "Alamat diganti di Check Rate",
-    note: "Detail address sisi itu dikosongkan, supaya kurir tidak dikirim ke unit alamat lama; kartunya bilang begitu.",
-    via: "Ganti alamat tujuan di Check Rate",
+    title: "Address changed on Check Rate",
+    note: "That side's Detail Address is cleared, so the courier isn't sent to the old Address's unit; its card says so.",
+    via: "Change the destination Address on Check Rate",
     from: null,
     path: PLAN,
     seed: () =>
-      seed(
-        planned({
-          eligibility: d.eligibility,
-          details: { ...EMPTY_DETAILS, dialIso: d.check.originCountry },
-          addressChanged: { origin: false, destination: true },
-        }),
-      ),
+      seed(planned({ eligibility: d.eligibility, details: START_DETAILS, addressChanged: { origin: false, destination: true } })),
   },
   {
     id: "details-address-pick",
-    title: "Simpan alamat tanpa memilih",
+    title: "Saving an address without picking one",
     note: "“Pick an address from the list, so we get its postal code.”",
-    via: "Kosongkan alamat, tekan “Save address”",
+    via: "Clear the address, press “Save address”",
     from: "details-address",
     path: PLAN,
     seed: () => seed(planned({ eligibility: d.eligibility })),
@@ -490,36 +488,36 @@ const plan: Scene[] = [
   /* RPW-295: the Packages */
   {
     id: "pack-start",
-    title: "Package 1, belum diisi",
-    note: "Bagian terakhir plan. Mulai dengan satu package; ukuran dipilih dulu, baru berat dan isinya.",
-    via: "Your details selesai",
+    title: "Package 1, not filled in",
+    note: "The plan's last part. It starts with one package; its size is picked first, then its weight and what's inside.",
+    via: "Your details is done",
     path: PLAN,
     seed: () => seed(planned({ eligibility: d.eligibility, details: d.details })),
   },
   {
     id: "pack-category",
-    title: "Memilih kategori isi",
-    note: "Enam belas kategori dengan contohnya, bisa dicari. “Others” meminta namanya.",
-    via: "Buka “Category”",
+    title: "Choosing what's inside",
+    note: "Sixteen categories with examples, searchable. “Others” asks what it is.",
+    via: "Open “Category”",
     path: PLAN,
     seed: () => seed(planned({ eligibility: d.eligibility, details: d.details })),
     steps: [click({ text: M.packing.categoryPh }), wait(300)],
   },
   {
     id: "pack-filled",
-    title: "Dua package terisi",
-    note: "Satu Medium Box, satu Custom (suitcase). Total di bawahnya, dan estimate sekarang memakai berat package.",
-    via: "Isi ukuran, berat dan isi",
+    title: "Two packages filled in",
+    note: "One Medium Box, one Custom (a suitcase). The totals are under them, and the estimate now uses the packages' weight.",
+    via: "Fill in size, weight and contents",
     from: "pack-start",
     path: PLAN,
-    seed: () => seed(planned({ eligibility: d.eligibility, details: d.details, packing: d.packing })),
+    seed: () => seed(planned(ALL_DONE)),
     steps: [click(part("packing"))],
   },
   {
     id: "pack-missing",
-    title: "Confirm saat package belum lengkap",
-    note: "“Choose a package size.” dan “Required.” di tempatnya; package yang terlipat membuka diri.",
-    via: "Tekan “Confirm application”",
+    title: "Confirm with a package unfinished",
+    note: "“Choose a package size.” and “Required.” where they apply; a folded package unfolds.",
+    via: "Press “Confirm application”",
     from: "pack-start",
     path: PLAN,
     seed: () => seed(planned({ eligibility: d.eligibility, details: d.details })),
@@ -527,16 +525,15 @@ const plan: Scene[] = [
   },
   {
     id: "pack-odd",
-    title: "Ukuran atau berat tidak wajar",
-    note: "Sisi di atas 300 cm atau berat di atas 500 kg ditanyakan lagi, tidak pernah ditolak. Dua angka itu masih placeholder.",
-    via: "Isi 400 cm dan 600 kg",
+    title: "An unlikely size or weight",
+    note: "A side over 300 cm or a weight over 500 kg is asked about, never refused. Both numbers are still placeholders.",
+    via: "Enter 400 cm and 600 kg",
     from: "pack-filled",
     path: PLAN,
     seed: () =>
       seed(
         planned({
-          eligibility: d.eligibility,
-          details: d.details,
+          ...ALL_DONE,
           packing: { currency: "", packages: [pkg("odd", { weight: "600", length: "400", width: "60", height: "60" })] },
         }),
       ),
@@ -544,20 +541,20 @@ const plan: Scene[] = [
   },
   {
     id: "pack-remove",
-    title: "Menghapus package",
-    note: "Ditanya dulu: ukuran, berat dan isinya ikut hilang, dan tidak bisa dibatalkan.",
-    via: "Tekan “Remove” di Package 2",
+    title: "Removing a package",
+    note: "Asked first: its size, weight and contents go too, and it can't be undone.",
+    via: "Press “Remove” on Package 2",
     from: "pack-filled",
     path: PLAN,
-    seed: () => seed(planned({ eligibility: d.eligibility, details: d.details, packing: d.packing })),
+    seed: () => seed(planned(ALL_DONE)),
     steps: [click(part("packing")), wait(400), click(button(M.packing.removePackage.replace("{n}", "2"))), wait(500)],
     view: "screen",
   },
   {
     id: "pack-category-empty",
-    title: "Pencarian kategori tanpa hasil",
-    note: "“Others” selalu tinggal di daftar, jadi pencarian yang tidak cocok tetap punya jalan: pilih Others, lalu sebut barangnya.",
-    via: "Cari kategori yang tidak ada",
+    title: "A category search with no match",
+    note: "“Others” always stays in the list, so a search that matches nothing still has a way on: pick Others, then say what it is.",
+    via: "Search for a category that isn't there",
     from: "pack-category",
     path: PLAN,
     seed: () => seed(planned({ eligibility: d.eligibility, details: d.details })),
@@ -565,19 +562,13 @@ const plan: Scene[] = [
   },
   {
     id: "pack-below-tier",
-    title: "Package di bawah tier Special Rate",
-    note: "Berat package (5 kg) belum masuk Special Rate, jadi estimate tetap di berat yang dicek (30 kg).",
-    via: "Package lebih ringan dari 21 kg",
+    title: "Packages below the Special Rate's first tier",
+    note: "The packages' weight (5 kg) isn't in the Special Rate yet, so the estimate stays at the weight checked (30 kg).",
+    via: "Packages lighter than 21 kg",
     from: "pack-filled",
     path: PLAN,
     seed: () =>
-      seed(
-        planned({
-          eligibility: d.eligibility,
-          details: d.details,
-          packing: { currency: "", packages: [pkg("light", { box: "A", weight: "5" })] },
-        }),
-      ),
+      seed(planned({ ...ALL_DONE, packing: { currency: "", packages: [pkg("light", { box: "A", weight: "5" })] } })),
     steps: [click(part("packing"))],
   },
 
@@ -585,8 +576,8 @@ const plan: Scene[] = [
   {
     id: "service-change",
     title: "Change your service",
-    note: "Semua service untuk rutenya, Special Rate dulu lalu termurah. Yang sedang dipakai ditandai “Selected”.",
-    via: "Tekan “Change” di Selected service",
+    note: "Every service for the route, the Special Rate first, then cheapest first. The one in use is marked “Selected”.",
+    via: "Press “Change” on Selected service",
     from: "plan-start",
     path: PLAN,
     seed: () => seed(planned()),
@@ -595,9 +586,9 @@ const plan: Scene[] = [
   },
   {
     id: "service-changed",
-    title: "Service diganti",
-    note: "Jawaban tetap; estimate dihitung ulang, dan toast bilang service apa yang sekarang dipakai.",
-    via: "Tekan “Select this rate” di service lain",
+    title: "Service changed",
+    note: "The answers stay; the estimate is priced again, and a toast says which service is now in use.",
+    via: "Press “Select this rate” on another service",
     path: PLAN,
     seed: () => seed(planned()),
     steps: [
@@ -614,7 +605,7 @@ const plan: Scene[] = [
   {
     id: "plan-worst",
     title: "Worst case",
-    note: "Nilai terpanjang yang diterima tiap field: nama 120 karakter, email yang tidak bisa dipotong, ukuran dalam satuan yang salah.",
+    note: "The longest value each field accepts: a 120-character name, an email that can't wrap, sizes typed in the wrong unit.",
     from: null,
     path: PLAN,
     seed: () => seed(dataset("worst")),
@@ -623,7 +614,7 @@ const plan: Scene[] = [
   {
     id: "plan-many",
     title: "40 packages",
-    note: "Satu rumah, package demi package. Yang sudah lengkap mulai terlipat.",
+    note: "A whole house, package by package. The finished ones start folded.",
     from: null,
     path: PLAN,
     seed: () => seed(dataset("many")),
@@ -634,12 +625,24 @@ const plan: Scene[] = [
   {
     id: "plan-confirming",
     title: "Confirming…",
-    note: "Submitting: plan diam di bawah tombol yang bilang apa yang sedang terjadi.",
-    via: "Tekan “Confirm application”",
+    note: "Submitting: the plan stands still under a button that says what's happening.",
+    via: "Press “Confirm application”",
     from: "plan-all-done",
     path: PLAN,
-    seed: () => seed(planned({ eligibility: d.eligibility, details: d.details, packing: d.packing })),
+    seed: () => seed(planned(ALL_DONE)),
     steps: [{ do: "hold", over: 1000 }, click(CONFIRM)],
+    view: "screen",
+  },
+  {
+    id: "plan-confirm-failed",
+    title: "Confirm fails",
+    note: "The error state RPW-294 asks for: nothing is registered, the draft is as it was, and a toast says to check the answers. Without a server, it's reached here through the data: an Address with no postal code.",
+    via: "The application can't be registered",
+    from: "plan-confirming",
+    path: PLAN,
+    // every part is in, but the origin is a place the booking can't take
+    seed: () => seed(planned({ ...ALL_DONE, check: { ...d.check, origin: placeOf("AU", "syd", 0) } })),
+    steps: [HOLD, click(CONFIRM), wait(1900)],
     view: "screen",
   },
 ];
@@ -647,9 +650,9 @@ const plan: Scene[] = [
 const FURNITURE_PACKAGES: Gap = {
   gap: true,
   id: "furn-packages",
-  title: "Warning furniture di Shipment Information",
-  note: "Diminta brief: callout yang sama muncul lagi saat furniture dideklarasikan di package. Di prototype, memilih kategori “Furniture” tidak memunculkan apa-apa.",
-  via: "Pilih kategori “Furniture” di package",
+  title: "Furniture warning in Shipment Information",
+  note: "Asked by the brief: the same callout again when furniture is declared in a package. In the prototype, choosing the “Furniture” category shows nothing.",
+  via: "Choose the “Furniture” category in a package",
 };
 
 /* ----------------------------------------------------------- Booking Summary */
@@ -657,9 +660,9 @@ const FURNITURE_PACKAGES: Gap = {
 const bookingScenes: Scene[] = [
   {
     id: "booking-fresh",
-    title: "Baru dikonfirmasi",
-    note: "Kepala “Booking received” menggambar centangnya sekali, lalu dialog “We’ll contact you within 1 working day”.",
-    via: "Booking terdaftar",
+    title: "Just confirmed",
+    note: "The “Booking received” head draws its check once, then the dialog “We'll contact you within 1 working day”.",
+    via: "The booking is registered",
     from: "plan-confirming",
     path: booking(NUMBER),
     seed: () => seed(booked("demo"), { justBooked: NUMBER }),
@@ -669,16 +672,16 @@ const bookingScenes: Scene[] = [
   {
     id: "booking-summary",
     title: "Booking Summary",
-    note: "Nomor booking, What happens next (tiga langkah, invoice menyusul), lalu catatan pesanannya. Customs Category tidak pernah tampil.",
-    via: "Tekan “Got it”",
+    note: "The booking number, What happens next (three steps, the invoice later), then the record of the order. The Customs Category never shows.",
+    via: "Press “Got it”",
     path: booking(NUMBER),
     seed: () => seed(booked("demo")),
   },
   {
     id: "booking-later",
-    title: "Pickup lebih dari 3 bulan lagi",
-    note: "Tanpa tanggal: pickup “To be confirmed, more than 3 months from now”, dan langkah ketiga bilang tanggalnya disepakati saat waktunya lebih dekat.",
-    via: "Booking dengan “More than 3 months”, tanpa tanggal",
+    title: "Pickup more than 3 months away",
+    note: "No date: the pickup reads “To be confirmed, more than 3 months from now”, and step three says the date is agreed closer to the time.",
+    via: "A booking with “More than 3 months” and no date",
     from: null,
     path: booking(NUMBER),
     seed: () => {
@@ -692,8 +695,8 @@ const bookingScenes: Scene[] = [
   {
     id: "booking-docs",
     title: "Documents to get ready",
-    note: "Tiga Customs Path dengan dokumennya, terlipat di bawah langkah yang memintanya.",
-    via: "Buka “Documents to get ready”",
+    note: "The three Customs Paths with their documents, folded under the step that asks for them.",
+    via: "Open “Documents to get ready”",
     from: "booking-summary",
     path: booking(NUMBER),
     seed: () => seed(booked("demo")),
@@ -702,16 +705,16 @@ const bookingScenes: Scene[] = [
   {
     id: "booking-not-found",
     title: "Booking not found",
-    note: "Booking hanya ada di perangkat yang membuatnya (mock). Nomor yang tidak dikenal diarahkan ke Check Rate.",
-    via: "Buka tautan booking di perangkat lain",
+    note: "A booking exists only on the device that made it (mock). An unknown number is pointed to Check Rate.",
+    via: "Open a booking link on another device",
     from: null,
     path: booking("RKNOPE0000"),
     seed: () => seed(draft()),
   },
   {
     id: "booking-no-packages",
-    title: "Booking tanpa packages",
-    note: "Booking yang dibuat sebelum Packages ada: bagian itu absen, sisanya utuh.",
+    title: "A booking without packages",
+    note: "A booking made before the Packages were asked: that part is absent, the rest is whole.",
     from: null,
     path: booking(breakBookingNumber("empty")),
     seed: () => seed(booked("empty")),
@@ -719,7 +722,7 @@ const bookingScenes: Scene[] = [
   {
     id: "booking-many",
     title: "40 packages",
-    note: "Lima pertama tampil; sisanya di balik “Show all 40 packages”.",
+    note: "The first five show; the rest are behind “Show all 40 packages”.",
     from: null,
     path: booking(breakBookingNumber("many")),
     seed: () => seed(booked("many")),
@@ -728,21 +731,12 @@ const bookingScenes: Scene[] = [
   {
     id: "booking-worst",
     title: "Worst case",
-    note: "Yang diketik customer tampil seperti diketik; email dan kata panjang boleh patah di mana saja.",
+    note: "What the customer typed is shown as typed; an email or a long word may break anywhere.",
     from: null,
     path: booking(breakBookingNumber("worst")),
     seed: () => seed(booked("worst")),
   },
 ];
-
-const CONFIRM_FAILED: Gap = {
-  gap: true,
-  id: "plan-confirm-failed",
-  title: "Confirm gagal",
-  note: "Diminta RPW-294 (state error). Toast-nya sudah ada (“We couldn’t confirm your application…”), tapi belum bisa terjadi: tanpa server, submit hanya gagal pada draft yang belum lengkap.",
-  via: "Server menolak",
-  from: "plan-confirming",
-};
 
 /* --------------------------------------------------------- Internal ticket */
 
@@ -756,9 +750,9 @@ const EXPAT_TAB: Step = click({ role: "tab", name: OPS.tab });
 const ops: Scene[] = [
   {
     id: "ops-tickets",
-    title: "Ticket per Customs Category",
-    note: "Tiga booking, tiga flag: eligible_pindahan, needs_review, personal_shipment. Flag ini hanya ada di sini, tidak pernah di sisi customer.",
-    via: "Booking terdaftar",
+    title: "A ticket per Customs Category",
+    note: "Three bookings, three flags: eligible_pindahan, needs_review, personal_shipment. The flag exists only here, never on the customer's side.",
+    via: "Bookings are registered",
     from: null,
     path: SIMULATOR,
     seed: () => seed(TICKETS()),
@@ -766,9 +760,9 @@ const ops: Scene[] = [
   },
   {
     id: "ops-email",
-    title: "Preview email konfirmasi",
-    note: "Email yang sama dikirim ke customer dan ke hello@rimkirim.com. Di prototype hanya bisa dilihat di sini.",
-    via: `Tekan “${OPS.preview}”`,
+    title: "Confirmation email preview",
+    note: "The same email goes to the customer and to hello@rimkirim.com. In the prototype it can only be seen here.",
+    via: `Press “${OPS.preview}”`,
     path: SIMULATOR,
     seed: () => seed(TICKETS()),
     steps: [EXPAT_TAB, wait(400), click(button(OPS.preview, { nth: 0 })), wait(700)],
@@ -776,8 +770,8 @@ const ops: Scene[] = [
   },
   {
     id: "ops-empty",
-    title: "Belum ada booking",
-    note: "Sebelum ada yang dikonfirmasi di perangkat ini.",
+    title: "No bookings yet",
+    note: "Before anything has been confirmed on this device.",
     from: null,
     path: SIMULATOR,
     seed: () => seed(draft()),
@@ -787,48 +781,58 @@ const ops: Scene[] = [
 
 /* ------------------------------------------------------------------ Landing */
 
-/** a section of the landing, at the top of the screen once its reveal has played */
-const section = (css: string, nth = 0): Step[] => [{ do: "to", on: { css, nth } }, wait(1600)];
 const labelled = (heading: string) => `section[aria-labelledby='${heading}']`;
-const landingScene = (id: string, title: string, note: string, steps: Step[], more: Partial<Scene> = {}): Scene => ({
+/** one section of the landing, whole: the frame is as tall as the section */
+const section = (id: string, title: string, note: string, css: string, more: Partial<Scene> = {}): Scene => ({
   id,
   title,
   note,
+  from: null,
   path: LANDING,
   seed: () => seed(draft()),
-  steps,
-  view: "screen",
+  view: "section",
+  focus: { css },
   ...more,
 });
 
 const landing: Scene[] = [
-  landingScene("land-hero", "Hero", "Layar pertama: apa yang dikirim, ke mana, dan “Check your rate”.", [wait(1600)], { from: null }),
-  landingScene("land-reviews", "Reviews", "Bukti dari customer yang sudah mengirim.", section("#reviews"), { from: null }),
-  landingScene("land-ship", "What you can ship", "Apa yang bisa dikirim.", section(labelled("ship-heading")), { from: null }),
-  landingScene("land-packing", "Packing guide", "Customer selalu packing sendiri, furniture termasuk.", section("#packing"), {
-    via: "Scroll ke bawah",
-  }),
-  landingScene("land-not-allowed", "Not allowed", "Daftar yang tidak bisa dikirim; Q1 di Eligibility Check menautkan ke sini.", section("#not-allowed"), {
-    via: "Scroll ke bawah",
-  }),
-  landingScene("land-coordinate", "Who does what", "Bagian Rimkirim dan bagian customer.", section(labelled("coordinate-heading")), { from: null }),
-  landingScene("land-why", "Why Rimkirim", "Apa bedanya Rimkirim untuk pindahan ke Indonesia.", section(labelled("compare-heading")), { from: null }),
-  landingScene("land-pricing", "Pricing information", "Apa yang membentuk harga: rute, berat, ukuran, dan chargeable weight (L × W × H ÷ 5000).", section(labelled("pricing-heading")), {
+  {
+    id: "land-hero",
+    title: "Hero",
+    note: "The first screen: what is shipped, where to, and “Check your rate”.",
     from: null,
-  }),
-  landingScene("land-steps", "How it works", "Langkah dari Check Rate sampai barang diantar.", section("#how-it-works"), { from: null }),
-  landingScene("land-customs", "Customs", "Tiga Customs Path. Ditambahkan setelah brief, dari review ops.", section(labelled("customs-heading")), {
-    via: "Scroll ke bawah",
-  }),
-  landingScene("land-faq", "FAQ", "Pertanyaan umum, di halaman yang sama.", section("#faq"), { from: null }),
-  landingScene(
-    "land-faq-open",
-    "FAQ: satu jawaban terbuka",
-    "Jawaban terbuka di tempatnya.",
-    [...section("#faq"), click({ css: "#faq summary", nth: 0 }), wait(600)],
-    { via: "Tekan sebuah pertanyaan" },
+    path: LANDING,
+    seed: () => seed(draft()),
+    steps: [wait(1600)],
+    view: "screen",
+  },
+  section("land-reviews", "Reviews", "Proof from customers who have shipped.", "#reviews"),
+  section(
+    "land-ship",
+    "What you can ship",
+    "What can be shipped, the packing guide (the customer always packs, furniture included) and what can't be shipped, which the Eligibility Check's Q1 links to.",
+    labelled("ship-heading"),
   ),
-  landingScene("land-closing", "Closing CTA", "Ajakan terakhir ke Check Rate, tanpa harus scroll ke atas.", section(labelled("closing-heading")), { from: null }),
+  section("land-coordinate", "Who does what", "Rimkirim's part and the customer's.", labelled("coordinate-heading")),
+  section("land-why", "Why Rimkirim", "What makes Rimkirim different for a move to Indonesia.", labelled("compare-heading")),
+  section(
+    "land-pricing",
+    "Pricing information",
+    "What shapes the price: route, weight, size, and chargeable weight (L × W × H ÷ 5000).",
+    labelled("pricing-heading"),
+  ),
+  section("land-steps", "How it works", "The steps from Check Rate to delivery.", "#how-it-works"),
+  section("land-customs", "Customs", "The three Customs Paths. Added after the brief, from ops' review.", labelled("customs-heading"), {
+    via: "Scroll on",
+    from: undefined,
+  }),
+  section("land-faq", "FAQ", "Common questions, on the same page.", "#faq"),
+  section("land-faq-open", "FAQ: an answer open", "An answer opens in place.", "#faq", {
+    via: "Press a question",
+    from: undefined,
+    steps: [click({ css: "#faq summary", nth: 0 }), wait(600)],
+  }),
+  section("land-closing", "Closing CTA", "A last way to Check Rate, without scrolling back up.", labelled("closing-heading")),
 ];
 
 export const EXPAT_SCENES: Scene[] = [...rates, ...plan, ...bookingScenes, ...ops, ...landing];
@@ -854,13 +858,13 @@ export const EXPAT_BOARDS: Board[] = [
     // no page of its own: the flow starts at Check Rate
     page: { is: () => false, home: RATES },
     digest: true,
-    lead: "Jalur mulus dari Check Rate sampai Booking Summary, satu frame per langkah. Detail tiap halaman ada di board-nya.",
+    lead: "The happy path from Check Rate to the Booking Summary, a frame per step. Each page's states are on its own board.",
     lanes: [
       {
         id: "happy",
         ticket: "RPW-280",
-        title: "Happy path, ujung ke ujung",
-        story: "Check Rate, Select Rate, lalu plan (Eligibility Check, Personal Information, Packages), Confirm application, Booking Summary.",
+        title: "Happy path, end to end",
+        story: "Check Rate, Select Rate, then the plan (Eligibility Check, Personal Information, Packages), Confirm application, the Booking Summary.",
         rows: [
           {
             kind: "positive",
@@ -885,7 +889,7 @@ export const EXPAT_BOARDS: Board[] = [
     title: "Check Rate",
     route: RATES,
     page: { is: (p) => p === RATES, home: RATES },
-    lead: "Tempat pesanan dimulai: dari mana, ke mana, kira-kira berapa berat. Lalu satu tarif, dengan yang lain kalau diminta.",
+    lead: "Where an order starts: where from, where to, and roughly how heavy. Then one rate, with the others on request.",
     lanes: [
       {
         id: "rpw-290",
@@ -893,6 +897,7 @@ export const EXPAT_BOARDS: Board[] = [
         title: "Rate Check",
         story:
           "As a visitor, I want to enter where I am moving from and to, plus a rough weight, so that I get a price without filling in a long form first.",
+        confirm: [ORDER_REVIEW_NOTES.rates],
         rows: [
           { kind: "positive", cells: ["rates-empty", "rates-address", "rates-filled", "rates-checking"] },
           { kind: "negative", cells: ["rates-required", "rates-no-results", "rates-no-postal", NO_SERVICE] },
@@ -905,7 +910,7 @@ export const EXPAT_BOARDS: Board[] = [
         story:
           "As a customer, I want one recommended price rather than a wall of options, so that I can decide quickly without comparing everything.",
         differs: [
-          "Brief: “final price confirmed at quotation”. Prototype: quotation masih estimate; harga final ada di invoice (koreksi tim).",
+          "Brief: “final price confirmed at quotation”. Prototype: the Quotation is still an estimate; the final price comes on the Invoice (the team's correction).",
         ],
         rows: [
           { kind: "positive", cells: ["rates-estimate", "rates-more", "rates-normal", "rates-rounded"] },
@@ -919,7 +924,7 @@ export const EXPAT_BOARDS: Board[] = [
     title: "Plan",
     route: PLAN,
     page: { is: (p) => p === PLAN, home: PLAN },
-    lead: "Eligibility Check, Personal Information dan Packages: tiga bagian di satu halaman, satu terbuka, dengan satu tombol.",
+    lead: "The Eligibility Check, Personal Information and the Packages: three parts on one page, one open at a time, with one action.",
     lanes: [
       {
         id: "rpw-297",
@@ -928,9 +933,9 @@ export const EXPAT_BOARDS: Board[] = [
         story:
           "As a customer partway through booking, I want to see which step I am on and move back without losing anything, so that a long form does not feel risky.",
         differs: [
-          "Brief: step indicator lima langkah dengan back/next. Prototype: tanpa stepper; plan satu halaman, bagian yang selesai melipat dan dibuka lagi lewat “Edit”.",
-          "Brief: urutan Shipment Information lalu Personal Information. Prototype: Your details dulu, Packages terakhir.",
-          "Tanpa footer di seluruh flow (keputusan tim).",
+          "Brief: a five-step indicator with back and next. Prototype: no stepper; the plan is one page, and a finished part folds and reopens from “Edit”.",
+          "Brief: Shipment Information, then Personal Information. Prototype: Your details first, the Packages last.",
+          "No footer anywhere in the flow (the team's call).",
         ],
         rows: [
           { kind: "positive", cells: ["plan-start", "plan-part-done", "plan-all-done", "plan-welcome"] },
@@ -944,8 +949,8 @@ export const EXPAT_BOARDS: Board[] = [
         story:
           "As a customer, I want to understand the clearance paths and what each needs, so that I know whether to expect duty, and which documents to gather.",
         differs: [
-          "Brief: dua path (Moving Goods, Personal Shipment). Prototype: tiga Customs Path, dengan Passenger Goods (diputuskan bersama PM).",
-          "Brief menutup dengan “Which path applies is confirmed by the Rimkirim team.” Prototype: tim merekomendasikan satu path saat review, customer yang memutuskan (ADR 0002).",
+          "Brief: two paths (Moving Goods, Personal Shipment). Prototype: three Customs Paths, with Passenger Goods (decided with the PM).",
+          "Brief closes with “Which path applies is confirmed by the Rimkirim team.” Prototype: the team recommends a path at review and the customer decides (ADR 0002).",
         ],
         rows: [{ kind: "positive", cells: ["customs-first", "customs-hint", "customs-reopen"] }],
       },
@@ -956,10 +961,11 @@ export const EXPAT_BOARDS: Board[] = [
         story:
           "As a business, I want the eligibility answers to decide which customs path a booking takes, so that ops can process it correctly without the customer needing to understand Indonesian customs.",
         differs: [
-          "Brief: Q1 enam opsi. Prototype: lima; “Fine Art & High-Value Items” dicabut 2026-11-20.",
-          "Brief: Q2 “In Indonesia” menanyakan lama tinggal. Prototype: tanggal di kedua cabang (aturan PM v1).",
-          "Di bawah Q1 ada blok “Cannot be shipped”: informasi, bukan pertanyaan, dan tidak menghentikan pesanan.",
+          "Brief: six options in Q1. Prototype: five; “Fine Art & High-Value Items” was dropped on 2026-11-20.",
+          "Brief: Q2 “In Indonesia” asks the length of stay. Prototype: a date in both branches (the PM's rule v1).",
+          "Under Q1 there's a “Cannot be shipped” block: information, not a question, and it doesn't stop the order.",
         ],
+        confirm: [ORDER_REVIEW_NOTES.eligibility],
         rows: [
           { kind: "positive", cells: ["elig-abroad", "elig-indonesia", "elig-others"] },
           { kind: "negative", cells: ["elig-missing", "elig-followups"] },
@@ -972,8 +978,8 @@ export const EXPAT_BOARDS: Board[] = [
         story:
           "As a customer who owns furniture or large items, I want a clear warning as soon as I declare them, so that I am not refused at collection because I assumed Rimkirim would pack them.",
         differs: [
-          "Brief: callout dengan copy persis (“Please note: Rimkirim does not provide a packing service for furniture or large items…”) yang muncul saat furniture dipilih dan hilang saat dilepas. Prototype: catatan “You pack everything yourself” selalu tampil; furniture hanya menambah “, furniture included”.",
-          "Brief: warning yang sama muncul lagi di Shipment Information. Prototype: belum ada.",
+          "Brief: a callout with exact copy (“Please note: Rimkirim does not provide a packing service for furniture or large items…”) that appears when furniture is selected and goes when it's deselected. Prototype: the note “You pack everything yourself” always shows; furniture only adds “, furniture included”.",
+          "Brief: the same warning again in Shipment Information. Prototype: not there yet.",
         ],
         rows: [{ kind: "positive", cells: ["furn-off", "furn-on", FURNITURE_PACKAGES] }],
       },
@@ -984,10 +990,11 @@ export const EXPAT_BOARDS: Board[] = [
         story:
           "As a customer, I want to enter my details and when I am moving, so that Rimkirim can arrange pickup and reach me about the shipment.",
         differs: [
-          "Brief: detail address wajib di kedua sisi, dengan map pin. Prototype: opsional, tanpa pin (keputusan tim).",
-          "Brief: satu relocation date, dua hari pertama tertutup. Prototype (revisi PM, RPW-293, 2026-11-23): ditanya dulu kapan dijemput. Dalam 3 bulan tanggalnya wajib, dari besok sampai hari ke-90; lebih dari 3 bulan tanggalnya opsional. Akhir pekan tetap tertutup.",
-          "Brief: “Confirm Application” aktif hanya saat semua valid. Prototype: tombolnya tidak pernah mati, dan menunjukkan apa yang kurang.",
+          "Brief: a Detail Address required on both sides, with a map pin. Prototype: optional, no pin (the team's call).",
+          "Brief: one relocation date, its first two days closed. Prototype (the PM's revision, RPW-293, 2026-11-23): when to collect is asked first. Within 3 months a date is required, from tomorrow to day 90; more than 3 months, the date is optional. Weekends stay closed.",
+          "Brief: “Confirm Application” is enabled only when everything is valid. Prototype: the button is never disabled, and shows what's missing.",
         ],
+        confirm: [ORDER_REVIEW_NOTES.details],
         rows: [
           { kind: "positive", cells: ["plan-part-done", "details-address", "details-date", "details-later", "details-filled"] },
           {
@@ -1003,10 +1010,11 @@ export const EXPAT_BOARDS: Board[] = [
         story:
           "As a customer, I want to list every package with its size, weight and contents, so that my quote and customs paperwork match what I am actually sending.",
         differs: [
-          "Brief: tiap package diisi panjang, lebar, tinggi dan berat. Prototype: pilih ukuran terdekat (Small, Medium, Large Box) atau Custom; hanya Custom yang diukur (revisi tim 2026-11-20).",
-          "Brief: tiap item punya deskripsi dan nilai. Prototype: satu baris per kategori, dengan jumlah dan nilai totalnya.",
-          "Brief: empty state dengan “Add package”. Prototype: langsung mulai dengan Package 1.",
+          "Brief: each package's length, width, height and weight. Prototype: pick the closest size (Small, Medium or Large Box) or Custom; only Custom is measured (the team's revision, 2026-11-20).",
+          "Brief: a description and a value per item. Prototype: a row per category, with its quantity and its value in total.",
+          "Brief: an empty state with “Add package”. Prototype: it starts with Package 1.",
         ],
+        confirm: [ORDER_REVIEW_NOTES.packing],
         rows: [
           { kind: "positive", cells: ["pack-start", "pack-category", "pack-filled"] },
           { kind: "negative", cells: ["pack-missing", "pack-category-empty", "pack-odd", "pack-remove", "pack-below-tier"] },
@@ -1015,9 +1023,10 @@ export const EXPAT_BOARDS: Board[] = [
       },
       {
         id: "service",
-        ticket: "Tambahan tim",
+        ticket: "Team addition",
         title: "Change service",
-        story: "Di luar brief: service bisa diganti dari plan tanpa kembali ke Check Rate, dan semua jawaban tetap.",
+        story: "Not in the brief: the service can be changed on the plan without going back to Check Rate, and every answer stays.",
+        confirm: [ORDER_REVIEW_NOTES.service],
         rows: [{ kind: "positive", cells: ["service-change", "service-changed"] }],
       },
     ],
@@ -1028,7 +1037,7 @@ export const EXPAT_BOARDS: Board[] = [
     route: "/expat-relocation/booking/[number]",
     // a summary exists only for a booking made on this device: the last one, else where one starts
     page: { is: (p) => p.startsWith("/expat-relocation/booking/"), home: RATES, resume: lastBooking },
-    lead: "Yang dilihat customer setelah Confirm application: bukti pesanannya masuk, dan apa yang terjadi berikutnya.",
+    lead: "What the customer sees after Confirm application: proof the booking landed, and what happens next.",
     lanes: [
       {
         id: "rpw-294",
@@ -1037,12 +1046,13 @@ export const EXPAT_BOARDS: Board[] = [
         story:
           "As a customer who just submitted, I want immediate confirmation and a record of what I booked, so that I know it worked and what happens next.",
         differs: [
-          "Di luar brief: dialog “We’ll contact you within 1 working day” saat baru tiba (permintaan tim, 2026-11-23).",
-          "What happens next berhenti di pickup; invoice datang setelah barang sampai di gudang Rimkirim (koreksi tim).",
+          "Not in the brief: the dialog “We'll contact you within 1 working day” on arriving (the team's request, 2026-11-23).",
+          "What happens next stops at pickup; the Invoice comes once the belongings reach Rimkirim's warehouse (the team's correction).",
         ],
+        confirm: [ORDER_REVIEW_NOTES.booking],
         rows: [
           { kind: "positive", cells: ["plan-confirming", "booking-fresh", "booking-summary", "booking-docs", "booking-later"] },
-          { kind: "negative", cells: [CONFIRM_FAILED, "booking-not-found"] },
+          { kind: "negative", cells: ["plan-confirm-failed", "booking-not-found"] },
           { kind: "edge", cells: ["booking-no-packages", "booking-many", "booking-worst"] },
         ],
       },
@@ -1053,17 +1063,17 @@ export const EXPAT_BOARDS: Board[] = [
     title: "Internal ticket",
     route: "/simulator · tab “Pesanan expat”",
     page: { is: (p) => p === SIMULATOR, home: SIMULATOR },
-    lead: "Yang sampai ke tim setelah Confirm application: ticket dengan jawaban, packages, kontak dan Customs Category, plus email konfirmasinya.",
+    lead: "What reaches the team after Confirm application: a ticket with the answers, the packages, the contact and the Customs Category, and the confirmation email.",
     lanes: [
       {
         id: "rpw-294-ops",
         ticket: "RPW-294",
-        title: "Handover ke ops",
+        title: "Handover to ops",
         story:
           "Everything reaches the internal ticket: eligibility answers, packages and contact details are carried to ops, including the internal customs flag the customer never sees.",
         differs: [
-          "Customs Category di sini memakai aturan dummy tim (lima aturan, docs/expat-order-flow.md), menunggu konfirmasi ops.",
-          "Ticket dan email masih tiruan: ticket disimpan di perangkat, email hanya dipratinjau.",
+          "The Customs Category here follows the team's dummy rule (five rules, docs/expat-order-flow.md), waiting for ops to confirm.",
+          "The ticket and the email are stand-ins: the ticket is kept on the device, the email is only previewed.",
         ],
         rows: [
           { kind: "positive", cells: ["ops-tickets", "ops-email"] },
@@ -1077,7 +1087,7 @@ export const EXPAT_BOARDS: Board[] = [
     title: "Landing",
     route: LANDING,
     page: { is: (p) => p === LANDING, home: LANDING },
-    lead: "Landing Expat Relocation, satu lane per story. Tiap frame adalah satu layar dari section-nya; klik dua kali untuk scroll di dalamnya.",
+    lead: "The Expat Relocation landing, a lane per story. Each frame is a whole section, from its heading to its end; the hero is one screen.",
     lanes: [
       {
         id: "rpw-281",
@@ -1085,7 +1095,8 @@ export const EXPAT_BOARDS: Board[] = [
         title: "Hero",
         story:
           "As a relocating expat landing on the page, I want to grasp in seconds that Rimkirim ships my belongings to Indonesia, and where to start, so that I can get a quote without hunting around the page.",
-        differs: ["Brief: CTA “Get a quote”. Prototype: “Check your rate”, karena angkanya Estimate, bukan quote (CONTEXT.md)."],
+        differs: ["Brief: the CTA reads “Get a quote”. Prototype: “Check your rate”, since the figure is an Estimate, not a quote (CONTEXT.md)."],
+        confirm: [REVIEW_NOTES.hero, REVIEW_NOTES.cta],
         rows: [{ kind: "positive", cells: ["land-hero"] }],
       },
       {
@@ -1094,6 +1105,7 @@ export const EXPAT_BOARDS: Board[] = [
         title: "Testimonials",
         story:
           "As a cautious first-time shipper, I want to see real customers who already moved their belongings, so that I trust Rimkirim with things I cannot replace.",
+        confirm: [REVIEW_NOTES.reviews],
         rows: [{ kind: "positive", cells: ["land-reviews"] }],
       },
       {
@@ -1103,9 +1115,10 @@ export const EXPAT_BOARDS: Board[] = [
         story:
           "As a visitor deciding whether Rimkirim fits, I want to see clearly what is allowed and what is not, so that I do not start a booking that will be refused later.",
         differs: [
-          "Brief: daftar cannot-ship masih provisional. Prototype: daftar “Not allowed” yang sekarang (alkohol, rokok dan vape, senjata, bahan mudah terbakar, uang tunai, perhiasan, tanaman, kendaraan bermotor).",
+          "Brief: the cannot-ship list is provisional. Prototype: today's “Not allowed” list (alcohol, cigarettes and vapes, weapons, flammables, cash, jewellery, plants, motor vehicles).",
         ],
-        rows: [{ kind: "positive", cells: ["land-ship", "land-packing", "land-not-allowed"] }],
+        confirm: [REVIEW_NOTES.ship],
+        rows: [{ kind: "positive", cells: ["land-ship"] }],
       },
       {
         id: "rpw-284",
@@ -1113,6 +1126,7 @@ export const EXPAT_BOARDS: Board[] = [
         title: "Who does what",
         story:
           "As a customer, I want to see exactly which parts Rimkirim handles and which are mine, so that nothing surprises me on pickup day.",
+        confirm: [REVIEW_NOTES.coordinate],
         rows: [{ kind: "positive", cells: ["land-coordinate"] }],
       },
       {
@@ -1121,6 +1135,7 @@ export const EXPAT_BOARDS: Board[] = [
         title: "Why Rimkirim",
         story:
           "As a customer comparing shipping options, I want to see what makes Rimkirim different for Indonesia specifically, so that I can choose without reading three competitor sites.",
+        confirm: [REVIEW_NOTES.compare],
         rows: [{ kind: "positive", cells: ["land-why"] }],
       },
       {
@@ -1129,7 +1144,10 @@ export const EXPAT_BOARDS: Board[] = [
         title: "Pricing information",
         story:
           "As a customer, I want to understand what actually shapes my price, so that the number does not feel arbitrary when I see it.",
-        differs: ["Brief: “final price confirmed at quotation”. Prototype: quotation masih estimate; harga final ada di invoice (koreksi tim)."],
+        differs: [
+          "Brief: “final price confirmed at quotation”. Prototype: the Quotation is still an estimate; the final price comes on the Invoice (the team's correction).",
+        ],
+        confirm: [REVIEW_NOTES.pricing],
         rows: [{ kind: "positive", cells: ["land-pricing"] }],
       },
       {
@@ -1138,7 +1156,8 @@ export const EXPAT_BOARDS: Board[] = [
         title: "How it works",
         story:
           "As a customer, I want a simple step-by-step of what happens from quote to delivery, so that I know what I am committing to before I start.",
-        differs: ["Brief: dua jalur duty (moving goods, personal shipment). Prototype: tiga Customs Path, di section sendiri setelah langkah-langkahnya."],
+        differs: ["Brief: two duty paths (moving goods, personal shipment). Prototype: three Customs Paths, in a section of their own after the steps."],
+        confirm: [REVIEW_NOTES.steps, REVIEW_NOTES.customs],
         rows: [{ kind: "positive", cells: ["land-steps", "land-customs"] }],
       },
       {
@@ -1147,6 +1166,7 @@ export const EXPAT_BOARDS: Board[] = [
         title: "FAQs",
         story:
           "As a customer with specific questions, I want answers to the common questions in one place, so that I do not have to open WhatsApp to learn the basics.",
+        confirm: [REVIEW_NOTES.faq],
         rows: [{ kind: "positive", cells: ["land-faq", "land-faq-open"] }],
       },
       {
@@ -1154,6 +1174,7 @@ export const EXPAT_BOARDS: Board[] = [
         ticket: "RPW-289",
         title: "Closing CTA",
         story: "As a visitor who has read to the bottom, I want an obvious way to begin, so that I do not have to scroll back to the top to act.",
+        confirm: [REVIEW_NOTES.closing],
         rows: [{ kind: "positive", cells: ["land-closing"] }],
       },
     ],

@@ -48,6 +48,8 @@ export interface SceneBoot {
   /** how the scene went, for the canvas and for a script checking it */
   status?: "running" | "ready" | "failed";
   detail?: string;
+  /** the page as a picture, as its frame shows it (SceneRunner): what "Copy image" asks a frame for */
+  capture?: (view: "page" | "screen" | "section", scale: number) => Promise<Blob>;
 }
 
 /** the browser's own localStorage, also from a page opened as a scene (whose `localStorage` is the stand-in) */

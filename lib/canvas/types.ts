@@ -44,11 +44,10 @@ export type Step =
   | { do: "hold"; over: number }
   /** bring something to the middle of the screen (a `screen` frame shows what's there) */
   | { do: "show"; on: Target }
-  /** bring something to the top of the screen, clear of a sticky header: a section of a long page */
-  | { do: "to"; on: Target }
   | { do: "top" };
 
 export type SceneKind = "positive" | "negative" | "edge";
+export type View = "page" | "screen" | "section";
 
 /** one page in one state */
 export interface Scene {
@@ -70,8 +69,12 @@ export interface Scene {
    * `page`: the frame grows to the whole page, as a design frame does.
    * `screen`: the frame is the device's screen, for what's pinned to it (a
    * dialog, a sheet, a toast).
+   * `section`: the frame is one section of a long page, whole, from its
+   * heading to its end (`focus` says which).
    */
-  view?: "page" | "screen";
+  view?: View;
+  /** the section a `section` frame is of */
+  focus?: Target;
 }
 
 /** a state the brief asks for that the prototype doesn't have: a placeholder, never a page */
@@ -100,6 +103,8 @@ export interface Lane {
   story?: string;
   /** where the prototype departs from the brief, each said in a line */
   differs?: string[];
+  /** what the team still has to confirm here: the prototype's own review notes (`?review=1`), quoted as they're written */
+  confirm?: string[];
   rows: Row[];
 }
 

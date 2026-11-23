@@ -2,8 +2,9 @@
 
 import * as React from "react";
 import { SCENE_SEED_PREFIX } from "@/lib/canvas/boot";
-import { pause, play } from "@/lib/canvas/driver";
+import { find, pause, play } from "@/lib/canvas/driver";
 import { findScene, sceneSeed } from "@/lib/canvas/registry";
+import type { View } from "@/lib/canvas/types";
 
 /** the seed this tab already reloaded for, so a seed that can't settle never loops */
 const TRIED = "rimkirim:scene-tried:";
@@ -16,7 +17,7 @@ export interface SceneMessage {
   id: string;
   status: "running" | "ready" | "failed";
   detail?: string;
-  /** the page's whole height, for a frame that grows to it */
+  /** how tall its frame should be: the whole page, or the one section it's of */
   height: number;
 }
 
@@ -31,6 +32,26 @@ html[data-scene] nextjs-portal { display: none !important; }
 let started = false;
 /** the frame's name on the canvas, read before the page can navigate away from its first URL */
 let frame: string | null | undefined;
+/** the section a `section` frame is of, once it's found */
+let focus: HTMLElement | null = null;
+
+/** what a header pinned to the top takes off the screen: a section is framed clear of it */
+function headerRoom(): number {
+  const header = document.querySelector<HTMLElement>("header");
+  if (!header) return 0;
+  const pinned = window.getComputedStyle(header).position;
+  return pinned === "sticky" || pinned === "fixed" ? header.offsetHeight : 0;
+}
+
+/** bring the section to the top of the frame, under the header */
+function frameSection() {
+  if (!focus) return;
+  const top = focus.getBoundingClientRect().top + window.scrollY;
+  window.scrollTo({ top: Math.max(0, top - headerRoom()), behavior: "instant" });
+}
+
+const frameHeight = () =>
+  focus ? Math.ceil(focus.getBoundingClientRect().height) + headerRoom() : document.documentElement.scrollHeight;
 
 function tell(status: SceneMessage["status"], detail?: string) {
   const boot = window.__RK_SCENE__;
@@ -39,30 +60,105 @@ function tell(status: SceneMessage["status"], detail?: string) {
   boot.status = status;
   boot.detail = detail;
   if (window.parent === window) return;
-  const message: SceneMessage = {
-    rk: "scene",
-    frame: frame ?? null,
-    id: boot.id,
-    status,
-    detail,
-    height: document.documentElement.scrollHeight,
-  };
+  const message: SceneMessage = { rk: "scene", frame: frame ?? null, id: boot.id, status, detail, height: frameHeight() };
   window.parent.postMessage(message, window.location.origin);
+}
+
+/* ----------------------------------------------------------------- capture */
+
+/** the fonts the page uses, embedded once: every picture of this frame reuses them */
+let fonts: string | undefined;
+
+/**
+ * The page as a picture, as its frame shows it. The page is redrawn from a
+ * copy of its DOM (html-to-image), and a copy isn't a screen: it's drawn
+ * from the document's top, as if it had never been scrolled, and nothing in
+ * it sticks. A whole page is exactly that. A screen or a section isn't:
+ * what's pinned to the screen stands where the screen is. So for those the
+ * page is laid flat first. Its content is moved up by how far it's scrolled;
+ * each sticky element (the header, the plan's bar on a phone, the service
+ * beside the form) is made an ordinary one and moved to where it stood; the
+ * picture is taken at the screen's size; and everything is put back.
+ *
+ * The copy carries each element's styles as they are at that moment, and
+ * none of the page's stylesheets: with them, an entrance that's a keyframe
+ * animation (a sheet coming up) would play again from its first frame, and
+ * the picture would be of a sheet that hasn't arrived.
+ */
+async function capture(view: View, scale: number): Promise<Blob> {
+  const { toBlob, getFontEmbedCSS } = await import("html-to-image");
+  const root = document.documentElement;
+  const body = document.body;
+  const whole = view === "page";
+  const width = window.innerWidth;
+  const height = whole ? root.scrollHeight : window.innerHeight;
+  const scrolled = window.scrollY;
+
+  const undo: (() => void)[] = [];
+  if (!whole) {
+    const sticky = [...document.querySelectorAll<HTMLElement>("body *")]
+      .filter((el) => window.getComputedStyle(el).position === "sticky")
+      .map((el) => ({ el, was: el.getBoundingClientRect() }));
+    if (scrolled > 0) {
+      const { position, top } = body.style;
+      // relative, not a transform: what's fixed to the screen must stay fixed to it
+      body.style.position = "relative";
+      body.style.top = `${-scrolled}px`;
+      window.scrollTo({ top: 0, behavior: "instant" });
+      undo.push(() => {
+        body.style.position = position;
+        body.style.top = top;
+        window.scrollTo({ top: scrolled, behavior: "instant" });
+      });
+    }
+    for (const { el, was } of sticky) {
+      const { position, translate } = el.style;
+      // in its place in the flow, as it will be in the copy, then moved to where it stood on the screen
+      el.style.position = "relative";
+      const now = el.getBoundingClientRect();
+      el.style.translate = `${was.left - now.left}px ${was.top - now.top}px`;
+      undo.push(() => {
+        el.style.position = position;
+        el.style.translate = translate;
+      });
+    }
+  }
+
+  try {
+    fonts ??= await getFontEmbedCSS(root);
+    const blob = await toBlob(root, {
+      width,
+      height,
+      pixelRatio: scale,
+      fontEmbedCSS: fonts,
+      // no stylesheets (see above), nothing of the harness, nothing that can't be drawn
+      filter: (node) =>
+        !(node instanceof Element && node.matches("head, style, link, script, noscript, nextjs-portal, [aria-label='Scene']")),
+    });
+    if (!blob) throw new Error("the page couldn't be drawn");
+    return blob;
+  } finally {
+    for (const put of undo.reverse()) put();
+  }
 }
 
 /**
  * The scene's second move, once the page is up (the first is the boot
  * script, lib/canvas/boot.ts): it checks the page was seeded with what the
  * code builds now, plays the scene's steps, and tells the canvas how it
- * went and how tall the page is. Mounted by the root layout outside
+ * went and how tall its frame should be. It also gives the canvas a way to
+ * ask for the page as a picture. Mounted by the root layout outside
  * production; on a page that isn't a scene it does nothing.
  */
 export function SceneRunner() {
-  // the page's height, each time it changes: a fold opening, a list growing
+  // the frame's height, each time the page changes size: a fold opening, a list growing
   React.useEffect(() => {
     const boot = window.__RK_SCENE__;
     if (!boot) return;
-    const sized = new ResizeObserver(() => tell(boot.status ?? "running", boot.detail));
+    const sized = new ResizeObserver(() => {
+      frameSection();
+      tell(boot.status ?? "running", boot.detail);
+    });
     sized.observe(document.documentElement);
     sized.observe(document.body);
     return () => sized.disconnect();
@@ -102,6 +198,7 @@ export function SceneRunner() {
     const style = document.createElement("style");
     style.textContent = HIDE;
     document.head.appendChild(style);
+    boot.capture = capture;
 
     tell("running");
     void (async () => {
@@ -109,6 +206,14 @@ export function SceneRunner() {
       await pause(400);
       try {
         await play(scene.steps ?? []);
+        if (scene.view === "section" && scene.focus) {
+          focus = await find(scene.focus);
+          frameSection();
+          // the frame takes the section's height, then the section plays its reveal
+          tell("running");
+          await pause(1600);
+          frameSection();
+        }
         // what the last step set off has landed (a fold, a dialog, a toast)
         await pause(500);
         tell("ready");

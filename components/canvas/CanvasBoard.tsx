@@ -3,7 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { BOARDS, boardHome, boardScenes, findBoard, findScene, sceneSeed } from "@/lib/canvas/registry";
-import { DEVICES, isGap, type Device, type Gap, type Lane, type Scene, type SceneKind } from "@/lib/canvas/types";
+import { DEVICES, isGap, type Device, type Gap, type Lane, type Scene, type SceneKind, type View } from "@/lib/canvas/types";
 import type { SceneMessage } from "./SceneRunner";
 import "./canvas.css";
 
@@ -25,8 +25,16 @@ const LOADING_AT_ONCE = 4;
 /** a frame that never reports is called failed, so it can't hold the queue */
 const LOAD_TIMEOUT_MS = 45000;
 const MAX_PAGE_HEIGHT = 14000;
+const MIN_SECTION_HEIGHT = 240;
 const ZOOM_MIN = 0.03;
 const ZOOM_MAX = 2;
+/** the surface's own grey, behind a lane's picture too */
+const SURFACE = "#e9e9ea";
+/** a lane's picture: how much of full size, the most it may be wide, and the room around it (world px) */
+const LANE_SCALE: Record<Device, number> = { desktop: 0.6, mobile: 1 };
+const LANE_MAX_WIDTH = 5600;
+const LANE_PAD = 80;
+const KIND_COLOR: Record<SceneKind, string> = { positive: "#15803d", negative: "#c62828", edge: "#5b5fc7" };
 /** each page frame's height as it was last seen, so a board opens laid out as it was left */
 const HEIGHTS = "rimkirim:canvas:heights";
 
@@ -100,7 +108,38 @@ interface Edge {
   key: string;
   d: string;
   kind: SceneKind;
+  /** where its arrowhead is and which way it points: a lane's picture draws it by hand */
+  end: [number, number];
+  dir: "right" | "down";
 }
+
+/** what a copy button is doing, by its key (`image:<cell>`, `link:<cell>`, `lane:<lane>`) */
+interface Copying {
+  key: string;
+  state: "busy" | "copied" | "saved" | "failed";
+}
+const COPY_SAYS: Record<Copying["state"], string> = {
+  busy: "Copying…",
+  copied: "Copied",
+  saved: "Saved as a file",
+  failed: "Couldn't copy",
+};
+
+const viewOf = (cell: Cell): View => cell.scene?.view ?? "page";
+const paint = () => new Promise<void>((done) => requestAnimationFrame(() => requestAnimationFrame(() => done())));
+const today = () => new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "short", year: "numeric" }).format(new Date());
+
+function download(blob: Blob, name: string) {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = name;
+  a.click();
+  window.setTimeout(() => URL.revokeObjectURL(url), 10_000);
+}
+
+const toPng = (canvas: HTMLCanvasElement) =>
+  new Promise<Blob>((done, fail) => canvas.toBlob((b) => (b ? done(b) : fail(new Error("the picture couldn't be made"))), "image/png"));
 
 /** an element's box inside the world, in the world's own pixels (no zoom in it) */
 function boxIn(el: HTMLElement, world: HTMLElement) {
@@ -141,6 +180,8 @@ export function CanvasBoard({ boardId }: { boardId: string }) {
 
   const [device, setDevice] = React.useState<Device>("desktop");
   const dev = DEVICES[device];
+  /** the world's type scale (`--u` in canvas.css): a phone's frames are narrow, so what's around them is smaller */
+  const unit = device === "mobile" ? 0.5 : 1;
   const [frames, setFrames] = React.useState<Record<string, FrameState>>({});
   /** the cells that have come near the screen, in the order they did */
   const [seen, setSeen] = React.useState<string[]>([]);
@@ -148,6 +189,7 @@ export function CanvasBoard({ boardId }: { boardId: string }) {
   const [selected, setSelected] = React.useState<string | null>(null);
   const [interacting, setInteracting] = React.useState<string | null>(null);
   const [edges, setEdges] = React.useState<Edge[]>([]);
+  const [copying, setCopying] = React.useState<Copying | null>(null);
   const [zoom, setZoom] = React.useState(1);
   /** the board is laid out (its stylesheet is in) and has its first view */
   const [laid, setLaid] = React.useState(false);
@@ -157,6 +199,14 @@ export function CanvasBoard({ boardId }: { boardId: string }) {
     const id = window.setTimeout(() => setKnown(readHeights()), 0);
     return () => window.clearTimeout(id);
   }, []);
+
+  // the latest of each, for work that runs on after the render it started in (a lane's picture)
+  const framesNow = React.useRef(frames);
+  const edgesNow = React.useRef(edges);
+  React.useEffect(() => {
+    framesNow.current = frames;
+    edgesNow.current = edges;
+  }, [frames, edges]);
 
   const viewport = React.useRef<HTMLDivElement>(null);
   const world = React.useRef<HTMLDivElement>(null);
@@ -315,9 +365,11 @@ export function CanvasBoard({ boardId }: { boardId: string }) {
       const m = e.data as SceneMessage | undefined;
       if (m?.rk !== "scene" || !m.frame) return;
       const key = m.frame;
+      const section = findScene(m.id)?.view === "section";
       setFrames((all) => {
         const was = all[key];
-        const height = Math.max(was?.height ?? 0, m.height);
+        // a page only grows (its frame is at least a screen); a section is exactly as tall as it says
+        const height = section ? m.height : Math.max(was?.height ?? 0, m.height);
         // a frame that failed stays failed, whatever its page says after
         const status = was?.status === "failed" ? "failed" : m.status === "running" ? (was?.status ?? "loading") : m.status;
         const detail = was?.status === "failed" ? was.detail : m.detail;
@@ -425,7 +477,7 @@ export function CanvasBoard({ boardId }: { boardId: string }) {
           if (before) {
             // side by side: straight across, a little below the frames' tops
             const y = Math.min(a.y + a.h, b.y + b.h, Math.max(a.y, b.y) + 140);
-            next.push({ key: cell.key, kind: cell.kind, d: route([[a.x + a.w + 10, y], [b.x - 14, y]]) });
+            next.push({ key: cell.key, kind: cell.kind, d: route([[a.x + a.w + 10, y], [b.x - 14, y]]), end: [b.x - 14, y], dir: "right" });
             return;
           }
           const sameRow = rows[r].cells.some((x) => x.key === cell.fromKey);
@@ -437,14 +489,26 @@ export function CanvasBoard({ boardId }: { boardId: string }) {
             const fromCard = card(cell.fromKey);
             const top = Math.min(c.y, fromCard ? boxIn(fromCard, w).y : a.y) - lift;
             const sx = a.x + a.w / 2;
-            next.push({ key: cell.key, kind: cell.kind, d: route([[sx, (fromCard ? boxIn(fromCard, w).y : a.y) - 10], [sx, top], [tx, top], [tx, c.y - 14]]) });
+            next.push({
+              key: cell.key,
+              kind: cell.kind,
+              d: route([[sx, (fromCard ? boxIn(fromCard, w).y : a.y) - 10], [sx, top], [tx, top], [tx, c.y - 14]]),
+              end: [tx, c.y - 14],
+              dir: "down",
+            });
           } else {
             // from a row above: down from under its card, across over the target, down into it
             const fromCard = card(cell.fromKey);
             const foot = fromCard ? boxIn(fromCard, w) : a;
             const sx = a.x + a.w / 2 + (level - 1) * 18;
             const over = c.y - lift;
-            next.push({ key: cell.key, kind: cell.kind, d: route([[sx, foot.y + foot.h + 12], [sx, over], [tx, over], [tx, c.y - 14]]) });
+            next.push({
+              key: cell.key,
+              kind: cell.kind,
+              d: route([[sx, foot.y + foot.h + 12], [sx, over], [tx, over], [tx, c.y - 14]]),
+              end: [tx, c.y - 14],
+              dir: "down",
+            });
           }
         });
       });
@@ -490,6 +554,185 @@ export function CanvasBoard({ boardId }: { boardId: string }) {
   const reload = (cell: Cell) => {
     setNonce((n) => ({ ...n, [cell.key]: (n[cell.key] ?? 0) + 1 }));
   };
+
+  /* ------------------------------------------------------------------ copying */
+
+  const say = (key: string, state: Copying["state"]) => {
+    setCopying({ key, state });
+    if (state !== "busy") window.setTimeout(() => setCopying((c) => (c?.key === key && c.state === state ? null : c)), 2200);
+  };
+  const saying = (key: string, idle: string) => (copying?.key === key ? COPY_SAYS[copying.state] : idle);
+
+  /** a picture onto the clipboard; where the browser won't allow that, into a file */
+  const copyPng = async (key: string, picture: Promise<Blob>, file: string) => {
+    say(key, "busy");
+    try {
+      // the promise goes in as it is, so the press that asked still counts when the picture is ready
+      await navigator.clipboard.write([new ClipboardItem({ "image/png": picture })]);
+      say(key, "copied");
+    } catch {
+      try {
+        download(await picture, file);
+        say(key, "saved");
+      } catch {
+        say(key, "failed");
+      }
+    }
+  };
+
+  /** a frame's page as a picture, asked of the frame itself (SceneRunner draws it) */
+  const shoot = (cell: Cell, scale: number): Promise<Blob> => {
+    const frame = world.current?.querySelector<HTMLIFrameElement>(`[data-view="${CSS.escape(cell.key)}"] iframe`);
+    const capture = frame?.contentWindow?.__RK_SCENE__?.capture;
+    if (!capture) return Promise.reject(new Error("the frame isn't loaded"));
+    return capture(viewOf(cell), scale);
+  };
+
+  /** one frame, with a line under it that says what it is and when it was taken: the picture won't follow the code */
+  const frameImage = async (cell: Cell, lane: Lane): Promise<Blob> => {
+    const scale = device === "mobile" ? 2 : 1;
+    const shot = await createImageBitmap(await shoot(cell, scale));
+    const lines = [`${lane.ticket} · ${cell.scene?.title ?? cell.id}`, `${dev.label} · ${today()}`];
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
+    if (!ctx) throw new Error("no canvas to draw on");
+    const size = 13 * scale;
+    const font = `${size}px -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif`;
+    ctx.font = font;
+    const pad = 14 * scale;
+    // one line when it fits, two when it doesn't (a phone's frame is narrow)
+    const one = lines.join(" · ");
+    const text = ctx.measureText(one).width + pad * 2 <= shot.width ? [one] : lines;
+    const strip = Math.round(size * 1.5 * text.length + pad);
+    canvas.width = shot.width;
+    canvas.height = shot.height + strip;
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(shot, 0, 0);
+    ctx.fillStyle = "#f4f4f5";
+    ctx.fillRect(0, shot.height, canvas.width, strip);
+    ctx.fillStyle = "#d9d9dc";
+    ctx.fillRect(0, shot.height, canvas.width, Math.max(1, scale));
+    ctx.fillStyle = "#18181b";
+    ctx.font = font;
+    ctx.textBaseline = "middle";
+    text.forEach((line, i) => ctx.fillText(line, pad, shot.height + pad / 2 + size * 1.5 * (i + 0.5), canvas.width - pad * 2));
+    return toPng(canvas);
+  };
+
+  /**
+   * One lane as a picture: what the lane shows (its ticket and story, its
+   * rows, each frame with its title, action and note, the arrows), without
+   * its notes on where it differs from the brief or what's still to confirm.
+   * The lane's own markup is drawn as it stands; each frame's page is asked
+   * of the frame and laid into its place; the arrows are drawn over both.
+   */
+  const laneImage = async ({ lane, rows }: LaneModel): Promise<Blob> => {
+    const w = world.current;
+    const el = w?.querySelector<HTMLElement>(`[data-lane="${CSS.escape(lane.id)}"]`);
+    if (!w || !el) throw new Error("the lane isn't on the board");
+    const mine = rows.flatMap((r) => r.cells).filter((c) => c.scene);
+
+    // every frame of the lane up and settled, whether or not it has been on screen
+    setSeen((was) => [...was, ...mine.map((c) => c.key).filter((k) => !was.includes(k))]);
+    const settled = () =>
+      mine.every((c) => {
+        const status = framesNow.current[frameKey(c)]?.status;
+        return status === "ready" || status === "failed";
+      });
+    for (let waited = 0; !settled() && waited < 120_000; waited += 300) await new Promise((done) => window.setTimeout(done, 300));
+    // no ring of selection in the picture
+    setSelected(null);
+    setInteracting(null);
+    await paint();
+
+    const box = boxIn(el, w);
+    const reach = [...el.querySelectorAll<HTMLElement>("[data-card], .rk-lane-head > div:first-child")].map((x) => {
+      const b = boxIn(x, w);
+      return b.x + b.w;
+    });
+    const width = Math.max(...reach) - box.x;
+    const scale = Math.min(LANE_SCALE[device], LANE_MAX_WIDTH / (width + LANE_PAD * 2));
+
+    const { toCanvas } = await import("html-to-image");
+    const chrome = await toCanvas(el, {
+      width,
+      height: box.h,
+      pixelRatio: scale,
+      // the canvas's own type is the system's: nothing to embed
+      skipFonts: true,
+      style: { margin: "0" },
+      filter: (node) => !(node instanceof Element && node.matches("iframe, .rk-veil, .rk-shield, .rk-failed, .rk-notes")),
+    });
+
+    const canvas = document.createElement("canvas");
+    canvas.width = Math.round((width + LANE_PAD * 2) * scale);
+    canvas.height = Math.round((box.h + LANE_PAD * 2) * scale);
+    const ctx = canvas.getContext("2d");
+    if (!ctx) throw new Error("no canvas to draw on");
+    ctx.fillStyle = SURFACE;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(chrome, LANE_PAD * scale, LANE_PAD * scale, width * scale, box.h * scale);
+
+    // world px to the picture's
+    const at = (x: number, y: number): [number, number] => [(x - box.x + LANE_PAD) * scale, (y - box.y + LANE_PAD) * scale];
+    for (const cell of mine) {
+      const shown = w.querySelector<HTMLElement>(`[data-view="${CSS.escape(cell.key)}"]`);
+      if (!shown || framesNow.current[frameKey(cell)]?.status !== "ready") continue;
+      const b = boxIn(shown, w);
+      const shot = await createImageBitmap(await shoot(cell, scale));
+      const [x, y] = at(b.x, b.y);
+      ctx.save();
+      ctx.beginPath();
+      ctx.roundRect(x, y, b.w * scale, b.h * scale, 6 * unit * scale);
+      ctx.clip();
+      ctx.drawImage(shot, x, y, b.w * scale, b.h * scale);
+      ctx.restore();
+    }
+
+    for (const edge of edgesNow.current) {
+      if (!edge.key.startsWith(`${lane.id}/`)) continue;
+      ctx.save();
+      ctx.setTransform(scale, 0, 0, scale, (LANE_PAD - box.x) * scale, (LANE_PAD - box.y) * scale);
+      ctx.strokeStyle = KIND_COLOR[edge.kind];
+      ctx.fillStyle = KIND_COLOR[edge.kind];
+      ctx.lineWidth = 5 * unit;
+      ctx.lineCap = "round";
+      if (edge.kind === "negative") ctx.setLineDash([16 * unit, 14 * unit]);
+      ctx.stroke(new Path2D(edge.d));
+      ctx.setLineDash([]);
+      const [x, y] = edge.end;
+      const head = 22 * unit;
+      ctx.beginPath();
+      if (edge.dir === "right") {
+        ctx.moveTo(x + head * 0.4, y);
+        ctx.lineTo(x - head * 0.6, y - head / 2);
+        ctx.lineTo(x - head * 0.6, y + head / 2);
+      } else {
+        ctx.moveTo(x, y + head * 0.4);
+        ctx.lineTo(x - head / 2, y - head * 0.6);
+        ctx.lineTo(x + head / 2, y - head * 0.6);
+      }
+      ctx.closePath();
+      ctx.fill();
+      ctx.restore();
+    }
+    return toPng(canvas);
+  };
+
+  const fileName = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+  const laneOf = (cell: Cell) => lanes.find((l) => l.rows.some((r) => r.cells.includes(cell)))?.lane;
+  const sceneUrl = (cell: Cell) => `${window.location.origin}${cell.scene!.path}?scene=${encodeURIComponent(cell.id)}`;
+  const copyLink = async (cell: Cell) => {
+    const key = `link:${cell.key}`;
+    try {
+      await navigator.clipboard.writeText(sceneUrl(cell));
+      say(key, "copied");
+    } catch {
+      say(key, "failed");
+    }
+  };
+
   const switchDevice = (next: Device) => {
     if (next === device) return;
     setDevice(next);
@@ -500,6 +743,7 @@ export function CanvasBoard({ boardId }: { boardId: string }) {
 
   if (!board) return null;
   const current = cells.find((c) => c.key === selected) ?? null;
+  const currentLane = current ? laneOf(current) : undefined;
   const failed = cells.filter((c) => c.scene && frames[frameKey(c)]?.status === "failed");
   const total = cells.filter((c) => c.scene).length;
   const ready = cells.filter((c) => c.scene && frames[frameKey(c)]?.status === "ready").length;
@@ -522,10 +766,19 @@ export function CanvasBoard({ boardId }: { boardId: string }) {
         <div className="rk-outline">
           {lanes.map(({ lane, rows }) => (
             <section key={lane.id}>
-              <h2>
-                <span>{lane.ticket}</span>
-                {lane.title}
-              </h2>
+              <div className="rk-lane-name">
+                <h2>
+                  <span>{lane.ticket}</span>
+                  {lane.title}
+                </h2>
+                <button
+                  type="button"
+                  title="Copy this lane as a picture, for its ticket"
+                  onClick={() => void copyPng(`lane:${lane.id}`, laneImage({ lane, rows }), `${fileName(`${lane.ticket} ${lane.title}`)}-${device}.png`)}
+                >
+                  {saying(`lane:${lane.id}`, "Copy lane")}
+                </button>
+              </div>
               <ul>
                 {rows.flatMap((row) =>
                   row.cells.map((cell) => {
@@ -540,7 +793,7 @@ export function CanvasBoard({ boardId }: { boardId: string }) {
                         >
                           <i aria-hidden />
                           <span>{cell.gap?.title ?? cell.scene?.title ?? cell.id}</span>
-                          {state === "failed" && <b>gagal</b>}
+                          {state === "failed" && <b>failed</b>}
                         </button>
                       </li>
                     );
@@ -556,7 +809,7 @@ export function CanvasBoard({ boardId }: { boardId: string }) {
         <header className="rk-bar">
           {/* the way to the page this board is of, with the visitor's own draft
               (CanvasSwitch is the same switch, from the prototype's side) */}
-          <div className="rk-seg" role="group" aria-label="Prototype atau canvas">
+          <div className="rk-seg" role="group" aria-label="Prototype or canvas">
             <a
               href={board.page.home}
               onClick={(e) => {
@@ -577,13 +830,13 @@ export function CanvasBoard({ boardId }: { boardId: string }) {
           </div>
           <div className="rk-seg" role="group" aria-label="Viewport">
             {(Object.keys(DEVICES) as Device[]).map((dv) => (
-              <button key={dv} type="button" aria-pressed={dv === device} onClick={() => switchDevice(dv)}>
+              <button key={dv} type="button" data-device={dv} aria-pressed={dv === device} onClick={() => switchDevice(dv)}>
                 {DEVICES[dv].label}
               </button>
             ))}
           </div>
-          <p className="rk-count" aria-live="polite">
-            {ready}/{total} frame siap{failed.length ? ` · ${failed.length} gagal` : ""}
+          <p className="rk-count" aria-live="polite" data-ready={ready} data-total={total} data-failed={failed.length}>
+            {ready}/{total} frames ready{failed.length ? ` · ${failed.length} failed` : ""}
           </p>
           <div className="rk-zoom">
             <button type="button" aria-label="Zoom out" onClick={() => zoomAt(window.innerWidth / 2, window.innerHeight / 2, view.current.k / 1.25)}>
@@ -593,11 +846,11 @@ export function CanvasBoard({ boardId }: { boardId: string }) {
             <button type="button" aria-label="Zoom in" onClick={() => zoomAt(window.innerWidth / 2, window.innerHeight / 2, view.current.k * 1.25)}>
               +
             </button>
-            <button type="button" onClick={fitWidth}>
-              Lebar
+            <button type="button" data-zoom="width" title="Fit the board's width" onClick={fitWidth}>
+              Width
             </button>
-            <button type="button" onClick={fit}>
-              Semua
+            <button type="button" data-zoom="all" title="Fit the whole board" onClick={fit}>
+              All
             </button>
           </div>
         </header>
@@ -623,21 +876,38 @@ export function CanvasBoard({ boardId }: { boardId: string }) {
           <div ref={world} className="rk-world">
             <p className="rk-lead">{board.lead}</p>
             {lanes.map(({ lane, rows }) => (
-              <section key={lane.id} className="rk-lane">
+              <section key={lane.id} className="rk-lane" data-lane={lane.id}>
                 <header className="rk-lane-head">
                   <div>
                     <p className="rk-ticket">{lane.ticket}</p>
                     <h2>{lane.title}</h2>
                     {lane.story && <p className="rk-story">{lane.story}</p>}
                   </div>
-                  {lane.differs && (
-                    <div className="rk-differs">
-                      <p>Beda dari brief</p>
-                      <ul>
-                        {lane.differs.map((line) => (
-                          <li key={line}>{line}</li>
-                        ))}
-                      </ul>
+                  {/* what the team reads beside the frames, never part of a copied picture */}
+                  {(lane.differs || lane.confirm) && (
+                    <div className="rk-notes">
+                      {lane.differs && (
+                        <div className="rk-differs">
+                          <p>Differs from the brief</p>
+                          <ul>
+                            {lane.differs.map((line) => (
+                              <li key={line}>{line}</li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                      {lane.confirm && (
+                        <div className="rk-confirm">
+                          <p>
+                            To confirm <span>the prototype&rsquo;s review notes (?review=1), as written</span>
+                          </p>
+                          <ul>
+                            {lane.confirm.map((line) => (
+                              <li key={line}>{line}</li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
                     </div>
                   )}
                 </header>
@@ -648,19 +918,28 @@ export function CanvasBoard({ boardId }: { boardId: string }) {
                       {row.cells.map((cell) => {
                         const fk = frameKey(cell);
                         const state = frames[fk];
-                        const screen = cell.scene?.view === "screen";
-                        // The frame itself starts a screen tall and grows to what its page
-                        // reports, so the height is always measured, never assumed. Until
-                        // it has settled, its place is held at the height it had last time
-                        const height = screen ? dev.h : Math.min(MAX_PAGE_HEIGHT, Math.max(dev.h, state?.height ?? 0));
+                        const view = viewOf(cell);
+                        const screen = view === "screen";
+                        // The frame itself starts a screen tall and takes the height its page
+                        // reports, so the height is always measured, never assumed: a page
+                        // grows to its whole length, a section is exactly as tall as it is.
+                        // Until it has settled, its place is held at the height it had last time
+                        const said = state?.height ?? 0;
+                        const height = screen
+                          ? dev.h
+                          : view === "section"
+                            ? Math.min(MAX_PAGE_HEIGHT, Math.max(MIN_SECTION_HEIGHT, said || dev.h))
+                            : Math.min(MAX_PAGE_HEIGHT, Math.max(dev.h, said));
                         const settled = state?.status === "ready" || state?.status === "failed";
-                        const held = screen || settled ? height : Math.min(MAX_PAGE_HEIGHT, Math.max(height, known[`${cell.id}@${device}`] ?? 0));
+                        const remembered = known[`${cell.id}@${device}`];
+                        const held = screen || settled || !remembered ? height : Math.min(MAX_PAGE_HEIGHT, view === "section" ? remembered : Math.max(height, remembered));
                         const on = !!cell.scene && live.has(fk);
                         return (
                           <article
                             key={cell.key}
                             className="rk-card"
                             data-card={cell.key}
+                            data-title={cell.gap?.title ?? cell.scene?.title}
                             data-kind={cell.gap ? "gap" : cell.kind}
                             data-selected={cell.key === selected || undefined}
                             data-interacting={cell.key === interacting || undefined}
@@ -669,17 +948,17 @@ export function CanvasBoard({ boardId }: { boardId: string }) {
                             {cell.via && (
                               <p className="rk-via">
                                 <span aria-hidden>{cell.fromKey ? "→" : "↳"}</span>
-                                {cell.fromTitle ? `Dari “${cell.fromTitle}”: ${cell.via}` : cell.via}
+                                {cell.fromTitle ? `From “${cell.fromTitle}”: ${cell.via}` : cell.via}
                               </p>
                             )}
                             <h3>
                               <i aria-hidden />
                               {cell.gap?.title ?? cell.scene?.title}
-                              {screen && <em>layar {dev.w}×{dev.h}</em>}
+                              {screen && <em>screen {dev.w}×{dev.h}</em>}
                             </h3>
                             {cell.gap ? (
                               <div className="rk-gap" data-view={cell.key} style={{ width: dev.w }}>
-                                <p>Belum ada di prototype</p>
+                                <p>Not in the prototype yet</p>
                                 <p>{cell.gap.note}</p>
                               </div>
                             ) : (
@@ -696,11 +975,11 @@ export function CanvasBoard({ boardId }: { boardId: string }) {
                                   />
                                 )}
                                 {state?.status !== "ready" && state?.status !== "failed" && (
-                                  <div className="rk-veil">{on ? "Memuat…" : "Belum dimuat"}</div>
+                                  <div className="rk-veil">{on ? "Loading…" : "Not loaded yet"}</div>
                                 )}
                                 {state?.status === "failed" && (
                                   <div className="rk-failed">
-                                    <strong>Scene gagal</strong>
+                                    <strong>Scene failed</strong>
                                     {state.detail}
                                   </div>
                                 )}
@@ -739,19 +1018,34 @@ export function CanvasBoard({ boardId }: { boardId: string }) {
             </span>
             {current.scene && (
               <>
-                <button type="button" aria-pressed={interacting === current.key} onClick={() => setInteracting(interacting === current.key ? null : current.key)}>
-                  {interacting === current.key ? "Selesai" : "Interaksi"}
+                <button
+                  type="button"
+                  data-copy="image"
+                  title="Copy this frame as a picture, with a line saying what it is"
+                  disabled={frames[frameKey(current)]?.status !== "ready" || !currentLane}
+                  onClick={() =>
+                    currentLane &&
+                    void copyPng(`image:${current.key}`, frameImage(current, currentLane), `${fileName(`${currentLane.ticket} ${current.id}`)}-${device}.png`)
+                  }
+                >
+                  {saying(`image:${current.key}`, "Copy image")}
                 </button>
-                <button type="button" onClick={() => reload(current)}>
-                  Muat ulang
+                <button type="button" data-copy="link" title="Copy a link that opens this state" onClick={() => void copyLink(current)}>
+                  {saying(`link:${current.key}`, "Copy link")}
                 </button>
                 <a href={`${current.scene.path}?scene=${encodeURIComponent(current.id)}`} target="_blank" rel="noreferrer">
-                  Buka di tab baru
+                  Open in new tab
                 </a>
+                <button type="button" aria-pressed={interacting === current.key} onClick={() => setInteracting(interacting === current.key ? null : current.key)}>
+                  {interacting === current.key ? "Done" : "Interact"}
+                </button>
+                <button type="button" onClick={() => reload(current)}>
+                  Reload
+                </button>
               </>
             )}
             <button type="button" onClick={() => goTo(current.key)}>
-              Zoom ke frame
+              Zoom to frame
             </button>
           </div>
         )}
@@ -771,9 +1065,9 @@ export function CanvasBoard({ boardId }: { boardId: string }) {
           </li>
           <li data-kind="gap">
             <i aria-hidden />
-            Belum ada
+            Not built
           </li>
-          <li className="rk-hint">Geser: drag atau scroll · Zoom: pinch atau ⌘ + scroll · Klik dua kali frame untuk berinteraksi</li>
+          <li className="rk-hint">Pan: drag or scroll · Zoom: pinch or ⌘ + scroll · Double-click a frame to use it</li>
         </ul>
       </div>
     </div>
