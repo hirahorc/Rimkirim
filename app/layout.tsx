@@ -8,6 +8,8 @@ import { LoginDialog } from "@/components/auth/LoginDialog";
 import { EnvBadge } from "@/components/system/EnvBadge";
 import { BreakData } from "@/components/expat-order/dev/BreakData";
 import { ScrollLanding } from "@/components/system/ScrollLanding";
+import { SceneRunner } from "@/components/canvas/SceneRunner";
+import { SCENE_BOOT_SCRIPT } from "@/lib/canvas/boot";
 import { LanguageProvider } from "@/lib/i18n/LanguageProvider";
 import { APP_ENV, IS_PRODUCTION } from "@/lib/env";
 
@@ -78,6 +80,11 @@ export default function RootLayout({
       className={`${spaceGrotesk.variable} ${geist.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-background text-foreground">
+        {/* scene mode (the canvas's frames, `?scene=`): a page opened as a
+            scene gets storage of its own before any store reads it, so this
+            has to be an inline script, first in the body (lib/canvas/boot.ts).
+            Never in production */}
+        {!IS_PRODUCTION && <script dangerouslySetInnerHTML={{ __html: SCENE_BOOT_SCRIPT }} />}
         <LanguageProvider>
           <AppHeader />
           <main className="flex-1">{children}</main>
@@ -87,6 +94,8 @@ export default function RootLayout({
           <EnvBadge />
           {/* the break-ui data toggle for the expat order flow: local dev only */}
           {APP_ENV === "development" && <BreakData />}
+          {/* plays a scene's steps and reports to the canvas: never in production */}
+          {!IS_PRODUCTION && <SceneRunner />}
           <ScrollLanding />
         </LanguageProvider>
       </body>

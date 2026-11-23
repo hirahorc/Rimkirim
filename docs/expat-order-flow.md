@@ -21,6 +21,19 @@ The draft lives in `lib/store/useExpatOrderStore.ts` (localStorage key `rimkirim
 
 In local development every page of the flow carries a small data toggle (`components/expat-order/dev/`, the break-ui skill): **Demo data**, **Worst case** (the longest values each field accepts, an email that can't wrap, sizes typed in the wrong unit), **Empty**, **One**, and **40 packages**. It swaps the stored draft and its booking, so the screens render the data untouched; `?data=worst` on any flow URL does the same, and **Off** puts your own draft back. It never renders outside development. Keep the worst-case dataset as the check for the next change to these screens.
 
+## Every state on a canvas
+
+`/canvas` lays the flow out as boards, the way a design file would: one per page (the landing, Check Rate, the plan, the Booking Summary, the internal ticket) and an overview of the happy path. A board holds every state its stories ask for as frames, at desktop and at phone width. A lane is a ticket of the brief (RPW-281 to RPW-297); its rows are the positive path, the negative paths and the edge data; an arrow runs from a state to the one an action leads to. Each frame is the page itself, live, not a picture of it, so the boards follow the code. A state the brief asks for that isn't built stands as a dashed placeholder, and where the prototype departs from the brief, the lane says so in a note.
+
+It exists in local development and on staging, never in production: there the routes answer 404 and the layout leaves its script out.
+
+For whoever adds to it:
+
+- A frame is a **scene**: a route opened with `?scene=<id>`. Scene mode gives the page storage of its own, in memory and filled with the scene's seed, before any store reads it (`lib/canvas/boot.ts`, an inline script in `app/layout.tsx`). So the frames of a board don't share a draft, and none of them touches yours.
+- A scene is a seed and, where a stored draft can't reach the state, a few steps: press this, type that, leave the field (`lib/canvas/expat/scenes.ts`, built on the demo order of the datasets above). Steps find what they press by the flow's own copy, so a reworded label is still found. A moment that would pass (a toast, "Checking…") stays because the timer that ends it is held back.
+- A scene whose step can't be played says so on its frame, by step. `npm run check:scenes` opens every board at both widths against a running app and fails if any scene does; run it after a change to these screens.
+- Another flow adds a folder beside `lib/canvas/expat` and joins `lib/canvas/registry.ts`.
+
 ## Feedback
 
 What the flow says back is in DESIGN.md (The expat order flow, "The plan's one action" and "Feedback"). For dev:

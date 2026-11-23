@@ -11,6 +11,8 @@ export function EnvBadge() {
   return (
     <div
       aria-hidden
+      // named, so a canvas frame can leave it out (SceneRunner)
+      data-env-badge
       className="pointer-events-none fixed bottom-4 left-4 z-50 select-none rounded-full border border-info/25 bg-info/15 px-3 py-1 font-display text-xs font-semibold uppercase tracking-wide text-info-ink shadow-float"
     >
       {APP_ENV}

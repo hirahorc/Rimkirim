@@ -1,9 +1,10 @@
 /**
  * Standalone pages that must render WITHOUT the app header/footer, so they can
  * be embedded under other Rimkirim landing services that have their own navbar
- * (e.g. the legal documents).
+ * (e.g. the legal documents). The canvas (/canvas, the flow boards, never in
+ * production) is bare too: it fills the screen with its own chrome.
  */
-const BARE_ROUTE_PREFIXES = ["/terms", "/privacy"];
+const BARE_ROUTE_PREFIXES = ["/terms", "/privacy", "/canvas"];
 
 export function isBareRoute(pathname: string): boolean {
   return BARE_ROUTE_PREFIXES.some(
