@@ -23,8 +23,9 @@ import {
  * data every screen was designed against, and the realistic worst a customer
  * can give it. Each one is a whole order, entered where real data enters, the
  * draft and its booking (BreakData loads it into useExpatOrderStore), so the
- * screens render it untouched. Dev only: nothing in the app imports this but
- * the dev toggle.
+ * screens render it untouched. Never in production: nothing imports this but
+ * the dev toggle and the canvas's scenes (lib/canvas/expat/seeds.ts), which
+ * are built on the same demo order.
  *
  * Every worst value is one a customer could really type, or the longest the
  * form accepts: its `maxLength` where it has one (name 120, detail address

@@ -1,0 +1,676 @@
+/*
+ * The canvas (/canvas): harness chrome, not part of the design it shows.
+ * Plain on purpose, in its own neutrals and the system's type, so nothing
+ * here is mistaken for the product, and nothing of the product's tokens
+ * leaks in. Never in production.
+ *
+ * Two scales: the chrome (the side list, the bar) is at the screen's size;
+ * everything in `.rk-world` is at the frames' size and zooms with them, so
+ * its type is large (a frame is 1440 wide). `--u` shrinks it for phones.
+ */
+
+.rk-canvas {
+  --rk-bg: #e9e9ea;
+  --rk-panel: #ffffff;
+  --rk-line: #d9d9dc;
+  --rk-ink: #18181b;
+  --rk-mute: #6b6b74;
+  --rk-pos: #15803d;
+  --rk-neg: #c62828;
+  --rk-edge: #5b5fc7;
+  --rk-gap: #a16207;
+  --rk-note: #fff7d6;
+  --u: 1;
+
+  position: fixed;
+  inset: 0;
+  z-index: 45;
+  display: grid;
+  grid-template-columns: 264px minmax(0, 1fr);
+  background: var(--rk-bg);
+  color: var(--rk-ink);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  font-size: 13px;
+  line-height: 1.4;
+}
+.rk-canvas[data-device="mobile"] {
+  --u: 0.5;
+}
+.rk-canvas button,
+.rk-canvas a {
+  font: inherit;
+  color: inherit;
+}
+.rk-canvas :focus-visible {
+  outline: 2px solid var(--rk-ink);
+  outline-offset: 2px;
+}
+
+/* the environment marker sits where the side list ends: the canvas is
+   never production, so it has nothing to mark here */
+main:has(.rk-canvas) ~ [data-env-badge] {
+  display: none;
+}
+
+/* ------------------------------------------------------------- the side */
+
+.rk-side {
+  display: flex;
+  min-height: 0;
+  flex-direction: column;
+  border-right: 1px solid var(--rk-line);
+  background: var(--rk-panel);
+}
+.rk-home {
+  padding: 14px 16px 6px;
+  font-size: 15px;
+  font-weight: 650;
+  text-decoration: none;
+}
+.rk-boards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 6px 12px 12px;
+  border-bottom: 1px solid var(--rk-line);
+}
+.rk-boards a {
+  padding: 5px 9px;
+  border-radius: 6px;
+  color: var(--rk-mute);
+  text-decoration: none;
+}
+.rk-boards a:hover {
+  background: #f1f1f2;
+  color: var(--rk-ink);
+}
+.rk-boards a[aria-current="page"] {
+  background: var(--rk-ink);
+  color: #fff;
+}
+.rk-outline {
+  min-height: 0;
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px 8px 24px;
+}
+.rk-outline h2 {
+  margin: 12px 8px 4px;
+  font-size: 12px;
+  font-weight: 650;
+}
+.rk-outline h2 span {
+  display: block;
+  color: var(--rk-mute);
+  font-size: 11px;
+  font-weight: 500;
+}
+.rk-outline ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.rk-outline button {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 8px;
+  border: 0;
+  border-radius: 6px;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+}
+.rk-outline button:hover {
+  background: #f1f1f2;
+}
+.rk-outline button[aria-current] {
+  background: #e7e7ea;
+  font-weight: 600;
+}
+.rk-outline button span {
+  min-width: 0;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.rk-outline button b {
+  color: var(--rk-neg);
+  font-size: 11px;
+}
+
+/* a state's kind, as a mark: its colour, and a shape that says it without colour */
+.rk-canvas [data-kind] > i {
+  width: 9px;
+  height: 9px;
+  flex: none;
+  border-radius: 50%;
+  background: var(--rk-mute);
+}
+.rk-canvas [data-kind="positive"] > i {
+  background: var(--rk-pos);
+}
+.rk-canvas [data-kind="negative"] > i {
+  border-radius: 2px;
+  background: var(--rk-neg);
+}
+.rk-canvas [data-kind="edge"] > i {
+  border-radius: 2px;
+  background: var(--rk-edge);
+  transform: rotate(45deg);
+}
+.rk-canvas [data-kind="gap"] > i {
+  border: 2px dashed var(--rk-gap);
+  background: none;
+}
+
+/* -------------------------------------------------------------- the bar */
+
+.rk-main {
+  position: relative;
+  display: flex;
+  min-width: 0;
+  min-height: 0;
+  flex-direction: column;
+}
+.rk-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 16px;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--rk-line);
+  background: var(--rk-panel);
+}
+.rk-title {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  align-items: baseline;
+  gap: 10px;
+}
+.rk-title h1 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 650;
+}
+.rk-title code {
+  overflow: hidden;
+  color: var(--rk-mute);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.rk-count {
+  margin: 0;
+  color: var(--rk-mute);
+  font-variant-numeric: tabular-nums;
+}
+.rk-seg,
+.rk-zoom {
+  display: flex;
+  gap: 2px;
+  padding: 2px;
+  border-radius: 8px;
+  background: #ececee;
+}
+.rk-seg button,
+.rk-seg a,
+.rk-seg span,
+.rk-zoom button {
+  min-width: 28px;
+  padding: 5px 10px;
+  border: 0;
+  border-radius: 6px;
+  background: none;
+  cursor: pointer;
+}
+.rk-seg a {
+  color: var(--rk-mute);
+  text-decoration: none;
+}
+.rk-seg a:hover {
+  color: var(--rk-ink);
+}
+.rk-seg span[aria-current] {
+  cursor: default;
+}
+.rk-seg span[aria-current],
+.rk-seg button[aria-pressed="true"] {
+  background: #fff;
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.16);
+  font-weight: 600;
+}
+.rk-zoom button:hover {
+  background: #fff;
+}
+.rk-zoom output {
+  min-width: 48px;
+  align-self: center;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ----------------------------------------------------------- the surface */
+
+.rk-viewport {
+  position: relative;
+  min-height: 0;
+  flex: 1;
+  /* clip, not hidden: a hidden box can still be scrolled by script, and a
+     page in a frame that scrolls something into view scrolls its way out
+     through every box that can be, the canvas's included */
+  overflow: clip;
+  background-color: var(--rk-bg);
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+}
+.rk-viewport:active {
+  cursor: grabbing;
+}
+.rk-world {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: max-content;
+  padding: calc(120px * var(--u));
+  transform-origin: 0 0;
+  will-change: transform;
+}
+.rk-lead {
+  max-width: calc(1800px * var(--u));
+  margin: 0 0 calc(110px * var(--u));
+  color: var(--rk-mute);
+  font-size: calc(40px * var(--u));
+  line-height: 1.35;
+}
+
+.rk-lane {
+  margin-bottom: calc(260px * var(--u));
+}
+.rk-lane-head {
+  display: flex;
+  align-items: flex-start;
+  gap: calc(120px * var(--u));
+  margin-bottom: calc(90px * var(--u));
+  padding-top: calc(48px * var(--u));
+  border-top: calc(6px * var(--u)) solid var(--rk-ink);
+}
+.rk-lane-head > div:first-child {
+  max-width: calc(1500px * var(--u));
+}
+.rk-ticket {
+  margin: 0;
+  color: var(--rk-mute);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: calc(34px * var(--u));
+}
+.rk-lane-head h2 {
+  margin: 0;
+  font-size: calc(84px * var(--u));
+  font-weight: 680;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+.rk-story {
+  margin: calc(18px * var(--u)) 0 0;
+  color: var(--rk-mute);
+  font-size: calc(34px * var(--u));
+}
+.rk-differs {
+  max-width: calc(1500px * var(--u));
+  padding: calc(34px * var(--u)) calc(40px * var(--u));
+  border-radius: calc(8px * var(--u));
+  background: var(--rk-note);
+  box-shadow: 0 calc(6px * var(--u)) calc(18px * var(--u)) rgb(0 0 0 / 0.1);
+  font-size: calc(30px * var(--u));
+}
+.rk-differs p {
+  margin: 0 0 calc(12px * var(--u));
+  font-weight: 680;
+}
+.rk-differs ul {
+  margin: 0;
+  padding-left: 1.1em;
+}
+.rk-differs li + li {
+  margin-top: calc(10px * var(--u));
+}
+
+.rk-row {
+  margin-bottom: calc(190px * var(--u));
+}
+.rk-row-name {
+  display: inline-block;
+  margin: 0 0 calc(70px * var(--u));
+  padding: calc(8px * var(--u)) calc(26px * var(--u));
+  border-radius: 999px;
+  color: #fff;
+  font-size: calc(32px * var(--u));
+  font-weight: 650;
+}
+.rk-row[data-kind="positive"] .rk-row-name {
+  background: var(--rk-pos);
+}
+.rk-row[data-kind="negative"] .rk-row-name {
+  background: var(--rk-neg);
+}
+.rk-row[data-kind="edge"] .rk-row-name {
+  background: var(--rk-edge);
+}
+.rk-cells {
+  display: flex;
+  align-items: flex-start;
+  gap: calc(200px * var(--u));
+}
+
+.rk-card {
+  position: relative;
+  flex: none;
+}
+.rk-via {
+  display: flex;
+  gap: 0.45em;
+  margin: 0 0 calc(14px * var(--u));
+  color: var(--rk-mute);
+  font-size: calc(30px * var(--u));
+}
+.rk-card[data-kind="negative"] .rk-via {
+  color: var(--rk-neg);
+}
+.rk-card h3 {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  margin: 0 0 calc(18px * var(--u));
+  font-size: calc(38px * var(--u));
+  font-weight: 650;
+  line-height: 1.2;
+}
+.rk-card h3 > i {
+  width: 0.5em;
+  height: 0.5em;
+}
+.rk-card h3 em {
+  margin-left: auto;
+  padding-left: 1em;
+  color: var(--rk-mute);
+  font-size: 0.68em;
+  font-style: normal;
+  font-weight: 500;
+  white-space: nowrap;
+}
+.rk-note {
+  margin: calc(22px * var(--u)) 0 0;
+  color: var(--rk-mute);
+  font-size: calc(30px * var(--u));
+}
+
+.rk-view {
+  position: relative;
+  overflow: clip;
+  border-radius: calc(6px * var(--u));
+  background: #fff;
+  box-shadow:
+    0 0 0 1px rgb(0 0 0 / 0.08),
+    0 calc(10px * var(--u)) calc(30px * var(--u)) rgb(0 0 0 / 0.1);
+}
+.rk-view iframe {
+  display: block;
+  border: 0;
+}
+/* over the frame until it's entered: the canvas keeps the wheel and the drag */
+.rk-shield {
+  position: absolute;
+  inset: 0;
+}
+.rk-card[data-interacting] .rk-shield {
+  display: none;
+}
+.rk-card[data-selected] .rk-view {
+  box-shadow:
+    0 0 0 calc(5px * var(--u)) #2563eb,
+    0 calc(10px * var(--u)) calc(30px * var(--u)) rgb(0 0 0 / 0.1);
+}
+.rk-card[data-interacting] .rk-view {
+  box-shadow:
+    0 0 0 calc(5px * var(--u)) #2563eb,
+    0 0 0 calc(14px * var(--u)) rgb(37 99 235 / 0.25);
+}
+.rk-veil {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: #f4f4f5;
+  color: var(--rk-mute);
+  font-size: calc(34px * var(--u));
+}
+.rk-failed {
+  position: absolute;
+  inset: 0 0 auto;
+  padding: calc(26px * var(--u)) calc(32px * var(--u));
+  background: var(--rk-neg);
+  color: #fff;
+  font-size: calc(28px * var(--u));
+  overflow-wrap: anywhere;
+}
+.rk-failed strong {
+  display: block;
+}
+
+.rk-gap {
+  padding: calc(56px * var(--u)) calc(48px * var(--u));
+  border: calc(4px * var(--u)) dashed var(--rk-gap);
+  border-radius: calc(6px * var(--u));
+  background: repeating-linear-gradient(135deg, #fffbea 0 22px, #fff6cf 22px 44px);
+  font-size: calc(30px * var(--u));
+  box-sizing: border-box;
+  min-height: calc(420px * var(--u));
+}
+.rk-gap p {
+  margin: 0;
+}
+.rk-gap p:first-child {
+  margin-bottom: calc(14px * var(--u));
+  color: var(--rk-gap);
+  font-weight: 680;
+}
+
+.rk-edges {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+.rk-edges path[data-kind] {
+  fill: none;
+  stroke-width: calc(5px * var(--u));
+  stroke-linecap: round;
+  stroke: var(--rk-pos);
+}
+.rk-edges path[data-kind="negative"] {
+  stroke: var(--rk-neg);
+  stroke-dasharray: calc(16px * var(--u)) calc(14px * var(--u));
+}
+.rk-edges path[data-kind="edge"] {
+  stroke: var(--rk-edge);
+}
+.rk-head-positive {
+  fill: var(--rk-pos);
+}
+.rk-head-negative {
+  fill: var(--rk-neg);
+}
+.rk-head-edge {
+  fill: var(--rk-edge);
+}
+
+/* ---------------------------------------------- over the surface: chrome */
+
+.rk-inspect {
+  position: absolute;
+  top: 62px;
+  left: 50%;
+  z-index: 2;
+  display: flex;
+  max-width: calc(100% - 24px);
+  align-items: center;
+  gap: 4px;
+  padding: 4px;
+  transform: translateX(-50%);
+  border-radius: 10px;
+  background: var(--rk-ink);
+  color: #fff;
+  box-shadow: 0 6px 20px rgb(0 0 0 / 0.22);
+}
+.rk-inspect > span {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 8px;
+  padding: 0 10px;
+  overflow: hidden;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.rk-inspect button,
+.rk-inspect a {
+  padding: 6px 10px;
+  border: 0;
+  border-radius: 7px;
+  background: rgb(255 255 255 / 0.12);
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.rk-inspect button:hover,
+.rk-inspect a:hover {
+  background: rgb(255 255 255 / 0.24);
+}
+.rk-inspect button[aria-pressed="true"] {
+  background: #2563eb;
+}
+.rk-canvas .rk-inspect :focus-visible {
+  outline-color: #fff;
+}
+
+.rk-legend {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  z-index: 2;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 14px;
+  max-width: calc(100% - 24px);
+  margin: 0;
+  padding: 7px 12px;
+  border-radius: 9px;
+  background: rgb(255 255 255 / 0.94);
+  box-shadow: 0 2px 10px rgb(0 0 0 / 0.14);
+  list-style: none;
+}
+.rk-legend li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.rk-hint {
+  color: var(--rk-mute);
+}
+
+/* --------------------------------------------------- the index (/canvas) */
+
+.rk-index {
+  position: fixed;
+  inset: 0;
+  z-index: 45;
+  overflow-y: auto;
+  background: #e9e9ea;
+  color: #18181b;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  font-size: 14px;
+  line-height: 1.45;
+}
+.rk-index > div {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 48px 20px 80px;
+}
+.rk-index h1 {
+  margin: 0 0 6px;
+  font-size: 26px;
+  font-weight: 680;
+  letter-spacing: -0.01em;
+}
+.rk-index > div > p {
+  max-width: 62ch;
+  margin: 0 0 28px;
+  color: #6b6b74;
+}
+.rk-index ul {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.rk-index a {
+  display: block;
+  height: 100%;
+  padding: 18px;
+  border-radius: 10px;
+  background: #fff;
+  box-shadow: 0 0 0 1px rgb(0 0 0 / 0.07);
+  color: inherit;
+  text-decoration: none;
+}
+.rk-index a:hover {
+  box-shadow:
+    0 0 0 1px rgb(0 0 0 / 0.16),
+    0 6px 18px rgb(0 0 0 / 0.08);
+}
+.rk-index a:focus-visible {
+  outline: 2px solid #18181b;
+  outline-offset: 2px;
+}
+.rk-index h2 {
+  margin: 0 0 2px;
+  font-size: 17px;
+  font-weight: 650;
+}
+.rk-index code {
+  color: #6b6b74;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 12px;
+}
+.rk-index a p {
+  margin: 10px 0 12px;
+  color: #6b6b74;
+}
+.rk-index small {
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 720px) {
+  .rk-canvas {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .rk-side {
+    display: none;
+  }
+  .rk-hint {
+    display: none;
+  }
+}
