@@ -14,6 +14,7 @@ import { useExpatOrderHydrated, useExpatOrderStore } from "@/lib/store/useExpatO
 import { useT } from "@/lib/i18n/LanguageProvider";
 import { bookingFacts } from "./booking-facts";
 import { BookingHead } from "./BookingHead";
+import { ContactDialog } from "./ContactDialog";
 import { CustomsPaths } from "./CustomsPaths";
 import { FlowLoading } from "./FlowLoading";
 import { Fold, InspectLink, TYPE } from "./kit";
@@ -110,6 +111,8 @@ export function BookingView({ number }: { number: string }) {
   return (
     <div data-field data-flow className="mx-auto max-w-5xl px-4 pb-12 pt-6 sm:px-6">
       <ReviewNote note={ORDER_REVIEW_NOTES.booking} className="mb-6" />
+      {/* who gets in touch next, said once on arriving (What happens next keeps it) */}
+      <ContactDialog fresh={fresh} />
 
       {/* what the customer typed is shown as typed, and some of it can't
           wrap by itself (an email, a long word in an address): it may break
