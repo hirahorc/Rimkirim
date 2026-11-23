@@ -50,6 +50,16 @@ export interface SceneBoot {
   detail?: string;
 }
 
+/** the browser's own localStorage, also from a page opened as a scene (whose `localStorage` is the stand-in) */
+export function ownLocalStorage(): Storage | null {
+  if (typeof window === "undefined") return null;
+  try {
+    return window.__RK_SCENE__?.real.local ?? window.localStorage;
+  } catch {
+    return null;
+  }
+}
+
 declare global {
   interface Window {
     __RK_SCENE__?: SceneBoot;

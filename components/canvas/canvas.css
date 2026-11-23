@@ -218,6 +218,8 @@ main:has(.rk-canvas) ~ [data-env-badge] {
   background: #ececee;
 }
 .rk-seg button,
+.rk-seg a,
+.rk-seg span,
 .rk-zoom button {
   min-width: 28px;
   padding: 5px 10px;
@@ -226,6 +228,17 @@ main:has(.rk-canvas) ~ [data-env-badge] {
   background: none;
   cursor: pointer;
 }
+.rk-seg a {
+  color: var(--rk-mute);
+  text-decoration: none;
+}
+.rk-seg a:hover {
+  color: var(--rk-ink);
+}
+.rk-seg span[aria-current] {
+  cursor: default;
+}
+.rk-seg span[aria-current],
 .rk-seg button[aria-pressed="true"] {
   background: #fff;
   box-shadow: 0 1px 2px rgb(0 0 0 / 0.16);

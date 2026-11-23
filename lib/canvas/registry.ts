@@ -14,6 +14,18 @@ const BY_ID = new Map(SCENES.map((s) => [s.id, s]));
 export const findScene = (id: string): Scene | undefined => BY_ID.get(id);
 export const findBoard = (id: string): Board | undefined => BOARDS.find((b) => b.id === id);
 
+/** the board of the page a visitor is on, if it has one */
+export const boardForPath = (pathname: string): Board | undefined => BOARDS.find((b) => b.page.is(pathname));
+
+/** the board a scene stands on: its own page's, before a digest that borrows it */
+export function boardOfScene(id: string): Board | undefined {
+  const has = (b: Board) => b.lanes.some((l) => l.rows.some((r) => r.cells.some((c) => !isGap(c) && c === id)));
+  return BOARDS.find((b) => !b.digest && has(b)) ?? BOARDS.find(has);
+}
+
+/** where "Prototype" goes from a board, on this device (the browser only) */
+export const boardHome = (b: Board): string => b.page.resume?.() ?? b.page.home;
+
 /** the scenes a board frames, each once */
 export function boardScenes(board: Board): Scene[] {
   const ids = new Set<string>();

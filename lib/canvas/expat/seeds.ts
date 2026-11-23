@@ -29,7 +29,7 @@ import type { SceneSeed } from "../boot";
  */
 
 /* the flow's own keys (useExpatOrderStore, CustomsGuide, visit.ts) */
-const DRAFT = "rimkirim:expat-order";
+export const DRAFT = "rimkirim:expat-order";
 const DRAFT_VERSION = 2;
 const CUSTOMS_SEEN = "rimkirim:expat-order:customs-seen";
 const WELCOMED = "rimkirim:expat-order:welcomed";

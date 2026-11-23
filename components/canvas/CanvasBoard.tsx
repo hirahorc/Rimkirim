@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { BOARDS, boardScenes, findBoard, findScene, sceneSeed } from "@/lib/canvas/registry";
+import { BOARDS, boardHome, boardScenes, findBoard, findScene, sceneSeed } from "@/lib/canvas/registry";
 import { DEVICES, isGap, type Device, type Gap, type Lane, type Scene, type SceneKind } from "@/lib/canvas/types";
 import type { SceneMessage } from "./SceneRunner";
 import "./canvas.css";
@@ -554,6 +554,23 @@ export function CanvasBoard({ boardId }: { boardId: string }) {
 
       <div className="rk-main">
         <header className="rk-bar">
+          {/* the way to the page this board is of, with the visitor's own draft
+              (CanvasSwitch is the same switch, from the prototype's side) */}
+          <div className="rk-seg" role="group" aria-label="Prototype atau canvas">
+            <a
+              href={board.page.home}
+              onClick={(e) => {
+                // a better place on this device, when there is one: known only in the browser
+                const to = boardHome(board);
+                if (to === board.page.home) return;
+                e.preventDefault();
+                window.location.assign(to);
+              }}
+            >
+              Prototype
+            </a>
+            <span aria-current="page">Canvas</span>
+          </div>
           <div className="rk-title">
             <h1>{board.title}</h1>
             <code>{board.route}</code>

@@ -109,6 +109,20 @@ export interface Board {
   /** the route the board's page lives on, as a reader knows it */
   route: string;
   lead: string;
+  /**
+   * The page the board is of, for the switch between the two. `is` says
+   * which routes are it: a prototype page there offers its board. `home` is
+   * where "Prototype" goes from the board, the page with the visitor's own
+   * draft; `resume`, read in the browser, is a better place on this device
+   * when there is one (the last booking made here, say).
+   */
+  page: {
+    is: (pathname: string) => boolean;
+    home: string;
+    resume?: () => string | null;
+  };
+  /** a board made of other boards' frames (the overview): never the board a scene is "from" */
+  digest?: boolean;
   lanes: Lane[];
 }
 

@@ -8,6 +8,7 @@ import { LoginDialog } from "@/components/auth/LoginDialog";
 import { EnvBadge } from "@/components/system/EnvBadge";
 import { BreakData } from "@/components/expat-order/dev/BreakData";
 import { ScrollLanding } from "@/components/system/ScrollLanding";
+import { CanvasSwitch } from "@/components/canvas/CanvasSwitch";
 import { SceneRunner } from "@/components/canvas/SceneRunner";
 import { SCENE_BOOT_SCRIPT } from "@/lib/canvas/boot";
 import { LanguageProvider } from "@/lib/i18n/LanguageProvider";
@@ -96,6 +97,8 @@ export default function RootLayout({
           {APP_ENV === "development" && <BreakData />}
           {/* plays a scene's steps and reports to the canvas: never in production */}
           {!IS_PRODUCTION && <SceneRunner />}
+          {/* the switch between a page and its board on the canvas: never in production */}
+          {!IS_PRODUCTION && <CanvasSwitch />}
           <ScrollLanding />
         </LanguageProvider>
       </body>

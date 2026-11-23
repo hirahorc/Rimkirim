@@ -25,7 +25,7 @@ In local development every page of the flow carries a small data toggle (`compon
 
 `/canvas` lays the flow out as boards, the way a design file would: one per page (the landing, Check Rate, the plan, the Booking Summary, the internal ticket) and an overview of the happy path. A board holds every state its stories ask for as frames, at desktop and at phone width. A lane is a ticket of the brief (RPW-281 to RPW-297); its rows are the positive path, the negative paths and the edge data; an arrow runs from a state to the one an action leads to. Each frame is the page itself, live, not a picture of it, so the boards follow the code. A state the brief asks for that isn't built stands as a dashed placeholder, and where the prototype departs from the brief, the lane says so in a note.
 
-It exists in local development and on staging, never in production: there the routes answer 404 and the layout leaves its script out.
+It exists in local development and on staging, never in production: there the routes answer 404 and the layout leaves its script out. On a page that has a board, a small switch at the foot of the screen, "Prototype | Canvas", opens that board, and the board's own bar has the way back to the page. A frame opened in a tab of its own says it's a scene (a seeded state, not your draft), with the way back to its frame and the way out to the real page.
 
 For whoever adds to it:
 

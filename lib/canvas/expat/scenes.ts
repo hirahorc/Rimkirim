@@ -1,8 +1,9 @@
 import { breakBookingNumber } from "@/components/expat-order/dev/break-fixtures";
 import { messages } from "@/lib/i18n/messages";
 import { EMPTY_CHECK, EMPTY_DETAILS, EMPTY_ELIGIBILITY } from "@/lib/order/expat-order";
+import { ownLocalStorage } from "../boot";
 import type { Board, Gap, Scene, Step, Target } from "../types";
-import { booked, checked, dataset, days, demo, draft, pkg, placeOf, planned, seed, tickets } from "./seeds";
+import { DRAFT, booked, checked, dataset, days, demo, draft, pkg, placeOf, planned, seed, tickets } from "./seeds";
 
 /**
  * The Expat Relocation order flow as scenes: every state its stories ask
@@ -797,11 +798,25 @@ export const EXPAT_SCENES: Scene[] = [...rates, ...plan, ...bookingScenes, ...op
 
 /* ------------------------------------------------------------------- Boards */
 
+/** the Booking Summary of the last booking made on this device, when there is one */
+function lastBooking(): string | null {
+  try {
+    const raw = ownLocalStorage()?.getItem(DRAFT);
+    const number = raw ? (JSON.parse(raw) as { state?: { bookings?: { number?: string }[] } }).state?.bookings?.[0]?.number : undefined;
+    return number ? booking(number) : null;
+  } catch {
+    return null;
+  }
+}
+
 export const EXPAT_BOARDS: Board[] = [
   {
     id: "overview",
     title: "Overview",
     route: "Expat Relocation order flow",
+    // no page of its own: the flow starts at Check Rate
+    page: { is: () => false, home: RATES },
+    digest: true,
     lead: "Jalur mulus dari Check Rate sampai Booking Summary, satu frame per langkah. Detail tiap halaman ada di board-nya.",
     lanes: [
       {
@@ -832,6 +847,7 @@ export const EXPAT_BOARDS: Board[] = [
     id: "rates",
     title: "Check Rate",
     route: RATES,
+    page: { is: (p) => p === RATES, home: RATES },
     lead: "Tempat pesanan dimulai: dari mana, ke mana, kira-kira berapa berat. Lalu satu tarif, dengan yang lain kalau diminta.",
     lanes: [
       {
@@ -865,6 +881,7 @@ export const EXPAT_BOARDS: Board[] = [
     id: "plan",
     title: "Plan",
     route: PLAN,
+    page: { is: (p) => p === PLAN, home: PLAN },
     lead: "Eligibility Check, Personal Information dan Packages: tiga bagian di satu halaman, satu terbuka, dengan satu tombol.",
     lanes: [
       {
@@ -972,6 +989,8 @@ export const EXPAT_BOARDS: Board[] = [
     id: "booking",
     title: "Booking Summary",
     route: "/expat-relocation/booking/[number]",
+    // a summary exists only for a booking made on this device: the last one, else where one starts
+    page: { is: (p) => p.startsWith("/expat-relocation/booking/"), home: RATES, resume: lastBooking },
     lead: "Yang dilihat customer setelah Confirm application: bukti pesanannya masuk, dan apa yang terjadi berikutnya.",
     lanes: [
       {
@@ -996,6 +1015,7 @@ export const EXPAT_BOARDS: Board[] = [
     id: "ops",
     title: "Internal ticket",
     route: "/simulator · tab “Pesanan expat”",
+    page: { is: (p) => p === SIMULATOR, home: SIMULATOR },
     lead: "Yang sampai ke tim setelah Confirm application: ticket dengan jawaban, packages, kontak dan Customs Category, plus email konfirmasinya.",
     lanes: [
       {
@@ -1019,6 +1039,7 @@ export const EXPAT_BOARDS: Board[] = [
     id: "landing",
     title: "Landing",
     route: LANDING,
+    page: { is: (p) => p === LANDING, home: LANDING },
     lead: "Landing Expat Relocation, satu lane per story. Tiap frame adalah satu layar dari section-nya; klik dua kali untuk scroll di dalamnya.",
     lanes: [
       {
