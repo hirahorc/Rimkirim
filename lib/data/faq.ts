@@ -683,8 +683,8 @@ const SOURCE: FaqTabSource[] = [
               en: "How do I claim lost/damaged items?",
             },
             a: {
-              id: "Isi form klaim dengan video unboxing, foto barang, daftar nilai barang, dan invoice/CIPL sesuai jenis klaim.",
-              en: "Fill in the claim form with an unboxing video, item photos, a list of item values, and the invoice/CIPL depending on the claim type.",
+              id: "Isi form klaim dengan video unboxing, foto barang, daftar nilai barang, dan invoice atau Commercial Invoice/Packing List sesuai jenis klaim.",
+              en: "Fill in the claim form with an unboxing video, item photos, a list of item values, and the invoice or Commercial Invoice/Packing List depending on the claim type.",
             },
           },
           {
@@ -1206,8 +1206,8 @@ const SOURCE: FaqTabSource[] = [
               en: "How do I claim lost/damaged items?",
             },
             a: {
-              id: "Isi form klaim sesuai jenis (hilang/rusak) dengan foto, video unboxing, dan invoice/CIPL sebagai bukti pendukung.",
-              en: "Fill in the claim form for the claim type (lost/damaged) with photos, an unboxing video, and the invoice/CIPL as supporting evidence.",
+              id: "Isi form klaim sesuai jenis (hilang/rusak) dengan foto, video unboxing, dan invoice atau Commercial Invoice/Packing List sebagai bukti pendukung.",
+              en: "Fill in the claim form for the claim type (lost/damaged) with photos, an unboxing video, and the invoice or Commercial Invoice/Packing List as supporting evidence.",
             },
           },
           {

@@ -325,6 +325,12 @@ duty and tax is the answer to the section's heading, so it is the one fact set a
 size of the card's name. From lg the three share their rows (subgrid), so the answers, the
 explanations and the document lists each start on one line across the cards; a shorter list
 ends its card early, at the foot. On a phone the document list folds behind its label.
+The commercial invoice/packing list is a line in each card's list, and in each path's list in
+the order flow's customs guide (2026-11-23: it was tried once over the paths, with what it is,
+and taken back into the lists at Hira's call). What it is, the guide says in one more ruled
+section after the three paths: the question for its title (a subhead, set as a section rather
+than a fourth path), two short sentences, and a link to the landing FAQ's whole answer, in a new
+tab so the plan stays.
 
 **The rates card, taken off (2026-11-17).** "What you'll pay on a personal shipment", the white
 card with the flat-rates table under the three paths, is no longer on the landing (Hira's call).

@@ -1,7 +1,8 @@
 "use client";
 
-import { FileText } from "lucide-react";
+import { ArrowUpRight, FileText } from "lucide-react";
 import { CUSTOMS_ROUTES } from "@/components/expat/ExpatCustoms";
+import { EXPAT_CIPL_FAQ_URL } from "@/lib/data/expat";
 import { useT } from "@/lib/i18n/LanguageProvider";
 import { cn } from "@/lib/utils/cn";
 import { Fold, InspectLink, TYPE } from "./kit";
@@ -55,6 +56,26 @@ export function CustomsBody({ lead = true, inspection = false }: { lead?: boolea
             </li>
           );
         })}
+        {/* one more section, after the three: what the commercial
+            invoice/packing list every list names is, in short (Hira, 23 Nov
+            2026). Not a path, so its title is the question; the whole
+            answer is the landing FAQ's, in a new tab so the plan stays, as
+            InspectLink's is */}
+        <li className="py-4">
+          <p className={TYPE.subhead}>{t("expatOrder.customs.cipl.title")}</p>
+          <p className="mt-1 text-sm">{t("expatOrder.customs.cipl.body")}</p>
+          <p className="mt-2 text-sm">
+            <a
+              href={EXPAT_CIPL_FAQ_URL}
+              target="_blank"
+              rel="noreferrer"
+              className="link-mark tap-row relative inline-flex items-center gap-1"
+            >
+              {t("expatOrder.customs.cipl.more")}
+              <ArrowUpRight aria-hidden className="size-3.5" />
+            </a>
+          </p>
+        </li>
       </ul>
       <p className="mt-4 text-sm text-muted">{t("expat.customs.extraDocs")}</p>
       {inspection && (

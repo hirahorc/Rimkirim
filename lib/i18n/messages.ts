@@ -248,6 +248,13 @@ const id = {
       needed: "Dokumen yang dibutuhkan",
       close: "Tidak perlu memilih sekarang. Saat mereview pesananmu, kami tunjukkan jalur yang paling menguntungkan dan dokumen yang dibutuhkan. Keputusannya tetap di kamu.",
       inspection: "Bea Cukai juga bisa meminta paket mana pun dibuka untuk diperiksa.",
+      // what the commercial invoice/packing list in every path's list is, in
+      // short; the whole answer is the landing FAQ's
+      cipl: {
+        title: "Apa itu commercial invoice/packing list?",
+        body: "Daftar semua barang yang kamu kirim, per paket, lengkap dengan nilai tiap barang. Kamu membuatnya sendiri di halaman packing list Rimkirim.",
+        more: "Baca selengkapnya di FAQ",
+      },
       gotIt: "Oke, paham",
       reopen: "Buka lagi di sini, kapan saja.",
     },
@@ -782,7 +789,7 @@ const id = {
         doc1: "Paspor",
         doc2: "ITAS kerja atau belajar, berlaku 12 bulan atau lebih",
         doc3: "Pengesahan kerja atau izin belajar",
-        doc4: "Commercial invoice/packing list dengan nilai tiap barang",
+        doc4: "Commercial invoice/packing list",
         note: "Kendaraan dan barang kena cukai (seperti alkohol dan rokok) tidak termasuk.",
       },
       penumpang: {
@@ -792,7 +799,7 @@ const id = {
         body: "Barang pribadimu bebas bea masuk dan pajak sampai USD 500 (FOB) per orang, per kedatangan. Di atas itu, kamu bayar bea masuk (BM) 10% plus PPN atas kelebihan dari USD 500, kira-kira 22% dari kelebihan itu.",
         doc1: "Paspor",
         doc2: "Tanggal kedatangan dan detail penerbanganmu",
-        doc3: "Commercial invoice/packing list dengan nilai tiap barang",
+        doc3: "Commercial invoice/packing list",
         note: "Untuk dipakai sendiri, bukan untuk dijual atau untuk orang lain, dikirim atas namamu dan diatur sesuai waktu kedatanganmu.",
       },
       kiriman: {
@@ -801,7 +808,7 @@ const id = {
         name: "Barang kiriman pribadi",
         body: "Barang yang dikirim untukmu secara pribadi, tanpa pembebasan bea. Untuk kiriman sampai USD 1.500, berlaku tarif flat sesuai jenis barang: dari 0% untuk buku sampai 25% untuk pakaian, tas, dan alas kaki, ditambah PPN.",
         doc1: "Paspor atau NPWP-mu",
-        doc2: "Commercial invoice/packing list dengan nilai tiap barang",
+        doc2: "Commercial invoice/packing list",
         note: "Harga kami mencakup ongkos kirim. Bea dan pajak ditetapkan oleh Bea Cukai Indonesia dan ditagihkan terpisah. Tanpa NPWP, beberapa barang kena tarif PPh yang lebih tinggi.",
       },
       ask: "Belum yakin jalur mana yang cocok untukmu?",
@@ -2606,6 +2613,13 @@ const en: Messages = {
       needed: "Documents needed",
       close: "No need to choose now. When we review your booking, we'll point out the one that saves you the most and what it needs. The choice is yours.",
       inspection: "Customs can also have any package opened for inspection.",
+      // what the commercial invoice/packing list in every path's list is, in
+      // short; the whole answer is the landing FAQ's
+      cipl: {
+        title: "What's a commercial invoice/packing list?",
+        body: "A list of everything you're sending, package by package, with what each item is worth. You create it yourself on Rimkirim's packing list page.",
+        more: "Read more in the FAQ",
+      },
       gotIt: "Got it",
       reopen: "Open this again here, any time.",
     },
@@ -3134,7 +3148,7 @@ const en: Messages = {
         doc1: "Passport",
         doc2: "ITAS for work or study, valid 12 months or more",
         doc3: "Your work approval or study permit",
-        doc4: "Commercial invoice/packing list with each item's value",
+        doc4: "Commercial invoice/packing list",
         note: "Vehicles and excise goods (such as alcohol and tobacco) aren't covered.",
       },
       penumpang: {
@@ -3144,7 +3158,7 @@ const en: Messages = {
         body: "Your personal goods are duty- and tax-free up to USD 500 (FOB) per person, per arrival. Above that, you pay 10% duty (BM) plus VAT (PPN) on the amount over USD 500, roughly 22% of that amount.",
         doc1: "Passport",
         doc2: "Your arrival date and flight details",
-        doc3: "Commercial invoice/packing list with each item's value",
+        doc3: "Commercial invoice/packing list",
         note: "For your own use, not for sale or for anyone else, sent in your name and timed around your arrival.",
       },
       kiriman: {
@@ -3153,7 +3167,7 @@ const en: Messages = {
         name: "Personal shipment (Barang Kiriman Pribadi)",
         body: "Goods sent to you personally, with no duty-free allowance. For shipments up to USD 1,500, flat rates apply by item type: from 0% for books to 25% for clothing, bags and shoes, plus VAT (PPN).",
         doc1: "Your passport or NPWP",
-        doc2: "Commercial invoice/packing list with each item's value",
+        doc2: "Commercial invoice/packing list",
         note: "Our price covers shipping. Any duties and taxes are set by Indonesian Customs and charged separately. Without an NPWP, some items carry a higher income tax (PPh) rate.",
       },
       ask: "Not sure which applies to you?",

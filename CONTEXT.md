@@ -100,6 +100,10 @@ _Avoid_: Unaccompanied baggage, luggage
 The customs path for belongings that don't qualify as Relocation Goods: cleared as _barang kiriman_, with duty and tax paid in full.
 _Avoid_: Regular shipment, courier shipment
 
+**Commercial Invoice/Packing List**:
+The customs document every Customs Path needs: one list of everything being sent, package by package, with each item's quantity and what it's worth today (no receipts), and who's sending and receiving it. Not a bill, and nothing is being sold. The customer creates it themselves on Rimkirim's packing list page (`/packing-list/buat`). Always written out in full in copy.
+_Avoid_: CIPL (in copy), invoice (alone), packing list (alone)
+
 ## Personal Information
 
 **Detail Address**:
