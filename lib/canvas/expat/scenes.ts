@@ -45,6 +45,8 @@ const wait = (ms: number): Step => ({ do: "wait", ms });
 
 const d = demo();
 const NUMBER = breakBookingNumber("demo");
+/** Your details as the plan first shows it: nothing typed, the dial code from the origin country */
+const START_DETAILS = { ...EMPTY_DETAILS, dialIso: d.check.originCountry };
 
 /* --------------------------------------------------------------- Check Rate */
 
@@ -383,13 +385,23 @@ const plan: Scene[] = [
   },
   {
     id: "details-date",
-    title: "Pickup date",
-    note: "Hari kerja saja, mulai besok. Akhir pekan dan hari ini tidak bisa dipilih.",
-    via: "Buka “Pickup date”",
+    title: "Within 3 months: pickup date",
+    note: "Kalender baru ada setelah pertanyaannya dijawab. Dalam 3 bulan: hari kerja dari besok sampai hari ke-90, dan tanggalnya wajib. Di mobile kalendernya bottom sheet.",
+    via: "Pilih “Within 3 months”, buka “Pickup date”",
     from: "plan-part-done",
     path: PLAN,
-    seed: () => seed(planned({ eligibility: d.eligibility })),
-    steps: [click(button(M.details.pickup)), wait(300)],
+    seed: () => seed(planned({ eligibility: d.eligibility, details: { ...START_DETAILS, pickupWhen: "soon" } })),
+    steps: [click(button(M.details.pickup)), wait(500)],
+    view: "screen",
+  },
+  {
+    id: "details-later",
+    title: "More than 3 months: tanggal opsional",
+    note: "Kalender mulai hari ke-91, tanpa batas akhir. Tanggal boleh kosong: itu jawaban yang selesai, bukan kesalahan.",
+    via: "Pilih “More than 3 months”",
+    from: "plan-part-done",
+    path: PLAN,
+    seed: () => seed(planned({ eligibility: d.eligibility, details: { ...START_DETAILS, pickupWhen: "later" } })),
   },
   {
     id: "details-filled",
@@ -418,7 +430,7 @@ const plan: Scene[] = [
   {
     id: "details-required",
     title: "Continue saat kosong",
-    note: "“Required.” di tiap isian, dan toast menghitung yang kurang.",
+    note: "“Required.” di tiap isian, “Choose one to continue.” di pertanyaan kapan dijemput, dan toast menghitung yang kurang.",
     via: "Tekan “Continue” tanpa mengisi",
     from: "plan-part-done",
     path: PLAN,
@@ -433,6 +445,16 @@ const plan: Scene[] = [
     from: null,
     path: PLAN,
     seed: () => seed(planned({ eligibility: d.eligibility, details: { ...d.details, pickupDate: days(-2) } })),
+  },
+  {
+    id: "details-cleared",
+    title: "Jawaban diganti, tanggal dikosongkan",
+    note: "Dua rentangnya tidak pernah bertemu, jadi tanggal yang dipilih untuk jawaban lama dikosongkan, dan itu dikatakan: “We cleared … because it’s outside the dates this option allows.”",
+    via: "Sudah pilih tanggal, ganti ke “More than 3 months”",
+    from: "details-date",
+    path: PLAN,
+    seed: () => seed(planned({ eligibility: d.eligibility, details: { ...d.details, fullName: "" } })),
+    steps: [click({ role: "radio", name: M.details.whenLater, contains: true }), wait(500)],
   },
   {
     id: "details-changed",
@@ -651,6 +673,21 @@ const bookingScenes: Scene[] = [
     via: "Tekan “Got it”",
     path: booking(NUMBER),
     seed: () => seed(booked("demo")),
+  },
+  {
+    id: "booking-later",
+    title: "Pickup lebih dari 3 bulan lagi",
+    note: "Tanpa tanggal: pickup “To be confirmed, more than 3 months from now”, dan langkah ketiga bilang tanggalnya disepakati saat waktunya lebih dekat.",
+    via: "Booking dengan “More than 3 months”, tanpa tanggal",
+    from: null,
+    path: booking(NUMBER),
+    seed: () => {
+      const state = booked("demo");
+      return seed({
+        ...state,
+        bookings: state.bookings.map((b) => ({ ...b, details: { ...b.details, pickupWhen: "later" as const, pickupDate: undefined } })),
+      });
+    },
   },
   {
     id: "booking-docs",
@@ -948,14 +985,14 @@ export const EXPAT_BOARDS: Board[] = [
           "As a customer, I want to enter my details and when I am moving, so that Rimkirim can arrange pickup and reach me about the shipment.",
         differs: [
           "Brief: detail address wajib di kedua sisi, dengan map pin. Prototype: opsional, tanpa pin (keputusan tim).",
-          "Brief: tanggal dalam 2 hari dari hari ini tertutup. Prototype: pickup mulai besok; akhir pekan tetap tertutup.",
+          "Brief: satu relocation date, dua hari pertama tertutup. Prototype (revisi PM, RPW-293, 2026-11-23): ditanya dulu kapan dijemput. Dalam 3 bulan tanggalnya wajib, dari besok sampai hari ke-90; lebih dari 3 bulan tanggalnya opsional. Akhir pekan tetap tertutup.",
           "Brief: “Confirm Application” aktif hanya saat semua valid. Prototype: tombolnya tidak pernah mati, dan menunjukkan apa yang kurang.",
         ],
         rows: [
-          { kind: "positive", cells: ["plan-part-done", "details-address", "details-date", "details-filled"] },
+          { kind: "positive", cells: ["plan-part-done", "details-address", "details-date", "details-later", "details-filled"] },
           {
             kind: "negative",
-            cells: ["details-left", "details-required", "details-address-pick", "details-pickup-past", "details-changed"],
+            cells: ["details-left", "details-required", "details-address-pick", "details-cleared", "details-pickup-past", "details-changed"],
           },
         ],
       },
@@ -1004,7 +1041,7 @@ export const EXPAT_BOARDS: Board[] = [
           "What happens next berhenti di pickup; invoice datang setelah barang sampai di gudang Rimkirim (koreksi tim).",
         ],
         rows: [
-          { kind: "positive", cells: ["plan-confirming", "booking-fresh", "booking-summary", "booking-docs"] },
+          { kind: "positive", cells: ["plan-confirming", "booking-fresh", "booking-summary", "booking-docs", "booking-later"] },
           { kind: "negative", cells: [CONFIRM_FAILED, "booking-not-found"] },
           { kind: "edge", cells: ["booking-no-packages", "booking-many", "booking-worst"] },
         ],

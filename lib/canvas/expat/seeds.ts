@@ -30,7 +30,8 @@ import type { SceneSeed } from "../boot";
 
 /* the flow's own keys (useExpatOrderStore, CustomsGuide, visit.ts) */
 export const DRAFT = "rimkirim:expat-order";
-const DRAFT_VERSION = 2;
+/** the order store's own (useExpatOrderStore): a seed is never migrated on its way in */
+const DRAFT_VERSION = 3;
 const CUSTOMS_SEEN = "rimkirim:expat-order:customs-seen";
 const WELCOMED = "rimkirim:expat-order:welcomed";
 const BOOKED = "rimkirim:expat-order:booked";
