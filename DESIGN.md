@@ -1994,7 +1994,15 @@ the team's call, 2026-11-20).
   never on every keystroke, or all at once when the action is pressed; a field in error turns
   its edge red, and keeps it while it's being put right, and says what's wrong under it, in red
   with a mark. A
-  Pickup Date that can no longer be picked (a draft from days ago) says so at once.
+  Pickup Date that can no longer be picked (a draft from days ago) says so at once. The
+  Pickup Date waits on "When would you like us to collect your shipment?" (two cards, nothing
+  chosen): the calendar isn't there until it's answered, then takes that answer's range.
+  More than 3 months out the date is optional, with "optional" in its label, and an empty one
+  is never styled as a problem. A change of answer that clears a date says so in a status
+  line under the field, with an Info mark, in ink: a notice, not an error. In the calendar
+  the day in hand wears a solid Ink ring (a tint was under 3:1, and the grid is walked by
+  keyboard), a day that can't be picked is muted and aria-disabled but still reachable, and
+  on a phone the calendar is a bottom sheet, painted as the popover is.
 - **Feedback, said once and where it happens:**
   - *Done marks.* A finished part's dot draws its check once (`check-draw`), only for a part
     just finished, never for one a draft brought finished. An answered question's number and a

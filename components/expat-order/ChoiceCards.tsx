@@ -46,7 +46,7 @@ export function RadioCards<T extends string | boolean>({
 }: {
   value: T | undefined;
   onChange: (v: T) => void;
-  /** `sub` shows on tiles only: a line under the label */
+  /** `sub`: a line under the label (a tile's sits under its dot) */
   options: { value: T; label: string; sub?: string }[];
   labelledBy: string;
   columns?: 2 | 3 | 4;
@@ -104,7 +104,12 @@ export function RadioCards<T extends string | boolean>({
                 move(i, -1);
               }
             }}
-            className={cn(card(on), tiles && "flex-col items-stretch gap-1 p-3")}
+            className={cn(
+              card(on),
+              tiles && "flex-col items-stretch gap-1 p-3",
+              // two lines: the dot stays on the first
+              !tiles && o.sub && "items-start py-3",
+            )}
           >
             {tiles ? (
               <>
@@ -119,7 +124,14 @@ export function RadioCards<T extends string | boolean>({
             ) : (
               <>
                 <Dot on={on} picked={picked} />
-                {o.label}
+                {o.sub ? (
+                  <span className="min-w-0">
+                    <span className="block">{o.label}</span>
+                    <span className="mt-0.5 block text-pretty text-xs font-normal text-muted">{o.sub}</span>
+                  </span>
+                ) : (
+                  o.label
+                )}
               </>
             )}
           </button>

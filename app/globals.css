@@ -555,27 +555,30 @@ body:has(main > [data-flow]) .link-mark:active {
 body:has(main > [data-flow]) .link-mark:focus-visible {
   outline-color: var(--flow-ink);
 }
-/* what opens over the page (a picker's list, the calendar) is paper, as a
-   card is: on the page's own wash it would read as a hole, not a layer. The
+/* what opens over the page (a picker's list, the calendar, as the popover
+   or a phone's sheet) is paper, as a card is: on the page's own wash it
+   would read as a hole, not a layer. The
    day that's chosen is Ink, as every chosen answer is; lime stays the
    action's */
-body:has(main > [data-flow]) .pop-panel {
+body:has(main > [data-flow]) :is(.pop-panel, .pick-sheet) {
   background-color: var(--flow-paper);
 }
-body:has(main > [data-flow]) .pop-panel [role="gridcell"] > button[aria-pressed="true"] {
+body:has(main > [data-flow]) :is(.pop-panel, .pick-sheet) [role="gridcell"] > button[aria-pressed="true"] {
   background-color: var(--flow-ink);
   color: var(--flow-paper);
 }
-body:has(main > [data-flow]) .pop-panel [role="gridcell"] > button[aria-pressed="true"] > span {
+body:has(main > [data-flow]) :is(.pop-panel, .pick-sheet) [role="gridcell"] > button[aria-pressed="true"] > span {
   background-color: var(--flow-paper);
 }
 /* every day that can be picked is Ink, and Sunday's name is Muted as the
    other six are: the calendar's red Sunday is a custom, not an error, and
-   red here is only what's wrong and what takes something away */
-body:has(main > [data-flow]) .pop-panel [role="gridcell"] > button:enabled:not([aria-pressed="true"]) {
+   red here is only what's wrong and what takes something away. A day that
+   can't be picked says so with aria-disabled (it stays reachable by the
+   arrows), so that's what keeps it out of Ink */
+body:has(main > [data-flow]) :is(.pop-panel, .pick-sheet) [role="gridcell"] > button:not([aria-disabled="true"]):not([aria-pressed="true"]) {
   color: var(--flow-ink);
 }
-body:has(main > [data-flow]) .pop-panel :has(+ [role="grid"]) > div {
+body:has(main > [data-flow]) :is(.pop-panel, .pick-sheet) :has(+ [role="grid"]) > div {
   color: var(--flow-muted);
 }
 /* a toast is ink, and its icon says which kind; the one that says what's

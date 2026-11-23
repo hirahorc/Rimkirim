@@ -3,7 +3,8 @@
 import * as React from "react";
 import { Calendar, ChevronDown, ChevronLeft, ChevronRight, ChevronUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { useIsMobile } from "@/components/ui/dialog";
+import { Picker, PickerContent, PickerTrigger, Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useLanguage, useT } from "@/lib/i18n/LanguageProvider";
 import { cn } from "@/lib/utils/cn";
 
@@ -39,6 +40,14 @@ const dow = (d: Date) => (d.getDay() + 6) % 7;
  * few presses away instead of a month at a time (an arrival date in Q2 of the
  * expat Eligibility Check). A month picks, and the days come back on it;
  * months and years past the bounds are off. The panel keeps its height.
+ *
+ * `sheet` makes it the house's bottom sheet below `sm` (a picker's, from
+ * popover.tsx), with 44px days; from `sm` up it stays the popover.
+ *
+ * It opens on the chosen day, or on the first day that can be picked, so a
+ * range that starts months out opens there with focus on a day that takes
+ * it. A day that can't be picked says so (aria-disabled) and can still be
+ * reached by the arrows, so the keyboard never loses its place on it.
  */
 export function DatePicker({
   value,
@@ -52,6 +61,7 @@ export function DatePicker({
   className,
   id,
   monthJump = false,
+  sheet = false,
 }: {
   value?: string;
   onChange: (value: string) => void;
@@ -67,10 +77,14 @@ export function DatePicker({
   id?: string;
   /** the month's name opens a month and year view (see above) */
   monthJump?: boolean;
+  /** a bottom sheet on a phone (see above) */
+  sheet?: boolean;
 }) {
   const t = useT();
   const { locale } = useLanguage();
   const [open, setOpen] = React.useState(false);
+  const mobile = useIsMobile();
+  const asSheet = sheet && mobile;
   const selected = fromIso(value);
   const minD = fromIso(min);
   const maxD = fromIso(max);
@@ -120,22 +134,44 @@ export function DatePicker({
     setFocusDay(d);
   };
 
-  // when the popover opens, start on the selected day (or today) and focus it
+  // the first day from today (or the lower bound) that can be picked, two
+  // years out at most; today when there's none
+  const firstOpen = () => {
+    const start = minD && minD > today() ? minD : today();
+    for (let i = 0; i < 731; i++) {
+      const d = addDays(start, i);
+      if (!outOfRange(d)) return d;
+    }
+    return today();
+  };
+
+  // when the popover opens, start on the selected day (or the first that
+  // can be picked) and focus it
   const onOpenChange = (next: boolean) => {
     setOpen(next);
     if (next) {
-      openTo(selected ?? today());
+      openTo(selected ?? firstOpen());
       setMonths(false);
       focusPending.current = true;
     }
   };
 
-  // move DOM focus to the roving day whenever it changes via keyboard/open
+  // move DOM focus to the roving day whenever it changes via keyboard/open.
+  // On opening, the panel's portal mounts a frame after this runs, so it
+  // waits for the grid (a few frames at most) rather than losing the focus
   React.useEffect(() => {
     if (!open || !focusPending.current) return;
-    focusPending.current = false;
-    const el = gridRef.current?.querySelector<HTMLButtonElement>('[data-focus="true"]');
-    el?.focus();
+    let frame = 0;
+    let tries = 0;
+    const land = () => {
+      const el = gridRef.current?.querySelector<HTMLButtonElement>('[data-focus="true"]');
+      if (el) {
+        focusPending.current = false;
+        el.focus();
+      } else if (++tries < 10) frame = window.requestAnimationFrame(land);
+    };
+    land();
+    return () => window.cancelAnimationFrame(frame);
   }, [open, focusDay, view]);
 
   const moveFocus = (d: Date) => {
@@ -200,9 +236,12 @@ export function DatePicker({
     focusPending.current = true;
   };
 
+  const Root = sheet ? Picker : Popover;
+  const Trigger = sheet ? PickerTrigger : PopoverTrigger;
+  const Content = sheet ? PickerContent : PopoverContentTitled;
   return (
-    <Popover open={open} onOpenChange={onOpenChange}>
-      <PopoverTrigger asChild>
+    <Root open={open} onOpenChange={onOpenChange}>
+      <Trigger asChild>
         <button
           type="button"
           id={id}
@@ -226,15 +265,18 @@ export function DatePicker({
           </span>
           <Calendar className="size-4 shrink-0 text-muted-2" />
         </button>
-      </PopoverTrigger>
+      </Trigger>
 
-      <PopoverContent
+      <Content
+        title={t("date.field")}
         className="w-[19.5rem] min-w-0 p-3"
         // keep focus management to the grid (roving tabindex), not radix's default
         onOpenAutoFocus={(e) => e.preventDefault()}
         role="dialog"
         aria-label={t("date.field")}
       >
+        {/* on the sheet the calendar keeps a phone's gutter and a column's width */}
+        <div className={asSheet ? "mx-auto w-full max-w-sm px-4 pb-4 pt-1" : undefined}>
         {/* month header: in the months view the arrows step a year */}
         <div className="flex items-center justify-between">
           <Button
@@ -294,7 +336,7 @@ export function DatePicker({
                   aria-pressed={hasSel}
                   onClick={() => pickMonth(m)}
                   className={cn(
-                    "h-[3.875rem] rounded-sm text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/40",
+                    "h-[3.875rem] rounded-sm text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground",
                     hasSel
                       ? "bg-brand font-semibold text-brand-ink hover:bg-brand-dim"
                       : off
@@ -334,7 +376,7 @@ export function DatePicker({
           className={cn("grid grid-cols-7 gap-y-0.5", months && "hidden")}
         >
           {cells.map((d, i) => {
-            if (!d) return <div key={`e${i}`} role="gridcell" aria-hidden className="size-10" />;
+            if (!d) return <div key={`e${i}`} role="gridcell" aria-hidden className={asSheet ? "size-11" : "size-10"} />;
             const isSel = sameDay(d, selected);
             const isToday = sameDay(d, now);
             const isFocus = sameDay(d, focusDay);
@@ -347,17 +389,21 @@ export function DatePicker({
                   data-focus={isFocus ? "true" : undefined}
                   aria-label={fmtFull.format(d)}
                   aria-pressed={isSel}
+                  // said, not enforced with `disabled`: the arrows can still
+                  // land on it (pick() ignores it), so focus is never lost
                   aria-disabled={dis || undefined}
-                  disabled={dis}
                   onClick={() => pick(d)}
                   onFocus={() => setFocusDay(d)}
                   className={cn(
-                    "relative grid size-10 place-items-center rounded-sm text-sm tabular-nums transition-colors",
-                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/40",
+                    "relative grid place-items-center rounded-sm text-sm tabular-nums transition-colors",
+                    asSheet ? "size-11" : "size-10",
+                    // the grid is walked by keyboard, and the ring is the only
+                    // sign of the day in hand: solid Ink, not a tint
+                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground",
                     isSel
                       ? "bg-brand font-semibold text-brand-ink hover:bg-brand-dim"
                       : dis
-                        ? "text-muted-2/50"
+                        ? "cursor-default text-muted-2/50"
                         : "text-foreground hover:bg-surface-3",
                     !isSel && dow(d) === 6 && !dis && "text-danger",
                   )}
@@ -401,10 +447,18 @@ export function DatePicker({
             </button>
           )}
         </div>
-      </PopoverContent>
-    </Popover>
+        </div>
+      </Content>
+    </Root>
   );
 }
 
 /** "YYYY-MM-DD" for today, local time — handy for `min`. */
 export const todayIso = () => toIso(today());
+
+/** the popover, named by the sheet's `title` when nothing else names it, so both roots share one call */
+const PopoverContentTitled = React.forwardRef<
+  React.ElementRef<typeof PopoverContent>,
+  React.ComponentPropsWithoutRef<typeof PopoverContent> & { title: string }
+>(({ title, ...props }, ref) => <PopoverContent ref={ref} aria-label={title} {...props} />);
+PopoverContentTitled.displayName = "PopoverContentTitled";

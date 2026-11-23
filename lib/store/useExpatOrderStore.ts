@@ -17,6 +17,7 @@ import {
   detailsProgress,
   eligibilityProgress,
   migratePacking,
+  pickupWhenOf,
   packedPricing,
   packingProgress,
   toItemsData,
@@ -153,10 +154,14 @@ export const useExpatOrderStore = create<ExpatOrderState>()(
     {
       name: "rimkirim:expat-order",
       // 2: packages pick a standard box, items a category (migratePacking)
-      version: 2,
+      // 3: the pickup is asked "when" first; a draft's date answers it
+      version: 3,
       migrate: (persisted, version) => {
-        const s = persisted as { packing?: PackingInput };
+        const s = persisted as { packing?: PackingInput; details?: DetailsInput };
         if (version < 2 && s?.packing) s.packing = migratePacking(s.packing);
+        if (version < 3 && s?.details?.pickupDate && !s.details.pickupWhen) {
+          s.details = { ...s.details, pickupWhen: pickupWhenOf(s.details.pickupDate) };
+        }
         return s as never;
       },
       partialize: (s) => ({

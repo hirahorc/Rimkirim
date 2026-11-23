@@ -134,6 +134,7 @@ const demo: Order = {
     dialIso: "AU",
     dialTouched: false,
     phone: "412 345 678",
+    pickupWhen: "soon",
     pickupDate: pickup(() => true),
   },
   packing: {
@@ -217,7 +218,9 @@ const worst: Order = {
     dialIso: "VC",
     dialTouched: true,
     phone: "784 4567 8901 2345 678",
-    // the longest a date reads: a Wednesday in September
+    // the longest a date reads: a Wednesday in September, so it's also
+    // more than 3 months out, picked although it may stay empty there
+    pickupWhen: "later",
     pickupDate: pickup((d) => d.getDay() === 3 && d.getMonth() === 8),
   },
   packing: {
@@ -330,6 +333,7 @@ const one: Order = {
     dialIso: "AU",
     dialTouched: false,
     phone: "1",
+    pickupWhen: "soon",
     pickupDate: pickup(() => true),
   },
   packing: {

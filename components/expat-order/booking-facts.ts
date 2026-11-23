@@ -118,7 +118,8 @@ export function bookingFacts(b: ExpatBooking, t: T) {
     packing,
     checkedKg: kg(check.weightKg),
     packReminder: bk("packReminder").replace("{furniture}", a.items.includes("furniture") ? bk("packFurniture") : ""),
-    pickup: longDate(d.pickupDate),
+    // more than 3 months out, the date may not be known yet
+    pickup: d.pickupDate ? longDate(d.pickupDate) : bk("pickupTbc"),
     contact: {
       name: d.fullName.trim(),
       email: d.email.trim(),
@@ -130,7 +131,7 @@ export function bookingFacts(b: ExpatBooking, t: T) {
       { title: bk("next2Title"), body: bk("next2Body") },
       {
         title: bk("next3Title"),
-        body: bk("next3Body").replace("{date}", longDate(d.pickupDate)),
+        body: d.pickupDate ? bk("next3Body").replace("{date}", longDate(d.pickupDate)) : bk("next3BodyLater"),
       },
     ],
     // The steps stop at pickup. When the invoice comes is said apart from

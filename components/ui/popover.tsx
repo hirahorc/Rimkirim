@@ -95,7 +95,8 @@ export const PickerContent = React.forwardRef<
           (e.currentTarget as HTMLElement | null)?.focus();
         }}
         className={cn(
-          "fixed inset-x-0 bottom-0 z-50 flex max-h-[85dvh] flex-col overflow-hidden rounded-t-lg border-t border-border-strong bg-surface pb-[env(safe-area-inset-bottom)] text-foreground shadow-overlay outline-none",
+          // pick-sheet: the order flow paints it as it does a popover (globals.css)
+          "pick-sheet fixed inset-x-0 bottom-0 z-50 flex max-h-[85dvh] flex-col overflow-hidden rounded-t-lg border-t border-border-strong bg-surface pb-[env(safe-area-inset-bottom)] text-foreground shadow-overlay outline-none",
           // the list takes the sheet's height, whatever the keyboard leaves of it
           "[&_[cmdk-root]]:flex [&_[cmdk-root]]:min-h-0 [&_[cmdk-root]]:flex-1 [&_[cmdk-root]]:flex-col",
           "[&_[cmdk-list]]:max-h-none [&_[cmdk-list]]:min-h-0 [&_[cmdk-list]]:flex-1 [&_[cmdk-list]]:overscroll-contain [&_[cmdk-item]]:min-h-11",

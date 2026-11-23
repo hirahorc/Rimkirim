@@ -3,25 +3,31 @@
 import * as React from "react";
 import Link from "next/link";
 import { MapPinIcon, PencilIcon } from "@heroicons/react/16/solid";
+import { Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DatePicker } from "@/components/ui/date-picker";
+import { CollapseHeight } from "@/components/ui/disclosure";
 import { DialCodeSelect } from "@/components/order/DialCodeSelect";
 import { getCountry } from "@/lib/data/countries";
 import { placeLine, type Place } from "@/lib/data/expat-places";
 import {
   addressReady,
   emailValid,
+  firstLaterPickupIso,
   firstPickupIso,
+  lastSoonPickupIso,
   phoneValid,
   pickupDayAllowed,
   type CheckRateInput,
   type DetailsInput,
+  type PickupWhen,
 } from "@/lib/order/expat-order";
 import type { AddressChange } from "@/lib/store/useExpatOrderStore";
-import { useT } from "@/lib/i18n/LanguageProvider";
+import { useLanguage, useT } from "@/lib/i18n/LanguageProvider";
 import { cn } from "@/lib/utils/cn";
 import { AddressField } from "./AddressField";
-import { ACTION, Field, Note, QUIET, Well } from "./kit";
+import { RadioCards } from "./ChoiceCards";
+import { ACTION, Field, Note, QUIET, Well, Wrong } from "./kit";
 
 type Side = "origin" | "destination";
 
@@ -223,7 +229,8 @@ function AddressCard({
 /**
  * Personal Information: where from and where to as cards, each changed in
  * place (AddressCard: the Address and its Detail Address, optional on both
- * sides), then name, email, phone and the Pickup Date. The origin country
+ * sides), then name, email, phone, when to collect and the Pickup Date
+ * (PickupWhen, below). The origin country
  * isn't changed here: it set the rate, so it changes on Check Rate. An error
  * shows once a field is left, not on every keystroke; `tried` (the plan's
  * action pressed while a field was still open) shows them all.
@@ -263,12 +270,15 @@ export function DetailsStep({
         : undefined;
   // a date that can no longer be picked (a draft from days ago) is said at
   // once, as an Address without a postal code is: the field shows a date,
-  // so nothing else would say why the plan still waits
+  // so nothing else would say why the plan still waits. More than 3 months
+  // out, an empty date is a finished answer, never a problem
+  const when = value.pickupWhen;
+  const whenErr = tried && !when ? d("whenMissing") : undefined;
   const pickupErr =
-    value.pickupDate && !pickupDayAllowed(value.pickupDate)
+    value.pickupDate && !pickupDayAllowed(value.pickupDate, when)
       ? d("pickupPast")
-      : tried && !value.pickupDate
-        ? d("required")
+      : tried && when === "soon" && !value.pickupDate
+        ? d("pickupMissing")
         : undefined;
 
   return (
@@ -334,16 +344,12 @@ export function DetailsStep({
             onBlur={leave("phone")}
           />
         </Field>
-        <div>
-          <Field label={d("pickup")} hint={pickupErr ? undefined : d("pickupHint")} error={pickupErr}>
-            <PickupPicker
-              value={value.pickupDate}
-              onChange={(pickupDate) => onChange({ pickupDate })}
-              placeholder={d("pickupPh")}
-              ariaLabel={d("pickup")}
-            />
-          </Field>
-        </div>
+        <PickupWhenField
+          value={value}
+          whenErr={whenErr}
+          pickupErr={pickupErr}
+          onChange={onChange}
+        />
       </div>
     </div>
   );
@@ -390,8 +396,113 @@ function PhoneField({
   );
 }
 
-/** the Pickup Date: weekdays only, from tomorrow (the epic, section 7, said three days out) */
+/**
+ * When to collect, then the Pickup Date (the PM's rule, RPW-293,
+ * 2026-11-23). Nothing is chosen for the customer: a default would push
+ * them into the answer that makes them invent a date. The calendar isn't
+ * there until they answer, and its range is the answer's:
+ *   Within 3 months     tomorrow to day 90 (today is day 0), a date required
+ *   More than 3 months  day 91 on, no end, the date optional
+ * Weekends never, nor the day of the order (the PM, 2026-11-23). The two
+ * ranges never meet, so changing the answer clears a date picked for the
+ * other, and says so. The words never show a day count or the 90.
+ */
+function PickupWhenField({
+  value,
+  whenErr,
+  pickupErr,
+  onChange,
+}: {
+  value: DetailsInput;
+  whenErr?: string;
+  pickupErr?: string;
+  onChange: (patch: Partial<DetailsInput>) => void;
+}) {
+  const t = useT();
+  const d = (k: string) => t(`expatOrder.details.${k}`);
+  const { locale } = useLanguage();
+  const id = React.useId();
+  const when = value.pickupWhen;
+  // the date a change of answer cleared: said until a day is picked
+  const [cleared, setCleared] = React.useState<string | null>(null);
+  const day = (iso: string) => {
+    const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso);
+    if (!m) return iso;
+    const date = new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
+    return new Intl.DateTimeFormat(locale, { day: "numeric", month: "long", year: "numeric" }).format(date);
+  };
+  const answer = (next: PickupWhen) => {
+    if (next === when) return;
+    const date = value.pickupDate;
+    const keep = !!date && pickupDayAllowed(date, next);
+    setCleared(date && !keep ? date : null);
+    onChange({ pickupWhen: next, pickupDate: keep ? date : undefined });
+  };
+  // the last day named, so the customer needn't count to it
+  const hint = when === "soon" ? d("pickupHint").replace("{date}", day(lastSoonPickupIso())) : d("pickupHintLater");
+
+  return (
+    <div className="sm:col-span-2">
+      <p id={`${id}-q`} className="mb-1 block text-xs font-medium">
+        {d("when")}
+      </p>
+      {/* the radios' wrapper wears the mark the plan's action looks for */}
+      <div data-missing={whenErr ? true : undefined}>
+        <RadioCards
+          labelledBy={`${id}-q`}
+          describedBy={whenErr ? `${id}-q-error` : undefined}
+          value={when}
+          onChange={answer}
+          options={[
+            { value: "soon" as const, label: d("whenSoon"), sub: d("whenSoonSub") },
+            { value: "later" as const, label: d("whenLater"), sub: d("whenLaterSub") },
+          ]}
+        />
+      </div>
+      <Wrong id={`${id}-q-error`}>{whenErr}</Wrong>
+      {/* no calendar until there's an answer: it isn't there, not disabled */}
+      <CollapseHeight open={!!when}>
+        {when && (
+          <div className="grid grid-cols-1 pt-4 sm:grid-cols-2 sm:gap-x-6">
+            <Field
+              // "optional" in the words, so a screen reader hears it too
+              label={when === "later" ? d("pickupOptional") : d("pickup")}
+              hint={pickupErr ? undefined : hint}
+              error={pickupErr}
+              alert
+              after={
+                // there before anything's cleared, so the change is heard
+                <div role="status">
+                  {cleared && (
+                    <p className="mt-1 flex gap-1 text-xs text-foreground">
+                      <Info aria-hidden className="size-4 shrink-0" />
+                      {d("pickupCleared").replace("{date}", day(cleared))}
+                    </p>
+                  )}
+                </div>
+              }
+            >
+              <PickupPicker
+                when={when}
+                value={value.pickupDate}
+                onChange={(pickupDate) => {
+                  setCleared(null);
+                  onChange({ pickupDate: pickupDate || undefined });
+                }}
+                placeholder={d("pickupPh")}
+                ariaLabel={when === "later" ? d("pickupOptional") : d("pickup")}
+              />
+            </Field>
+          </div>
+        )}
+      </CollapseHeight>
+    </div>
+  );
+}
+
+/** the Pickup Date, inside the range its answer to "when" allows; weekdays only */
 function PickupPicker({
+  when,
   value,
   onChange,
   placeholder,
@@ -399,6 +510,7 @@ function PickupPicker({
   id,
   "aria-invalid": invalid,
 }: {
+  when: PickupWhen;
   value?: string;
   onChange: (v: string) => void;
   placeholder: string;
@@ -414,10 +526,12 @@ function PickupPicker({
         id={id}
         value={value}
         onChange={onChange}
-        min={firstPickupIso()}
-        isDateDisabled={(iso) => !pickupDayAllowed(iso)}
+        min={when === "later" ? firstLaterPickupIso() : firstPickupIso()}
+        max={when === "soon" ? lastSoonPickupIso() : undefined}
+        isDateDisabled={(iso) => !pickupDayAllowed(iso, when)}
         placeholder={placeholder}
         ariaLabel={ariaLabel}
+        sheet
         className={invalid ? "border-danger" : undefined}
       />
     </div>

@@ -275,6 +275,7 @@ export function EligibilityStep({
                 min={todayIso()}
                 placeholder={e("arrivalPh")}
                 monthJump
+                sheet
                 ariaLabel={e("arrivalEstimated")}
               />
             </FollowUp>
@@ -293,6 +294,7 @@ export function EligibilityStep({
                 max={todayIso()}
                 placeholder={e("arrivalPh")}
                 monthJump
+                sheet
                 ariaLabel={e("arrival")}
               />
             </FollowUp>

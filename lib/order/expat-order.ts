@@ -402,9 +402,16 @@ export interface DetailsInput {
   /** true once the customer picks a dial code themselves */
   dialTouched: boolean;
   phone: string;
-  /** "YYYY-MM-DD": the day the belongings are collected */
+  /** when the customer wants it collected: within 3 months (a date is
+   *  required) or more than 3 months away (a date is optional). Unset until
+   *  they answer: neither is chosen for them (the PM's rule, RPW-293) */
+  pickupWhen?: PickupWhen;
+  /** "YYYY-MM-DD": the day the belongings are collected; "" or absent when
+   *  it's more than 3 months away and not known yet */
   pickupDate?: string;
 }
+
+export type PickupWhen = "soon" | "later";
 
 export const EMPTY_DETAILS: DetailsInput = {
   destinationDetail: "",
@@ -424,18 +431,52 @@ export const phoneValid = (s: string) => /^[0-9 ]*[0-9][0-9 ]*$/.test(s.trim());
 const pad = (n: number) => String(n).padStart(2, "0");
 const toIso = (d: Date) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
 
-/** the first day a pickup can be booked: tomorrow (H+0 is out) */
+const dayFrom = (now: Date, n: number) => new Date(now.getFullYear(), now.getMonth(), now.getDate() + n);
+const weekday = (d: Date) => d.getDay() !== 0 && d.getDay() !== 6;
+
+/**
+ * "Within 3 months" is exactly 90 days, counted from today as day 0: day 90
+ * is its last day and day 91 the first of "more than 3 months", so the two
+ * never touch and leave no gap (calendar months run 89 to 92 days). The
+ * customer only ever reads "3 months" (the PM's rule, RPW-293, 2026-11-23).
+ */
+export const PICKUP_SOON_DAYS = 90;
+
+/** the first day a pickup can be booked: tomorrow (the day of the order is out) */
 export function firstPickupIso(now = new Date()): string {
-  return toIso(new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1));
+  return toIso(dayFrom(now, 1));
 }
 
-/** weekends and anything before the first pickup day are out */
-export function pickupDayAllowed(iso: string, now = new Date()): boolean {
+/** the last day "within 3 months" can pick: day 90, or the weekday before it */
+export function lastSoonPickupIso(now = new Date()): string {
+  const d = dayFrom(now, PICKUP_SOON_DAYS);
+  while (!weekday(d)) d.setDate(d.getDate() - 1);
+  return toIso(d);
+}
+
+/** the first day "more than 3 months" can pick: day 91, or the weekday after it */
+export function firstLaterPickupIso(now = new Date()): string {
+  const d = dayFrom(now, PICKUP_SOON_DAYS + 1);
+  while (!weekday(d)) d.setDate(d.getDate() + 1);
+  return toIso(d);
+}
+
+/** weekends, today and before are out (the PM, 2026-11-23); with an answer
+ *  to "when", so is every day of the other answer's range */
+export function pickupDayAllowed(iso: string, when?: PickupWhen, now = new Date()): boolean {
   const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso);
   if (!m) return false;
   const d = new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
-  const day = d.getDay();
-  return day !== 0 && day !== 6 && iso >= firstPickupIso(now);
+  if (!weekday(d) || iso < firstPickupIso(now)) return false;
+  const lastSoon = toIso(dayFrom(now, PICKUP_SOON_DAYS));
+  if (when === "soon") return iso <= lastSoon;
+  if (when === "later") return iso > lastSoon;
+  return true;
+}
+
+/** the answer to "when" a date belongs to (a draft saved before it was asked) */
+export function pickupWhenOf(iso: string, now = new Date()): PickupWhen {
+  return iso <= toIso(dayFrom(now, PICKUP_SOON_DAYS)) ? "soon" : "later";
 }
 
 export function todayIso(now = new Date()): string {
@@ -446,8 +487,15 @@ export function detailsProgress(d: DetailsInput) {
   const name = d.fullName.trim().length > 0;
   const email = emailValid(d.email);
   const phone = !!d.dialIso && phoneValid(d.phone);
-  const pickup = !!d.pickupDate && pickupDayAllowed(d.pickupDate);
-  return { name, email, phone, pickup, done: name && email && phone && pickup };
+  // within 3 months a date is required; more than 3, it may stay empty
+  const when = !!d.pickupWhen;
+  const pickup =
+    d.pickupWhen === "soon"
+      ? !!d.pickupDate && pickupDayAllowed(d.pickupDate, "soon")
+      : d.pickupWhen === "later"
+        ? !d.pickupDate || pickupDayAllowed(d.pickupDate, "later")
+        : false;
+  return { name, email, phone, when, pickup, done: name && email && phone && pickup };
 }
 
 /* -------------------------------------------------------------------- Booking */

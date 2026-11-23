@@ -128,10 +128,21 @@ export function Worn({ children }: { children: React.ReactNode }) {
 /** what's wrong, where it is: red (which in the flow is only what's wrong
  *  and what takes something away, REMOVE), medium, with a mark, so it isn't
  *  said in colour alone */
-export function Wrong({ id, className, children }: { id?: string; className?: string; children?: React.ReactNode }) {
+export function Wrong({
+  id,
+  alert = false,
+  className,
+  children,
+}: {
+  id?: string;
+  /** said at once to a screen reader as it appears (role="alert") */
+  alert?: boolean;
+  className?: string;
+  children?: React.ReactNode;
+}) {
   if (!children) return null;
   return (
-    <p id={id} className={cn("mt-1 flex gap-1 text-xs font-medium text-danger", className)}>
+    <p id={id} role={alert ? "alert" : undefined} className={cn("mt-1 flex gap-1 text-xs font-medium text-danger", className)}>
       <CircleAlert aria-hidden className="size-4 shrink-0" />
       {children}
     </p>
@@ -149,12 +160,18 @@ export function Field({
   quiet = false,
   hint,
   error,
+  alert = false,
+  after,
   children,
 }: {
   label: React.ReactNode;
   quiet?: boolean;
   hint?: React.ReactNode;
   error?: string;
+  /** its error is said at once as it appears (role="alert") */
+  alert?: boolean;
+  /** under the hint and the error: a notice of what just happened to it */
+  after?: React.ReactNode;
   children: React.ReactNode;
 }) {
   const id = React.useId();
@@ -181,7 +198,10 @@ export function Field({
           {hint}
         </p>
       )}
-      <Wrong id={errorId}>{error}</Wrong>
+      <Wrong id={errorId} alert={alert}>
+        {error}
+      </Wrong>
+      {after}
     </div>
   );
 }

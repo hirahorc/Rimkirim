@@ -81,7 +81,11 @@ function saidBack(
     details: line([
       d.fullName.trim(),
       d.phone.trim() ? `${dialCodeFor(d.dialIso) ?? ""} ${d.phone.trim()}`.trim() : "",
-      d.pickupDate ? `${bk("pickup")} ${shortDate(d.pickupDate)}` : "",
+      d.pickupDate
+        ? `${bk("pickup")} ${shortDate(d.pickupDate)}`
+        : d.pickupWhen === "later"
+          ? bk("pickupLater")
+          : "",
     ]),
     packing:
       totals.kg > 0
@@ -273,6 +277,7 @@ function Plan({
       [dp.name, "detailsName"],
       [dp.email, "detailsEmail"],
       [dp.phone, "detailsPhone"],
+      [dp.when, "detailsWhen"],
       [dp.pickup, "detailsPickup"],
     ];
     return p(missing.find(([ok]) => !ok)?.[1] ?? HINT.details);
