@@ -203,7 +203,6 @@ function Plan({
     packing,
     details,
     addressChanged,
-    questionsRevised,
     setCheck,
     selectRate,
     setEligibility,
@@ -495,7 +494,6 @@ function Plan({
                             <EligibilityStep
                               value={eligibility}
                               tried={tried.eligibility > 0}
-                              revised={questionsRevised}
                               onChange={setEligibility}
                             />
                           )}

@@ -366,7 +366,7 @@ const plan: Scene[] = [
   {
     id: "elig-revised",
     title: "A draft from before Q4 and Q5",
-    note: "Answers saved before the questions changed (2026-11-24) lose the visa ones and have none for Q4 and Q5. The check is open again and says so: “Questions 4 and 5 are new. Your other answers are still saved.”",
+    note: "Answers saved before the questions changed (2026-11-24) lose the visa ones and have none for Q4 and Q5. The check is open again, with those two to answer.",
     via: "Come back to answers saved before the change",
     from: null,
     path: PLAN,

@@ -144,18 +144,14 @@ function Struck({ icon: Icon }: { icon: LucideIcon }) {
  * pictured and struck through, and the way to the full list. Q2 asks a date
  * in both branches, the arrival ahead or the one already made. `tried` is the plan's action pressed while
  * a question was still open: from then each unanswered group says so.
- * `revised` is a draft answered before Q4 and Q5 were asked: the check is
- * open again, so it says which questions are new and that the rest stands.
  */
 export function EligibilityStep({
   value,
   tried = false,
-  revised = false,
   onChange,
 }: {
   value: EligibilityAnswers;
   tried?: boolean;
-  revised?: boolean;
   onChange: (patch: Partial<EligibilityAnswers>) => void;
 }) {
   const t = useT();
@@ -179,7 +175,6 @@ export function EligibilityStep({
 
   return (
     <div className="grid grid-cols-1 gap-8">
-      {revised && !(answered.q4 && answered.q5) && <Note>{e("revised")}</Note>}
       <Question n={1} id="q1" title={e("q1")} sub={e("q1Sub")} done={answered.q1}>
         <div>
           <Asked missing={miss(value.items.length === 0, "chooseSome")}>
