@@ -108,7 +108,8 @@ try {
   let bad = 0;
   for (const href of boards) {
     for (const device of ["Desktop", "Mobile"]) {
-      await send("Page.navigate", { url: `${BASE}${href}` });
+      // `?check`: every frame comes up once, in turn, past the board's live budget
+      await send("Page.navigate", { url: `${BASE}${href}?check` });
       for (let i = 0; i < 60; i++) {
         await sleep(500);
         if (await run(`!!document.querySelector(".rk-count")`).catch(() => false)) break;

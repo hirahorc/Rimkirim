@@ -44,6 +44,14 @@ const PAN_STEP = S[8];
 
 /** frames that may be loading at once: each is the whole app starting up */
 const LOADING_AT_ONCE = 4;
+/**
+ * How many frames may be live at once, in page-frame units. Each live frame
+ * is the whole app running, so a board with every frame up took gigabytes;
+ * past this, the frames furthest down the queue are let go and say so.
+ */
+const LIVE_BUDGET = 16;
+/** a section frame runs the whole long page it's cut from, so it costs more */
+const COST: Record<View, number> = { page: 1, screen: 1, section: 3 };
 /** a frame that never reports is called failed, so it can't hold the queue */
 const LOAD_TIMEOUT_MS = 45000;
 const MAX_PAGE_HEIGHT = 14000;
@@ -129,9 +137,12 @@ const viewOf = (cell: Cell): View => cell.scene?.view ?? "page";
 const laneIdOf = (key: string) => key.slice(0, key.indexOf("/"));
 
 interface FrameState {
-  status: "loading" | "ready" | "failed";
+  /** "idle": it came up, then was let go to save memory; it loads again when it's back near the screen */
+  status: "loading" | "ready" | "failed" | "idle";
   detail?: string;
   height?: number;
+  /** it has been ready at least once: counted as loaded, and not queued ahead of those that haven't */
+  up?: boolean;
 }
 
 interface Edge {
@@ -265,6 +276,10 @@ export function CanvasBoard({ boardId }: { boardId: string }) {
   const [frames, setFrames] = React.useState<Record<string, FrameState>>({});
   /** the cells that have come near the screen, in the order they did */
   const [seen, setSeen] = React.useState<string[]>([]);
+  /** the cells near the screen now: only these (and what's pinned) stay live */
+  const [near, setNear] = React.useState<ReadonlySet<string>>(() => new Set());
+  /** frames a lane's picture needs live while it's drawn, wherever they are */
+  const [pins, setPins] = React.useState<readonly string[]>([]);
   const [nonce, setNonce] = React.useState<Record<string, number>>({});
   /** what's in hand: a frame, or failing that a lane */
   const [selected, setSelected] = React.useState<string | null>(null);
@@ -587,10 +602,19 @@ export function CanvasBoard({ boardId }: { boardId: string }) {
         // a page only grows (its frame is at least a screen); a section is exactly as tall as it says
         const height = section ? m.height : Math.max(was?.height ?? 0, m.height);
         // a frame that failed stays failed, whatever its page says after
-        const status = was?.status === "failed" ? "failed" : m.status === "running" ? (was?.status ?? "loading") : m.status;
+        // (one let go and loading again is loading, so it isn't pulled from under its page)
+        const status =
+          was?.status === "failed"
+            ? "failed"
+            : m.status === "running"
+              ? was?.status === "idle"
+                ? "loading"
+                : (was?.status ?? "loading")
+              : m.status;
         const detail = was?.status === "failed" ? was.detail : m.detail;
-        if (was && was.status === status && was.height === height && was.detail === detail) return all;
-        return { ...all, [key]: { status, detail, height } };
+        const up = was?.up || status === "ready" || undefined;
+        if (was && was.status === status && was.height === height && was.detail === detail && was.up === up) return all;
+        return { ...all, [key]: { status, detail, height, up } };
       });
       if (m.status === "ready") {
         // `cell@device@n` is remembered as `scene@device`
@@ -627,6 +651,18 @@ export function CanvasBoard({ boardId }: { boardId: string }) {
           }
           return next;
         });
+        // and which are near it now, coming and going
+        setNear((was) => {
+          let next: Set<string> | null = null;
+          for (const en of entries) {
+            const key = (en.target as HTMLElement).dataset.view;
+            if (!key || en.isIntersecting === was.has(key)) continue;
+            next ??= new Set(was);
+            if (en.isIntersecting) next.add(key);
+            else next.delete(key);
+          }
+          return next ?? was;
+        });
       },
       { root: at, rootMargin: "300px" },
     );
@@ -634,34 +670,75 @@ export function CanvasBoard({ boardId }: { boardId: string }) {
     return () => io.disconnect();
   }, [lanes, device, laid]);
 
-  // A few at a time, in the order they were seen: a frame is live once it
-  // has settled (ready or failed), or while it's one of the first few that
-  // haven't. The order never changes under a frame that's loading
+  // Which frames are live, within LIVE_BUDGET, a few loading at a time:
+  // 1. what's pinned: the frame in hand, the one being used, a lane being copied;
+  // 2. near frames that are loading now, so nothing is pulled from under a page mid-load;
+  // 3. only for `npm run check:scenes` (`?check`): near frames that have never come
+  //    up, in the order they were seen, so with more near than the budget each
+  //    still comes up once, in turn (a person looking at the whole board instead
+  //    gets the first that fit, without frames loading in and out);
+  // 4. near frames in the order they were seen, to fill what's left.
+  // A frame let go keeps its height and says how to see it again.
   const live = React.useMemo(() => {
+    const everyOnce = typeof window !== "undefined" && new URLSearchParams(window.location.search).has("check");
     const on = new Set<string>();
     let loading = 0;
-    for (const key of seen) {
-      const cell = cells.find((c) => c.key === key);
-      if (!cell?.scene) continue;
+    let used = 0;
+    const take = (cell: Cell, pinned = false) => {
       const fk = frameKey(cell);
+      if (on.has(fk)) return;
+      const cost = COST[viewOf(cell)];
       const status = frames[fk]?.status;
-      if (status === "ready" || status === "failed") on.add(fk);
-      else if (loading < LOADING_AT_ONCE) {
-        on.add(fk);
+      const settled = status === "ready" || status === "failed";
+      if (!pinned && used + cost > LIVE_BUDGET) return;
+      if (!settled) {
+        if (loading >= LOADING_AT_ONCE) return;
         loading += 1;
       }
+      on.add(fk);
+      used += cost;
+    };
+    const byKey = new Map(cells.map((c) => [c.key, c]));
+    for (const key of [selected, interacting, ...pins]) {
+      const cell = key ? byKey.get(key) : undefined;
+      if (cell?.scene) take(cell, true);
     }
+    const nearby = seen.map((k) => byKey.get(k)).filter((c): c is Cell => !!c?.scene && near.has(c.key));
+    const state = (c: Cell) => frames[frameKey(c)];
+    for (const c of nearby) if (state(c)?.status === "loading") take(c);
+    if (everyOnce) for (const c of nearby) if (!state(c)?.up && state(c)?.status !== "failed") take(c);
+    for (const c of nearby) take(c);
     return on;
-  }, [cells, frameKey, frames, seen]);
+  }, [cells, frameKey, frames, seen, near, pins, selected, interacting]);
+
+  // a frame let go: idle, so it loads again (and counts as loading) when it's back
+  const wasLive = React.useRef<ReadonlySet<string>>(new Set());
+  React.useEffect(() => {
+    const gone = [...wasLive.current].filter((k) => !live.has(k));
+    wasLive.current = live;
+    if (!gone.length) return;
+    setFrames((all) => {
+      let next: Record<string, FrameState> | null = null;
+      for (const k of gone) {
+        const s = all[k];
+        if (s?.status !== "ready" && s?.status !== "loading") continue;
+        next ??= { ...all };
+        next[k] = { ...s, status: "idle" };
+      }
+      return next ?? all;
+    });
+  }, [live]);
 
   // one that never answers: said, and out of the queue's way
-  const waiting = [...live].filter((k) => !frames[k]).join("|");
+  const waiting = [...live].filter((k) => !frames[k] || frames[k].status === "idle").join("|");
   React.useEffect(() => {
     if (!waiting) return;
     const id = window.setTimeout(() => {
       setFrames((all) => {
         const next = { ...all };
-        for (const k of waiting.split("|")) if (!next[k]) next[k] = { status: "failed", detail: "the page didn't answer in time" };
+        for (const k of waiting.split("|")) {
+          if (!next[k] || next[k].status === "idle") next[k] = { ...next[k], status: "failed", detail: "the page didn't answer in time" };
+        }
         return next;
       });
     }, LOAD_TIMEOUT_MS);
@@ -741,6 +818,7 @@ export function CanvasBoard({ boardId }: { boardId: string }) {
     if (next === device) return;
     setDevice(next);
     setSeen([]);
+    setNear(new Set());
     setInteracting(null);
     follow.current = null;
     fitted.current = false;
@@ -827,8 +905,10 @@ export function CanvasBoard({ boardId }: { boardId: string }) {
     if (!w || !el) throw new Error("the lane isn't on the board");
     const mine = lm.rows.flatMap((r) => r.cells).filter((c) => c.scene);
 
-    // every frame of the lane up and settled, whether or not it has been on screen
+    // every frame of the lane up and settled, whether or not it has been on screen,
+    // and kept live (pinned) until the picture is drawn
     setSeen((was) => [...was, ...mine.map((c) => c.key).filter((k) => !was.includes(k))]);
+    setPins(mine.map((c) => c.key));
     const settled = () =>
       mine.every((c) => {
         const status = framesNow.current[frameKey(c)]?.status;
@@ -915,6 +995,7 @@ export function CanvasBoard({ boardId }: { boardId: string }) {
       return await toPng(canvas);
     } finally {
       delete el.dataset.print;
+      setPins([]);
     }
   };
 
@@ -934,7 +1015,11 @@ export function CanvasBoard({ boardId }: { boardId: string }) {
   const currentLane = lanes.find((l) => l.lane.id === laneSel) ?? null;
   const failed = cells.filter((c) => c.scene && frames[frameKey(c)]?.status === "failed").length;
   const total = cells.filter((c) => c.scene).length;
-  const ready = cells.filter((c) => c.scene && frames[frameKey(c)]?.status === "ready").length;
+  // loaded: has come up, whether it's live now or was let go since
+  const ready = cells.filter((c) => {
+    const s = c.scene && frames[frameKey(c)];
+    return !!s && s.up && s.status !== "failed";
+  }).length;
   const srcOf = (cell: Cell) =>
     `${cell.scene!.path}?scene=${encodeURIComponent(cell.id)}&frame=${encodeURIComponent(frameKey(cell))}`;
   const close = () => {
@@ -1183,7 +1268,9 @@ export function CanvasBoard({ boardId }: { boardId: string }) {
                                   tabIndex={cell.key === interacting ? 0 : -1}
                                 />
                               )}
-                              {!settled && <div className="rk-veil">{on ? "Loading…" : "Not loaded yet"}</div>}
+                              {(on ? !settled : state?.status !== "failed") && (
+                                <div className="rk-veil">{on ? "Loading…" : state?.up ? "Zoom in to load it again" : "Not loaded yet"}</div>
+                              )}
                               {state?.status === "failed" && (
                                 <div className="rk-failed">
                                   <strong>Scene failed</strong>
