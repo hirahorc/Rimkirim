@@ -197,8 +197,20 @@ function Plan({
   const t = useT();
   const p = (k: string) => t(`expatOrder.plan.${k}`);
   const router = useRouter();
-  const { check, eligibility, packing, details, addressChanged, setCheck, selectRate, setEligibility, setPacking, setDetails, submit } =
-    useExpatOrderStore();
+  const {
+    check,
+    eligibility,
+    packing,
+    details,
+    addressChanged,
+    questionsRevised,
+    setCheck,
+    selectRate,
+    setEligibility,
+    setPacking,
+    setDetails,
+    submit,
+  } = useExpatOrderStore();
   const cards = React.useRef<Record<Part, HTMLElement | null>>({ eligibility: null, details: null, packing: null });
   const heads = React.useRef<Record<Part, HTMLElement | null>>({ eligibility: null, details: null, packing: null });
   // how often the action was pressed while a part still waited: from the
@@ -480,7 +492,12 @@ function Plan({
                           {/* the Customs Paths aren't folded in here any more:
                               they're the guide's, a press away from every part */}
                           {part === "eligibility" && (
-                            <EligibilityStep value={eligibility} tried={tried.eligibility > 0} onChange={setEligibility} />
+                            <EligibilityStep
+                              value={eligibility}
+                              tried={tried.eligibility > 0}
+                              revised={questionsRevised}
+                              onChange={setEligibility}
+                            />
                           )}
                           {part === "details" && (
                             <DetailsStep

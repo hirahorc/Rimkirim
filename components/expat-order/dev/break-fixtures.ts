@@ -121,11 +121,10 @@ const demo: Order = {
     itemsOther: "",
     location: "abroad",
     arrivalDate: days(40),
-    hasVisa: true,
-    hasVitas: true,
-    hasItas: false,
     reason: "working",
     reasonOther: "",
+    hasItas: true,
+    fromResidence: true,
   },
   details: {
     destinationDetail: "Apt 12B, Sudirman Tower",
@@ -199,12 +198,12 @@ const worst: Order = {
     location: "indonesia",
     // here a long while: the arrival years back
     arrivalDate: "2019-02-28",
-    hasVisa: true,
-    hasVitas: false,
-    hasItas: true,
     reason: "others",
     reasonOther:
       "Joining my spouse, who was seconded to Jakarta by Northwind Industries Holdings, while I finish a remote doctorate",
+    // the longest answer Q4 has, and the goods coming from somewhere else
+    hasItas: false,
+    fromResidence: false,
   },
   details: {
     // 200 characters, the field's limit
@@ -322,9 +321,10 @@ const one: Order = {
     itemsOther: "A",
     location: "indonesia",
     arrivalDate: "2026-11-01",
-    hasVisa: false,
     reason: "others",
     reasonOther: "X",
+    hasItas: false,
+    fromResidence: true,
   },
   details: {
     destinationDetail: "1",

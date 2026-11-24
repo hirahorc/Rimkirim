@@ -5,7 +5,7 @@ import { messages } from "@/lib/i18n/messages";
 import { EMPTY_CHECK, EMPTY_DETAILS, EMPTY_ELIGIBILITY } from "@/lib/order/expat-order";
 import { ownLocalStorage } from "../boot";
 import type { Board, Gap, Scene, Step, Target } from "../types";
-import { DRAFT, booked, checked, dataset, days, demo, draft, pkg, placeOf, planned, seed, tickets } from "./seeds";
+import { DRAFT, asAskedBefore, booked, checked, dataset, days, demo, draft, pkg, placeOf, planned, seed, tickets } from "./seeds";
 
 /**
  * Expat Relocation as scenes: every state its stories ask for, each one a
@@ -191,8 +191,9 @@ const ELIG_INDONESIA = {
   items: ["personal" as const],
   location: "indonesia" as const,
   arrivalDate: days(-20),
-  hasVisa: false,
   reason: "student" as const,
+  hasItas: false,
+  fromResidence: true,
 };
 const ELIG_OTHERS = {
   ...EMPTY_ELIGIBILITY,
@@ -200,11 +201,10 @@ const ELIG_OTHERS = {
   itemsOther: "A digital piano",
   location: "abroad" as const,
   arrivalDate: days(30),
-  hasVisa: true,
-  hasVitas: false,
-  hasItas: true,
   reason: "others" as const,
   reasonOther: "Joining my partner",
+  hasItas: true,
+  fromResidence: false,
 };
 /** every part of the plan answered: all three fold and the action reads Confirm application */
 const ALL_DONE = { eligibility: d.eligibility, details: d.details, packing: d.packing };
@@ -303,9 +303,9 @@ const plan: Scene[] = [
   /* RPW-292: the Eligibility Check */
   {
     id: "elig-abroad",
-    title: "Not arrived yet, with a VITAS",
-    note: "Q2 “I have not arrived yet” asks the estimated arrival date; Q3 “Yes” opens VITAS and ITAS.",
-    via: "Answer Q1 to Q4",
+    title: "Not arrived yet, with an ITAS",
+    note: "Q2 “I have not arrived yet” asks the estimated arrival date. Q4 asks for an ITAS for work or study, valid 12 months or more; Q5 whether the goods ship from the country they've been living in.",
+    via: "Answer Q1 to Q5",
     from: "plan-start",
     path: PLAN,
     seed: () => seed(planned({ eligibility: d.eligibility })),
@@ -313,9 +313,9 @@ const plan: Scene[] = [
   },
   {
     id: "elig-indonesia",
-    title: "Already in Indonesia, no visa",
-    note: "Q2 asks the day they arrived (up to today); Q3 “No” hides VITAS and ITAS.",
-    via: "The other branch of Q2 and Q3",
+    title: "Already in Indonesia, no ITAS yet",
+    note: "Q2 asks the day they arrived (up to today). Q4 “No or not yet” asks nothing more; the order goes on.",
+    via: "The other branch of Q2 and Q4",
     from: "plan-start",
     path: PLAN,
     seed: () => seed(planned({ eligibility: ELIG_INDONESIA })),
@@ -323,9 +323,9 @@ const plan: Scene[] = [
   },
   {
     id: "elig-others",
-    title: "“Others” in Q1 and Q4",
-    note: "Each asks for a few words. No answer stops the order.",
-    via: "Choose “Others”",
+    title: "“Others” in Q1, “Something else” in Q3",
+    note: "Each asks for a few words. Q5 “No”: the goods ship from somewhere else. No answer stops the order.",
+    via: "Choose “Others” and “Something else”",
     from: "plan-start",
     path: PLAN,
     seed: () => seed(planned({ eligibility: ELIG_OTHERS })),
@@ -334,7 +334,7 @@ const plan: Scene[] = [
   {
     id: "elig-missing",
     title: "Nothing answered",
-    note: "“Choose at least one.” on Q1, “Choose an answer.” on Q2 to Q4.",
+    note: "“Choose at least one.” on Q1, “Choose an answer.” on Q2 to Q5.",
     via: "Press “Continue” without answering",
     from: "plan-start",
     path: PLAN,
@@ -344,17 +344,34 @@ const plan: Scene[] = [
   {
     id: "elig-followups",
     title: "Follow-ups left empty",
-    note: "The arrival date, VITAS/ITAS and the “Others” text are required once an answer brings them up.",
+    note: "The arrival date and the “Others” and “Something else” texts are required once an answer brings them up.",
     via: "Answer, but skip the follow-ups",
     from: "plan-start",
     path: PLAN,
     seed: () =>
       seed(
         planned({
-          eligibility: { ...EMPTY_ELIGIBILITY, items: ["others"], location: "abroad", hasVisa: true, reason: "others" },
+          eligibility: {
+            ...EMPTY_ELIGIBILITY,
+            items: ["others"],
+            location: "abroad",
+            reason: "others",
+            hasItas: true,
+            fromResidence: true,
+          },
         }),
       ),
     steps: [HOLD, click(CONTINUE)],
+  },
+  {
+    id: "elig-revised",
+    title: "A draft from before Q4 and Q5",
+    note: "Answers saved before the questions changed (2026-11-24) lose the visa ones and have none for Q4 and Q5. The check is open again and says so: “Questions 4 and 5 are new. Your other answers are still saved.”",
+    via: "Come back to answers saved before the change",
+    from: null,
+    path: PLAN,
+    // every part was done: the Eligibility Check alone opens again
+    seed: () => seed(planned({ ...ALL_DONE, eligibility: asAskedBefore(d.eligibility) }), { stored: 3 }),
   },
 
   /* RPW-292 + RPW-295: the furniture warning */
@@ -720,6 +737,18 @@ const bookingScenes: Scene[] = [
     seed: () => seed(booked("empty")),
   },
   {
+    id: "booking-old-answers",
+    title: "A booking from before Q4 and Q5",
+    note: "Its visa answers are gone and it was never asked Q4 or Q5, so “Your answers” lists what it has: the arrival and the reason, no name with nothing beside it. The same on the internal ticket and in the email.",
+    from: null,
+    path: booking(NUMBER),
+    seed: () => {
+      const state = booked("demo");
+      return seed({ ...state, bookings: state.bookings.map((b) => ({ ...b, eligibility: asAskedBefore(b.eligibility) })) }, { stored: 3 });
+    },
+    steps: [click(button(M.booking.answers)), wait(500)],
+  },
+  {
     id: "booking-many",
     title: "40 packages",
     note: "The first five show; the rest are behind “Show all 40 packages”.",
@@ -964,11 +993,13 @@ export const EXPAT_BOARDS: Board[] = [
           "Brief: six options in Q1. Prototype: five; “Fine Art & High-Value Items” was dropped on 2026-11-20.",
           "Brief: Q2 “In Indonesia” asks the length of stay. Prototype: a date in both branches (the PM's rule v1).",
           "Under Q1 there's a “Cannot be shipped” block: information, not a question, and it doesn't stop the order.",
+          "Brief: four questions, the third a visa (then a VITAS and an ITAS), the fourth the reason for relocating. Prototype: five, the PM's revision (2026-11-24): the reason is third, the fourth asks for an ITAS for work or study valid 12 months or more, and a fifth asks whether the goods ship from the country they've been living in.",
         ],
         confirm: [ORDER_REVIEW_NOTES.eligibility],
         rows: [
           { kind: "positive", cells: ["elig-abroad", "elig-indonesia", "elig-others"] },
           { kind: "negative", cells: ["elig-missing", "elig-followups"] },
+          { kind: "edge", cells: ["elig-revised"] },
         ],
       },
       {
@@ -1053,7 +1084,7 @@ export const EXPAT_BOARDS: Board[] = [
         rows: [
           { kind: "positive", cells: ["plan-confirming", "booking-fresh", "booking-summary", "booking-docs", "booking-later"] },
           { kind: "negative", cells: ["plan-confirm-failed", "booking-not-found"] },
-          { kind: "edge", cells: ["booking-no-packages", "booking-many", "booking-worst"] },
+          { kind: "edge", cells: ["booking-no-packages", "booking-old-answers", "booking-many", "booking-worst"] },
         ],
       },
     ],

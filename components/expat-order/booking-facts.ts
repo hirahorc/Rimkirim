@@ -57,10 +57,15 @@ export function bookingFacts(b: ExpatBooking, t: T) {
       bk("arrival"),
       a.arrivalDate ? bk(a.location === "indonesia" ? "arrivalDone" : "arrivalPlanned").replace("{date}", longDate(a.arrivalDate)) : "",
     ],
-    [bk("visa"), yesNo(a.hasVisa)],
-    ...(a.hasVisa ? ([[bk("vitas"), yesNo(a.hasVitas)], [bk("itas"), yesNo(a.hasItas)]] as [string, string][]) : []),
     [bk("reason"), a.reason === "others" ? `${e("reasons.others")}: ${a.reasonOther.trim()}` : a.reason ? e(`reasons.${a.reason}`) : ""],
+    // Q4 says what the ITAS is, so a bare "Yes" next to "ITAS" doesn't lose it
+    [bk("itas"), a.hasItas === undefined ? "" : a.hasItas ? bk("itasYes") : e("itasNo")],
+    [bk("fromResidence"), yesNo(a.fromResidence)],
   ];
+  // A booking made before a question was asked has no answer to it (one from
+  // before Q4 and Q5, whose visa answers were dropped): it lists what it has,
+  // on the page, the ticket and the email, never a name with nothing beside it
+  const given = answers.filter(([, value]) => value !== "");
 
   // the packages, absent on bookings made before they were asked
   const list = b.packing?.packages ?? [];
@@ -125,7 +130,7 @@ export function bookingFacts(b: ExpatBooking, t: T) {
       email: d.email.trim(),
       phone: `${dialCodeFor(d.dialIso) ?? ""} ${d.phone.trim()}`.trim(),
     },
-    answers,
+    answers: given,
     next: [
       { title: bk("next1Title"), body: bk("next1Body") },
       { title: bk("next2Title"), body: bk("next2Body") },

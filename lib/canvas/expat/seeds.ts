@@ -6,6 +6,7 @@ import {
   EMPTY_DETAILS,
   EMPTY_ELIGIBILITY,
   EMPTY_PACKING,
+  EXPAT_ORDER_VERSION,
   customsCategory,
   type CheckRateInput,
   type DetailsInput,
@@ -30,8 +31,6 @@ import type { SceneSeed } from "../boot";
 
 /* the flow's own keys (useExpatOrderStore, CustomsGuide, visit.ts) */
 export const DRAFT = "rimkirim:expat-order";
-/** the order store's own (useExpatOrderStore): a seed is never migrated on its way in */
-const DRAFT_VERSION = 3;
 const CUSTOMS_SEEN = "rimkirim:expat-order:customs-seen";
 const WELCOMED = "rimkirim:expat-order:welcomed";
 const BOOKED = "rimkirim:expat-order:booked";
@@ -93,6 +92,16 @@ export function checked(check: CheckRateInput): Draft {
 export const leadRate = (check: CheckRateInput) =>
   check.weightKg ? (expatRates(check.originCountry, check.weightKg).rates[0] ?? null) : null;
 
+/** Answers as a device held them before the visa question became one about
+ *  an ITAS and Q5 was added (the store's version 3): a visa, a VITAS, no
+ *  ITAS, and nothing on where the goods ship from. With `stored: 3` on the
+ *  seed, the store migrates them as it would a visitor's */
+export function asAskedBefore(a: EligibilityAnswers): EligibilityAnswers {
+  const old: Record<string, unknown> = { ...a, hasVisa: true, hasVitas: true, hasItas: false };
+  delete old.fromResidence;
+  return old as unknown as EligibilityAnswers;
+}
+
 /** a package measured as Custom unless `over` says a standard size */
 export const pkg = (id: string, over: Partial<PackingPackage> = {}): PackingPackage => ({
   id,
@@ -139,10 +148,14 @@ export interface SeedOptions {
   /** the booking Confirm application just made: its summary draws its moment */
   justBooked?: string;
   hold?: number;
+  /** The version the draft is stored at, when it's what an earlier build
+   *  left on the device: the store migrates it on its way in. Left out, the
+   *  seed is at the store's own version and is taken as it is */
+  stored?: number;
 }
 
 export function seed(state: Draft, opt: SeedOptions = {}): Omit<SceneSeed, "sig"> {
-  const local: Record<string, string> = { [DRAFT]: JSON.stringify({ state, version: DRAFT_VERSION }) };
+  const local: Record<string, string> = { [DRAFT]: JSON.stringify({ state, version: opt.stored ?? EXPAT_ORDER_VERSION }) };
   if (!opt.firstVisit) local[CUSTOMS_SEEN] = "1";
   const session: Record<string, string> = {};
   if (!opt.returning) session[WELCOMED] = "1";

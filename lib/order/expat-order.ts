@@ -50,7 +50,7 @@ export type ItemCategory = (typeof ITEM_CATEGORIES)[number];
 export const BLOCKED_ITEMS = ["vehicle", "excise", "hazard"] as const;
 export type BlockedItem = (typeof BLOCKED_ITEMS)[number];
 
-/** Q4's options, in the epic's order */
+/** Q3's options, in the epic's order (read "Work", "Study", "Something else") */
 export const REASONS = ["working", "student", "others"] as const;
 export type Reason = (typeof REASONS)[number];
 
@@ -64,13 +64,15 @@ export interface EligibilityAnswers {
    *  still abroad, the day they arrived when already in Indonesia (the PM's
    *  rule v1 asks the date either way); recorded for ops only */
   arrivalDate?: string;
-  /** Q3, then its two follow-ups when yes */
-  hasVisa?: boolean;
-  hasVitas?: boolean;
-  hasItas?: boolean;
-  /** Q4 */
+  /** Q3 */
   reason?: Reason;
   reasonOther: string;
+  /** Q4: an ITAS for work or study, valid 12 months or more; false is "No
+   *  or not yet". It replaced the visa question and its VITAS and ITAS
+   *  follow-ups (the PM, built straight to staging; caught up 2026-11-24) */
+  hasItas?: boolean;
+  /** Q5: the goods ship from the country they've been living in */
+  fromResidence?: boolean;
 }
 
 export const EMPTY_ELIGIBILITY: EligibilityAnswers = { items: [], itemsOther: "", reasonOther: "" };
@@ -79,9 +81,27 @@ export const EMPTY_ELIGIBILITY: EligibilityAnswers = { items: [], itemsOther: ""
 export function eligibilityProgress(a: EligibilityAnswers) {
   const q1 = a.items.length > 0 && (!a.items.includes("others") || a.itemsOther.trim().length > 0);
   const q2 = !!a.location && !!a.arrivalDate;
-  const q3 = a.hasVisa === false || (a.hasVisa === true && a.hasVitas !== undefined && a.hasItas !== undefined);
-  const q4 = !!a.reason && (a.reason !== "others" || a.reasonOther.trim().length > 0);
-  return { q1, q2, q3, q4, done: q1 && q2 && q3 && q4 };
+  const q3 = !!a.reason && (a.reason !== "others" || a.reasonOther.trim().length > 0);
+  const q4 = a.hasItas !== undefined;
+  const q5 = a.fromResidence !== undefined;
+  return { q1, q2, q3, q4, q5, done: q1 && q2 && q3 && q4 && q5 };
+}
+
+/** The stored order's version: the order store's `version`
+ *  (useExpatOrderStore), raised when a stored draft or booking has to be
+ *  reshaped, with the step that does it in the store's `migrate`. It's here
+ *  so what writes a draft from outside the store (the canvas's seeds) writes
+ *  the same number, and isn't migrated on its way in */
+export const EXPAT_ORDER_VERSION = 4;
+
+/** a draft or booking answered before Q4 and Q5 were asked: its visa
+ *  answers go, and so does its ITAS, since the old question didn't ask for
+ *  work or study and 12 months */
+export function dropVisaAnswers<T extends object>(a: T): T {
+  if (!("hasVisa" in a)) return a;
+  const rest: Record<string, unknown> = { ...a };
+  for (const k of ["hasVisa", "hasVitas", "hasItas"]) delete rest[k];
+  return rest as T;
 }
 
 /* ----------------------------------------------------------- Customs Category */
@@ -95,18 +115,22 @@ export type CustomsCategory = "eligible_pindahan" | "personal_shipment" | "needs
  * beside it, not asked), and neither does the arrival date:
  * ops weighs it. A draft until ops confirms it.
  *
- * | # | When                                              | Flag                |
- * |---|---------------------------------------------------|---------------------|
- * | 1 | reason is Others                                  | personal_shipment   |
- * | 2 | working or student, no visa                       | needs_review        |
- * | 3 | a visa, but neither a VITAS nor an ITAS           | needs_review        |
- * | 4 | already in Indonesia, however long                | needs_review        |
- * | 5 | the rest: working or student, abroad, VITAS/ITAS  | eligible_pindahan   |
+ * | # | When                                                  | Flag                |
+ * |---|-------------------------------------------------------|---------------------|
+ * | 1 | reason is Something else                              | personal_shipment   |
+ * | 2 | work or study, no ITAS of 12 months yet               | needs_review        |
+ * | 3 | the goods don't ship from where they've been living   | needs_review        |
+ * | 4 | already in Indonesia, however long                    | needs_review        |
+ * | 5 | the rest: work or study, abroad, ITAS, from home      | eligible_pindahan   |
+ *
+ * Rows 2 and 3 are ours, from when the visa question became Q4 and Q5 was
+ * added (2026-11-24): relocation goods need that ITAS and goods from the
+ * country they lived in. The staging build's rule is the dev team's.
  */
 export function customsCategory(a: EligibilityAnswers): CustomsCategory {
   if (a.reason === "others") return "personal_shipment";
-  if (a.hasVisa === false) return "needs_review";
-  if (a.hasVisa && !a.hasVitas && !a.hasItas) return "needs_review";
+  if (a.hasItas === false) return "needs_review";
+  if (a.fromResidence === false) return "needs_review";
   if (a.location === "indonesia") return "needs_review";
   return "eligible_pindahan";
 }

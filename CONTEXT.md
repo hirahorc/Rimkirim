@@ -77,7 +77,7 @@ _Avoid_: Chosen plan, package
 ## Eligibility and customs
 
 **Eligibility Check**:
-The four questions after Check Rate (what's shipping, where the customer is, their visa, why they're relocating) that route an order to a customs channel without ever turning the customer away.
+The five questions after Check Rate (what's shipping, when the customer arrives, why they're moving, whether they hold a work or study ITAS of 12 months or more, whether the goods ship from the country they've been living in) that route an order to a customs channel without ever turning the customer away.
 _Avoid_: Questionnaire, qualification, screening
 
 **Customs Category**:

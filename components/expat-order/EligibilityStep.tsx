@@ -131,8 +131,12 @@ function Struck({ icon: Icon }: { icon: LucideIcon }) {
 }
 
 /**
- * The Eligibility Check: the epic's four questions in its words, each
- * follow-up opening under the answer that asks it. Changing an answer clears
+ * The Eligibility Check: five questions, the epic's as the PM revised them
+ * (built straight to staging, caught up 2026-11-24: why they're moving comes
+ * third, the visa question and its VITAS and ITAS follow-ups gave way to one
+ * about a work or study ITAS of 12 months or more, and a fifth asks whether
+ * the goods ship from the country they've been living in), each follow-up
+ * opening under the answer that asks it. Changing an answer clears
  * the follow-ups it asked, so the ticket never mixes two stories. Nothing here
  * turns the customer away: what they pack, they pack themselves, and the
  * order goes on. What no customs path lets in (the PM's rule v1) is told
@@ -140,14 +144,18 @@ function Struck({ icon: Icon }: { icon: LucideIcon }) {
  * pictured and struck through, and the way to the full list. Q2 asks a date
  * in both branches, the arrival ahead or the one already made. `tried` is the plan's action pressed while
  * a question was still open: from then each unanswered group says so.
+ * `revised` is a draft answered before Q4 and Q5 were asked: the check is
+ * open again, so it says which questions are new and that the rest stands.
  */
 export function EligibilityStep({
   value,
   tried = false,
+  revised = false,
   onChange,
 }: {
   value: EligibilityAnswers;
   tried?: boolean;
+  revised?: boolean;
   onChange: (patch: Partial<EligibilityAnswers>) => void;
 }) {
   const t = useT();
@@ -165,13 +173,13 @@ export function EligibilityStep({
   const othersItems = value.items.includes("others");
   const abroad = value.location === "abroad";
   const inIndonesia = value.location === "indonesia";
-  const visa = value.hasVisa === true;
   const otherReason = value.reason === "others";
   const itemsOtherErr = miss(othersItems && !value.itemsOther.trim(), "required");
   const reasonOtherErr = miss(otherReason && !value.reasonOther.trim(), "required");
 
   return (
     <div className="grid grid-cols-1 gap-8">
+      {revised && !(answered.q4 && answered.q5) && <Note>{e("revised")}</Note>}
       <Question n={1} id="q1" title={e("q1")} sub={e("q1Sub")} done={answered.q1}>
         <div>
           <Asked missing={miss(value.items.length === 0, "chooseSome")}>
@@ -302,46 +310,11 @@ export function EligibilityStep({
         </div>
       </Question>
 
-      <Question n={3} id="q3" title={e("q3")} done={answered.q3}>
-        <div>
-          <Asked missing={miss(value.hasVisa === undefined, "chooseOne")}>
-            <RadioCards
-              labelledBy="q3"
-              value={value.hasVisa}
-              onChange={(hasVisa) =>
-                hasVisa !== value.hasVisa && onChange({ hasVisa, hasVitas: undefined, hasItas: undefined })
-              }
-              options={yesNo}
-            />
-          </Asked>
-          <Under open={visa}>
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6">
-              <FollowUp
-                id="q3-vitas"
-                title={e("vitas")}
-                hint={e("vitasHint")}
-                missing={miss(visa && value.hasVitas === undefined, "chooseOne")}
-              >
-                <RadioCards labelledBy="q3-vitas" value={value.hasVitas} onChange={(hasVitas) => onChange({ hasVitas })} options={yesNo} />
-              </FollowUp>
-              <FollowUp
-                id="q3-itas"
-                title={e("itas")}
-                hint={e("itasHint")}
-                missing={miss(visa && value.hasItas === undefined, "chooseOne")}
-              >
-                <RadioCards labelledBy="q3-itas" value={value.hasItas} onChange={(hasItas) => onChange({ hasItas })} options={yesNo} />
-              </FollowUp>
-            </div>
-          </Under>
-        </div>
-      </Question>
-
-      <Question n={4} id="q4" title={e("q4")} sub={e("q4Sub")} done={answered.q4}>
+      <Question n={3} id="q3" title={e("q3")} sub={e("q3Sub")} done={answered.q3}>
         <div>
           <Asked missing={miss(!value.reason, "chooseOne")}>
             <RadioCards
-              labelledBy="q4"
+              labelledBy="q3"
               columns={3}
               value={value.reason}
               onChange={(reason) => onChange({ reason, ...(reason === "others" ? {} : { reasonOther: "" }) })}
@@ -359,6 +332,31 @@ export function EligibilityStep({
             </Field>
           </Under>
         </div>
+      </Question>
+
+      <Question n={4} id="q4" title={e("q4")} sub={e("q4Sub")} done={answered.q4}>
+        <Asked missing={miss(value.hasItas === undefined, "chooseOne")}>
+          <RadioCards
+            labelledBy="q4"
+            value={value.hasItas}
+            onChange={(hasItas) => onChange({ hasItas })}
+            options={[
+              { value: true, label: e("yes") },
+              { value: false, label: e("itasNo") },
+            ]}
+          />
+        </Asked>
+      </Question>
+
+      <Question n={5} id="q5" title={e("q5")} done={answered.q5}>
+        <Asked missing={miss(value.fromResidence === undefined, "chooseOne")}>
+          <RadioCards
+            labelledBy="q5"
+            value={value.fromResidence}
+            onChange={(fromResidence) => onChange({ fromResidence })}
+            options={yesNo}
+          />
+        </Asked>
       </Question>
     </div>
   );

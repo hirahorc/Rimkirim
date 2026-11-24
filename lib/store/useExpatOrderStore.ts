@@ -10,11 +10,13 @@ import {
   EMPTY_DETAILS,
   EMPTY_ELIGIBILITY,
   EMPTY_PACKING,
+  EXPAT_ORDER_VERSION,
   TEAM_INBOX,
   addressReady,
   checkComplete,
   customsCategory,
   detailsProgress,
+  dropVisaAnswers,
   eligibilityProgress,
   migratePacking,
   pickupWhenOf,
@@ -42,6 +44,10 @@ interface ExpatOrderState {
   details: DetailsInput;
   /** set when a changed Address cleared that side's Detail Address */
   addressChanged: AddressChange;
+  /** set when the draft was answered before Q4 and Q5 were asked and its
+   *  visa answers were dropped: the Eligibility Check says which questions
+   *  are new, until both have an answer */
+  questionsRevised: boolean;
   /** every submitted booking: the internal system's tickets (mock) */
   bookings: ExpatBooking[];
 
@@ -64,6 +70,7 @@ export const useExpatOrderStore = create<ExpatOrderState>()(
       packing: EMPTY_PACKING,
       details: EMPTY_DETAILS,
       addressChanged: { origin: false, destination: false },
+      questionsRevised: false,
       bookings: [],
 
       setCheck: (next) => {
@@ -99,7 +106,13 @@ export const useExpatOrderStore = create<ExpatOrderState>()(
 
       selectRate: (rate) => set({ rate }),
 
-      setEligibility: (patch) => set((s) => ({ eligibility: { ...s.eligibility, ...patch } })),
+      setEligibility: (patch) =>
+        set((s) => {
+          const eligibility = { ...s.eligibility, ...patch };
+          const { q4, q5 } = eligibilityProgress(eligibility);
+          // the new questions answered: there's nothing left to point at
+          return { eligibility, ...(s.questionsRevised && q4 && q5 ? { questionsRevised: false } : {}) };
+        }),
 
       setPacking: (packing) => set({ packing }),
 
@@ -147,6 +160,7 @@ export const useExpatOrderStore = create<ExpatOrderState>()(
           packing: EMPTY_PACKING,
           details: EMPTY_DETAILS,
           addressChanged: { origin: false, destination: false },
+          questionsRevised: false,
         });
         return booking;
       },
@@ -155,12 +169,32 @@ export const useExpatOrderStore = create<ExpatOrderState>()(
       name: "rimkirim:expat-order",
       // 2: packages pick a standard box, items a category (migratePacking)
       // 3: the pickup is asked "when" first; a draft's date answers it
-      version: 3,
+      // 4: the visa question gave way to a work or study ITAS of 12 months
+      //    or more, and Q5 asks where the goods ship from; the old answers go
+      //    (dropVisaAnswers), so a draft asks Q4 again, and says so
+      //    (questionsRevised)
+      version: EXPAT_ORDER_VERSION,
       migrate: (persisted, version) => {
-        const s = persisted as { packing?: PackingInput; details?: DetailsInput };
+        const s = persisted as {
+          packing?: PackingInput;
+          details?: DetailsInput;
+          eligibility?: EligibilityAnswers;
+          bookings?: ExpatBooking[];
+          questionsRevised?: boolean;
+        };
         if (version < 2 && s?.packing) s.packing = migratePacking(s.packing);
         if (version < 3 && s?.details?.pickupDate && !s.details.pickupWhen) {
           s.details = { ...s.details, pickupWhen: pickupWhenOf(s.details.pickupDate) };
+        }
+        if (version < 4) {
+          if (s?.eligibility) {
+            // only a draft that had answered the visa question lost something
+            if ("hasVisa" in s.eligibility) s.questionsRevised = true;
+            s.eligibility = dropVisaAnswers(s.eligibility);
+          }
+          if (Array.isArray(s?.bookings)) {
+            s.bookings = s.bookings.map((b) => (b?.eligibility ? { ...b, eligibility: dropVisaAnswers(b.eligibility) } : b));
+          }
         }
         return s as never;
       },
@@ -171,6 +205,7 @@ export const useExpatOrderStore = create<ExpatOrderState>()(
         packing: s.packing,
         details: s.details,
         addressChanged: s.addressChanged,
+        questionsRevised: s.questionsRevised,
         bookings: s.bookings,
       }),
     },
