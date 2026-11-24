@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { BOARDS, boardHome, boardScenes, findBoard, findScene, sceneSeed } from "@/lib/canvas/registry";
+import { BOARDS, boardCount, boardHome, boardScenes, findBoard, findScene, sceneSeed } from "@/lib/canvas/registry";
 import { DEVICES, isGap, type Device, type Gap, type Lane, type Scene, type SceneKind, type View } from "@/lib/canvas/types";
 import type { SceneMessage } from "./SceneRunner";
 import "./canvas.css";
@@ -16,9 +16,31 @@ import "./canvas.css";
  * its positive path, its negative ones and its edge data; arrows follow a
  * state to the one an action leads to.
  *
+ * Three parts, in the order they're read: the side list (which board, then
+ * its lanes and their frames), the surface, and the inspector, which is
+ * there only while a frame or a lane is in hand and holds everything said
+ * about it: what it shows, how it's reached, where the lane differs from
+ * the brief, and what to do with it. The surface itself carries names and
+ * nothing longer, and its names keep their size whatever the zoom.
+ *
  * Harness chrome, plain on purpose, like the dataset toggle: it isn't part
  * of the design it shows, and it never ships to production (app/canvas).
+ * Its look is canvas.css's tokens and nothing else; the few numbers below
+ * are those tokens again, where a length has to be worked out in script.
  */
+
+/** canvas.css's spacing scale, by step */
+const S = { 1: 4, 2: 8, 3: 12, 4: 16, 5: 24, 6: 32, 7: 48, 8: 64, 9: 96 } as const;
+/** world px per scale px (`--rk-w`): a frame is 1440 wide, so the room around it is scaled up to match */
+const WORLD: Record<Device, number> = { desktop: 6, mobile: 3 };
+/** what stands over a frame, in screen px: its action and its title, or its title alone */
+const LABELS = { near: 44, far: 28 } as const;
+/** a label's size in a lane's picture (`--rk-p` under `data-print`): one and a half times the chrome's, once the picture is scaled by LANE_SCALE */
+const PRINT_LABEL: Record<Device, number> = { desktop: 2.5, mobile: 1.5 };
+/** `--rk-stroke-2` */
+const STROKE = 2;
+/** how far Shift with an arrow key moves the board, in screen px */
+const PAN_STEP = S[8];
 
 /** frames that may be loading at once: each is the whole app starting up */
 const LOADING_AT_ONCE = 4;
@@ -28,13 +50,13 @@ const MAX_PAGE_HEIGHT = 14000;
 const MIN_SECTION_HEIGHT = 240;
 const ZOOM_MIN = 0.03;
 const ZOOM_MAX = 2;
-/** the surface's own grey, behind a lane's picture too */
-const SURFACE = "#e9e9ea";
-/** a lane's picture: how much of full size, the most it may be wide, and the room around it (world px) */
+/** the surface's own grey (`--rk-surface`), behind a lane's picture too */
+const SURFACE = "#ebebed";
+/** a lane's picture: how much of full size, and the most it may be wide */
 const LANE_SCALE: Record<Device, number> = { desktop: 0.6, mobile: 1 };
 const LANE_MAX_WIDTH = 5600;
-const LANE_PAD = 80;
-const KIND_COLOR: Record<SceneKind, string> = { positive: "#15803d", negative: "#c62828", edge: "#5b5fc7" };
+/** `--rk-positive`, `--rk-negative`, `--rk-edge`: a lane's picture draws its arrows by hand */
+const KIND_COLOR: Record<SceneKind, string> = { positive: "#166534", negative: "#b91c1c", edge: "#4338ca" };
 /** each page frame's height as it was last seen, so a board opens laid out as it was left */
 const HEIGHTS = "rimkirim:canvas:heights";
 
@@ -46,7 +68,8 @@ function readHeights(): Record<string, number> {
   }
 }
 
-const KIND_LABEL: Record<SceneKind, string> = { positive: "Positive", negative: "Negative", edge: "Edge" };
+const KIND_LABEL: Record<SceneKind | "gap", string> = { positive: "Positive", negative: "Negative", edge: "Edge", gap: "Not built" };
+const VIEW_SAYS: Record<View, string> = { page: "The whole page", screen: "One screen", section: "One section, whole" };
 
 interface Cell {
   /** unique on the board: a scene can stand in more than one lane */
@@ -58,7 +81,7 @@ interface Cell {
   via?: string;
   /** the cell an arrow comes from, when it's in this lane */
   fromKey?: string;
-  /** where it comes from when that's elsewhere: said on the card, no arrow */
+  /** where it comes from when that's elsewhere: said with the action, no arrow */
   fromTitle?: string;
 }
 interface LaneModel {
@@ -98,6 +121,13 @@ function model(boardId: string): LaneModel[] {
   });
 }
 
+const titleOf = (cell: Cell) => cell.gap?.title ?? cell.scene?.title ?? cell.id;
+const noteOf = (cell: Cell) => cell.gap?.note ?? cell.scene?.note;
+const viaOf = (cell: Cell) => (cell.via && cell.fromTitle ? `From “${cell.fromTitle}”: ${cell.via}` : cell.via);
+const viewOf = (cell: Cell): View => cell.scene?.view ?? "page";
+/** a cell's key starts with its lane's id */
+const laneIdOf = (key: string) => key.slice(0, key.indexOf("/"));
+
 interface FrameState {
   status: "loading" | "ready" | "failed";
   detail?: string;
@@ -125,9 +155,9 @@ const COPY_SAYS: Record<Copying["state"], string> = {
   failed: "Couldn't copy",
 };
 
-const viewOf = (cell: Cell): View => cell.scene?.view ?? "page";
 const paint = () => new Promise<void>((done) => requestAnimationFrame(() => requestAnimationFrame(() => done())));
 const today = () => new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "short", year: "numeric" }).format(new Date());
+const fileName = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 
 function download(blob: Blob, name: string) {
   const url = URL.createObjectURL(blob);
@@ -155,7 +185,7 @@ function boxIn(el: HTMLElement, world: HTMLElement) {
 }
 
 /** a path through points, its corners rounded */
-function route(points: [number, number][], r = 28): string {
+function route(points: [number, number][], r: number): string {
   let d = `M ${points[0][0]} ${points[0][1]}`;
   for (let i = 1; i < points.length - 1; i++) {
     const [px, py] = points[i - 1];
@@ -173,6 +203,57 @@ function route(points: [number, number][], r = 28): string {
   return `${d} L ${last[0]} ${last[1]}`;
 }
 
+/**
+ * The arrows of some lanes, from where their frames stand now. An arrow to
+ * the next frame of its row runs straight across. One to a frame further
+ * along, or from a row above, runs through the gutter over the target's row
+ * (canvas.css, .rk-row), each at a level of its own, and comes down onto the
+ * target's card. `u` is the world's unit (`--rk-w`).
+ */
+function arrows(w: HTMLElement, lanes: LaneModel[], u: number): Edge[] {
+  const card = (key: string) => w.querySelector<HTMLElement>(`[data-card="${CSS.escape(key)}"]`);
+  const shown = (key: string) => w.querySelector<HTMLElement>(`[data-view="${CSS.escape(key)}"]`);
+  const pad = S[1] * u;
+  const corner = S[2] * u;
+  const out: Edge[] = [];
+  for (const { rows } of lanes) {
+    rows.forEach((row) => {
+      // the arrows that arrive through this row's gutter share it: each gets a level of its own
+      let level = 0;
+      row.cells.forEach((cell, i) => {
+        if (!cell.fromKey) return;
+        const toCard = card(cell.key);
+        const toView = shown(cell.key);
+        const fromCard = card(cell.fromKey);
+        const fromView = shown(cell.fromKey);
+        if (!toCard || !toView || !fromCard || !fromView) return;
+        const a = boxIn(fromView, w);
+        const b = boxIn(toView, w);
+        const from = boxIn(fromCard, w);
+        const to = boxIn(toCard, w);
+        if (i > 0 && row.cells[i - 1].key === cell.fromKey) {
+          const y = Math.min(a.y + a.h, b.y + b.h, Math.max(a.y, b.y) + S[5] * u);
+          out.push({ key: cell.key, kind: cell.kind, d: route([[a.x + a.w + pad, y], [b.x - pad, y]], corner), end: [b.x - pad, y], dir: "right" });
+          return;
+        }
+        level += 1;
+        // from the gutter's top down, a step each: as far from the names under it as the gutter allows
+        const over = to.y - S[5] * u + level * S[1] * u;
+        const tx = to.x + to.w / 2;
+        const end: [number, number] = [tx, to.y];
+        if (row.cells.some((x) => x.key === cell.fromKey)) {
+          const sx = a.x + a.w / 2;
+          out.push({ key: cell.key, kind: cell.kind, d: route([[sx, from.y], [sx, over], [tx, over], end], corner), end, dir: "down" });
+        } else {
+          const sx = a.x + a.w / 2 + (level - 1) * S[1] * u;
+          out.push({ key: cell.key, kind: cell.kind, d: route([[sx, from.y + from.h + pad], [sx, over], [tx, over], end], corner), end, dir: "down" });
+        }
+      });
+    });
+  }
+  return out;
+}
+
 export function CanvasBoard({ boardId }: { boardId: string }) {
   const board = findBoard(boardId);
   const lanes = React.useMemo(() => model(boardId), [boardId]);
@@ -180,13 +261,18 @@ export function CanvasBoard({ boardId }: { boardId: string }) {
 
   const [device, setDevice] = React.useState<Device>("desktop");
   const dev = DEVICES[device];
-  /** the world's type scale (`--u` in canvas.css): a phone's frames are narrow, so what's around them is smaller */
-  const unit = device === "mobile" ? 0.5 : 1;
+  const unit = WORLD[device];
   const [frames, setFrames] = React.useState<Record<string, FrameState>>({});
   /** the cells that have come near the screen, in the order they did */
   const [seen, setSeen] = React.useState<string[]>([]);
   const [nonce, setNonce] = React.useState<Record<string, number>>({});
+  /** what's in hand: a frame, or failing that a lane */
   const [selected, setSelected] = React.useState<string | null>(null);
+  const [laneSel, setLaneSel] = React.useState<string | null>(null);
+  /** said aloud by a screen reader, not shown: what was picked on the board, what a copy came to */
+  const [said, setSaid] = React.useState("");
+  /** a narrow window: the side list, opened over the surface from the bar */
+  const [sideOpen, setSideOpen] = React.useState(false);
   const [interacting, setInteracting] = React.useState<string | null>(null);
   const [edges, setEdges] = React.useState<Edge[]>([]);
   const [copying, setCopying] = React.useState<Copying | null>(null);
@@ -200,26 +286,43 @@ export function CanvasBoard({ boardId }: { boardId: string }) {
     return () => window.clearTimeout(id);
   }, []);
 
-  // the latest of each, for work that runs on after the render it started in (a lane's picture)
+  // the latest of each, for work that runs on after the render it started in
   const framesNow = React.useRef(frames);
-  const edgesNow = React.useRef(edges);
+  const unitNow = React.useRef(unit);
   React.useEffect(() => {
     framesNow.current = frames;
-    edgesNow.current = edges;
-  }, [frames, edges]);
+    unitNow.current = unit;
+  }, [frames, unit]);
 
   const viewport = React.useRef<HTMLDivElement>(null);
   const world = React.useRef<HTMLDivElement>(null);
+  const outline = React.useRef<HTMLDivElement>(null);
   const view = React.useRef({ x: 0, y: 0, k: 1 });
   const fitted = React.useRef(false);
-  /** the card the view holds on to while the board is still settling: none once it's moved by hand */
+  /** what the view holds on to while the board is still settling (`cell:<key>` or `lane:<id>`): nothing once it's moved by hand */
   const follow = React.useRef<string | null>(null);
+
+  // the side list keeps what's in hand in sight, wherever it was picked
+  React.useEffect(() => {
+    outline.current?.querySelector('[aria-current="true"]')?.scrollIntoView({ block: "nearest" });
+  }, [selected, laneSel]);
 
   /* ------------------------------------------------------------ pan and zoom */
 
   const apply = React.useCallback(() => {
     const { x, y, k } = view.current;
-    if (world.current) world.current.style.transform = `translate3d(${x}px, ${y}px, 0) scale(${k})`;
+    const w = world.current;
+    if (w) {
+      // Names keep their size on screen: scaled against the zoom, for as long as a
+      // frame's title still fits the band over it (canvas.css, .rk-card-head).
+      // Past that, about 10% for a desktop board, they shrink with the board
+      const band = S[7] * unitNow.current;
+      const label = Math.min(band / LABELS.far, Math.max(1, 1 / k));
+      w.style.transform = `translate3d(${x}px, ${y}px, 0) scale(${k})`;
+      w.style.setProperty("--rk-label", String(label));
+      // and the band holds what fits in it at this zoom
+      w.dataset.lod = label * LABELS.near <= band ? "near" : "far";
+    }
     setZoom(k);
   }, []);
 
@@ -238,18 +341,24 @@ export function CanvasBoard({ boardId }: { boardId: string }) {
     },
     [apply],
   );
+  /** zoom about the middle of the surface: the bar's buttons, the keys */
+  const zoomBy = React.useCallback(
+    (factor: number) => {
+      const at = viewport.current?.getBoundingClientRect();
+      if (at) zoomAt(at.left + at.width / 2, at.top + at.height / 2, view.current.k * factor);
+    },
+    [zoomAt],
+  );
 
-  /** bring a box of the world into view, with room around it */
+  /** bring a box of the world into view, with room around it and, over it, room for what's written there */
   const frameBox = React.useCallback(
-    (box: { x: number; y: number; w: number; h: number }, pad = 64, most = 1) => {
+    (box: { x: number; y: number; w: number; h: number }, pad: number, most: number, over = pad) => {
       const at = viewport.current;
       if (!at) return;
-      const k = Math.min(most, (at.clientWidth - pad * 2) / box.w, (at.clientHeight - pad * 2) / box.h);
-      view.current = {
-        k: Math.max(ZOOM_MIN, k),
-        x: (at.clientWidth - box.w * k) / 2 - box.x * k,
-        y: Math.max(pad, (at.clientHeight - box.h * k) / 2) - box.y * k,
-      };
+      const k = Math.max(ZOOM_MIN, Math.min(most, (at.clientWidth - pad * 2) / box.w, (at.clientHeight - over - pad) / box.h));
+      // in the middle of what's left under `over`, or from its top when it's taller than that
+      const y = over + Math.max(0, (at.clientHeight - over - pad - box.h * k) / 2);
+      view.current = { k, x: (at.clientWidth - box.w * k) / 2 - box.x * k, y: y - box.y * k };
       apply();
     },
     [apply],
@@ -257,8 +366,7 @@ export function CanvasBoard({ boardId }: { boardId: string }) {
 
   const fit = React.useCallback(() => {
     const w = world.current;
-    if (!w) return;
-    frameBox({ x: 0, y: 0, w: w.offsetWidth, h: w.offsetHeight }, 48, 0.6);
+    if (w) frameBox({ x: 0, y: 0, w: w.offsetWidth, h: w.offsetHeight }, S[5], 0.6);
   }, [frameBox]);
 
   /** the board at its width, from its top: how it opens */
@@ -271,12 +379,19 @@ export function CanvasBoard({ boardId }: { boardId: string }) {
     apply();
   }, [apply]);
 
-  const goTo = React.useCallback(
-    (key: string) => {
+  /** bring a frame (`cell:<key>`) or a lane (`lane:<id>`) into view */
+  const reveal = React.useCallback(
+    (target: string) => {
       const w = world.current;
-      const card = w?.querySelector<HTMLElement>(`[data-card="${CSS.escape(key)}"]`);
-      if (!w || !card) return;
-      frameBox(boxIn(card, w), 72, 1);
+      if (!w) return;
+      const lane = target.startsWith("lane:");
+      const name = CSS.escape(target.slice(target.indexOf(":") + 1));
+      // a lane whole; a frame by its page, with its labels' room kept over it
+      const el = w.querySelector<HTMLElement>(lane ? `[data-lane="${name}"]` : `[data-view="${name}"]`);
+      if (!el) return;
+      if (lane) frameBox(boxIn(el, w), S[5], 0.6);
+      // (on a short surface, a window zoomed to 200%, less is kept: the frame itself comes first)
+      else frameBox(boxIn(el, w), S[5], 1, Math.min(S[9], (viewport.current?.clientHeight ?? 0) / 4));
     },
     [frameBox],
   );
@@ -297,8 +412,22 @@ export function CanvasBoard({ boardId }: { boardId: string }) {
       }
     };
     at.addEventListener("wheel", onWheel, { passive: false });
-    return () => at.removeEventListener("wheel", onWheel);
-  }, [apply, zoomAt]);
+    // the inspector opening or closing changes how much surface there is: what's followed stays in view
+    const sized = new ResizeObserver(() => {
+      if (follow.current) reveal(follow.current);
+    });
+    sized.observe(at);
+    return () => {
+      at.removeEventListener("wheel", onWheel);
+      sized.disconnect();
+    };
+  }, [apply, reveal, zoomAt]);
+
+  /** for whoever isn't looking: the frame the board's own keys, or a press on it, picked */
+  const announce = (cell: Cell) => {
+    const lane = lanes.find((l) => l.lane.id === laneIdOf(cell.key))?.lane;
+    setSaid(`${KIND_LABEL[cell.gap ? "gap" : cell.kind]}: ${titleOf(cell)}${lane ? `, ${lane.ticket}` : ""}`);
+  };
 
   // a drag pans; a press that didn't move picks what's under it
   const drag = React.useRef<{ x: number; y: number; moved: boolean } | null>(null);
@@ -312,7 +441,7 @@ export function CanvasBoard({ boardId }: { boardId: string }) {
     if (!g) return;
     const dx = e.clientX - g.x;
     const dy = e.clientY - g.y;
-    if (!g.moved && Math.hypot(dx, dy) < 4) return;
+    if (!g.moved && Math.hypot(dx, dy) < S[1]) return;
     g.moved = true;
     follow.current = null;
     g.x = e.clientX;
@@ -325,28 +454,115 @@ export function CanvasBoard({ boardId }: { boardId: string }) {
     const g = drag.current;
     drag.current = null;
     if (!g || g.moved) return;
-    const card = (document.elementFromPoint(e.clientX, e.clientY) as HTMLElement | null)?.closest<HTMLElement>("[data-card]");
-    const key = card?.dataset.card ?? null;
+    // by where the pointer is: the surface holds the pointer while it's down
+    const under = document.elementFromPoint(e.clientX, e.clientY) as HTMLElement | null;
+    const key = under?.closest<HTMLElement>("[data-card]")?.dataset.card ?? null;
+    const lane = key ? laneIdOf(key) : (under?.closest<HTMLElement>("[data-lane-label]")?.dataset.laneLabel ?? null);
+    follow.current = null;
     setSelected(key);
+    setLaneSel(lane);
     if (interacting && interacting !== key) setInteracting(null);
+    const cell = key ? cells.find((c) => c.key === key) : null;
+    if (cell) announce(cell);
   };
 
+  /* ------------------------------------------------------------ the keyboard */
+
+  // Escape lets go, from anywhere in the canvas: of the frame in use, then of
+  // the frame, then of the lane. The keys that are one character belong to the
+  // board alone (onBoardKey): they can't fire while something else has the keys
   React.useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if ((e.target as HTMLElement | null)?.closest("input, textarea, select")) return;
-      const at = viewport.current?.getBoundingClientRect();
-      const cx = (at?.left ?? 0) + (at?.width ?? 0) / 2;
-      const cy = (at?.top ?? 0) + (at?.height ?? 0) / 2;
-      if (e.key === "Escape") {
-        if (interacting) setInteracting(null);
-        else setSelected(null);
-      } else if (e.key === "1" || e.key === "f") fit();
-      else if (e.key === "=" || e.key === "+") zoomAt(cx, cy, view.current.k * 1.25);
-      else if (e.key === "-") zoomAt(cx, cy, view.current.k / 1.25);
+      if (e.key !== "Escape" || (e.target as HTMLElement | null)?.closest("input, textarea, select")) return;
+      if (interacting) setInteracting(null);
+      else if (selected) setSelected(null);
+      else if (laneSel) setLaneSel(null);
+      else setSideOpen(false);
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [fit, interacting, zoomAt]);
+  }, [interacting, laneSel, selected]);
+
+  /** the board's rows in order, lane after lane: what the arrow keys walk */
+  const grid = React.useMemo(() => lanes.flatMap((l) => l.rows.map((r) => r.cells)), [lanes]);
+
+  /** move the view just enough to have a frame on screen, at the zoom it's at */
+  const bringIn = React.useCallback(
+    (key: string) => {
+      const w = world.current;
+      const at = viewport.current;
+      const el = w?.querySelector<HTMLElement>(`[data-card="${CSS.escape(key)}"]`);
+      if (!w || !at || !el) return;
+      const b = boxIn(el, w);
+      const v = view.current;
+      const pad = S[5];
+      const left = b.x * v.k + v.x;
+      const top = b.y * v.k + v.y;
+      // a frame bigger than the surface is shown from its top left
+      if (left < pad || b.w * v.k > at.clientWidth - pad * 2) v.x += pad - left;
+      else if (left + b.w * v.k > at.clientWidth - pad) v.x -= left + b.w * v.k - (at.clientWidth - pad);
+      if (top < pad || b.h * v.k > at.clientHeight - pad * 2) v.y += pad - top;
+      else if (top + b.h * v.k > at.clientHeight - pad) v.y -= top + b.h * v.k - (at.clientHeight - pad);
+      apply();
+    },
+    [apply],
+  );
+
+  /** the board's own keys, while the board itself has them */
+  const onBoardKey = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (e.target !== e.currentTarget || e.metaKey || e.ctrlKey || e.altKey) return;
+    const ways: Record<string, [number, number] | undefined> = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1] };
+    const way = ways[e.key];
+    const r = grid.findIndex((row) => row.some((x) => x.key === selected));
+    const c = r < 0 ? -1 : grid[r].findIndex((x) => x.key === selected);
+    let to: Cell | undefined;
+    if (way && e.shiftKey) {
+      follow.current = null;
+      view.current.x -= way[0] * PAN_STEP;
+      view.current.y -= way[1] * PAN_STEP;
+      apply();
+    } else if (way && r < 0) {
+      // nothing in hand yet: the first frame on screen, or the board's first
+      const at = e.currentTarget.getBoundingClientRect();
+      to =
+        cells.find((x) => {
+          const box = world.current?.querySelector(`[data-view="${CSS.escape(x.key)}"]`)?.getBoundingClientRect();
+          return !!box && box.right > at.left && box.left < at.right && box.bottom > at.top && box.top < at.bottom;
+        }) ?? cells[0];
+    } else if (way && way[0]) to = grid[r][c + way[0]];
+    else if (way) {
+      // the frame under or over this one: rows start at the same edge
+      const row = grid[r + way[1]];
+      to = row?.[Math.min(c, row.length - 1)];
+    } else if (e.key === "Home" && r >= 0) to = grid[r][0];
+    else if (e.key === "End" && r >= 0) to = grid[r][grid[r].length - 1];
+    else if (e.key === "Enter" && selected) {
+      follow.current = `cell:${selected}`;
+      reveal(follow.current);
+    } else if (e.key === "+" || e.key === "=") zoomBy(1.25);
+    else if (e.key === "-") zoomBy(0.8);
+    else if (e.key === "0") fitWidth();
+    else if (e.key === "1") fit();
+    else return;
+    e.preventDefault();
+    if (!to) return;
+    follow.current = null;
+    setSelected(to.key);
+    setLaneSel(laneIdOf(to.key));
+    setInteracting(null);
+    bringIn(to.key);
+    announce(to);
+  };
+
+  // a frame in use has the keys: Tab goes through the page inside it, and out again
+  React.useEffect(() => {
+    if (interacting) world.current?.querySelector<HTMLIFrameElement>(`[data-view="${CSS.escape(interacting)}"] iframe`)?.focus({ preventScroll: true });
+  }, [interacting]);
+
+  // the side list, opened from the bar on a narrow window, takes the keys with it
+  React.useEffect(() => {
+    if (sideOpen) document.querySelector<HTMLElement>("#rk-side a")?.focus();
+  }, [sideOpen]);
 
   /* ------------------------------------------------------------------ frames */
 
@@ -456,65 +672,18 @@ export function CanvasBoard({ boardId }: { boardId: string }) {
 
   const draw = React.useCallback(() => {
     const w = world.current;
-    if (!w) return;
-    const card = (key: string) => w.querySelector<HTMLElement>(`[data-card="${CSS.escape(key)}"]`);
-    const shown = (key: string) => w.querySelector<HTMLElement>(`[data-view="${CSS.escape(key)}"]`);
-    const next: Edge[] = [];
-    for (const { rows } of lanes) {
-      // edges that leave their row share the space between rows: each gets a level of its own
-      let level = 0;
-      rows.forEach((row, r) => {
-        row.cells.forEach((cell, i) => {
-          if (!cell.fromKey) return;
-          const toCard = card(cell.key);
-          const toView = shown(cell.key);
-          const fromView = shown(cell.fromKey);
-          if (!toCard || !toView || !fromView) return;
-          const a = boxIn(fromView, w);
-          const b = boxIn(toView, w);
-          const c = boxIn(toCard, w);
-          const before = i > 0 && row.cells[i - 1].key === cell.fromKey;
-          if (before) {
-            // side by side: straight across, a little below the frames' tops
-            const y = Math.min(a.y + a.h, b.y + b.h, Math.max(a.y, b.y) + 140);
-            next.push({ key: cell.key, kind: cell.kind, d: route([[a.x + a.w + 10, y], [b.x - 14, y]]), end: [b.x - 14, y], dir: "right" });
-            return;
-          }
-          const sameRow = rows[r].cells.some((x) => x.key === cell.fromKey);
-          const lift = 46 + level * 26;
-          level += 1;
-          const tx = c.x + c.w / 2;
-          if (sameRow) {
-            // further along its own row: over the frames between
-            const fromCard = card(cell.fromKey);
-            const top = Math.min(c.y, fromCard ? boxIn(fromCard, w).y : a.y) - lift;
-            const sx = a.x + a.w / 2;
-            next.push({
-              key: cell.key,
-              kind: cell.kind,
-              d: route([[sx, (fromCard ? boxIn(fromCard, w).y : a.y) - 10], [sx, top], [tx, top], [tx, c.y - 14]]),
-              end: [tx, c.y - 14],
-              dir: "down",
-            });
-          } else {
-            // from a row above: down from under its card, across over the target, down into it
-            const fromCard = card(cell.fromKey);
-            const foot = fromCard ? boxIn(fromCard, w) : a;
-            const sx = a.x + a.w / 2 + (level - 1) * 18;
-            const over = c.y - lift;
-            next.push({
-              key: cell.key,
-              kind: cell.kind,
-              d: route([[sx, foot.y + foot.h + 12], [sx, over], [tx, over], [tx, c.y - 14]]),
-              end: [tx, c.y - 14],
-              dir: "down",
-            });
-          }
-        });
-      });
-    }
-    setEdges(next);
+    if (w) setEdges(arrows(w, lanes, unitNow.current));
   }, [lanes]);
+
+  const pickCell = React.useCallback(
+    (cell: Cell, bring: boolean) => {
+      setSelected(cell.key);
+      setLaneSel(laneIdOf(cell.key));
+      follow.current = bring ? `cell:${cell.key}` : null;
+      if (bring) reveal(`cell:${cell.key}`);
+    },
+    [reveal],
+  );
 
   React.useLayoutEffect(() => {
     const w = world.current;
@@ -527,38 +696,61 @@ export function CanvasBoard({ boardId }: { boardId: string }) {
       if (!fitted.current && w.offsetWidth > 0 && window.getComputedStyle(w).position === "absolute") {
         fitted.current = true;
         setLaid(true);
-        const hash = decodeURIComponent(window.location.hash.slice(1));
-        const asked = hash && cells.find((c) => c.id === hash);
-        if (asked) {
-          setSelected(asked.key);
-          follow.current = asked.key;
-          goTo(asked.key);
-        } else fitWidth();
+        const asked = cells.find((c) => c.id === decodeURIComponent(window.location.hash.slice(1)));
+        if (asked) pickCell(asked, true);
+        else fitWidth();
       } else if (follow.current) {
-        // a frame asked for by link stays in view while the ones above it grow
-        goTo(follow.current);
+        // what was asked for stays in view while the frames above it grow
+        reveal(follow.current);
       }
     });
     ro.observe(w);
     return () => ro.disconnect();
-  }, [cells, draw, fitWidth, goTo, device]);
+  }, [cells, draw, fitWidth, pickCell, reveal, device]);
+
+  // a frame's link followed while the board is already open
+  React.useEffect(() => {
+    const onHash = () => {
+      const asked = cells.find((c) => c.id === decodeURIComponent(window.location.hash.slice(1)));
+      if (asked) pickCell(asked, true);
+    };
+    window.addEventListener("hashchange", onHash);
+    return () => window.removeEventListener("hashchange", onHash);
+  }, [cells, pickCell]);
+
+  // and the address names the frame in hand, however it was picked, so it can be passed on as it is
+  React.useEffect(() => {
+    if (!laid) return;
+    const cell = selected ? cells.find((c) => c.key === selected) : null;
+    const hash = cell ? `#${cell.id}` : "";
+    if (window.location.hash !== hash) window.history.replaceState(null, "", hash || window.location.pathname + window.location.search);
+  }, [cells, laid, selected]);
 
   /* ----------------------------------------------------------------- actions */
 
-  const pick = (cell: Cell) => {
-    setSelected(cell.key);
-    window.history.replaceState(null, "", `#${cell.id}`);
-    follow.current = cell.key;
-    goTo(cell.key);
+  const pickLane = (id: string) => {
+    setSelected(null);
+    setLaneSel(id);
+    follow.current = `lane:${id}`;
+    reveal(`lane:${id}`);
   };
   const reload = (cell: Cell) => {
     setNonce((n) => ({ ...n, [cell.key]: (n[cell.key] ?? 0) + 1 }));
+  };
+  const switchDevice = (next: Device) => {
+    if (next === device) return;
+    setDevice(next);
+    setSeen([]);
+    setInteracting(null);
+    follow.current = null;
+    fitted.current = false;
   };
 
   /* ------------------------------------------------------------------ copying */
 
   const say = (key: string, state: Copying["state"]) => {
     setCopying({ key, state });
+    setSaid(COPY_SAYS[state]);
     if (state !== "busy") window.setTimeout(() => setCopying((c) => (c?.key === key && c.state === state ? null : c)), 2200);
   };
   const saying = (key: string, idle: string) => (copying?.key === key ? COPY_SAYS[copying.state] : idle);
@@ -592,18 +784,20 @@ export function CanvasBoard({ boardId }: { boardId: string }) {
   const frameImage = async (cell: Cell, lane: Lane): Promise<Blob> => {
     const scale = device === "mobile" ? 2 : 1;
     const shot = await createImageBitmap(await shoot(cell, scale));
-    const lines = [`${lane.ticket} · ${cell.scene?.title ?? cell.id}`, `${dev.label} · ${today()}`];
+    const lines = [`${lane.ticket} · ${titleOf(cell)}`, `${dev.label} · ${today()}`];
     const canvas = document.createElement("canvas");
     const ctx = canvas.getContext("2d");
     if (!ctx) throw new Error("no canvas to draw on");
+    // the caption is the chrome's own type: body size, on the spacing scale
     const size = 13 * scale;
+    const line = 20 * scale;
     const font = `${size}px -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif`;
     ctx.font = font;
-    const pad = 14 * scale;
+    const pad = S[3] * scale;
     // one line when it fits, two when it doesn't (a phone's frame is narrow)
     const one = lines.join(" · ");
     const text = ctx.measureText(one).width + pad * 2 <= shot.width ? [one] : lines;
-    const strip = Math.round(size * 1.5 * text.length + pad);
+    const strip = line * text.length + pad;
     canvas.width = shot.width;
     canvas.height = shot.height + strip;
     ctx.fillStyle = "#ffffff";
@@ -611,27 +805,27 @@ export function CanvasBoard({ boardId }: { boardId: string }) {
     ctx.drawImage(shot, 0, 0);
     ctx.fillStyle = "#f4f4f5";
     ctx.fillRect(0, shot.height, canvas.width, strip);
-    ctx.fillStyle = "#d9d9dc";
-    ctx.fillRect(0, shot.height, canvas.width, Math.max(1, scale));
+    ctx.fillStyle = "#dcdce0";
+    ctx.fillRect(0, shot.height, canvas.width, scale);
     ctx.fillStyle = "#18181b";
     ctx.font = font;
     ctx.textBaseline = "middle";
-    text.forEach((line, i) => ctx.fillText(line, pad, shot.height + pad / 2 + size * 1.5 * (i + 0.5), canvas.width - pad * 2));
+    text.forEach((t, i) => ctx.fillText(t, pad, shot.height + pad / 2 + line * (i + 0.5), canvas.width - pad * 2));
     return toPng(canvas);
   };
 
   /**
-   * One lane as a picture: what the lane shows (its ticket and story, its
-   * rows, each frame with its title, action and note, the arrows), without
-   * its notes on where it differs from the brief or what's still to confirm.
-   * The lane's own markup is drawn as it stands; each frame's page is asked
-   * of the frame and laid into its place; the arrows are drawn over both.
+   * One lane as a picture: its ticket and story, its rows, each frame with
+   * its action, title and note, and the arrows. The lane is put in its
+   * print form (canvas.css, `data-print`) for as long as the picture takes:
+   * its own markup is drawn as it stands, each frame's page is asked of the
+   * frame and laid into its place, and the arrows are drawn over both.
    */
-  const laneImage = async ({ lane, rows }: LaneModel): Promise<Blob> => {
+  const laneImage = async (lm: LaneModel): Promise<Blob> => {
     const w = world.current;
-    const el = w?.querySelector<HTMLElement>(`[data-lane="${CSS.escape(lane.id)}"]`);
+    const el = w?.querySelector<HTMLElement>(`[data-lane="${CSS.escape(lm.lane.id)}"]`);
     if (!w || !el) throw new Error("the lane isn't on the board");
-    const mine = rows.flatMap((r) => r.cells).filter((c) => c.scene);
+    const mine = lm.rows.flatMap((r) => r.cells).filter((c) => c.scene);
 
     // every frame of the lane up and settled, whether or not it has been on screen
     setSeen((was) => [...was, ...mine.map((c) => c.key).filter((k) => !was.includes(k))]);
@@ -641,87 +835,89 @@ export function CanvasBoard({ boardId }: { boardId: string }) {
         return status === "ready" || status === "failed";
       });
     for (let waited = 0; !settled() && waited < 120_000; waited += 300) await new Promise((done) => window.setTimeout(done, 300));
-    // no ring of selection in the picture
-    setSelected(null);
-    setInteracting(null);
-    await paint();
 
-    const box = boxIn(el, w);
-    const reach = [...el.querySelectorAll<HTMLElement>("[data-card], .rk-lane-head > div:first-child")].map((x) => {
-      const b = boxIn(x, w);
-      return b.x + b.w;
-    });
-    const width = Math.max(...reach) - box.x;
-    const scale = Math.min(LANE_SCALE[device], LANE_MAX_WIDTH / (width + LANE_PAD * 2));
+    el.dataset.print = "";
+    try {
+      await paint();
+      const u = unitNow.current;
+      const label = PRINT_LABEL[device];
+      const pad = S[4] * u;
+      const box = boxIn(el, w);
+      const reach = [...el.querySelectorAll<HTMLElement>("[data-card], .rk-lane-head")].map((x) => {
+        const b = boxIn(x, w);
+        return b.x + b.w;
+      });
+      const width = Math.max(...reach) - box.x;
+      const scale = Math.min(LANE_SCALE[device], LANE_MAX_WIDTH / (width + pad * 2));
 
-    const { toCanvas } = await import("html-to-image");
-    const chrome = await toCanvas(el, {
-      width,
-      height: box.h,
-      pixelRatio: scale,
-      // the canvas's own type is the system's: nothing to embed
-      skipFonts: true,
-      style: { margin: "0" },
-      filter: (node) => !(node instanceof Element && node.matches("iframe, .rk-veil, .rk-shield, .rk-failed, .rk-notes")),
-    });
+      const { toCanvas } = await import("html-to-image");
+      const chrome = await toCanvas(el, {
+        width,
+        height: box.h,
+        pixelRatio: scale,
+        // the canvas's own type is the system's: nothing to embed
+        skipFonts: true,
+        style: { margin: "0" },
+        filter: (node) => !(node instanceof Element && node.matches("iframe, .rk-veil, .rk-shield, .rk-failed")),
+      });
 
-    const canvas = document.createElement("canvas");
-    canvas.width = Math.round((width + LANE_PAD * 2) * scale);
-    canvas.height = Math.round((box.h + LANE_PAD * 2) * scale);
-    const ctx = canvas.getContext("2d");
-    if (!ctx) throw new Error("no canvas to draw on");
-    ctx.fillStyle = SURFACE;
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    ctx.drawImage(chrome, LANE_PAD * scale, LANE_PAD * scale, width * scale, box.h * scale);
+      const canvas = document.createElement("canvas");
+      canvas.width = Math.round((width + pad * 2) * scale);
+      canvas.height = Math.round((box.h + pad * 2) * scale);
+      const ctx = canvas.getContext("2d");
+      if (!ctx) throw new Error("no canvas to draw on");
+      ctx.fillStyle = SURFACE;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(chrome, pad * scale, pad * scale, width * scale, box.h * scale);
 
-    // world px to the picture's
-    const at = (x: number, y: number): [number, number] => [(x - box.x + LANE_PAD) * scale, (y - box.y + LANE_PAD) * scale];
-    for (const cell of mine) {
-      const shown = w.querySelector<HTMLElement>(`[data-view="${CSS.escape(cell.key)}"]`);
-      if (!shown || framesNow.current[frameKey(cell)]?.status !== "ready") continue;
-      const b = boxIn(shown, w);
-      const shot = await createImageBitmap(await shoot(cell, scale));
-      const [x, y] = at(b.x, b.y);
-      ctx.save();
-      ctx.beginPath();
-      ctx.roundRect(x, y, b.w * scale, b.h * scale, 6 * unit * scale);
-      ctx.clip();
-      ctx.drawImage(shot, x, y, b.w * scale, b.h * scale);
-      ctx.restore();
-    }
-
-    for (const edge of edgesNow.current) {
-      if (!edge.key.startsWith(`${lane.id}/`)) continue;
-      ctx.save();
-      ctx.setTransform(scale, 0, 0, scale, (LANE_PAD - box.x) * scale, (LANE_PAD - box.y) * scale);
-      ctx.strokeStyle = KIND_COLOR[edge.kind];
-      ctx.fillStyle = KIND_COLOR[edge.kind];
-      ctx.lineWidth = 5 * unit;
-      ctx.lineCap = "round";
-      if (edge.kind === "negative") ctx.setLineDash([16 * unit, 14 * unit]);
-      ctx.stroke(new Path2D(edge.d));
-      ctx.setLineDash([]);
-      const [x, y] = edge.end;
-      const head = 22 * unit;
-      ctx.beginPath();
-      if (edge.dir === "right") {
-        ctx.moveTo(x + head * 0.4, y);
-        ctx.lineTo(x - head * 0.6, y - head / 2);
-        ctx.lineTo(x - head * 0.6, y + head / 2);
-      } else {
-        ctx.moveTo(x, y + head * 0.4);
-        ctx.lineTo(x - head / 2, y - head * 0.6);
-        ctx.lineTo(x + head / 2, y - head * 0.6);
+      for (const cell of mine) {
+        const shown = w.querySelector<HTMLElement>(`[data-view="${CSS.escape(cell.key)}"]`);
+        if (!shown || framesNow.current[frameKey(cell)]?.status !== "ready") continue;
+        const b = boxIn(shown, w);
+        const shot = await createImageBitmap(await shoot(cell, scale));
+        const x = (b.x - box.x + pad) * scale;
+        const y = (b.y - box.y + pad) * scale;
+        ctx.save();
+        ctx.beginPath();
+        ctx.roundRect(x, y, b.w * scale, b.h * scale, S[1] * label * scale);
+        ctx.clip();
+        ctx.drawImage(shot, x, y, b.w * scale, b.h * scale);
+        ctx.restore();
       }
-      ctx.closePath();
-      ctx.fill();
-      ctx.restore();
+
+      const weight = STROKE * label;
+      for (const edge of arrows(w, [lm], u)) {
+        ctx.save();
+        ctx.setTransform(scale, 0, 0, scale, (pad - box.x) * scale, (pad - box.y) * scale);
+        ctx.strokeStyle = KIND_COLOR[edge.kind];
+        ctx.fillStyle = KIND_COLOR[edge.kind];
+        ctx.lineWidth = weight;
+        ctx.lineCap = "round";
+        if (edge.kind === "negative") ctx.setLineDash([S[2] * label, S[1] * label]);
+        ctx.stroke(new Path2D(edge.d));
+        ctx.setLineDash([]);
+        const [x, y] = edge.end;
+        const head = weight * 4;
+        ctx.beginPath();
+        if (edge.dir === "right") {
+          ctx.moveTo(x + head * 0.4, y);
+          ctx.lineTo(x - head * 0.6, y - head / 2);
+          ctx.lineTo(x - head * 0.6, y + head / 2);
+        } else {
+          ctx.moveTo(x, y + head * 0.4);
+          ctx.lineTo(x - head / 2, y - head * 0.6);
+          ctx.lineTo(x + head / 2, y - head * 0.6);
+        }
+        ctx.closePath();
+        ctx.fill();
+        ctx.restore();
+      }
+      return await toPng(canvas);
+    } finally {
+      delete el.dataset.print;
     }
-    return toPng(canvas);
   };
 
-  const fileName = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
-  const laneOf = (cell: Cell) => lanes.find((l) => l.rows.some((r) => r.cells.includes(cell)))?.lane;
   const sceneUrl = (cell: Cell) => `${window.location.origin}${cell.scene!.path}?scene=${encodeURIComponent(cell.id)}`;
   const copyLink = async (cell: Cell) => {
     const key = `link:${cell.key}`;
@@ -733,26 +929,32 @@ export function CanvasBoard({ boardId }: { boardId: string }) {
     }
   };
 
-  const switchDevice = (next: Device) => {
-    if (next === device) return;
-    setDevice(next);
-    setSeen([]);
-    setInteracting(null);
-    fitted.current = false;
-  };
-
   if (!board) return null;
   const current = cells.find((c) => c.key === selected) ?? null;
-  const currentLane = current ? laneOf(current) : undefined;
-  const failed = cells.filter((c) => c.scene && frames[frameKey(c)]?.status === "failed");
+  const currentLane = lanes.find((l) => l.lane.id === laneSel) ?? null;
+  const failed = cells.filter((c) => c.scene && frames[frameKey(c)]?.status === "failed").length;
   const total = cells.filter((c) => c.scene).length;
   const ready = cells.filter((c) => c.scene && frames[frameKey(c)]?.status === "ready").length;
   const srcOf = (cell: Cell) =>
     `${cell.scene!.path}?scene=${encodeURIComponent(cell.id)}&frame=${encodeURIComponent(frameKey(cell))}`;
+  const close = () => {
+    follow.current = null;
+    setSelected(null);
+    setLaneSel(null);
+    setInteracting(null);
+    // its button goes with the panel: the keys go back to the board
+    viewport.current?.focus({ preventScroll: true });
+  };
 
   return (
-    <div className="rk-canvas" data-device={device}>
-      <aside className="rk-side" aria-label="Boards and scenes">
+    <div className="rk-canvas" data-device={device} data-inspecting={current || currentLane ? "" : undefined} data-side-open={sideOpen || undefined}>
+      <p className="rk-sr" role="status">
+        {said}
+      </p>
+      <p className="rk-sr" role="status">
+        {failed > 0 && `${failed} ${failed === 1 ? "frame" : "frames"} failed to load`}
+      </p>
+      <aside id="rk-side" className="rk-side" aria-label="Boards and frames">
         <Link href="/canvas" className="rk-home">
           Canvas
         </Link>
@@ -760,316 +962,402 @@ export function CanvasBoard({ boardId }: { boardId: string }) {
           {BOARDS.map((b) => (
             <Link key={b.id} href={`/canvas/${b.id}`} aria-current={b.id === board.id ? "page" : undefined}>
               {b.title}
+              <span>{boardCount(b).scenes}</span>
             </Link>
           ))}
         </nav>
-        <div className="rk-outline">
+        <div ref={outline} className="rk-outline">
+          <p>{board.lead}</p>
           {lanes.map(({ lane, rows }) => (
             <section key={lane.id}>
-              <div className="rk-lane-name">
-                <h2>
-                  <span>{lane.ticket}</span>
-                  {lane.title}
-                </h2>
-                <button
-                  type="button"
-                  title="Copy this lane as a picture, for its ticket"
-                  onClick={() => void copyPng(`lane:${lane.id}`, laneImage({ lane, rows }), `${fileName(`${lane.ticket} ${lane.title}`)}-${device}.png`)}
-                >
-                  {saying(`lane:${lane.id}`, "Copy lane")}
+              <h2>
+                <button type="button" aria-current={!current && laneSel === lane.id ? "true" : undefined} onClick={() => pickLane(lane.id)}>
+                  <code>{lane.ticket}</code>
+                  <span>{lane.title}</span>
                 </button>
-              </div>
+              </h2>
               <ul>
                 {rows.flatMap((row) =>
-                  row.cells.map((cell) => {
-                    const state = cell.scene ? frames[frameKey(cell)]?.status : undefined;
-                    return (
-                      <li key={cell.key}>
-                        <button
-                          type="button"
-                          data-kind={cell.gap ? "gap" : cell.kind}
-                          aria-current={cell.key === selected ? "true" : undefined}
-                          onClick={() => pick(cell)}
-                        >
-                          <i aria-hidden />
-                          <span>{cell.gap?.title ?? cell.scene?.title ?? cell.id}</span>
-                          {state === "failed" && <b>failed</b>}
-                        </button>
-                      </li>
-                    );
-                  }),
+                  row.cells.map((cell) => (
+                    <li key={cell.key}>
+                      <button
+                        type="button"
+                        data-kind={cell.gap ? "gap" : cell.kind}
+                        aria-current={cell.key === selected ? "true" : undefined}
+                        onClick={() => pickCell(cell, true)}
+                      >
+                        <i className="rk-mark" role="img" aria-label={KIND_LABEL[cell.gap ? "gap" : cell.kind]} />
+                        <span>{titleOf(cell)}</span>
+                        {cell.scene && frames[frameKey(cell)]?.status === "failed" && <b className="rk-failed-tag">failed</b>}
+                      </button>
+                    </li>
+                  )),
                 )}
               </ul>
             </section>
           ))}
         </div>
-      </aside>
-
-      <div className="rk-main">
-        <header className="rk-bar">
-          {/* the way to the page this board is of, with the visitor's own draft
-              (CanvasSwitch is the same switch, from the prototype's side) */}
-          <div className="rk-seg" role="group" aria-label="Prototype or canvas">
-            <a
-              href={board.page.home}
-              onClick={(e) => {
-                // a better place on this device, when there is one: known only in the browser
-                const to = boardHome(board);
-                if (to === board.page.home) return;
-                e.preventDefault();
-                window.location.assign(to);
-              }}
-            >
-              Prototype
-            </a>
-            <span aria-current="page">Canvas</span>
-          </div>
-          <div className="rk-title">
-            <h1>{board.title}</h1>
-            <code>{board.route}</code>
-          </div>
-          <div className="rk-seg" role="group" aria-label="Viewport">
-            {(Object.keys(DEVICES) as Device[]).map((dv) => (
-              <button key={dv} type="button" data-device={dv} aria-pressed={dv === device} onClick={() => switchDevice(dv)}>
-                {DEVICES[dv].label}
-              </button>
-            ))}
-          </div>
-          <p className="rk-count" aria-live="polite" data-ready={ready} data-total={total} data-failed={failed.length}>
-            {ready}/{total} frames ready{failed.length ? ` · ${failed.length} failed` : ""}
-          </p>
-          <div className="rk-zoom">
-            <button type="button" aria-label="Zoom out" onClick={() => zoomAt(window.innerWidth / 2, window.innerHeight / 2, view.current.k / 1.25)}>
-              −
-            </button>
-            <output>{Math.round(zoom * 100)}%</output>
-            <button type="button" aria-label="Zoom in" onClick={() => zoomAt(window.innerWidth / 2, window.innerHeight / 2, view.current.k * 1.25)}>
-              +
-            </button>
-            <button type="button" data-zoom="width" title="Fit the board's width" onClick={fitWidth}>
-              Width
-            </button>
-            <button type="button" data-zoom="all" title="Fit the whole board" onClick={fit}>
-              All
-            </button>
-          </div>
-        </header>
-
-        <div
-          ref={viewport}
-          className="rk-viewport"
-          onPointerDown={onPointerDown}
-          onPointerMove={onPointerMove}
-          onPointerUp={onPointerUp}
-          onDoubleClick={(e) => {
-            // by where the pointer is: the surface holds the pointer while it's
-            // down, so the event's own target is the surface, not the card
-            const under = document.elementFromPoint(e.clientX, e.clientY) as HTMLElement | null;
-            const key = under?.closest<HTMLElement>("[data-card]")?.dataset.card;
-            const cell = cells.find((c) => c.key === key);
-            if (cell?.scene) {
-              setSelected(cell.key);
-              setInteracting(cell.key);
-            }
-          }}
-        >
-          <div ref={world} className="rk-world">
-            <p className="rk-lead">{board.lead}</p>
-            {lanes.map(({ lane, rows }) => (
-              <section key={lane.id} className="rk-lane" data-lane={lane.id}>
-                <header className="rk-lane-head">
-                  <div>
-                    <p className="rk-ticket">{lane.ticket}</p>
-                    <h2>{lane.title}</h2>
-                    {lane.story && <p className="rk-story">{lane.story}</p>}
-                  </div>
-                  {/* what the team reads beside the frames, never part of a copied picture */}
-                  {(lane.differs || lane.confirm) && (
-                    <div className="rk-notes">
-                      {lane.differs && (
-                        <div className="rk-differs">
-                          <p>Differs from the brief</p>
-                          <ul>
-                            {lane.differs.map((line) => (
-                              <li key={line}>{line}</li>
-                            ))}
-                          </ul>
-                        </div>
-                      )}
-                      {lane.confirm && (
-                        <div className="rk-confirm">
-                          <p>
-                            To confirm <span>the prototype&rsquo;s review notes (?review=1), as written</span>
-                          </p>
-                          <ul>
-                            {lane.confirm.map((line) => (
-                              <li key={line}>{line}</li>
-                            ))}
-                          </ul>
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </header>
-                {rows.map((row, r) => (
-                  <div key={r} className="rk-row" data-kind={row.kind}>
-                    <p className="rk-row-name">{KIND_LABEL[row.kind]}</p>
-                    <div className="rk-cells">
-                      {row.cells.map((cell) => {
-                        const fk = frameKey(cell);
-                        const state = frames[fk];
-                        const view = viewOf(cell);
-                        const screen = view === "screen";
-                        // The frame itself starts a screen tall and takes the height its page
-                        // reports, so the height is always measured, never assumed: a page
-                        // grows to its whole length, a section is exactly as tall as it is.
-                        // Until it has settled, its place is held at the height it had last time
-                        const said = state?.height ?? 0;
-                        const height = screen
-                          ? dev.h
-                          : view === "section"
-                            ? Math.min(MAX_PAGE_HEIGHT, Math.max(MIN_SECTION_HEIGHT, said || dev.h))
-                            : Math.min(MAX_PAGE_HEIGHT, Math.max(dev.h, said));
-                        const settled = state?.status === "ready" || state?.status === "failed";
-                        const remembered = known[`${cell.id}@${device}`];
-                        const held = screen || settled || !remembered ? height : Math.min(MAX_PAGE_HEIGHT, view === "section" ? remembered : Math.max(height, remembered));
-                        const on = !!cell.scene && live.has(fk);
-                        return (
-                          <article
-                            key={cell.key}
-                            className="rk-card"
-                            data-card={cell.key}
-                            data-title={cell.gap?.title ?? cell.scene?.title}
-                            data-kind={cell.gap ? "gap" : cell.kind}
-                            data-selected={cell.key === selected || undefined}
-                            data-interacting={cell.key === interacting || undefined}
-                            style={{ width: dev.w }}
-                          >
-                            {cell.via && (
-                              <p className="rk-via">
-                                <span aria-hidden>{cell.fromKey ? "→" : "↳"}</span>
-                                {cell.fromTitle ? `From “${cell.fromTitle}”: ${cell.via}` : cell.via}
-                              </p>
-                            )}
-                            <h3>
-                              <i aria-hidden />
-                              {cell.gap?.title ?? cell.scene?.title}
-                              {screen && <em>screen {dev.w}×{dev.h}</em>}
-                            </h3>
-                            {cell.gap ? (
-                              <div className="rk-gap" data-view={cell.key} style={{ width: dev.w }}>
-                                <p>Not in the prototype yet</p>
-                                <p>{cell.gap.note}</p>
-                              </div>
-                            ) : (
-                              <div className="rk-view" data-view={cell.key} style={{ width: dev.w, height: held }}>
-                                {on && (
-                                  <iframe
-                                    key={fk}
-                                    title={cell.scene!.title}
-                                    src={srcOf(cell)}
-                                    width={dev.w}
-                                    height={height}
-                                    // a frame is looked at until it's entered (double-click)
-                                    tabIndex={cell.key === interacting ? 0 : -1}
-                                  />
-                                )}
-                                {state?.status !== "ready" && state?.status !== "failed" && (
-                                  <div className="rk-veil">{on ? "Loading…" : "Not loaded yet"}</div>
-                                )}
-                                {state?.status === "failed" && (
-                                  <div className="rk-failed">
-                                    <strong>Scene failed</strong>
-                                    {state.detail}
-                                  </div>
-                                )}
-                                <div className="rk-shield" />
-                              </div>
-                            )}
-                            {cell.scene?.note && <p className="rk-note">{cell.scene.note}</p>}
-                          </article>
-                        );
-                      })}
-                    </div>
-                  </div>
-                ))}
-              </section>
-            ))}
-            <svg className="rk-edges" aria-hidden>
-              <defs>
-                {(["positive", "negative", "edge"] as const).map((k) => (
-                  <marker key={k} id={`rk-head-${k}`} viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
-                    <path d="M 0 0 L 10 5 L 0 10 z" className={`rk-head-${k}`} />
-                  </marker>
-                ))}
-              </defs>
-              {edges.map((e) => (
-                <path key={e.key} d={e.d} data-kind={e.kind} markerEnd={`url(#rk-head-${e.kind})`} />
-              ))}
-            </svg>
-          </div>
-        </div>
-
-        {current && (
-          <div className="rk-inspect" role="toolbar" aria-label="Selected frame">
-            <span data-kind={current.gap ? "gap" : current.kind}>
-              <i aria-hidden />
-              {current.gap?.title ?? current.scene?.title}
-            </span>
-            {current.scene && (
+        <div className="rk-foot">
+          <p className="rk-count" data-ready={ready} data-total={total} data-failed={failed}>
+            {total} frames · {ready} loaded
+            {failed > 0 && (
               <>
-                <button
-                  type="button"
-                  data-copy="image"
-                  title="Copy this frame as a picture, with a line saying what it is"
-                  disabled={frames[frameKey(current)]?.status !== "ready" || !currentLane}
-                  onClick={() =>
-                    currentLane &&
-                    void copyPng(`image:${current.key}`, frameImage(current, currentLane), `${fileName(`${currentLane.ticket} ${current.id}`)}-${device}.png`)
-                  }
-                >
-                  {saying(`image:${current.key}`, "Copy image")}
-                </button>
-                <button type="button" data-copy="link" title="Copy a link that opens this state" onClick={() => void copyLink(current)}>
-                  {saying(`link:${current.key}`, "Copy link")}
-                </button>
-                <a href={`${current.scene.path}?scene=${encodeURIComponent(current.id)}`} target="_blank" rel="noreferrer">
-                  Open in new tab
-                </a>
-                <button type="button" aria-pressed={interacting === current.key} onClick={() => setInteracting(interacting === current.key ? null : current.key)}>
-                  {interacting === current.key ? "Done" : "Interact"}
-                </button>
-                <button type="button" onClick={() => reload(current)}>
-                  Reload
-                </button>
+                {" · "}
+                <b>{failed} failed</b>
               </>
             )}
-            <button type="button" onClick={() => goTo(current.key)}>
-              Zoom to frame
-            </button>
-          </div>
-        )}
+          </p>
+          <ul className="rk-legend" aria-label="Kinds of state">
+            {(["positive", "negative", "edge", "gap"] as const).map((k) => (
+              <li key={k} data-kind={k}>
+                <i className="rk-mark" aria-hidden />
+                {KIND_LABEL[k]}
+              </li>
+            ))}
+          </ul>
+          <p>Drag or scroll to move. Pinch or ⌘-scroll to zoom. Double-click a frame to use it.</p>
+          <p id="rk-keys">On the board, by keyboard: arrows go from frame to frame, Enter zooms to one, + − 0 1 zoom, Shift with an arrow moves the board.</p>
+        </div>
+      </aside>
 
-        <ul className="rk-legend" aria-label="Legend">
-          <li data-kind="positive">
-            <i aria-hidden />
-            Positive
-          </li>
-          <li data-kind="negative">
-            <i aria-hidden />
-            Negative
-          </li>
-          <li data-kind="edge">
-            <i aria-hidden />
-            Edge
-          </li>
-          <li data-kind="gap">
-            <i aria-hidden />
-            Not built
-          </li>
-          <li className="rk-hint">Pan: drag or scroll · Zoom: pinch or ⌘ + scroll · Double-click a frame to use it</li>
-        </ul>
+      <header className="rk-bar">
+        <button
+          type="button"
+          className="rk-side-toggle"
+          aria-label="List of boards and frames"
+          aria-expanded={sideOpen}
+          aria-controls="rk-side"
+          onClick={() => setSideOpen((open) => !open)}
+        >
+          List
+        </button>
+        {/* the way to the page this board is of, with the visitor's own draft
+            (CanvasSwitch is the same switch, from the prototype's side) */}
+        <div className="rk-seg" role="group" aria-label="Prototype or canvas">
+          <a
+            href={board.page.home}
+            onClick={(e) => {
+              // a better place on this device, when there is one: known only in the browser
+              const to = boardHome(board);
+              if (to === board.page.home) return;
+              e.preventDefault();
+              window.location.assign(to);
+            }}
+          >
+            Prototype
+          </a>
+          <span aria-current="page">Canvas</span>
+        </div>
+        <div className="rk-title">
+          <h1>{board.title}</h1>
+          <code>{board.route}</code>
+        </div>
+        <div className="rk-seg" role="group" aria-label="Viewport">
+          {(Object.keys(DEVICES) as Device[]).map((dv) => (
+            <button key={dv} type="button" data-device={dv} aria-pressed={dv === device} onClick={() => switchDevice(dv)}>
+              {DEVICES[dv].label}
+            </button>
+          ))}
+        </div>
+        <div className="rk-seg rk-zoom" role="group" aria-label="Zoom">
+          <button type="button" data-zoom="out" aria-label="Zoom out" onClick={() => zoomBy(0.8)}>
+            −
+          </button>
+          <output>{Math.round(zoom * 100)}%</output>
+          <button type="button" data-zoom="in" aria-label="Zoom in" onClick={() => zoomBy(1.25)}>
+            +
+          </button>
+          <button type="button" data-zoom="width" title="Fit the board's width" onClick={fitWidth}>
+            Fit
+          </button>
+          <button type="button" data-zoom="all" title="Fit the whole board" onClick={fit}>
+            All
+          </button>
+        </div>
+      </header>
+
+      <div
+        ref={viewport}
+        className="rk-viewport"
+        // one stop for Tab: the arrow keys go from frame to frame inside it
+        tabIndex={0}
+        role="group"
+        aria-label={`${board.title}: the board`}
+        aria-describedby="rk-keys"
+        onKeyDown={onBoardKey}
+        onPointerDown={onPointerDown}
+        onPointerMove={onPointerMove}
+        onPointerUp={onPointerUp}
+        onDoubleClick={(e) => {
+          const under = document.elementFromPoint(e.clientX, e.clientY) as HTMLElement | null;
+          const cell = cells.find((c) => c.key === under?.closest<HTMLElement>("[data-card]")?.dataset.card);
+          if (cell?.scene) {
+            setSelected(cell.key);
+            setLaneSel(laneIdOf(cell.key));
+            setInteracting(cell.key);
+          }
+        }}
+      >
+        <div ref={world} className="rk-world">
+          {lanes.map(({ lane, rows }) => (
+            <section key={lane.id} className="rk-lane" data-lane={lane.id} data-selected={laneSel === lane.id || undefined}>
+              <header className="rk-lane-head">
+                <div className="rk-label" data-lane-label={lane.id}>
+                  <h2 className="rk-lane-name">
+                    <code>{lane.ticket}</code>
+                    {lane.title}
+                  </h2>
+                  {lane.story && <p className="rk-story rk-print">{lane.story}</p>}
+                </div>
+              </header>
+              {rows.map((row, r) => (
+                <div key={r} className="rk-row" data-kind={row.kind}>
+                  <p className="rk-row-name">{KIND_LABEL[row.kind]}</p>
+                  <div className="rk-cells">
+                    {row.cells.map((cell) => {
+                      const fk = frameKey(cell);
+                      const state = frames[fk];
+                      const view = viewOf(cell);
+                      const screen = view === "screen";
+                      // The frame itself starts a screen tall and takes the height its page
+                      // reports, so the height is always measured, never assumed: a page
+                      // grows to its whole length, a section is exactly as tall as it is.
+                      // Until it has settled, its place is held at the height it had last time
+                      const said = state?.height ?? 0;
+                      const height = screen
+                        ? dev.h
+                        : view === "section"
+                          ? Math.min(MAX_PAGE_HEIGHT, Math.max(MIN_SECTION_HEIGHT, said || dev.h))
+                          : Math.min(MAX_PAGE_HEIGHT, Math.max(dev.h, said));
+                      const settled = state?.status === "ready" || state?.status === "failed";
+                      const remembered = known[`${cell.id}@${device}`];
+                      const held =
+                        screen || settled || !remembered
+                          ? height
+                          : Math.min(MAX_PAGE_HEIGHT, view === "section" ? remembered : Math.max(height, remembered));
+                      const on = !!cell.scene && live.has(fk);
+                      const kind = cell.gap ? "gap" : cell.kind;
+                      const via = viaOf(cell);
+                      return (
+                        <article
+                          key={cell.key}
+                          className="rk-card"
+                          data-card={cell.key}
+                          data-title={titleOf(cell)}
+                          data-kind={kind}
+                          data-selected={cell.key === selected || undefined}
+                          data-interacting={cell.key === interacting || undefined}
+                          style={{ width: dev.w }}
+                        >
+                          <div className="rk-card-head">
+                            <div className="rk-label">
+                              {via && (
+                                <p className="rk-via" title={via}>
+                                  <span aria-hidden>{cell.fromKey ? "→ " : "↳ "}</span>
+                                  {via}
+                                </p>
+                              )}
+                              <h3 data-kind={kind} title={titleOf(cell)}>
+                                <i className="rk-mark" role="img" aria-label={KIND_LABEL[kind]} />
+                                <span>{titleOf(cell)}</span>
+                              </h3>
+                            </div>
+                          </div>
+                          {cell.gap ? (
+                            <div className="rk-gap" data-view={cell.key}>
+                              <p>Not built yet</p>
+                            </div>
+                          ) : (
+                            <div className="rk-view" data-view={cell.key} style={{ height: held }}>
+                              {on && (
+                                <iframe
+                                  key={fk}
+                                  title={titleOf(cell)}
+                                  src={srcOf(cell)}
+                                  width={dev.w}
+                                  height={height}
+                                  // A frame is looked at until it's used. Until then the page in
+                                  // it can't take the keys (a page that focuses a field as it
+                                  // loads would take them from the canvas) and isn't read out
+                                  inert={cell.key !== interacting}
+                                  tabIndex={cell.key === interacting ? 0 : -1}
+                                />
+                              )}
+                              {!settled && <div className="rk-veil">{on ? "Loading…" : "Not loaded yet"}</div>}
+                              {state?.status === "failed" && (
+                                <div className="rk-failed">
+                                  <strong>Scene failed</strong>
+                                  {state.detail}
+                                </div>
+                              )}
+                              <div className="rk-shield" />
+                            </div>
+                          )}
+                          {noteOf(cell) && <p className="rk-note rk-print">{noteOf(cell)}</p>}
+                        </article>
+                      );
+                    })}
+                  </div>
+                </div>
+              ))}
+            </section>
+          ))}
+          <svg className="rk-edges" aria-hidden>
+            <defs>
+              {(["positive", "negative", "edge"] as const).map((k) => (
+                <marker key={k} id={`rk-head-${k}`} viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+                  <path d="M 0 0 L 10 5 L 0 10 z" className={`rk-head-${k}`} />
+                </marker>
+              ))}
+            </defs>
+            {edges.map((e) => (
+              <path key={e.key} d={e.d} data-kind={e.kind} markerEnd={`url(#rk-head-${e.kind})`} />
+            ))}
+          </svg>
+        </div>
       </div>
+
+      {(current || currentLane) && (
+        <aside className="rk-inspect" aria-label={current ? "The frame in hand" : "The lane in hand"}>
+          <button type="button" className="rk-close" onClick={close}>
+            Close
+          </button>
+          {current ? (
+            <>
+              <div className="rk-subject">
+                <p data-kind={current.gap ? "gap" : current.kind}>
+                  <i className="rk-mark" aria-hidden />
+                  {KIND_LABEL[current.gap ? "gap" : current.kind]}
+                  {currentLane && <code>{currentLane.lane.ticket}</code>}
+                </p>
+                <h2>{titleOf(current)}</h2>
+              </div>
+              {current.scene && currentLane && (
+                <div className="rk-actions">
+                  <button
+                    type="button"
+                    className="rk-primary"
+                    data-copy="image"
+                    title="This frame as a picture, with a line saying what it is"
+                    disabled={frames[frameKey(current)]?.status !== "ready"}
+                    onClick={() =>
+                      void copyPng(
+                        `image:${current.key}`,
+                        frameImage(current, currentLane.lane),
+                        `${fileName(`${currentLane.lane.ticket} ${current.id}`)}-${device}.png`,
+                      )
+                    }
+                  >
+                    {saying(`image:${current.key}`, "Copy image")}
+                  </button>
+                  <button type="button" data-copy="link" title="A link that opens this state" onClick={() => void copyLink(current)}>
+                    {saying(`link:${current.key}`, "Copy link")}
+                  </button>
+                  <a href={`${current.scene.path}?scene=${encodeURIComponent(current.id)}`} target="_blank" rel="noreferrer">
+                    Open in a tab
+                  </a>
+                  <button
+                    type="button"
+                    aria-pressed={interacting === current.key}
+                    title="Click and type in the page inside the frame"
+                    onClick={() => setInteracting(interacting === current.key ? null : current.key)}
+                  >
+                    {interacting === current.key ? "Done using it" : "Use the frame"}
+                  </button>
+                  <button type="button" onClick={() => reload(current)}>
+                    Reload
+                  </button>
+                </div>
+              )}
+              {viaOf(current) && (
+                <section>
+                  <h3>Reached by</h3>
+                  <p>{viaOf(current)}</p>
+                </section>
+              )}
+              {noteOf(current) && (
+                <section>
+                  <h3>{current.gap ? "What the brief asks for" : "What it shows"}</h3>
+                  <p>{noteOf(current)}</p>
+                </section>
+              )}
+              {current.scene && (
+                <section>
+                  <h3>Frame</h3>
+                  <p>
+                    {VIEW_SAYS[viewOf(current)]}, {dev.label.toLowerCase()}.
+                    {frames[frameKey(current)]?.status === "failed" && ` It failed: ${frames[frameKey(current)]?.detail}`}
+                  </p>
+                </section>
+              )}
+              {currentLane && (
+                <div className="rk-actions">
+                  <button type="button" onClick={() => pickLane(currentLane.lane.id)}>
+                    Its lane: {currentLane.lane.ticket}
+                  </button>
+                </div>
+              )}
+            </>
+          ) : (
+            currentLane && (
+              <>
+                <div className="rk-subject">
+                  <p>
+                    <code>{currentLane.lane.ticket}</code>
+                    {currentLane.rows.reduce((n, row) => n + row.cells.length, 0)} frames
+                  </p>
+                  <h2>{currentLane.lane.title}</h2>
+                </div>
+                <div className="rk-actions">
+                  <button
+                    type="button"
+                    className="rk-primary"
+                    data-copy="lane"
+                    title="The whole lane as one picture, for its ticket"
+                    onClick={() =>
+                      void copyPng(
+                        `lane:${currentLane.lane.id}`,
+                        laneImage(currentLane),
+                        `${fileName(`${currentLane.lane.ticket} ${currentLane.lane.title}`)}-${device}.png`,
+                      )
+                    }
+                  >
+                    {saying(`lane:${currentLane.lane.id}`, "Copy lane as a picture")}
+                  </button>
+                </div>
+                {currentLane.lane.story && (
+                  <section>
+                    <h3>Story</h3>
+                    <p>{currentLane.lane.story}</p>
+                  </section>
+                )}
+                {currentLane.lane.differs && (
+                  <section>
+                    <h3>Differs from the brief</h3>
+                    <ul>
+                      {currentLane.lane.differs.map((line) => (
+                        <li key={line}>{line}</li>
+                      ))}
+                    </ul>
+                  </section>
+                )}
+                {currentLane.lane.confirm && (
+                  <details>
+                    <summary>
+                      To confirm <span>· the prototype&rsquo;s review notes, as written</span>
+                    </summary>
+                    <ul>
+                      {currentLane.lane.confirm.map((line) => (
+                        <li key={line}>{line}</li>
+                      ))}
+                    </ul>
+                  </details>
+                )}
+              </>
+            )
+          )}
+        </aside>
+      )}
     </div>
   );
 }

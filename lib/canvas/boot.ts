@@ -70,6 +70,15 @@ declare global {
   }
 }
 
+/*
+ * Also in the script: a frame of the canvas is looked at until it's used, and
+ * until then the page in it can't take the keys. The canvas marks such a
+ * frame `inert`, which keeps Tab and a screen reader out of it, but not a
+ * page that focuses a field itself (an error's first field, a dialog): that
+ * would move the keys out of the canvas into whichever frame loaded last. So
+ * while its frame is inert, focus() does nothing. A scene in a tab of its own
+ * has no frame and is never held back.
+ */
 export const SCENE_BOOT_SCRIPT = `(function(){try{
 var m=/[?&]scene=([^&#]+)/.exec(location.search);if(!m)return;
 var id=decodeURIComponent(m[1]);
@@ -87,5 +96,7 @@ Object.defineProperty(window,"sessionStorage",{configurable:true,value:mem(seed&
 var st=window.setTimeout;
 var boot={id:id,sig:seed?seed.sig:null,from:from,real:real,setTimeout:function(){return st.apply(window,arguments);},holdOver:(seed&&seed.hold)||0,status:"running"};
 window.setTimeout=function(fn,ms){if(boot.holdOver&&ms>boot.holdOver)return 0;return st.apply(window,arguments);};
+var fo=HTMLElement.prototype.focus;
+HTMLElement.prototype.focus=function(){try{var fe=window.frameElement;if(fe&&fe.hasAttribute("inert"))return;}catch(e){}return fo.apply(this,arguments);};
 window.__RK_SCENE__=boot;
 }catch(e){}})();`;

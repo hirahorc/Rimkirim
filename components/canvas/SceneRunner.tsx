@@ -151,6 +151,19 @@ async function capture(view: View, scale: number): Promise<Blob> {
  * production; on a page that isn't a scene it does nothing.
  */
 export function SceneRunner() {
+  // Less motion, when the visitor asks for it. The pages do that themselves,
+  // except where a scene holds a moment that would have passed: its spinner
+  // would turn for as long as the board is open. So in a scene, then, an
+  // animation runs once and is over; its end state is what the frame shows
+  React.useEffect(() => {
+    if (!window.__RK_SCENE__) return;
+    const still = document.createElement("style");
+    still.textContent =
+      "@media (prefers-reduced-motion: reduce){*,*::before,*::after{animation-duration:1ms!important;animation-iteration-count:1!important;transition-duration:1ms!important;scroll-behavior:auto!important}}";
+    document.head.appendChild(still);
+    return () => still.remove();
+  }, []);
+
   // the frame's height, each time the page changes size: a fold opening, a list growing
   React.useEffect(() => {
     const boot = window.__RK_SCENE__;

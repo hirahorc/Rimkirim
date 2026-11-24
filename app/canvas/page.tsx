@@ -31,12 +31,12 @@ export default function CanvasIndexPage() {
               <li key={b.id}>
                 <Link href={`/canvas/${b.id}`}>
                   <h2>{b.title}</h2>
-                  <code>{b.route}</code>
                   <p>{b.lead}</p>
                   <small>
                     {n.lanes} {n.lanes === 1 ? "story" : "stories"} · {n.scenes} {n.scenes === 1 ? "frame" : "frames"}
                     {n.gaps ? ` · ${n.gaps} not built` : ""}
                   </small>
+                  <code>{b.route}</code>
                 </Link>
               </li>
             );

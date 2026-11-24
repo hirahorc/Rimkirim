@@ -27,31 +27,35 @@ const readScene = () => {
   return boot ? `${window.parent === window ? "tab" : "frame"}:${boot.id}` : "";
 };
 
+/* canvas.css's tokens, said again: its stylesheet isn't on a product page.
+   Space s1 4, s2 8, s4 16; type t2 12/16; wash, panel, ink, ink-2; r1, r2 */
 const BAR: React.CSSProperties = {
   position: "fixed",
   left: 16,
   zIndex: 60,
   display: "flex",
   alignItems: "center",
-  gap: 2,
+  gap: 4,
   maxWidth: "calc(100vw - 32px)",
-  padding: 3,
-  borderRadius: 9,
-  background: "#e4e4e4",
-  boxShadow: "0 2px 10px rgba(0,0,0,.18)",
-  fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+  padding: 4,
+  borderRadius: 8,
+  background: "#f4f4f5",
+  boxShadow: "0 0 0 1px rgb(0 0 0 / 0.08), 0 8px 24px rgb(0 0 0 / 0.16)",
+  fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif",
   fontSize: 12,
-  lineHeight: 1.2,
-  color: "#111",
+  lineHeight: "16px",
+  color: "#18181b",
 };
+/* a link with the keys: a ring in its own ink, as thick as the canvas's (stroke-2), stood off by as much */
+const RING = "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-current";
 const segment = (on: boolean): React.CSSProperties => ({
-  borderRadius: 6,
-  padding: "5px 9px",
+  borderRadius: 4,
+  padding: "4px 8px",
   whiteSpace: "nowrap",
   textDecoration: "none",
-  color: on ? "#111" : "#555",
-  background: on ? "#fff" : "transparent",
-  boxShadow: on ? "0 1px 2px rgba(0,0,0,.18)" : "none",
+  color: on ? "#18181b" : "#52525b",
+  background: on ? "#ffffff" : "transparent",
+  boxShadow: on ? "0 0 0 1px rgb(0 0 0 / 0.08), 0 4px 12px rgb(0 0 0 / 0.08)" : "none",
   fontWeight: on ? 600 : 400,
 });
 
@@ -84,14 +88,14 @@ export function CanvasSwitch() {
     return (
       <div role="group" aria-label="Scene" className={place} style={BAR}>
         <span style={{ ...segment(false), overflow: "hidden", textOverflow: "ellipsis", minWidth: 0 }}>
-          Scene: <strong style={{ color: "#111" }}>{findScene(id)?.title ?? id}</strong>
+          Scene: <strong style={{ color: "#18181b" }}>{findScene(id)?.title ?? id}</strong>
         </span>
         {/* plain links, so each is a page load: a scene's storage ends with its page */}
-        <a href={board ? `/canvas/${board.id}#${encodeURIComponent(id)}` : "/canvas"} style={segment(true)}>
+        <a href={board ? `/canvas/${board.id}#${encodeURIComponent(id)}` : "/canvas"} className={RING} style={segment(true)}>
           Back to canvas
         </a>
         {board && (
-          <a href={boardHome(board)} style={segment(false)}>
+          <a href={boardHome(board)} className={RING} style={segment(false)}>
             Leave scene
           </a>
         )}
@@ -106,7 +110,7 @@ export function CanvasSwitch() {
       <span aria-current="page" style={segment(true)}>
         Prototype
       </span>
-      <a href={`/canvas/${board.id}`} style={segment(false)}>
+      <a href={`/canvas/${board.id}`} className={RING} style={segment(false)}>
         Canvas
       </a>
     </div>
