@@ -12,7 +12,7 @@ import { CanvasSwitch } from "@/components/canvas/CanvasSwitch";
 import { SceneRunner } from "@/components/canvas/SceneRunner";
 import { SCENE_BOOT_SCRIPT } from "@/lib/canvas/boot";
 import { LanguageProvider } from "@/lib/i18n/LanguageProvider";
-import { APP_ENV, IS_PRODUCTION } from "@/lib/env";
+import { APP_ENV, HAS_CANVAS, IS_PRODUCTION } from "@/lib/env";
 
 const spaceGrotesk = Space_Grotesk({
   variable: "--font-space-grotesk",
@@ -84,8 +84,8 @@ export default function RootLayout({
         {/* scene mode (the canvas's frames, `?scene=`): a page opened as a
             scene gets storage of its own before any store reads it, so this
             has to be an inline script, first in the body (lib/canvas/boot.ts).
-            Never in production */}
-        {!IS_PRODUCTION && <script dangerouslySetInnerHTML={{ __html: SCENE_BOOT_SCRIPT }} />}
+            On a page that isn't opened as a scene it does nothing */}
+        {HAS_CANVAS && <script dangerouslySetInnerHTML={{ __html: SCENE_BOOT_SCRIPT }} />}
         <LanguageProvider>
           <AppHeader />
           <main className="flex-1">{children}</main>
@@ -95,10 +95,10 @@ export default function RootLayout({
           <EnvBadge />
           {/* the break-ui data toggle for the expat order flow: local dev only */}
           {APP_ENV === "development" && <BreakData />}
-          {/* plays a scene's steps and reports to the canvas: never in production */}
-          {!IS_PRODUCTION && <SceneRunner />}
-          {/* the switch between a page and its board on the canvas: never in production */}
-          {!IS_PRODUCTION && <CanvasSwitch />}
+          {/* plays a scene's steps and reports to the canvas */}
+          {HAS_CANVAS && <SceneRunner />}
+          {/* the switch between a page and its board on the canvas */}
+          {HAS_CANVAS && <CanvasSwitch />}
           <ScrollLanding />
         </LanguageProvider>
       </body>

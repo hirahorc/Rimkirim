@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { IS_PRODUCTION } from "@/lib/env";
+import { HAS_CANVAS } from "@/lib/env";
 import { BOARDS, boardCount } from "@/lib/canvas/registry";
 import "@/components/canvas/canvas.css";
 
@@ -11,11 +11,11 @@ export const metadata: Metadata = {
 };
 
 /**
- * The canvas's front door: the boards, one per page of a flow. Local
- * development and staging only: in production the route doesn't exist.
+ * The canvas's front door: the boards, one per page of a flow. Wherever the
+ * canvas ships (lib/env.ts, HAS_CANVAS), and never in a search index.
  */
 export default function CanvasIndexPage() {
-  if (IS_PRODUCTION) notFound();
+  if (!HAS_CANVAS) notFound();
   return (
     <div className="rk-index">
       <div>

@@ -2,7 +2,6 @@
  * The canvas (/canvas): harness chrome, not part of the design it shows.
  * Plain on purpose, in its own neutrals and the system's type, so nothing
  * here is mistaken for the product and none of the product's tokens leak in.
- * Never in production.
  *
  * Everything below is built from the tokens that follow, and only from
  * them: one spacing scale, one type scale, one set of colours, two radii,
@@ -148,8 +147,8 @@
   list-style: none;
 }
 
-/* the environment marker sits where the side list ends: the canvas is
-   never production, so it has nothing to mark here */
+/* the environment marker sits where the side list ends: the canvas is the
+   harness, not a page of the product, so there's nothing for it to mark */
 main:has(.rk-canvas) ~ [data-env-badge],
 main:has(.rk-index) ~ [data-env-badge] {
   display: none;

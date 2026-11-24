@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { CanvasBoard } from "@/components/canvas/CanvasBoard";
-import { IS_PRODUCTION } from "@/lib/env";
+import { HAS_CANVAS } from "@/lib/env";
 import { findBoard } from "@/lib/canvas/registry";
 
 export async function generateMetadata({ params }: { params: Promise<{ board: string }> }): Promise<Metadata> {
@@ -14,10 +14,10 @@ export async function generateMetadata({ params }: { params: Promise<{ board: st
 
 /**
  * One board: a page of the prototype with every state its stories ask for.
- * Local development and staging only: in production the route doesn't exist.
+ * Wherever the canvas ships (lib/env.ts, HAS_CANVAS), and never in a search index.
  */
 export default async function CanvasBoardPage({ params }: { params: Promise<{ board: string }> }) {
   const { board } = await params;
-  if (IS_PRODUCTION || !findBoard(board)) notFound();
+  if (!HAS_CANVAS || !findBoard(board)) notFound();
   return <CanvasBoard boardId={board} />;
 }

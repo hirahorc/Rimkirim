@@ -19,7 +19,8 @@
  * It also holds timers back (`hold`): a moment that would pass (a toast, a
  * "Checking…") stays on the page when the timer that ends it never fires.
  *
- * Never in production (the layout leaves it out).
+ * In the page wherever the canvas ships (lib/env.ts, HAS_CANVAS); without
+ * `?scene=` in the address it does nothing.
  */
 
 /** where a scene's seed waits in the real localStorage, for a tab of its own */

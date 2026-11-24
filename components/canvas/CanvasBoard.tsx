@@ -24,7 +24,7 @@ import "./canvas.css";
  * nothing longer, and its names keep their size whatever the zoom.
  *
  * Harness chrome, plain on purpose, like the dataset toggle: it isn't part
- * of the design it shows, and it never ships to production (app/canvas).
+ * of the design it shows.
  * Its look is canvas.css's tokens and nothing else; the few numbers below
  * are those tokens again, where a length has to be worked out in script.
  */

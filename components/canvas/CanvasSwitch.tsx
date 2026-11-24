@@ -3,7 +3,7 @@
 import * as React from "react";
 import { usePathname } from "next/navigation";
 import { boardForPath, boardHome, boardOfScene, findScene } from "@/lib/canvas/registry";
-import { APP_ENV } from "@/lib/env";
+import { APP_ENV, IS_PRODUCTION } from "@/lib/env";
 
 /**
  * The way between the prototype and the canvas, from the prototype's side
@@ -17,7 +17,8 @@ import { APP_ENV } from "@/lib/env";
  *
  * Nothing inside a frame of the canvas, and nothing on a page without a
  * board. Harness chrome, plain on purpose and in its own styles, like the
- * dataset toggle; the root layout mounts it outside production only.
+ * dataset toggle; the root layout mounts it wherever the canvas ships
+ * (lib/env.ts, HAS_CANVAS).
  */
 
 const never = () => () => {};
@@ -70,9 +71,10 @@ export function CanvasSwitch() {
 
   // Clear of what's already at the foot of the screen. On a page: the
   // environment marker, and on the plan below lg its bar and, in development,
-  // the dataset toggle over it. A scene has neither marker nor toggle
+  // the dataset toggle over it. A scene has neither marker nor toggle, and
+  // neither has production
   const onPlan = pathname === "/expat-relocation/plan";
-  const place = scene
+  const place = scene || IS_PRODUCTION
     ? onPlan
       ? "bottom-4 max-lg:bottom-[148px]"
       : "bottom-4"

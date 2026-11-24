@@ -147,8 +147,8 @@ async function capture(view: View, scale: number): Promise<Blob> {
  * script, lib/canvas/boot.ts): it checks the page was seeded with what the
  * code builds now, plays the scene's steps, and tells the canvas how it
  * went and how tall its frame should be. It also gives the canvas a way to
- * ask for the page as a picture. Mounted by the root layout outside
- * production; on a page that isn't a scene it does nothing.
+ * ask for the page as a picture. Mounted by the root layout wherever the
+ * canvas ships; on a page that isn't a scene it does nothing.
  */
 export function SceneRunner() {
   // Less motion, when the visitor asks for it. The pages do that themselves,

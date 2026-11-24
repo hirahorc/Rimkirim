@@ -5,7 +5,7 @@
  * more (a label was reworded, a control moved), or a page that never came
  * up. Run it after a change to the flows the canvas frames.
  *
- *   npm run dev            # or a staging build: the canvas isn't in production
+ *   npm run dev            # or any build of the app, with BASE_URL
  *   npm run check:scenes
  *
  * BASE_URL (default http://localhost:3000) is where the app runs;
@@ -101,7 +101,7 @@ try {
     boards = await run(`[...document.querySelectorAll('.rk-index a[href^="/canvas/"]')].map((a) => a.getAttribute("href"))`).catch(() => []);
   }
   if (!boards.length) {
-    console.error(`No canvas at ${BASE}/canvas. Is the app running, and not as production?`);
+    console.error(`No canvas at ${BASE}/canvas. Is the app running?`);
     quit(2);
   }
 

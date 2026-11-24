@@ -20,3 +20,18 @@ export const APP_ENV: AppEnv =
 
 export const IS_PRODUCTION = APP_ENV === "production";
 export const IS_STAGING = APP_ENV === "staging";
+
+/**
+ * Whether the canvas ships with this deployment: `/canvas`, scene mode
+ * (`?scene=`) and the "Prototype | Canvas" switch on the pages it frames.
+ *
+ * Everywhere, production included. The prototype is a design tool with no
+ * backend, so there's nothing in production for the canvas to get in the way
+ * of, and whoever is sent the production link sees the same boards (decided
+ * 2026-11-24). Its pages stay out of search indexes either way.
+ *
+ * The one place to change that: make this `!IS_PRODUCTION` and the canvas
+ * leaves production again (its routes answer 404, the layout leaves its
+ * script out).
+ */
+export const HAS_CANVAS: boolean = true;
