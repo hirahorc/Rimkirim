@@ -304,7 +304,7 @@ const plan: Scene[] = [
   {
     id: "elig-abroad",
     title: "Not arrived yet, with an ITAS",
-    note: "Q2 “I have not arrived yet” asks the estimated arrival date. Q4 asks for an ITAS for work or study, valid 12 months or more; Q5 whether the goods ship from the country they've been living in.",
+    note: "Q2 “Not yet” asks the estimated arrival date. Q4 asks for an ITAS for work or study, valid for 12 months or more; Q5 whether they ship from the country they've been living in.",
     via: "Answer Q1 to Q5",
     from: "plan-start",
     path: PLAN,

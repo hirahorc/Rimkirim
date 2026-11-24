@@ -75,7 +75,7 @@ function saidBack(
   return {
     eligibility: line([
       items.join(", "),
-      a.location ? e(a.location) : "",
+      a.location ? e(`said.${a.location}`) : "",
       a.reason ? (a.reason === "others" && a.reasonOther.trim() ? a.reasonOther.trim() : e(`reasons.${a.reason}`)) : "",
     ]),
     details: line([
