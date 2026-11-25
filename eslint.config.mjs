@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // kanvas's built board: its viewer is minified, and none of it is the app's code
+    "public/canvas/**",
   ]),
 ]);
 

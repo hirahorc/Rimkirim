@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "check:covers": "node scripts/check-covers.mjs",
-    "check:scenes": "node scripts/check-scenes.mjs"
+    "kanvas": "node ../kanvas/dist/cli.js"
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",

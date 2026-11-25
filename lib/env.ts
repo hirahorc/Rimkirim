@@ -22,16 +22,19 @@ export const IS_PRODUCTION = APP_ENV === "production";
 export const IS_STAGING = APP_ENV === "staging";
 
 /**
- * Whether the canvas ships with this deployment: `/canvas`, scene mode
- * (`?scene=`) and the "Prototype | Canvas" switch on the pages it frames.
+ * Whether the canvas's ways into the prototype ship with this deployment:
+ * scene mode (`?scene=`, what the board's "Open live" links to) and the
+ * "Prototype | Canvas" switch on the pages it frames. The board itself is
+ * kanvas's static site in public/canvas (kanvas.config.ts), served as files.
  *
  * Everywhere, production included. The prototype is a design tool with no
  * backend, so there's nothing in production for the canvas to get in the way
  * of, and whoever is sent the production link sees the same boards (decided
- * 2026-11-24). Its pages stay out of search indexes either way.
+ * 2026-11-24). Its pages stay out of search indexes either way (the board's
+ * pages say noindex).
  *
- * The one place to change that: make this `!IS_PRODUCTION` and the canvas
- * leaves production again (its routes answer 404, the layout leaves its
- * script out).
+ * The one place to change that: make this `!IS_PRODUCTION` and scene mode
+ * and the switch leave production (the layout leaves the script out); to
+ * take the board out too, leave public/canvas out of that deployment.
  */
 export const HAS_CANVAS: boolean = true;

@@ -7,19 +7,22 @@ import { APP_ENV, IS_PRODUCTION } from "@/lib/env";
 
 /**
  * The way between the prototype and the canvas, from the prototype's side
- * (the canvas has its own, in its bar):
+ * (the canvas, kanvas's board at /canvas, links to the page from its bar):
  *
  * - on a page that has a board, a small switch, "Prototype | Canvas": Canvas
  *   opens that page's board;
- * - on a page opened as a scene in a tab of its own, a line that says so
- *   (what's on screen is a seeded state, not the visitor's draft), with the
- *   way back to its frame and the way out to the real page.
+ * - on a page opened as a scene (`?scene=`, what the board's "Open live"
+ *   links to), a line that says so (what's on screen is a seeded state, not
+ *   the visitor's draft), with the way back to its frame on the board and
+ *   the way out to the real page.
  *
- * Nothing inside a frame of the canvas, and nothing on a page without a
- * board. Harness chrome, plain on purpose and in its own styles, like the
- * dataset toggle; the root layout mounts it wherever the canvas ships
- * (lib/env.ts, HAS_CANVAS).
+ * Nothing on a page without a board. Harness chrome, plain on purpose and in
+ * its own styles, like the dataset toggle; the root layout mounts it wherever
+ * the canvas ships (lib/env.ts, HAS_CANVAS).
  */
+
+/** the board's site (public/canvas, kanvas.config.ts), at a board or one of its frames */
+const boardLink = (board: string, scene?: string) => `/canvas/index.html#/${encodeURIComponent(board)}${scene ? `/${encodeURIComponent(scene)}` : ""}`;
 
 const never = () => () => {};
 /** "" on a page that isn't a scene; else whether it's in a frame, then the scene's id */
@@ -28,8 +31,8 @@ const readScene = () => {
   return boot ? `${window.parent === window ? "tab" : "frame"}:${boot.id}` : "";
 };
 
-/* canvas.css's tokens, said again: its stylesheet isn't on a product page.
-   Space s1 4, s2 8, s4 16; type t2 12/16; wash, panel, ink, ink-2; r1, r2 */
+/* the board's own greys and steps, said here: harness chrome takes nothing from the product's styles.
+   Space 4, 8, 16; type 12/16; wash, panel, ink, ink-2 */
 const BAR: React.CSSProperties = {
   position: "fixed",
   left: 16,
@@ -47,7 +50,7 @@ const BAR: React.CSSProperties = {
   lineHeight: "16px",
   color: "#18181b",
 };
-/* a link with the keys: a ring in its own ink, as thick as the canvas's (stroke-2), stood off by as much */
+/* a link with the keys: a ring in its own ink, 2px, stood off by as much */
 const RING = "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-current";
 const segment = (on: boolean): React.CSSProperties => ({
   borderRadius: 4,
@@ -93,7 +96,7 @@ export function CanvasSwitch() {
           Scene: <strong style={{ color: "#18181b" }}>{findScene(id)?.title ?? id}</strong>
         </span>
         {/* plain links, so each is a page load: a scene's storage ends with its page */}
-        <a href={board ? `/canvas/${board.id}#${encodeURIComponent(id)}` : "/canvas"} className={RING} style={segment(true)}>
+        <a href={board ? boardLink(board.id, id) : "/canvas"} className={RING} style={segment(true)}>
           Back to canvas
         </a>
         {board && (
@@ -112,7 +115,7 @@ export function CanvasSwitch() {
       <span aria-current="page" style={segment(true)}>
         Prototype
       </span>
-      <a href={`/canvas/${board.id}`} className={RING} style={segment(false)}>
+      <a href={boardLink(board.id)} className={RING} style={segment(false)}>
         Canvas
       </a>
     </div>
