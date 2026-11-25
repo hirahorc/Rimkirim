@@ -1,0 +1,18 @@
+{
+  "kanvas": 1,
+  "entries": [
+    {
+      "date": "2026-11-25T10:18:05+07:00",
+      "commit": "d236d20b324f3c22f3814cd9eb89f7df9faade8c",
+      "summary": "The board's first frames",
+      "boards": [
+        "overview",
+        "rates",
+        "plan",
+        "booking",
+        "ops",
+        "landing"
+      ]
+    }
+  ]
+}
